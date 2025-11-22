@@ -1,0 +1,234 @@
+<div class="pos-content">
+  <!-- Products Section -->
+  <div class="products-section">
+    <!-- Search Results Component -->
+    <app-search-results
+      [products]="searchResults"
+      (productSelected)="addToCart($event)"
+    ></app-search-results>
+
+    <!-- Bottom Section: Favorites and Quick Access -->
+    <div class="bottom-sections">
+      <app-favorites
+        [products]="favoriteProducts"
+        (productSelected)="addToCart($event)"
+      ></app-favorites>
+
+      <app-quick-access
+        [products]="quickAccessProducts"
+        (productSelected)="addToCart($event)"
+      ></app-quick-access>
+    </div>
+  </div>
+
+  <!-- Cart Component -->
+  <app-cart
+    [cartItems]="cartItems"
+    [salesTabs]="salesTabs"
+    [activeSaleTabIndex]="activeSaleTabIndex"
+    [isMobileCartOpen]="isMobileCartOpen"
+    (switchTab)="switchSaleTab($event)"
+    (addTab)="addSaleTab()"
+    (closeTab)="closeSaleTab($event)"
+    (removeItem)="removeFromCart($event)"
+    (clearCart)="cartService.clearCart()"
+    (placeOrder)="openCheckout()"
+    (placeOrderWithMethod)="handleQuickPay($event)"
+    (closeMobileCart)="toggleMobileCart()"
+  ></app-cart>
+</div>
+
+<!-- Camera Scanner Overlay -->
+<div
+  class="camera-overlay"
+  *ngIf="isCameraActive"
+  (click)="toggleCameraScanner()"
+>
+  <div class="camera-content" (click)="$event.stopPropagation()">
+    <button class="close-camera" (click)="toggleCameraScanner()">
+      <i class="fas fa-times"></i>
+    </button>
+    <div id="camera-scanner"></div>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" *ngIf="showCheckout" (click)="showCheckout = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-cash-register"></i>
+        {{ "POS.CHECKOUT.TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="showCheckout = false">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="checkout-summary">
+        <div class="summary-item">
+          <i class="fas fa-shopping-basket"></i>
+          <span
+            >{{ cartItems.length }} {{ "POS.CHECKOUT.ITEMS" | translate }}</span
+          >
+        </div>
+        <div class="summary-item total">
+          <i class="fas fa-dollar-sign"></i>
+          <span>${{ calculateTotal() | number : "1.2-2" }}</span>
+        </div>
+      </div>
+
+      <div class="payment-methods">
+        <h4>
+          <i class="fas fa-wallet"></i>
+          {{ "POS.CHECKOUT.PAYMENT_METHOD" | translate }}
+        </h4>
+        <div class="payment-grid">
+          <button
+            class="payment-btn"
+            [class.active]="paymentMethod === 'cash'"
+            (click)="paymentMethod = 'cash'"
+          >
+            <i class="fas fa-money-bill-wave"></i>
+            <span>{{ "POS.PAYMENTS.CASH" | translate }}</span>
+          </button>
+          <button
+            class="payment-btn"
+            [class.active]="paymentMethod === 'card'"
+            (click)="paymentMethod = 'card'"
+          >
+            <i class="fas fa-credit-card"></i>
+            <span>{{ "POS.PAYMENTS.CARD" | translate }}</span>
+          </button>
+          <button
+            class="payment-btn"
+            [class.active]="paymentMethod === 'transfer'"
+            (click)="paymentMethod = 'transfer'"
+          >
+            <i class="fas fa-exchange-alt"></i>
+            <span>{{ "POS.PAYMENTS.TRANSFER" | translate }}</span>
+          </button>
+          <button
+            class="payment-btn"
+            [class.active]="paymentMethod === 'mixed'"
+            (click)="paymentMethod = 'mixed'"
+          >
+            <i class="fas fa-layer-group"></i>
+            <span>{{ "POS.PAYMENTS.MIXED" | translate }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="payment-amounts">
+        <div
+          *ngIf="paymentMethod === 'cash' || paymentMethod === 'mixed'"
+          class="amount-input"
+        >
+          <label
+            ><i class="fas fa-money-bill-wave"></i>
+            {{ "POS.CHECKOUT.CASH_AMOUNT" | translate }}</label
+          >
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              type="number"
+              [(ngModel)]="cashAmount"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="change-display" *ngIf="cashAmount > calculateTotal()">
+            <i class="fas fa-hand-holding-usd"></i>
+            {{ "POS.CHECKOUT.CHANGE" | translate }} ${{
+              cashAmount - calculateTotal() | number : "1.2-2"
+            }}
+          </div>
+        </div>
+
+        <div
+          *ngIf="paymentMethod === 'card' || paymentMethod === 'mixed'"
+          class="amount-input"
+        >
+          <label
+            ><i class="fas fa-credit-card"></i>
+            {{ "POS.CHECKOUT.CARD_AMOUNT" | translate }}</label
+          >
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              type="number"
+              [(ngModel)]="cardAmount"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+
+        <div
+          *ngIf="paymentMethod === 'transfer' || paymentMethod === 'mixed'"
+          class="amount-input"
+        >
+          <label
+            ><i class="fas fa-exchange-alt"></i>
+            {{ "POS.CHECKOUT.TRANSFER_AMOUNT" | translate }}</label
+          >
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              type="number"
+              [(ngModel)]="transferAmount"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showCheckout = false">
+        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button class="btn-complete" (click)="completeSale()">
+        <i class="fas fa-check"></i>
+        {{ "POS.BUTTONS.COMPLETE_SALE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Favorites Bar (Fixed at Bottom) -->
+<div class="mobile-favorites-bar">
+  <div class="favorites-header">
+    <i class="fas fa-star"></i>
+    <span>{{ "POS.MOBILE_QUICK_ACCESS" | translate }}</span>
+  </div>
+  <div class="favorites-scroll">
+    <div
+      class="favorite-item"
+      *ngFor="let product of favoriteProducts.slice(0, 10)"
+      (click)="addToCart(product)"
+    >
+      <div class="favorite-image">
+        <img
+          *ngIf="product.local_image"
+          [src]="getProductImageUrl(product)"
+          [alt]="product.name"
+          (error)="
+            $any($event.target).src =
+              'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect width=%2250%22 height=%2250%22 fill=%22%23f0f0f0%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2220%22%3E📦%3C/text%3E%3C/svg%3E'
+          "
+        />
+        <div *ngIf="!product.local_image" class="no-image">
+          <i class="fas fa-box"></i>
+        </div>
+      </div>
+      <div class="favorite-name">{{ product.name }}</div>
+      <div class="favorite-price">${{ product.price | number : "1.2-2" }}</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,587 @@
+{
+  "SALES": {
+    "TITLE": "Sales History",
+    "DESCRIPTION": "View and manage all completed sales",
+    "STATUS": "Status:",
+    "FROM": "From:",
+    "TO": "To:",
+    "TOTAL_SALES": "Total: {{count}} sales",
+    "ALL": "All",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled",
+    "REFUNDED": "Refunded",
+    "SALE_NUMBER": "Sale #",
+    "DATE": "Date",
+    "ITEMS": "Items",
+    "TOTAL": "Total",
+    "PAYMENT": "Payment",
+    "CASHIER": "Cashier",
+    "STATUS_LABEL": "Status",
+    "ACTIONS": "Actions",
+    "VIEW_DETAILS": "View Details",
+    "PRINT_RECEIPT": "Print Receipt",
+    "CANCEL_SALE": "Cancel Sale (Admin only)",
+    "NO_SALES": "No sales found",
+    "ITEMS_LABEL": "{{count}} items",
+    "SUBTOTAL": "Subtotal:",
+    "DISCOUNT": "Discount:",
+    "TAX": "Tax:",
+    "GRAND_TOTAL": "Total:",
+    "TOTAL": "Total: {{count}} sales",
+    "SUMMARY": {
+      "TOTAL_SALES": "Total Sales",
+      "REVENUE": "Revenue",
+      "AVERAGE_SALE": "Average Sale",
+      "ITEMS_SOLD": "Items Sold"
+    },
+    "TABLE": {
+      "SALE_ID": "Sale #",
+      "DATE": "Date",
+      "ITEMS": "Items",
+      "TOTAL": "Total",
+      "PAYMENT": "Payment",
+      "CASHIER": "Cashier",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    },
+    "ITEMS_COUNT": "{{count}} items",
+    "ACTIONS": {
+      "VIEW": "View Details",
+      "PRINT": "Print Receipt",
+      "CANCEL": "Cancel Sale (Admin only)"
+    },
+    "EMPTY": "No sales found",
+    "DETAILS_TITLE": "Sale Details - {{saleNumber}}",
+    "DETAILS": {
+      "DATE": "Date:",
+      "CASHIER": "Cashier:",
+      "PAYMENT_METHOD": "Payment Method:",
+      "STATUS": "Status:",
+      "NOTES": "Notes:",
+      "ITEMS": "Items",
+      "TABLE": {
+        "PRODUCT": "Product",
+        "QTY": "Qty",
+        "UNIT_PRICE": "Unit Price",
+        "DISCOUNT": "Discount",
+        "TOTAL": "Total"
+      },
+      "TOTALS": {
+        "SUBTOTAL": "Subtotal:",
+        "DISCOUNT": "Discount:",
+        "TAX": "Tax:",
+        "TOTAL": "Total:"
+      }
+    }
+  },
+  "GLOBAL": {
+    "LANGUAGE": "Language",
+    "ENGLISH": "English",
+    "SPANISH": "Español",
+    "CANCEL": "Cancel",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "PER_PAGE": "{{count}} per page",
+    "SEARCH_PLACEHOLDER": "Search products, orders, suppliers...",
+    "USER": "User",
+    "EMPLOYEE": "Employee",
+    "SETTINGS": "Settings",
+    "LOGOUT": "Logout",
+    "WELCOME": "Welcome, {{name}}",
+    "CLEAR": "Clear",
+    "SIDEBAR": {
+      "DASHBOARD": "Dashboard",
+      "POS": "POS",
+      "QUICK_CASHIER": "Quick Cashier",
+      "STATISTICS": "Statistics",
+      "INVENTORY": "Inventory",
+      "CATEGORIES": "Categories",
+      "SUPPLIERS": "Suppliers",
+      "SALES": "Sales",
+      "USERS": "Users",
+      "RECEIPT_TEMPLATES": "Receipt Templates"
+    }
+  },
+  "PROVIDERS": {
+    "TITLE": "Supplier Management",
+    "DESCRIPTION": "Manage suppliers and vendors",
+    "TOTAL": "Total: {{count}} suppliers",
+    "ACTIONS": {
+      "ADD": "Add Supplier",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CREATE": "Create",
+      "UPDATE": "Update"
+    },
+    "TABLE": {
+      "CODE": "Code",
+      "NAME": "Name",
+      "CONTACT": "Contact",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "PAYMENT": "Payment Terms",
+      "STATUS": "Status",
+      "ACTIONS": "Actions"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
+    "EMPTY": "No suppliers found",
+    "EDIT_TITLE": "Edit Supplier",
+    "ADD_TITLE": "Add New Supplier",
+    "FORM": {
+      "CODE_LABEL": "Supplier Code *",
+      "CODE_PLACEHOLDER": "SUP001",
+      "NAME_LABEL": "Supplier Name *",
+      "NAME_PLACEHOLDER": "Company Name",
+      "CONTACT_LABEL": "Contact Person",
+      "CONTACT_PLACEHOLDER": "John Doe",
+      "EMAIL_LABEL": "Email",
+      "EMAIL_PLACEHOLDER": "contact@supplier.com",
+      "PHONE_LABEL": "Phone",
+      "PHONE_PLACEHOLDER": "+63 123 456 7890",
+      "TAX_LABEL": "Tax ID",
+      "TAX_PLACEHOLDER": "123-456-789",
+      "PAYMENT_LABEL": "Payment Terms",
+      "NOTES_LABEL": "Notes",
+      "NOTES_PLACEHOLDER": "Additional notes about this supplier",
+      "ACTIVE_LABEL": "Active"
+    },
+    "PAYMENT": {
+      "IMMEDIATE": "Immediate",
+      "15DAYS": "15 Days",
+      "30DAYS": "30 Days",
+      "60DAYS": "60 Days",
+      "90DAYS": "90 Days"
+    },
+    "ALERTS": {
+      "FILL_REQUIRED": "Please fill in all required fields",
+      "ADMIN_DELETE": "Only administrators can delete suppliers",
+      "CONFIRM_DELETE": "Are you sure you want to delete this supplier?"
+    }
+  },
+  "USERS": {
+    "TITLE": "User Management",
+    "DESCRIPTION": "Manage staff members and permissions",
+    "TOTAL": "Total: {{count}} users",
+    "ACTIONS": {
+      "ADD": "Add User",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CREATE": "Create",
+      "UPDATE": "Update"
+    },
+    "TABLE": {
+      "USERNAME": "Username",
+      "NAME": "Name",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "ROLE": "Role",
+      "STATUS": "Status",
+      "LAST_LOGIN": "Last Login",
+      "ACTIONS": "Actions"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
+    "EMPTY": "No users found",
+    "EDIT_TITLE": "Edit User",
+    "ADD_TITLE": "Add New User",
+    "FORM": {
+      "USERNAME_LABEL": "Username *",
+      "USERNAME_PLACEHOLDER": "johndoe",
+      "EMAIL_LABEL": "Email *",
+      "EMAIL_PLACEHOLDER": "john@example.com",
+      "FIRST_NAME_LABEL": "First Name *",
+      "FIRST_NAME_PLACEHOLDER": "John",
+      "LAST_NAME_LABEL": "Last Name *",
+      "LAST_NAME_PLACEHOLDER": "Doe",
+      "PHONE_LABEL": "Phone",
+      "PHONE_PLACEHOLDER": "+63 123 456 7890",
+      "ROLE_LABEL": "Role *",
+      "NOTES_LABEL": "Notes",
+      "ACTIVE_LABEL": "Active"
+    },
+    "ROLES": {
+      "CASHIER": "Cashier",
+      "EMPLOYEE": "Employee",
+      "MANAGER": "Manager",
+      "ADMIN": "Admin"
+    },
+    "ALERTS": {
+      "FILL_REQUIRED": "Please fill in all required fields",
+      "PASSWORD_REQUIRED": "Password is required for new users"
+    }
+  },
+  "INVENTORY": {
+    "TITLE": "Inventory Management",
+    "DESCRIPTION": "Manage products and stock levels",
+    "BULK_IMPORT": "Bulk Import",
+    "DOWNLOAD_TEMPLATE": "Download Template",
+    "TABS": {
+      "PRODUCTS": "Products",
+      "CATEGORIES": "Categories"
+    },
+    "TOTAL": "Total: {{count}} products",
+    "ADD_PRODUCT": "Add Product",
+    "TABLE": {
+      "IMAGE": "Image",
+      "NAME": "Name",
+      "BARCODE": "Barcode/EAN",
+      "CATEGORY": "Category",
+      "PRICE": "Price",
+      "STOCK": "Stock",
+      "ACTIONS": "Actions"
+    },
+    "ACTIONS": {
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "CREATE_PRODUCT": "Create Product",
+      "UPDATE_PRODUCT": "Update Product",
+      "CREATE_CATEGORY": "Create Category",
+      "UPDATE_CATEGORY": "Update Category"
+    },
+    "EMPTY": "No products found",
+    "MODAL": {
+      "EDIT_PRODUCT": "Edit Product",
+      "ADD_PRODUCT": "Add New Product",
+      "EDIT_CATEGORY": "Edit Category",
+      "ADD_CATEGORY": "Add New Category"
+    },
+    "FORM": {
+      "NAME_LABEL": "Product Name *",
+      "NAME_PLACEHOLDER": "Enter product name",
+      "BARCODE_LABEL": "Barcode/EAN *",
+      "BARCODE_PLACEHOLDER": "Enter barcode/EAN",
+      "BRAND_LABEL": "Brand",
+      "BRAND_PLACEHOLDER": "Enter brand name",
+      "CATEGORY_LABEL": "Category *",
+      "CATEGORY_PLACEHOLDER": "Select a category",
+      "PRICE_LABEL": "Price (₱) *",
+      "PRICE_PLACEHOLDER": "0.00",
+      "COST_LABEL": "Cost (₱)",
+      "COST_PLACEHOLDER": "0.00",
+      "STOCK_LABEL": "Stock *",
+      "STOCK_PLACEHOLDER": "0",
+      "MIN_STOCK_LABEL": "Min Stock",
+      "MIN_STOCK_PLACEHOLDER": "0",
+      "AVAILABLE_LABEL": "Available for sale",
+      "REQUIRES_SCALE_LABEL": "Requires weighing scale",
+      "IMAGE_LABEL": "Image URL",
+      "IMAGE_PLACEHOLDER": "https://example.com/image.jpg"
+    },
+    "CATEGORIES": {
+      "TITLE": "Product Categories",
+      "EMPTY": "No categories found. Add your first category to get started."
+    },
+    "CATEGORY_FORM": {
+      "NAME_LABEL": "Category Name *",
+      "NAME_PLACEHOLDER": "Enter category name",
+      "DESCRIPTION_LABEL": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Enter category description (optional)"
+    },
+    "IMPORT": {
+      "TITLE": "Bulk Import Products",
+      "INSTRUCTIONS": "Upload an Excel (.xlsx) or CSV file with the following columns:",
+      "COLUMNS": {
+        "NAME": "name",
+        "NAME_DESC": "Product name (required)",
+        "BARCODE": "barcode",
+        "BARCODE_DESC": "Product barcode/EAN (required)",
+        "BRAND": "brand",
+        "BRAND_DESC": "Brand name (optional)",
+        "CATEGORY": "category",
+        "CATEGORY_DESC": "Category name (required)",
+        "PRICE": "price",
+        "PRICE_DESC": "Price (required)",
+        "COST": "cost",
+        "COST_DESC": "Cost (optional)",
+        "STOCK": "stock",
+        "STOCK_DESC": "Stock quantity (required)",
+        "IMAGE": "image",
+        "IMAGE_DESC": "Image URL (optional)"
+      },
+      "TIP": "Download the template file to see the correct format.",
+      "CHOOSE_FILE": "Choose File",
+      "PROGRESS": "Importing... {{percent}}%",
+      "COMPLETE_TITLE": "Import Complete",
+      "SUCCESSFUL": "Successfully imported: {{count}}",
+      "FAILED_COUNT": "Failed: {{count}}",
+      "COMPLETED": "Import completed!\nSuccess: {{successful}}\nFailed: {{failed}}",
+      "FAILED": "Failed to import products. Please check the file format."
+    },
+    "ALERTS": {
+      "FILL_REQUIRED": "Please fill in required fields: Name and Price",
+      "PRODUCT_UPDATED": "Product updated successfully!",
+      "PRODUCT_UPDATE_FAILED": "Failed to update product",
+      "PRODUCT_CREATED": "Product created successfully!",
+      "PRODUCT_CREATE_FAILED": "Failed to create product",
+      "ADMIN_DELETE": "Only administrators can delete products",
+      "CONFIRM_DELETE": "Are you sure you want to delete \"{{name}}\"?",
+      "PRODUCT_DELETED": "Product deleted successfully!",
+      "PRODUCT_DELETE_FAILED": "Failed to delete product"
+    },
+    "CATEGORY_ALERTS": {
+      "FILL_REQUIRED": "Please enter a category name",
+      "CATEGORY_UPDATED": "Category updated successfully!",
+      "CATEGORY_UPDATE_FAILED": "Failed to update category",
+      "CATEGORY_CREATED": "Category created successfully!",
+      "CATEGORY_CREATE_FAILED": "Failed to create category",
+      "ADMIN_DELETE": "Only administrators can delete categories",
+      "CONFIRM_DELETE": "Are you sure you want to delete \"{{name}}\"?",
+      "CATEGORY_DELETED": "Category deleted successfully!",
+      "CATEGORY_DELETE_FAILED": "Failed to delete category"
+    }
+  },
+  "DASHBOARD": {
+    "TITLE": "Dashboard",
+    "LOADING": "Loading dashboard data...",
+    "ALL_TIME": "All time",
+    "TODAYS_PERFORMANCE": "Today's Performance",
+    "TOP_PRODUCTS": "Top Products",
+    "NO_SALES_DATA": "No sales data available",
+    "RESTOCK_ALERTS": "Restock Alerts",
+    "ITEMS_NEED_ATTENTION": "items need attention",
+    "IN_STOCK": "in stock",
+    "SOLD_PER_DAY": "sold/day",
+    "DAYS_LEFT": "days left",
+    "OUT_OF_STOCK": "Out of stock",
+    "ALL_WELL_STOCKED": "All products are well stocked",
+    "SALES_BY_PAYMENT": "Sales by Payment Method",
+    "TRANSACTIONS": "transactions",
+    "NO_PAYMENT_DATA": "No payment data available",
+    "URGENT_LABEL": "Urgency",
+    "URGENCY": {
+      "CRITICAL": "Critical",
+      "WARNING": "Warning",
+      "LOW_STOCK": "Low Stock"
+    },
+    "LABELS": {
+      "SALES_TODAY": "Sales Today",
+      "REVENUE_TODAY": "Revenue Today"
+    },
+    "STATS": {
+      "TOTAL_REVENUE": "Total Revenue",
+      "TOTAL_SALES": "Total Sales",
+      "TOTAL_PRODUCTS": "Total Products",
+      "TOTAL_USERS": "Total Users"
+    },
+    "ACTIVE_USERS": "Active users",
+    "COMPLETED_TRANSACTIONS": "Completed transactions"
+  },
+  "CASHIER": {
+    "TITLE": "Quick Cashier",
+    "DESCRIPTION": "Fast product entry and payment processing",
+    "ADD": "Add",
+    "MULTIPLY": {
+      "ADD_LABEL": "Enter quantity to add:",
+      "UPDATE_LABEL": "Enter new quantity for last item:"
+    },
+    "LOOSE_PRODUCT": "Loose Product",
+    "ITEMS": {
+      "TITLE": "Items",
+      "EMPTY": "No items added",
+      "HINT": "Enter a price and click ADD"
+    },
+    "TOTAL_LABEL": "Total",
+    "PAYMENTS": {
+      "CASH": "Cash",
+      "CARD": "Card",
+      "TRANSFER": "Transfer"
+    },
+    "PAYMENT": {
+      "TITLE": {
+        "CASH": "Cash Payment",
+        "CARD": "Card Payment",
+        "TRANSFER": "Transfer Payment"
+      },
+      "TOTAL_AMOUNT": "Total Amount:",
+      "CASH_RECEIVED": "Cash Received:",
+      "CHANGE": "Change:",
+      "PROCESSING": "Processing...",
+      "CONFIRM_PAYMENT": "Confirm Payment",
+      "AMOUNT_TOO_LOW": "Amount must be greater than or equal to the total",
+      "CONFIRM_MESSAGE": "Please confirm the {{method}} payment has been processed."
+    },
+    "SCALE": {
+      "LABEL": "Scale",
+      "CONNECTED": "Connected",
+      "NOT_CONNECTED": "Not Connected",
+      "CONNECT": "Connect Scale",
+      "DISCONNECT": "Disconnect",
+      "USE_SCALE_LABEL": "Use scale weight automatically",
+      "WEIGHT_AUTOMATIC": "Weight is automatically updated from scale"
+    },
+    "LOOSE_PRODUCT_MODAL": {
+      "TITLE": "Loose Product",
+      "DESCRIPTION_PLACEHOLDER": "e.g., Apples, Bananas, etc.",
+      "WEIGHT_PLACEHOLDER": "Enter weight in kg",
+      "PRICE_PER_KG_PLACEHOLDER": "Enter price per kg",
+      "TOTAL_PRICE_LABEL": "Total Price:",
+      "CANCEL": "Cancel",
+      "ADD_ITEM": "Add Item"
+    }
+  },
+  "STATISTICS": {
+    "TITLE": "Statistics & Analytics",
+    "PERIOD": {
+      "WEEK": "Last 7 Days",
+      "MONTH": "Last Month",
+      "YEAR": "Last Year"
+    },
+    "LOADING": "Loading statistics...",
+    "METRICS": {
+      "TOTAL_REVENUE": "Total Revenue",
+      "ALL_TIME": "All time",
+      "TOTAL_SALES": "Total Sales",
+      "COMPLETED": "Completed",
+      "AVG_TRANSACTION": "Avg Transaction",
+      "PER_SALE": "Per sale",
+      "PERIOD_REVENUE": "Period Revenue"
+    },
+    "CHARTS": {
+      "SALES_TREND": "Sales Trend (Last 30 Days)",
+      "MONTHLY_SALES": "Monthly Sales (Last 12 Months)",
+      "TOP_PRODUCTS": "Top Products by Revenue",
+      "PAYMENT_METHODS": "Payment Methods Distribution",
+      "RECENT_DAILY_SALES": "Recent Daily Sales"
+    },
+    "TRANSACTIONS": "transactions",
+    "NO_DATA": "No data available for this period"
+  },
+  "POS": {
+    "CHECKOUT": {
+      "TITLE": "Checkout",
+      "ITEMS": "items",
+      "PAYMENT_METHOD": "Payment Method",
+      "CASH_AMOUNT": "Cash Amount",
+      "CARD_AMOUNT": "Card Amount",
+      "TRANSFER_AMOUNT": "Transfer Amount",
+      "CHANGE": "Change"
+    },
+    "PAYMENTS": {
+      "CASH": "Cash",
+      "CARD": "Card",
+      "TRANSFER": "Transfer",
+      "MIXED": "Mixed"
+    },
+    "BUTTONS": {
+      "COMPLETE_SALE": "Complete Sale"
+    },
+    "MOBILE_QUICK_ACCESS": "Quick Access"
+  },
+  "CART": {
+    "SALE": "Sale",
+    "NEW_SALE": "New Sale",
+    "CLOSE_TAB": "Close tab",
+    "REMOVE_ALL": "Remove all",
+    "EMPTY": "No items in cart",
+    "REMOVE_ITEM": "Remove item",
+    "SUMMARY": {
+      "ITEMS": "Items:",
+      "TOTAL": "Total:"
+    },
+    "PLACE_ORDER": "Place order",
+    "MODAL": {
+      "TITLE": "Close Sale Tab",
+      "CONTAINS": "This tab contains {{count}} item(s).",
+      "CONFIRM": "Are you sure you want to close this sale tab?",
+      "CLOSE_TAB": "Close Tab"
+    }
+  },
+  "SEARCH": {
+    "SEARCHING": "Searching...",
+    "FOUND": "found",
+    "NO_RESULTS": {
+      "TITLE": "No products found",
+      "DESCRIPTION": "Try searching with a different term"
+    },
+    "EMPTY": {
+      "TITLE": "Start searching",
+      "DESCRIPTION": "Type a product name, barcode, or category to begin"
+    }
+  },
+  "TEMPLATES": {
+    "TITLE": "Receipt Templates",
+    "DESCRIPTION": "Manage receipt and invoice templates for your POS system",
+    "CREATE_NEW": "Create New Template",
+    "LOADING": "Loading templates...",
+    "DEFAULT_BADGE": "Default",
+    "DEFAULT_SET": "Set '{{name}}' as default template.",
+    "DEFAULT_SET_FAILED": "Failed to set default template",
+    "NO_TEMPLATES": "No templates found. Create your first template!",
+    "EDIT": "Edit",
+    "SET_DEFAULT": "Set as default",
+    "CURRENT_DEFAULT": "Currently default",
+
+    "EDIT_HEADER": "Edit Template",
+    "CREATE_HEADER": "Create New Template",
+
+    "SECTION_BASIC": "Basic Information",
+    "SECTION_HEADER": "Header",
+    "SECTION_ITEMS": "Item Details",
+    "SECTION_FOOTER": "Footer",
+
+    "FORM": {
+      "NAME_LABEL": "Template Name *",
+      "NAME_PLACEHOLDER": "e.g., Standard Receipt",
+      "DESCRIPTION_LABEL": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Template description",
+      "TEMPLATE_TYPE_LABEL": "Template Type",
+      "PAPER_SIZE_LABEL": "Paper Size",
+      "STORE_NAME_LABEL": "Store Name",
+      "STORE_NAME_PLACEHOLDER": "Your store name",
+      "STORE_ADDRESS_LABEL": "Store Address",
+      "STORE_ADDRESS_PLACEHOLDER": "Store address",
+      "STORE_PHONE_LABEL": "Store Phone",
+      "STORE_PHONE_PLACEHOLDER": "Phone number",
+      "STORE_EMAIL_LABEL": "Store Email",
+      "STORE_EMAIL_PLACEHOLDER": "Email address",
+      "SHOW_LOGO": "Show Logo",
+      "SHOW_PRODUCT_CODE": "Show Product Code",
+      "SHOW_BARCODE": "Show Barcode",
+      "SHOW_QUANTITY": "Show Quantity",
+      "SHOW_UNIT_PRICE": "Show Unit Price",
+      "SHOW_DISCOUNT": "Show Discount",
+      "SHOW_TAX": "Show Tax",
+      "SHOW_SUBTOTAL": "Show Subtotal",
+      "SHOW_TOTALS": "Show Totals",
+      "SHOW_PAYMENT_METHOD": "Show Payment Method",
+      "SHOW_CASHIER": "Show Cashier",
+      "SHOW_DATETIME": "Show Date/Time",
+      "SHOW_THANKYOU": "Show Thank You Message",
+      "CUSTOM_MESSAGE_LABEL": "Custom Message",
+      "CUSTOM_MESSAGE_PLACEHOLDER": "e.g., Thank you for your purchase!",
+      "TEXT_ALIGNMENT": "Text Alignment"
+    },
+
+    "ACTIONS": {
+      "CREATE": "Create Template",
+      "UPDATE": "Update Template",
+      "DELETE": "Delete"
+    },
+
+    "PREVIEW_TITLE": "Preview",
+
+    "OPTIONS": {
+      "RECEIPT": "Receipt",
+      "INVOICE": "Invoice",
+      "LABEL": "Label",
+      "PAPER_58": "58mm (Thermal)",
+      "PAPER_80": "80mm (Thermal)",
+      "PAPER_A4": "A4",
+      "ALIGN_LEFT": "Left",
+      "ALIGN_CENTER": "Center",
+      "ALIGN_RIGHT": "Right"
+    },
+
+    "CREATED": "Template created successfully!",
+    "CREATE_FAILED": "Failed to create template",
+    "UPDATED": "Template updated successfully!",
+    "UPDATE_FAILED": "Failed to update template",
+    "DELETED": "Template deleted successfully!",
+    "DELETE_FAILED": "Failed to delete template"
+  }
+}

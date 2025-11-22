@@ -1,0 +1,78 @@
+@use "theme";
+
+/* Apply neumorphic table styling to all tables globally */
+table {
+  width: 100%;
+  background: $bg-tertiary;
+  border-radius: $radius-md;
+  box-shadow: $shadow-neumorphic-sm;
+  border: 1px solid $border-color;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  margin-bottom: $spacing-lg;
+  font-size: $font-size-base;
+}
+
+/* Header styles */
+thead th {
+  position: sticky;
+  top: 0;
+  background: $bg-tertiary;
+  color: $text-primary;
+  font-weight: $font-weight-medium;
+  text-align: left;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid $border-color;
+  z-index: $z-sticky;
+}
+
+/* Body rows */
+tbody tr {
+  transition: background $transition-fast, transform $transition-fast,
+    box-shadow $transition-fast;
+  border-bottom: 1px solid rgba($border-color, 0.6);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
+    transform: translateY(-1px);
+    box-shadow: $shadow-sm;
+  }
+}
+
+/* Cells */
+td {
+  padding: $spacing-md $spacing-lg;
+  vertical-align: middle;
+  color: $text-primary;
+  font-size: $font-size-base;
+  border: none;
+}
+
+/* Responsive helper if tables overflow horizontally */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Compact variant for dense tables */
+.compact-table,
+table.compact {
+  td,
+  th {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Empty state helper inside table containers */
+.table-empty {
+  padding: $spacing-lg;
+  text-align: center;
+  color: $text-muted;
+}
+
+/* Keep the explicit wrapper class for opt-in use if desired */
+.neumorphic-table {
+  @include neumorphic-table;
+}

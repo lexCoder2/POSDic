@@ -1,0 +1,191 @@
+@use "../../../styles/_theme.scss" as *;
+
+.client-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $primary;
+  color: $white;
+  padding: $spacing-lg $spacing-2xl;
+
+  .client-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .store {
+      .store-name {
+        font-size: 2rem;
+        font-weight: 800;
+      }
+
+      .meta {
+        margin-top: $spacing-xs;
+        font-size: 0.95rem;
+        color: rgba($white, 0.9);
+
+        .sale-id {
+          font-weight: 700;
+          margin-right: $spacing-xs;
+        }
+
+        .separator {
+          margin: 0 $spacing-xs;
+          opacity: 0.6;
+        }
+      }
+    }
+
+    .clock {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: rgba($white, 0.95);
+    }
+  }
+
+  .body-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: $spacing-lg;
+    margin-top: $spacing-lg;
+    height: calc(100vh - 100px);
+
+    .items {
+      background: transparent;
+      padding: $spacing-sm;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .empty {
+        text-align: center;
+        font-size: 1.2rem;
+        color: rgba($white, 0.9);
+        margin-top: $spacing-lg;
+      }
+
+      .item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-md;
+        background: $bg-tertiary;
+        border-radius: $radius-md;
+        box-shadow: $shadow-sm;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: $shadow-lg;
+        }
+
+        .left {
+          display: flex;
+          gap: $spacing-md;
+          align-items: center;
+
+          .product-image {
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            border-radius: $radius-md;
+            overflow: hidden;
+            background: rgba($white, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              display: block;
+            }
+
+            .placeholder {
+              font-size: 1.4rem;
+              font-weight: 700;
+              color: rgba($white, 0.85);
+            }
+          }
+
+          .text {
+            display: flex;
+            flex-direction: column;
+
+            .item-name {
+              font-size: 1.6rem;
+              font-weight: 700;
+              color: $text-primary;
+            }
+
+            .item-sub {
+              font-size: 0.95rem;
+              opacity: 0.85;
+              color: $text-secondary;
+            }
+          }
+        }
+
+        .right {
+          display: flex;
+          gap: $spacing-md;
+          align-items: center;
+          text-align: right;
+
+          .qty {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            color: $text-secondary;
+          }
+
+          .price,
+          .subtotal {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: $text-primary;
+          }
+        }
+      }
+    }
+
+    .summary {
+      .summary-card {
+        background: rgba($white, 0.06);
+        padding: $spacing-lg;
+        border-radius: $radius-lg;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: $spacing-xs 0;
+
+          &.total {
+            margin-top: $spacing-md;
+          }
+
+          .label {
+            color: rgba($white, 0.9);
+            font-size: 1rem;
+          }
+
+          .value {
+            font-weight: 700;
+            font-size: 1.05rem;
+
+            &.large {
+              font-size: 2rem;
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+  }
+}

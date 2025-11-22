@@ -1,0 +1,308 @@
+<app-page-title
+  title="{{ 'PROVIDERS.TITLE' | translate }}"
+  description="{{ 'PROVIDERS.DESCRIPTION' | translate }}"
+  icon="fa-truck"
+>
+  <div class="header-actions">
+    <div class="row-count">
+      <span>{{
+        "PROVIDERS.TOTAL" | translate : { count: filteredProviders().length }
+      }}</span>
+      <select
+        [(ngModel)]="pageSize"
+        (change)="changePageSize(+$any($event.target).value)"
+        class="page-size-select"
+      >
+        <option [value]="5">5 per page</option>
+        <option [value]="10">10 per page</option>
+        <option [value]="25">25 per page</option>
+        <option [value]="50">50 per page</option>
+        <option [value]="100">100 per page</option>
+      </select>
+    </div>
+    <button class="btn-add" (click)="openProviderModal()">
+      <i class="fas fa-plus"></i>
+      {{ "PROVIDERS.ACTIONS.ADD" | translate }}
+    </button>
+  </div>
+</app-page-title>
+<div class="providers-container">
+  <div class="providers-table-wrapper neumorphic-table table-responsive">
+    <table class="providers-table">
+      <thead>
+        <tr>
+          <th>{{ "PROVIDERS.TABLE.CODE" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.NAME" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.CONTACT" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.EMAIL" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.PHONE" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.PAYMENT" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.STATUS" | translate }}</th>
+          <th>{{ "PROVIDERS.TABLE.ACTIONS" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let provider of paginatedProviders()">
+          <td>
+            <strong>{{ provider.code }}</strong>
+          </td>
+          <td>{{ provider.name }}</td>
+          <td>{{ provider.contactName || "-" }}</td>
+          <td>{{ provider.email || "-" }}</td>
+          <td>{{ provider.phone || "-" }}</td>
+          <td>{{ paymentTermKey(provider.paymentTerms) | translate }}</td>
+          <td>
+            <span
+              class="status-badge"
+              [class.active]="provider.active"
+              [class.inactive]="!provider.active"
+            >
+              {{
+                provider.active
+                  ? ("PROVIDERS.STATUS.ACTIVE" | translate)
+                  : ("PROVIDERS.STATUS.INACTIVE" | translate)
+              }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button
+                class="btn-edit"
+                (click)="openProviderModal(provider)"
+                title="{{ 'PROVIDERS.ACTIONS.EDIT' | translate }}"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="btn-delete"
+                (click)="deleteProvider(provider._id!)"
+                [disabled]="!isAdmin()"
+                title="{{ 'PROVIDERS.ACTIONS.DELETE' | translate }}"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredProviders().length === 0">
+          <td colspan="8" class="empty-state">
+            {{ "PROVIDERS.EMPTY" | translate }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="filteredProviders().length > 0">
+      <button
+        class="pagination-btn"
+        (click)="prevPage()"
+        [disabled]="currentPage() === 1"
+      >
+        <i class="fas fa-chevron-left"></i> {{ "GLOBAL.PREVIOUS" | translate }}
+      </button>
+      <div class="pagination-pages">
+        <button
+          *ngFor="let page of getVisiblePages()"
+          class="pagination-page"
+          [class.active]="currentPage() === page"
+          [class.ellipsis]="page === -1"
+          [disabled]="page === -1"
+          (click)="page > 0 && goToPage(page)"
+        >
+          {{ page === -1 ? "..." : page }}
+        </button>
+      </div>
+      <button
+        class="pagination-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages()"
+      >
+        {{ "GLOBAL.NEXT" | translate }} <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Provider Modal -->
+  <div
+    class="modal-overlay"
+    *ngIf="showProviderModal"
+    (click)="showProviderModal = false"
+  >
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          {{
+            isEditing
+              ? ("PROVIDERS.EDIT_TITLE" | translate)
+              : ("PROVIDERS.ADD_TITLE" | translate)
+          }}
+        </h2>
+        <button class="btn-close" (click)="showProviderModal = false">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveProvider()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="code">{{
+                "PROVIDERS.FORM.CODE_LABEL" | translate
+              }}</label>
+              <input
+                type="text"
+                id="code"
+                [(ngModel)]="providerForm.code"
+                name="code"
+                required
+                placeholder="{{
+                  'PROVIDERS.FORM.CODE_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+            <div class="form-group">
+              <label for="name">{{
+                "PROVIDERS.FORM.NAME_LABEL" | translate
+              }}</label>
+              <input
+                type="text"
+                id="name"
+                [(ngModel)]="providerForm.name"
+                name="name"
+                required
+                placeholder="{{
+                  'PROVIDERS.FORM.NAME_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contactName">{{
+                "PROVIDERS.FORM.CONTACT_LABEL" | translate
+              }}</label>
+              <input
+                type="text"
+                id="contactName"
+                [(ngModel)]="providerForm.contactName"
+                name="contactName"
+                placeholder="{{
+                  'PROVIDERS.FORM.CONTACT_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+            <div class="form-group">
+              <label for="email">{{
+                "PROVIDERS.FORM.EMAIL_LABEL" | translate
+              }}</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="providerForm.email"
+                name="email"
+                placeholder="{{
+                  'PROVIDERS.FORM.EMAIL_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">{{
+                "PROVIDERS.FORM.PHONE_LABEL" | translate
+              }}</label>
+              <input
+                type="tel"
+                id="phone"
+                [(ngModel)]="providerForm.phone"
+                name="phone"
+                placeholder="{{
+                  'PROVIDERS.FORM.PHONE_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+            <div class="form-group">
+              <label for="taxId">{{
+                "PROVIDERS.FORM.TAX_LABEL" | translate
+              }}</label>
+              <input
+                type="text"
+                id="taxId"
+                [(ngModel)]="providerForm.taxId"
+                name="taxId"
+                placeholder="{{ 'PROVIDERS.FORM.TAX_PLACEHOLDER' | translate }}"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="paymentTerms">{{
+              "PROVIDERS.FORM.PAYMENT_LABEL" | translate
+            }}</label>
+            <select
+              id="paymentTerms"
+              [(ngModel)]="providerForm.paymentTerms"
+              name="paymentTerms"
+            >
+              <option value="immediate">
+                {{ "PROVIDERS.PAYMENT.IMMEDIATE" | translate }}
+              </option>
+              <option value="15days">
+                {{ "PROVIDERS.PAYMENT.15DAYS" | translate }}
+              </option>
+              <option value="30days">
+                {{ "PROVIDERS.PAYMENT.30DAYS" | translate }}
+              </option>
+              <option value="60days">
+                {{ "PROVIDERS.PAYMENT.60DAYS" | translate }}
+              </option>
+              <option value="90days">
+                {{ "PROVIDERS.PAYMENT.90DAYS" | translate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="notes">{{
+              "PROVIDERS.FORM.NOTES_LABEL" | translate
+            }}</label>
+            <textarea
+              id="notes"
+              [(ngModel)]="providerForm.notes"
+              name="notes"
+              rows="3"
+              placeholder="{{ 'PROVIDERS.FORM.NOTES_PLACEHOLDER' | translate }}"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [(ngModel)]="providerForm.active"
+                name="active"
+              />
+              {{ "PROVIDERS.FORM.ACTIVE_LABEL" | translate }}
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="showProviderModal = false"
+            >
+              {{ "GLOBAL.CANCEL" | translate }}
+            </button>
+            <button type="submit" class="btn-save">
+              {{
+                isEditing
+                  ? ("PROVIDERS.ACTIONS.UPDATE" | translate)
+                  : ("PROVIDERS.ACTIONS.CREATE" | translate)
+              }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

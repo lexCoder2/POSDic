@@ -1,0 +1,14 @@
+<div
+  class="toggle-switch"
+  [class]="'toggle-' + size"
+  (click)="toggle()"
+  [class.disabled]="disabled"
+>
+  <input
+    type="checkbox"
+    [checked]="checked"
+    [disabled]="disabled"
+    class="toggle-input"
+  />
+  <span class="toggle-slider"></span>
+</div>

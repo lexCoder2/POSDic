@@ -1,0 +1,175 @@
+<!-- Right Cart Panel -->
+<aside class="cart-panel" [class.mobile-open]="isMobileCartOpen">
+  <!-- Mobile Cart Close Button -->
+  <button class="mobile-cart-close" (click)="onCloseMobileCart()">
+    <i class="fas fa-times"></i>
+  </button>
+
+  <!-- Sales Tabs -->
+  <div class="sales-tabs">
+    <div class="tabs-container">
+      <button
+        *ngFor="let tab of salesTabs; let i = index"
+        class="sale-tab"
+        [class.active]="i === activeSaleTabIndex"
+        (click)="onSwitchTab(i)"
+      >
+        <span class="tab-title">
+          <span class="tab-number"
+            >{{ "CART.SALE" | translate }} #{{ i + 1 }}</span
+          >
+          <span class="tab-items" *ngIf="tab.items.length > 0"
+            >({{ tab.items.length }})</span
+          >
+        </span>
+        <button
+          *ngIf="salesTabs.length > 1"
+          class="close-tab"
+          (click)="onCloseTab(i, $event)"
+          title="{{ 'CART.CLOSE_TAB' | translate }}"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </button>
+      <button
+        class="add-tab-btn"
+        (click)="onAddTab()"
+        title="{{ 'CART.NEW_SALE' | translate }}"
+      >
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="cart-header">
+    <h2>{{ "CART.SALE" | translate }} #{{ activeSaleTabIndex + 1 }}</h2>
+    <button
+      class="remove-all-btn"
+      *ngIf="cartItems.length > 0"
+      (click)="onClearCart()"
+    >
+      {{ "CART.REMOVE_ALL" | translate }}
+    </button>
+  </div>
+
+  <div class="cart-content">
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+      <p>{{ "CART.EMPTY" | translate }}</p>
+    </div>
+
+    <!-- Group items by supplier -->
+    <div class="supplier-group" *ngFor="let group of getItemsBySupplier()">
+      <h3 class="supplier-name">{{ group.supplier }}</h3>
+
+      <div class="cart-item" *ngFor="let item of group.items">
+        <div class="item-header">
+          <div class="item-title">
+            <h4 class="item-name">{{ item.product.name }}</h4>
+            <div class="item-brand" *ngIf="item.product.brand">
+              {{ item.product.brand }}
+            </div>
+          </div>
+          <button
+            class="remove-btn"
+            (click)="onRemoveItem(item.product._id!)"
+            title="{{ 'CART.REMOVE_ITEM' | translate }}"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="item-details">
+          <div class="item-quantity-controls">
+            <button
+              class="qty-btn decrease"
+              (click)="decreaseQuantity(item)"
+              aria-label="Decrease quantity"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="item-quantity">{{ item.quantity }}</span>
+            <button
+              class="qty-btn increase"
+              (click)="increaseQuantity(item)"
+              aria-label="Increase quantity"
+            >
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <span class="item-price"
+            >${{ item.product.price | number : "1.2-2" }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-footer">
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>{{ "CART.SUMMARY.ITEMS" | translate }}</span>
+        <span>{{ getTotalItems() }}x</span>
+      </div>
+      <div class="summary-row total">
+        <span>{{ "CART.SUMMARY.TOTAL" | translate }}</span>
+        <span class="total-amount"
+          >${{ calculateTotal() | number : "1.2-2" }}</span
+        >
+      </div>
+    </div>
+    <div class="quick-pay">
+      <button
+        class="quick-pay-btn cash"
+        (click)="onPlaceOrderWithMethod('cash')"
+        [disabled]="cartItems.length === 0"
+        title="Pay with cash"
+      >
+        <i class="fas fa-money-bill-wave"></i>
+        <span>Cash</span>
+      </button>
+      <button
+        class="quick-pay-btn card"
+        (click)="onPlaceOrderWithMethod('card')"
+        [disabled]="cartItems.length === 0"
+        title="Pay with card"
+      >
+        <i class="fas fa-credit-card"></i>
+        <span>Card</span>
+      </button>
+    </div>
+
+    <!-- Place order button removed — quick-pay buttons handle checkout flows -->
+  </div>
+</aside>
+
+<!-- Close Tab Confirmation Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showCloseConfirmation()"
+  (click)="cancelCloseTab()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ "CART.MODAL.TITLE" | translate }}
+      </h3>
+    </div>
+    <div class="modal-body">
+      <p>
+        {{
+          "CART.MODAL.CONTAINS"
+            | translate : { count: salesTabs[tabToClose()!]?.items?.length }
+        }}
+      </p>
+      <p>{{ "CART.MODAL.CONFIRM" | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancelCloseTab()">
+        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button class="btn-confirm" (click)="confirmCloseTab()">
+        <i class="fas fa-check"></i> {{ "CART.MODAL.CLOSE_TAB" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

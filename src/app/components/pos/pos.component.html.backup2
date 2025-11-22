@@ -1,0 +1,375 @@
+<div class="pos-container">
+  <!-- Compact Modern Header -->
+  <header class="pos-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button class="btn-menu" (click)="toggleMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1><i class="fas fa-cash-register"></i> POS</h1>
+        <span class="user-badge">
+          <i class="fas fa-user-circle"></i> {{ currentUser?.firstName }}
+        </span>
+      </div>
+      <div class="header-right">
+        <button class="btn-search" routerLink="/search" title="Search Products">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="btn-logout" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Menu -->
+    <nav class="quick-nav" [class.show]="showMenu">
+      <button class="nav-btn" routerLink="/sales">
+        <i class="fas fa-receipt"></i>
+        <span>Sales</span>
+      </button>
+      <button class="nav-btn" routerLink="/products">
+        <i class="fas fa-box"></i>
+        <span>Products</span>
+      </button>
+      <button class="nav-btn" routerLink="/categories">
+        <i class="fas fa-tags"></i>
+        <span>Categories</span>
+      </button>
+      <button 
+        class="nav-btn" 
+        routerLink="/users"
+        *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'manager'">
+        <i class="fas fa-users"></i>
+        <span>Users</span>
+      </button>
+      <button 
+        class="nav-btn" 
+        routerLink="/settings"
+        *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'manager'">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="pos-content">
+    <!-- Left Panel - Products -->
+    <div class="products-panel">
+      <!-- Compact Scanner Controls -->
+      <div class="scanner-controls">
+        <div class="scan-input-wrapper">
+          <i class="fas fa-barcode"></i>
+          <input
+            #barcodeInput
+            type="text"
+            [(ngModel)]="barcodeValue"
+            (keypress)="onBarcodeKeyPress($event)"
+            placeholder="Scan or enter barcode"
+            class="barcode-input"
+          />
+          <button class="btn-camera" (click)="toggleCameraScanner()" [class.active]="isCameraActive">
+            <i class="fas" [class.fa-camera]="!isCameraActive" [class.fa-stop]="isCameraActive"></i>
+          </button>
+          <button
+            class="btn-scale"
+            (click)="connectScale()"
+            [class.active]="scaleConnected"
+          >
+            <i class="fas fa-weight"></i>
+          </button>
+        </div>
+        <div *ngIf="scaleConnected && currentWeight > 0" class="weight-display">
+          <i class="fas fa-balance-scale"></i> {{ currentWeight | number : "1.3-3" }} kg
+        </div>
+      </div>
+
+      <!-- Camera Scanner -->
+      <div
+        id="camera-scanner"
+        *ngIf="isCameraActive"
+        class="camera-scanner"
+      ></div>
+
+      <!-- Compact Search -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
+          placeholder="Search products..."
+          class="search-input"
+        />
+        <button *ngIf="searchQuery" (click)="searchQuery = ''; filterProducts()" class="btn-clear">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Compact Category Pills -->
+      <div class="categories-section">
+        <div class="categories-scroll">
+          <button
+            class="category-pill"
+            [class.active]="!selectedCategory"
+            (click)="onCategorySelect('')"
+          >
+            <i class="fas fa-th"></i> All
+          </button>
+          <button
+            *ngFor="let category of categories"
+            class="category-pill"
+            [class.active]="selectedCategory === category._id"
+            (click)="onCategorySelect(category._id!)"
+          >
+            {{ category.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Compact Products Grid -->
+      <div class="products-grid">
+        <div
+          *ngFor="let product of filteredProducts"
+          class="product-card"
+          (click)="addToCart(product)"
+        >
+          <div class="product-image">
+            <img
+              *ngIf="product.image_url || product.local_image"
+              [src]="product.image_url || product.local_image"
+              [alt]="product.name"
+              (error)="$any($event.target).src='assets/placeholder.png'"
+            />
+            <div
+              *ngIf="!product.image_url && !product.local_image"
+              class="no-image"
+            >
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="stock-badge" *ngIf="product.stock! <= (product.minStock || 10)">
+              <i class="fas fa-exclamation-triangle"></i> {{ product.stock }}
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-meta">
+              <span class="product-code">{{ product.product_id || product.sku }}</span>
+              <span class="product-brand" *ngIf="product.brand">{{ product.brand }}</span>
+            </div>
+            <h4 class="product-name">{{ product.name }}</h4>
+            <div class="product-footer">
+              <span class="product-price">${{ product.price | number : "1.2-2" }}</span>
+              <div class="add-icon">
+                <i class="fas fa-plus"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Compact Cart -->
+    <div class="cart-panel">
+      <div class="cart-header">
+        <h2><i class="fas fa-shopping-cart"></i> Cart</h2>
+        <button class="btn-clear" (click)="cartService.clearCart()" *ngIf="cartItems.length > 0">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+
+      <div class="cart-items">
+        <div *ngIf="cartItems.length === 0" class="empty-cart">
+          <i class="fas fa-shopping-basket"></i>
+          <p>Cart is empty</p>
+          <p class="help-text">Tap products to add them</p>
+        </div>
+
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <button class="btn-remove" (click)="removeFromCart(item.product._id!)">
+            <i class="fas fa-times"></i>
+          </button>
+
+          <div class="item-info">
+            <h4>{{ item.product.name }}</h4>
+            <div class="item-meta">
+              <span class="item-code">{{ item.product.product_id || item.product.sku }}</span>
+              <span class="item-brand" *ngIf="item.product.brand">{{ item.product.brand }}</span>
+            </div>
+            <p class="item-price">${{ item.product.price | number : "1.2-2" }}</p>
+          </div>
+
+          <div class="item-controls">
+            <div class="quantity-control">
+              <button
+                class="qty-btn"
+                (click)="updateQuantity(item.product._id!, item.quantity - 1)"
+              >
+                <i class="fas fa-minus"></i>
+              </button>
+              <input
+                type="number"
+                [(ngModel)]="item.quantity"
+                (change)="updateQuantity(item.product._id!, item.quantity)"
+                min="0.001"
+                [step]="item.product.requiresScale ? 0.001 : 1"
+                class="qty-input"
+              />
+              <button
+                class="qty-btn"
+                (click)="updateQuantity(item.product._id!, item.quantity + 1)"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+
+            <button class="btn-discount" (click)="openDiscountModal(item)">
+              <i class="fas fa-percent"></i> {{ item.discount > 0 ? item.discount + '%' : 'Discount' }}
+            </button>
+
+            <div class="item-subtotal">
+              ${{ calculateItemSubtotal(item) | number : "1.2-2" }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="cart-summary" *ngIf="cartItems.length > 0">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>${{ calculateSubtotal() | number : "1.2-2" }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Discount:</span>
+          <span class="discount-value">-${{ calculateTotalDiscount() | number : "1.2-2" }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span class="total-value">${{ calculateTotal() | number : "1.2-2" }}</span>
+        </div>
+        <button class="btn-checkout" (click)="openCheckout()">
+          <i class="fas fa-credit-card"></i> Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact Checkout Modal -->
+  <div class="modal-overlay" *ngIf="showCheckout" (click)="showCheckout = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-cash-register"></i> Checkout</h3>
+        <button class="btn-close" (click)="showCheckout = false">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="checkout-summary">
+          <div class="summary-item">
+            <i class="fas fa-shopping-basket"></i>
+            <span>{{ cartItems.length }} items</span>
+          </div>
+          <div class="summary-item total">
+            <i class="fas fa-dollar-sign"></i>
+            <span>${{ calculateTotal() | number : "1.2-2" }}</span>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <h4><i class="fas fa-wallet"></i> Payment Method</h4>
+          <div class="payment-grid">
+            <button
+              class="payment-btn"
+              [class.active]="paymentMethod === 'cash'"
+              (click)="paymentMethod = 'cash'"
+            >
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Cash</span>
+            </button>
+            <button
+              class="payment-btn"
+              [class.active]="paymentMethod === 'card'"
+              (click)="paymentMethod = 'card'"
+            >
+              <i class="fas fa-credit-card"></i>
+              <span>Card</span>
+            </button>
+            <button
+              class="payment-btn"
+              [class.active]="paymentMethod === 'transfer'"
+              (click)="paymentMethod = 'transfer'"
+            >
+              <i class="fas fa-exchange-alt"></i>
+              <span>Transfer</span>
+            </button>
+            <button
+              class="payment-btn"
+              [class.active]="paymentMethod === 'mixed'"
+              (click)="paymentMethod = 'mixed'"
+            >
+              <i class="fas fa-layer-group"></i>
+              <span>Mixed</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Amounts -->
+        <div class="payment-amounts">
+          <div *ngIf="paymentMethod === 'cash' || paymentMethod === 'mixed'" class="amount-input">
+            <label><i class="fas fa-money-bill-wave"></i> Cash Amount</label>
+            <div class="input-wrapper">
+              <span class="currency">$</span>
+              <input
+                type="number"
+                [(ngModel)]="cashAmount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div class="change-display" *ngIf="cashAmount > calculateTotal()">
+              <i class="fas fa-hand-holding-usd"></i> Change: ${{ (cashAmount - calculateTotal()) | number : "1.2-2" }}
+            </div>
+          </div>
+
+          <div *ngIf="paymentMethod === 'card' || paymentMethod === 'mixed'" class="amount-input">
+            <label><i class="fas fa-credit-card"></i> Card Amount</label>
+            <div class="input-wrapper">
+              <span class="currency">$</span>
+              <input
+                type="number"
+                [(ngModel)]="cardAmount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+
+          <div *ngIf="paymentMethod === 'transfer' || paymentMethod === 'mixed'" class="amount-input">
+            <label><i class="fas fa-exchange-alt"></i> Transfer Amount</label>
+            <div class="input-wrapper">
+              <span class="currency">$</span>
+              <input
+                type="number"
+                [(ngModel)]="transferAmount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showCheckout = false">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="btn-complete" (click)="completeSale()">
+          <i class="fas fa-check"></i> Complete Sale
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

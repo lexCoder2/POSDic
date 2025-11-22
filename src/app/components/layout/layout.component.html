@@ -1,0 +1,174 @@
+<div class="app-layout">
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-store"></i>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button
+        *ngIf="isAdminOrManager"
+        class="sidebar-btn"
+        routerLink="/dashboard"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-chart-line"></i>
+        <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
+      </button>
+      <button class="sidebar-btn" routerLink="/pos" routerLinkActive="active">
+        <i class="fas fa-cash-register"></i>
+        <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>
+      </button>
+      <button
+        class="sidebar-btn"
+        routerLink="/cashier"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-calculator"></i>
+        <span>{{ "GLOBAL.SIDEBAR.QUICK_CASHIER" | translate }}</span>
+      </button>
+      <button
+        *ngIf="isAdminOrManager"
+        class="sidebar-btn"
+        routerLink="/statistics"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-chart-bar"></i>
+        <span>Statistics</span>
+      </button>
+      <button
+        class="sidebar-btn"
+        routerLink="/inventory"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-warehouse"></i>
+        <span>{{ "GLOBAL.SIDEBAR.INVENTORY" | translate }}</span>
+      </button>
+
+      <button
+        *ngIf="isAdmin"
+        class="sidebar-btn"
+        routerLink="/providers"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-truck"></i>
+        <span>{{ "GLOBAL.SIDEBAR.SUPPLIERS" | translate }}</span>
+      </button>
+      <button
+        *ngIf="isAdminOrManager"
+        class="sidebar-btn"
+        routerLink="/sales"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-shopping-cart"></i>
+        <span>{{ "GLOBAL.SIDEBAR.SALES" | translate }}</span>
+      </button>
+      <button
+        *ngIf="isAdminOrManager"
+        class="sidebar-btn"
+        routerLink="/users"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-users"></i>
+        <span>{{ "GLOBAL.SIDEBAR.USERS" | translate }}</span>
+      </button>
+      <button
+        *ngIf="isAdmin"
+        class="sidebar-btn"
+        routerLink="/templates"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-receipt"></i>
+        <span>{{ "GLOBAL.SIDEBAR.RECEIPT_TEMPLATES" | translate }}</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-content">
+        <!-- Global Search Bar -->
+        <div class="global-search">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            #globalSearchInput
+            type="text"
+            [(ngModel)]="searchQuery"
+            (input)="onSearchChange(searchQuery)"
+            placeholder="{{ 'GLOBAL.SEARCH_PLACEHOLDER' | translate }}"
+            class="search-input"
+          />
+        </div>
+
+        <!-- language picker moved into user dropdown -->
+
+        <div class="user-info" (click)="toggleUserDropdown()">
+          <span class="user-name">{{
+            currentUser?.firstName || ("GLOBAL.USER" | translate)
+          }}</span>
+          <span class="user-role">{{
+            currentUser?.role || ("GLOBAL.EMPLOYEE" | translate)
+          }}</span>
+          <i class="fas fa-user-circle user-avatar"></i>
+
+          <!-- User Dropdown Menu -->
+          <div
+            class="user-dropdown"
+            *ngIf="showUserDropdown"
+            (click)="$event.stopPropagation()"
+          >
+            <div class="dropdown-header">
+              <div class="dropdown-user-name">
+                {{ currentUser?.firstName || ("GLOBAL.USER" | translate) }}
+              </div>
+              <div class="dropdown-user-email">
+                {{ currentUser?.email || currentUser?.username }}
+              </div>
+            </div>
+            <div class="dropdown-language">
+              <div class="language-label">
+                {{ "GLOBAL.LANGUAGE" | translate }}
+              </div>
+              <div class="language-options">
+                <button
+                  class="dropdown-item lang-item"
+                  [class.lang-active]="currentLang === 'en'"
+                  (click)="setLanguage('en')"
+                >
+                  <span class="lang-name">{{
+                    "GLOBAL.ENGLISH" | translate
+                  }}</span>
+                </button>
+                <button
+                  class="dropdown-item lang-item"
+                  [class.lang-active]="currentLang === 'es'"
+                  (click)="setLanguage('es')"
+                >
+                  <span class="lang-name">{{
+                    "GLOBAL.SPANISH" | translate
+                  }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" (click)="navigateToSettings()">
+              <i class="fas fa-cog"></i>
+              <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
+            </button>
+            <button class="dropdown-item logout-item" (click)="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>{{ "GLOBAL.LOGOUT" | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,388 @@
+@use "../../../styles/_theme.scss" as *;
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: $bg-primary;
+}
+
+// ===== SIDEBAR =====
+.sidebar {
+  width: $sidebar-width;
+  background: $bg-secondary;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  z-index: 100;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+
+  padding: 0 $spacing-sm;
+  .sidebar-header {
+    padding: $spacing-xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    i {
+      font-size: 2rem;
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    padding: $spacing-sm 0;
+    gap: 3px;
+  }
+
+  .sidebar-btn {
+    width: 90%;
+    padding: $spacing-md $spacing-lg $spacing-lg;
+    border: none;
+    background: transparent;
+    color: $text-secondary;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 12px;
+    margin: 2px 0;
+
+    i {
+      font-size: 1.5rem;
+    }
+
+    &:hover {
+      background: $bg-primary;
+      color: $primary;
+    }
+
+    &.active {
+      background: $white;
+      color: $primary;
+      font-weight: 600;
+      box-shadow: $shadow-neumorphic-sm;
+    }
+  }
+}
+
+// ===== MAIN WRAPPER =====
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ===== TOP HEADER =====
+.top-header {
+  background: $bg-primary;
+  border-bottom: none;
+  box-shadow: none;
+  z-index: 10;
+
+  .header-content {
+    padding: $spacing-lg $spacing-2xl;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $spacing-2xl;
+  }
+
+  // Global Search Bar
+  .global-search {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+
+    .search-icon {
+      position: absolute;
+      left: $spacing-lg;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-muted;
+      font-size: 1.1rem;
+      z-index: 1;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: $spacing-md $spacing-lg;
+      padding-left: 3rem;
+      border: none;
+      border-radius: $radius-2xl;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      background: $bg-secondary;
+      box-shadow: $shadow-neumorphic-inset;
+
+      &:focus {
+        outline: none;
+        box-shadow: $input-shadow-focus;
+      }
+
+      &::placeholder {
+        color: $text-muted;
+      }
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    position: relative;
+    cursor: pointer;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-lg;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+
+    .user-name {
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .user-role {
+      color: $text-secondary;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: $spacing-xs $spacing-md;
+      background: $bg-tertiary;
+      border-radius: $radius-full;
+      text-transform: capitalize;
+    }
+
+    .user-avatar {
+      font-size: 2rem;
+      color: $primary;
+    }
+
+    // User Dropdown Menu
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: $white;
+      border: 1px solid $border-color;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-lg;
+      min-width: 220px;
+      z-index: 1000;
+      overflow: hidden;
+      animation: dropdownSlide 0.2s ease;
+
+      .dropdown-header {
+        padding: $spacing-lg;
+        border-bottom: 1px solid $border-color;
+        background: $bg-tertiary;
+
+        .dropdown-user-name {
+          font-weight: 600;
+          color: $text-primary;
+          font-size: 0.95rem;
+          margin-bottom: $spacing-xs;
+        }
+
+        .dropdown-user-email {
+          font-size: 0.8rem;
+          color: $text-secondary;
+        }
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: $border-color;
+      }
+
+      .dropdown-language {
+        padding: $spacing-sm $spacing-lg;
+
+        .language-label {
+          font-size: 0.8rem;
+          color: $text-secondary;
+          margin-bottom: $spacing-xs;
+        }
+
+        .language-options {
+          display: flex;
+          gap: $spacing-sm;
+
+          .lang-item {
+            padding: $spacing-xs $spacing-md;
+            border-radius: $radius-md;
+            background: transparent;
+            color: $text-primary;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: $spacing-xs;
+            border: 1px solid transparent;
+
+            &:hover {
+              background: $bg-tertiary;
+              color: $primary;
+            }
+
+            &.lang-active {
+              background: rgba($primary, 0.08);
+              border-color: rgba($primary, 0.16);
+              color: $primary;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
+      .dropdown-item {
+        width: 100%;
+        padding: $spacing-md $spacing-lg;
+        border: none;
+        background: transparent;
+        color: $text-primary;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        transition: all 0.2s ease;
+        text-align: left;
+
+        i {
+          font-size: 1rem;
+          width: 20px;
+          color: $text-secondary;
+        }
+
+        &:hover {
+          background: $bg-tertiary;
+          color: $primary;
+
+          i {
+            color: $primary;
+          }
+        }
+
+        &.logout-item {
+          color: $danger;
+
+          i {
+            color: $danger;
+          }
+
+          &:hover {
+            background: rgba($danger, 0.1);
+            color: $danger-dark;
+
+            i {
+              color: $danger-dark;
+            }
+          }
+        }
+      }
+    }
+
+    @keyframes dropdownSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// ===== PAGE CONTENT =====
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background: $bg-secondary;
+  height: calc(100vh - 60px);
+}
+
+// ===== MOBILE RESPONSIVE =====
+@media (max-width: 768px) {
+  .app-layout {
+    &.pos-page {
+      .sidebar {
+        display: none;
+      }
+    }
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -$sidebar-width;
+    top: 0;
+    bottom: 0;
+    transition: left 0.3s ease;
+    z-index: 1000;
+
+    &.mobile-open {
+      left: 0;
+    }
+  }
+
+  .main-wrapper {
+    width: 100%;
+  }
+
+  .top-header {
+    .header-content {
+      padding: $spacing-md $spacing-lg;
+      gap: $spacing-md;
+    }
+
+    .global-search {
+      max-width: none;
+      flex: 1;
+
+      .search-input {
+        font-size: 0.875rem;
+        padding: $spacing-sm $spacing-md;
+        padding-left: 2.5rem;
+      }
+
+      .search-icon {
+        left: $spacing-md;
+        font-size: 1rem;
+      }
+    }
+
+    .user-info {
+      .user-name {
+        display: none;
+      }
+
+      .user-role {
+        display: none;
+      }
+
+      .user-avatar {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}

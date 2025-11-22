@@ -1,0 +1,129 @@
+<div class="search-container">
+  <!-- Header with Cart -->
+  <header class="search-header">
+    <div class="header-content">
+      <button class="btn-back" routerLink="/pos">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h1><i class="fas fa-search"></i> Buscar Productos</h1>
+      <button class="btn-cart" (click)="goToCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" *ngIf="cartItemCount > 0">{{
+          cartItemCount
+        }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search"></i>
+      <input
+        #searchInput
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+        placeholder="Buscar por nombre, marca, código..."
+        class="search-input"
+      />
+      <button
+        *ngIf="searchQuery"
+        (click)="searchQuery = ''; performSearch()"
+        class="btn-clear-search"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Categories Chips -->
+  <div class="categories-section">
+    <h3><i class="fas fa-layer-group"></i> Categorías</h3>
+    <div class="categories-chips">
+      <button
+        *ngFor="let category of categories"
+        class="category-chip"
+        [class.active]="selectedCategory === category.name"
+        (click)="selectCategory(category.name)"
+      >
+        {{ category.name }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-section">
+    <div class="section-header">
+      <h3><i class="fas fa-box"></i> Productos</h3>
+      <span class="product-count">{{ filteredProducts.length }} productos</span>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <i class="fas fa-spinner fa-spin"></i> Cargando...
+    </div>
+
+    <div *ngIf="!loading && filteredProducts.length === 0" class="no-results">
+      <i class="fas fa-inbox"></i>
+      <p>No se encontraron productos</p>
+    </div>
+
+    <div class="products-grid">
+      <div *ngFor="let product of filteredProducts" class="product-card">
+        <div class="product-image">
+          <img
+            *ngIf="product.image_url || product.local_image"
+            [src]="product.image_url || product.local_image"
+            [alt]="product.name"
+            (error)="$any($event.target).src = 'assets/placeholder.png'"
+          />
+          <div
+            *ngIf="!product.image_url && !product.local_image"
+            class="no-image"
+          >
+            <i class="fas fa-box"></i>
+          </div>
+        </div>
+
+        <div class="product-info">
+          <div class="product-meta">
+            <span class="product-code">{{
+              product.product_id || product.sku
+            }}</span>
+            <span class="product-brand" *ngIf="product.brand">{{
+              product.brand
+            }}</span>
+          </div>
+          <h4 class="product-name">{{ product.name }}</h4>
+          <p class="product-category">
+            <i class="fas fa-tag"></i> {{ product.category }}
+          </p>
+          <div class="product-footer">
+            <div class="product-price">
+              <span class="currency">$</span
+              >{{ product.price | number : "1.2-2" }}
+            </div>
+            <button class="btn-add-cart" (click)="addToCart(product)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Cart Summary -->
+  <div class="cart-summary" *ngIf="cartItemCount > 0">
+    <div class="summary-content">
+      <div class="summary-info">
+        <span class="summary-items">
+          <i class="fas fa-shopping-basket"></i> {{ cartItemCount }} items
+        </span>
+        <span class="summary-total"> ${{ cartTotal | number : "1.2-2" }} </span>
+      </div>
+      <button class="btn-go-cart" (click)="goToCart()">
+        Ver Carrito <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

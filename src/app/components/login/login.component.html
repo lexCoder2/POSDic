@@ -1,0 +1,97 @@
+<div class="login-layout">
+  <!-- Left Side Panel -->
+  <div class="left-panel">
+    <div class="nav-menu">
+      <div class="nav-item active">
+        <i class="fas fa-check-circle"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-check-circle"></i>
+        <span>Contacto</span>
+      </div>
+    </div>
+
+    <div class="panel-content">
+      <div class="tab-buttons">
+        <button class="tab-btn active">Login</button>
+        <button class="tab-btn">Sign up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side Card -->
+  <div class="right-panel">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="logo-circles">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="login-form">
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
+
+        <!-- Email/Username Input -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="username"
+              [(ngModel)]="username"
+              name="username"
+              placeholder="Email"
+              required
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Password"
+              required
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-submit" [disabled]="loading">
+          <span *ngIf="!loading">Get started</span>
+          <span *ngIf="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+          </span>
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <!-- Social Login Buttons -->
+        <div class="social-buttons">
+          <button type="button" class="social-btn google-btn">
+            <i class="fab fa-google"></i>
+            <span>Google</span>
+          </button>
+          <button type="button" class="social-btn facebook-btn">
+            <i class="fab fa-facebook-f"></i>
+            <span>Facebook</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

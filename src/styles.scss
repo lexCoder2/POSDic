@@ -1,0 +1,126 @@
+/* Modern Global Styles - Touch Optimized */
+@import "styles/theme";
+@import "styles/table";
+
+// CSS Variables for Design System (generated from theme)
+:root {
+  --primary-color: #{$primary};
+  --primary-dark: #{$primary-dark};
+  --secondary-color: #{$secondary};
+  --danger-color: #f56565;
+  --warning-color: #ed8936;
+  --info-color: #4299e1;
+
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-muted: #{$text-muted};
+  --text-light: #{$text-light};
+
+  --bg-primary: #{$bg-primary};
+  --bg-secondary: #{$bg-secondary};
+  --bg-tertiary: #{$bg-tertiary};
+
+  --border-color: #{$border-color};
+  --border-light: #{$border-light};
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-neumorphic: 6px 6px 12px rgba(163, 177, 198, 0.6),
+    -6px -6px 12px rgba(255, 255, 255, 0.5);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+
+  // Touch-friendly minimum sizes
+  --touch-target: 44px;
+  --touch-target-lg: 56px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+
+  // Prevent text size adjustment on mobile
+  -webkit-text-size-adjust: 100%;
+
+  // Improve touch scrolling
+  -webkit-overflow-scrolling: touch;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+
+  // Touch feedback
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+
+  // Minimum touch target
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+
+  // Minimum touch target for inputs
+  min-height: var(--touch-target);
+}
+
+/* Utility classes */
+.page-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

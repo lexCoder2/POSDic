@@ -1,0 +1,95 @@
+<div class="client-screen">
+  <div class="client-header">
+    <div class="store">
+      <div class="store-name">{{ "GLOBAL.SIDEBAR.POS" | translate }}</div>
+      <div class="meta">
+        <span class="sale-id">{{ saleId }}</span>
+        <span class="separator">•</span>
+        <span class="cashier">{{ cashierName }}</span>
+      </div>
+    </div>
+    <div class="clock">{{ currentTime }}</div>
+  </div>
+
+  <div class="body-grid">
+    <div class="items">
+      <ng-container *ngIf="cartItems$ | async as items">
+        <div *ngIf="items.length === 0" class="empty">
+          {{ "CART.EMPTY" | translate }}
+        </div>
+
+        <div *ngFor="let it of items" class="item-row">
+          <div class="left">
+            <div class="product-image">
+              <img
+                [src]="
+                  it.product.image_url ||
+                  it.product.local_image ||
+                  'assets/placeholder-product.png'
+                "
+                [alt]="it.product.name"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="text">
+              <div class="item-name">{{ it.product.name }}</div>
+              <div class="item-sub">{{ it.product.brand || "" }}</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="qty">x{{ it.quantity }}</div>
+            <div class="price">
+              {{ it.product.price | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+            <div class="subtotal">
+              {{ it.subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <aside class="summary">
+      <div class="summary-card">
+        <div class="summary-row">
+          <div class="label">{{ "CART.SUMMARY.ITEMS" | translate }}</div>
+          <div class="value">{{ itemCount }}</div>
+        </div>
+
+        <div class="summary-row">
+          <div class="label">
+            {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
+          </div>
+          <div class="value">
+            {{ subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <div class="label">
+            {{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}
+          </div>
+          <div class="value">
+            -{{ discount | currency : "MXN" : "symbol" : "1.2-2" }}
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <div class="label">{{ "SALES.DETAILS.TOTALS.TAX" | translate }}</div>
+          <div class="value">
+            {{ tax | currency : "MXN" : "symbol" : "1.2-2" }}
+          </div>
+        </div>
+
+        <div class="summary-row total">
+          <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
+          <div class="value large">
+            {{ total | currency : "MXN" : "symbol" : "1.2-2" }}
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

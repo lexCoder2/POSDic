@@ -1,0 +1,78 @@
+# Node modules
+node_modules/
+server/node_modules/
+
+# Build / output
+dist/
+build/
+out/
+coverage/
+
+# Angular / CLI
+.angular/
+.angular-cache/
+.sass-cache/
+
+# Environment files
+.env
+.env.*
+.env.local
+server/.env
+
+# Server certs and local secrets
+server/certs/
+server/*.pem
+server/*.key
+
+# Logs
+logs/
+server/logs/
+*.log
+*.log.*
+npm-debug.log*
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# IDEs / editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Misc
+*.tgz
+*.gz
+*.zip
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+server/product_images/
+
+# Mac and Linux swap files
+*~
+*.swp
+
+# Lockfiles (optional - keep if you prefer tracking lockfile)
+# package-lock.json
+# yarn.lock
+
+# Local certificates (if you keep them in certs/)
+certs/
+
+# Ignore server local DB files
+server/*.sqlite
+server/*.db
+
+# Exclude product images folder if generated locally
+product_images/
