@@ -1,18 +1,16 @@
-@import "../../../styles/theme";
+@use "../../../styles/theme" as *;
 
 .card {
-  background: $neumorphic-surface;
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  @include card;
+  padding: $spacing-md $spacing-lg;
 }
 
 .setting-section {
   margin-top: 1rem;
 
   h3 {
-    font-size: 1.05rem;
-    margin-bottom: 0.75rem;
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-sm;
     color: $primary;
   }
 
@@ -33,15 +31,15 @@
       }
 
       .label-text {
-        font-size: 0.95rem;
-        color: var(--text-primary);
+        font-size: $font-size-base;
+        color: $text-primary;
       }
     }
   }
 }
 
 .page-container {
-  padding: 20px;
+  padding: $spacing-2xl;
 }
 
 .setting-header {
@@ -51,8 +49,10 @@
   gap: 1rem;
 
   .preview-btn {
+    @include button-primary;
     padding: 0.35rem 0.75rem;
-    font-size: 0.95rem;
+    font-size: $font-size-base;
+    min-height: $touch-target-md;
   }
 }
 
@@ -65,9 +65,9 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $border-light;
+    border-radius: $radius-md;
     background: transparent;
     cursor: pointer;
     min-width: 220px;
@@ -76,7 +76,7 @@
     .icon {
       width: 44px;
       height: 44px;
-      border-radius: 6px;
+      border-radius: $radius-sm;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -89,11 +89,11 @@
       flex: 1;
       .title {
         font-weight: 600;
-        color: var(--text-primary);
+        color: $text-primary;
       }
       .desc {
         font-size: 0.85rem;
-        color: var(--text-secondary);
+        color: $text-secondary;
       }
     }
 
@@ -110,7 +110,7 @@
 
   .option-card.active {
     border-color: $primary;
-    box-shadow: var(--shadow-sm);
+    box-shadow: $shadow-sm;
     transform: translateY(-2px);
     .option-right .check {
       display: inline-block;
@@ -128,22 +128,19 @@
   .form-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin: 0.5rem 0;
+    gap: $spacing-md;
+    margin: $spacing-sm 0;
 
     .label {
       width: 160px;
-      font-weight: 600;
-      color: var(--text-primary);
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
     }
 
     input,
     select {
       flex: 1;
-      padding: 0.5rem 0.6rem;
-      border: 1px solid var(--border-light);
-      border-radius: 6px;
-      background: white;
+      @include input-base;
     }
   }
 

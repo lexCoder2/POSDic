@@ -21,6 +21,7 @@ import { ProductService } from "../../services/product.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { TranslationService } from "../../services/translation.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { ToastComponent } from "../toast/toast.component";
 import { User, Product } from "../../models";
 @Component({
   selector: "app-layout",
@@ -32,6 +33,7 @@ import { User, Product } from "../../models";
     RouterLinkActive,
     RouterOutlet,
     TranslatePipe,
+    ToastComponent,
   ],
   templateUrl: "./layout.component.html",
   styleUrls: ["./layout.component.scss"],

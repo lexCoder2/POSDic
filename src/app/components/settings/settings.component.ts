@@ -3,13 +3,21 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { RouterLink } from "@angular/router";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { TranslationService } from "../../services/translation.service";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: "app-settings",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageTitleComponent,
+    TranslatePipe,
+    RouterLink,
+  ],
   templateUrl: "settings.component.html",
   styleUrls: ["./settings.component.scss"],
 })
@@ -22,8 +30,14 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private receiptGen: ReceiptGeneratorService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private authService: AuthService
   ) {}
+
+  get isAdmin(): boolean {
+    const u = this.authService.getCurrentUser();
+    return u?.role === "admin";
+  }
 
   ngOnInit(): void {
     const stored = localStorage.getItem("printer.mode");

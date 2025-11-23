@@ -20,6 +20,7 @@ import { SaleService } from "../../services/sale.service";
 import { ScaleService } from "../../services/scale.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
+import { ToastService } from "../../services/toast.service";
 import { Product, Category, CartItem, User } from "../../models";
 import { environment } from "@environments/environment";
 import { CartComponent } from "../cart/cart.component";
@@ -107,7 +108,8 @@ export class PosComponent implements OnInit, OnDestroy {
     private scaleService: ScaleService,
     private receiptGeneratorService: ReceiptGeneratorService,
     private searchStateService: SearchStateService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -337,7 +339,11 @@ export class PosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error("Product not found for barcode:", barcode);
-        alert("Product not found for barcode: " + barcode);
+        this.toastService.show(
+          "Product not found for barcode: " + barcode,
+          "error",
+          1400
+        );
 
         // Error vibration on mobile
         if (this.isCameraActive && navigator.vibrate) {
@@ -421,16 +427,16 @@ export class PosComponent implements OnInit, OnDestroy {
       const ctx = new AudioCtx();
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = "sawtooth";
-      o.frequency.value = 280;
-      g.gain.value = 0.18;
+      o.type = "sine";
+      o.frequency.value = 360;
+      g.gain.value = 0.12;
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      // Quick downward pitch effect
+      // Quick short downward pitch effect (very short)
       const now = ctx.currentTime;
-      o.frequency.setValueAtTime(280, now);
-      o.frequency.exponentialRampToValueAtTime(120, now + 0.18);
+      o.frequency.setValueAtTime(360, now);
+      o.frequency.exponentialRampToValueAtTime(220, now + 0.06);
       setTimeout(() => {
         try {
           o.stop();
@@ -438,7 +444,7 @@ export class PosComponent implements OnInit, OnDestroy {
         } catch (e) {
           // ignore
         }
-      }, 200);
+      }, 80);
     } catch (e) {
       // fallback: try simple Audio beep (if available)
       try {
@@ -487,7 +493,11 @@ export class PosComponent implements OnInit, OnDestroy {
       // Fallback: try using native BarcodeDetector (modern browsers)
       const hasBarcodeDetector = (window as any).BarcodeDetector;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Camera not available on this device/browser.");
+        this.toastService.show(
+          "Camera not available on this device/browser.",
+          "error",
+          2000
+        );
         this.isCameraActive = false;
         return;
       }
@@ -496,7 +506,7 @@ export class PosComponent implements OnInit, OnDestroy {
       if (!container) {
         // If container still missing, hide overlay and abort
         console.error("HTML Element with id=camera-scanner not found");
-        alert("Camera container not found.");
+        this.toastService.show("Camera container not found.", "error", 1800);
         this.isCameraActive = false;
         return;
       }
@@ -575,12 +585,16 @@ export class PosComponent implements OnInit, OnDestroy {
         }
       } catch (err) {
         console.error("Error accessing camera:", err);
-        alert("Unable to access camera. Make sure permissions are granted.");
+        this.toastService.show(
+          "Unable to access camera. Make sure permissions are granted.",
+          "error",
+          2200
+        );
         this.stopCameraScanner();
       }
     } catch (err) {
       console.error("Error starting camera scanner:", err);
-      alert("Failed to start camera scanner");
+      this.toastService.show("Failed to start camera scanner", "error", 1600);
     }
   }
 
