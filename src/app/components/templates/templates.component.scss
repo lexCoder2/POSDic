@@ -161,7 +161,8 @@
         background: $bg-primary;
         border: 1px solid $border-light;
         border-radius: 6px;
-        overflow: hidden;
+        /* allow horizontal scrolling if preview content is wider than container */
+        overflow-x: auto;
         max-height: 180px;
         overflow-y: auto;
 

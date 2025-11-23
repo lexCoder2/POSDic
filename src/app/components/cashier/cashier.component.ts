@@ -52,6 +52,9 @@ export class CashierComponent {
   currentScaleReading = signal<ScaleReading | null>(null);
   useScaleWeight = signal<boolean>(false);
 
+  // Mobile UI: active tab for small screens ('calculator' | 'sales')
+  activeTab = signal<"calculator" | "sales">("calculator");
+
   private itemIdCounter = 0;
   private deleteKeyPressCount = 0;
   private deleteKeyTimer: any = null;
@@ -732,21 +735,41 @@ export class CashierComponent {
 
         // Generate and print receipt using the saved template
         const currentUser = this.authService.getCurrentUser();
-        this.receiptGeneratorService
-          .generateReceipt(
-            createdSale,
-            paymentMethod,
-            changeAmount,
-            currentUser
-          )
-          .subscribe({
-            next: (receiptContent) => {
-              this.receiptGeneratorService.printReceipt(receiptContent);
-            },
-            error: (err) => {
-              console.error("Error generating receipt:", err);
-            },
-          });
+        // Choose print mode from settings (localStorage)
+        const mode = localStorage.getItem("printer.mode") || "plain";
+        if (mode === "styled") {
+          this.receiptGeneratorService
+            .generateReceipt(
+              createdSale,
+              paymentMethod,
+              changeAmount,
+              currentUser
+            )
+            .subscribe({
+              next: (receiptContent) => {
+                this.receiptGeneratorService.printReceipt(receiptContent);
+              },
+              error: (err) => {
+                console.error("Error generating styled receipt:", err);
+              },
+            });
+        } else {
+          this.receiptGeneratorService
+            .generatePlainTextReceipt(
+              createdSale,
+              paymentMethod,
+              changeAmount,
+              currentUser
+            )
+            .subscribe({
+              next: (receiptContent) => {
+                this.receiptGeneratorService.printReceipt(receiptContent);
+              },
+              error: (err) => {
+                console.error("Error generating plain-text receipt:", err);
+              },
+            });
+        }
 
         // Mark cart as completed after successful sale
         if (this.activeCartId()) {

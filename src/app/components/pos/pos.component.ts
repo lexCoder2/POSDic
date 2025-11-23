@@ -9,6 +9,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { Html5Qrcode } from "html5-qrcode";
 import { Router } from "@angular/router";
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from "rxjs";
 import { AuthService } from "../../services/auth.service";
@@ -26,7 +27,7 @@ import { SearchResultsComponent } from "../search-results/search-results.compone
 import { FavoritesComponent } from "../favorites/favorites.component";
 import { QuickAccessComponent } from "../quick-access/quick-access.component";
 
-declare const Html5Qrcode: any;
+// Html5Qrcode is imported above; keep the variable dynamic in case of fallbacks
 
 @Component({
   selector: "app-pos",
@@ -66,6 +67,16 @@ export class PosComponent implements OnInit, OnDestroy {
   // Camera scanner
   cameraScanner: any = null;
   isCameraActive = false;
+  // native camera/video elements for BarcodeDetector fallback
+  private _mediaStream: MediaStream | null = null;
+  private _videoEl: HTMLVideoElement | null = null;
+  private _scanTimer: any = null;
+  // Prevent duplicate camera scans
+  private _lastScannedValue: string | null = null;
+  private _lastScannedAt = 0;
+  // UI scan toast
+  showScanToast = false;
+  scanToastText = "";
 
   // Scale
   scaleConnected = false;
@@ -81,6 +92,7 @@ export class PosComponent implements OnInit, OnDestroy {
   // UI State
   showMenu = false;
   isMobileCartOpen = false;
+  isMobileView = false;
 
   private destroy$ = new Subject<void>();
   // timestamp of last Enter key press for double-Enter detection
@@ -100,6 +112,13 @@ export class PosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
+
+    // determine initial mobile view state
+    try {
+      this.isMobileView = window.innerWidth <= 768;
+    } catch (e) {
+      this.isMobileView = false;
+    }
 
     this.loadCategories();
     this.loadProducts();
@@ -154,6 +173,15 @@ export class PosComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.stopCameraScanner();
+  }
+
+  @HostListener("window:resize", [])
+  onWindowResize(): void {
+    try {
+      this.isMobileView = window.innerWidth <= 768;
+    } catch (e) {
+      // ignore
+    }
   }
 
   loadCategories(): void {
@@ -289,13 +317,14 @@ export class PosComponent implements OnInit, OnDestroy {
     }
   }
 
-  searchByBarcode(barcode: string): void {
+  searchByBarcode(barcode: string, fromCamera = false): void {
+    // (dedupe handled earlier for camera-originated scans)
     this.productService.getProductByBarcode(barcode).subscribe({
       next: (product) => {
         if (product.requiresScale && this.scaleConnected) {
-          this.addToCart(product, this.currentWeight);
+          this.addToCart(product, this.currentWeight, fromCamera);
         } else {
-          this.addToCart(product);
+          this.addToCart(product, undefined, fromCamera);
         }
 
         // Visual feedback for successful scan
@@ -314,8 +343,111 @@ export class PosComponent implements OnInit, OnDestroy {
         if (this.isCameraActive && navigator.vibrate) {
           navigator.vibrate([100, 50, 100]);
         }
+        // Play an error beep to indicate the code was not recognized
+        try {
+          this.playErrorBeep();
+        } catch (e) {
+          // ignore audio errors
+        }
       },
     });
+  }
+
+  /**
+   * Handle a raw value detected by the camera: de-dupe, play beep and show small toast,
+   * then proceed to fetch/add the product.
+   */
+  handleCameraDetected(raw: string): void {
+    const now = Date.now();
+    if (this._lastScannedValue === raw && now - this._lastScannedAt < 1000) {
+      return; // ignore duplicates
+    }
+
+    this._lastScannedValue = raw;
+    this._lastScannedAt = now;
+
+    // Play beep and show toast
+    this.playBeep();
+    this.scanToastText = raw;
+    this.showScanToast = true;
+    setTimeout(() => (this.showScanToast = false), 900);
+
+    // Call the normal search flow (mark as fromCamera so addToCart won't refocus)
+    this.searchByBarcode(raw, true);
+  }
+
+  /** Play a short beep using WebAudio API. */
+  playBeep(): void {
+    try {
+      const AudioCtx =
+        window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = 1000;
+      g.gain.value = 0.15;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => {
+        try {
+          o.stop();
+          ctx.close();
+        } catch (e) {
+          /* ignore */
+        }
+      }, 120);
+    } catch (e) {
+      // fallback: try simple Audio beep (if available)
+      try {
+        const audio = new Audio();
+        // tiny base64 beep (440Hz short) - not included to avoid payload; skip
+        // audio.src = 'data:audio/wav;base64,...';
+        // audio.play();
+      } catch (err) {
+        // ignore
+      }
+    }
+  }
+
+  /** Play a short low-frequency error beep using WebAudio API. */
+  playErrorBeep(): void {
+    try {
+      const AudioCtx =
+        window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sawtooth";
+      o.frequency.value = 280;
+      g.gain.value = 0.18;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      // Quick downward pitch effect
+      const now = ctx.currentTime;
+      o.frequency.setValueAtTime(280, now);
+      o.frequency.exponentialRampToValueAtTime(120, now + 0.18);
+      setTimeout(() => {
+        try {
+          o.stop();
+          ctx.close();
+        } catch (e) {
+          // ignore
+        }
+      }, 200);
+    } catch (e) {
+      // fallback: try simple Audio beep (if available)
+      try {
+        const audio = new Audio();
+        // No embedded audio data provided; skip fallback playback if not available
+      } catch (err) {
+        // ignore
+      }
+    }
   }
 
   async toggleCameraScanner(): Promise<void> {
@@ -328,28 +460,124 @@ export class PosComponent implements OnInit, OnDestroy {
 
   async startCameraScanner(): Promise<void> {
     try {
+      // Make overlay visible first so the container element exists in the DOM
+      this.isCameraActive = true;
+      // Wait a tick for Angular to render the overlay and camera container
+      await new Promise((res) => setTimeout(res, 50));
+
       // Check if Html5Qrcode library is loaded
-      if (typeof Html5Qrcode === "undefined") {
-        alert(
-          "Camera scanner library not loaded. Please add html5-qrcode to your project."
+      if (typeof Html5Qrcode !== "undefined") {
+        this.cameraScanner = new Html5Qrcode("camera-scanner");
+
+        await this.cameraScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: 250 },
+          (decodedText: string) => {
+            this.handleCameraDetected(String(decodedText));
+          },
+          (error: any) => {
+            // Ignore decode errors
+          }
         );
+
+        this.isCameraActive = true;
         return;
       }
 
-      this.cameraScanner = new Html5Qrcode("camera-scanner");
+      // Fallback: try using native BarcodeDetector (modern browsers)
+      const hasBarcodeDetector = (window as any).BarcodeDetector;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Camera not available on this device/browser.");
+        this.isCameraActive = false;
+        return;
+      }
 
-      await this.cameraScanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText: string) => {
-          this.searchByBarcode(decodedText);
-        },
-        (error: any) => {
-          // Ignore decode errors
+      const container = document.getElementById("camera-scanner");
+      if (!container) {
+        // If container still missing, hide overlay and abort
+        console.error("HTML Element with id=camera-scanner not found");
+        alert("Camera container not found.");
+        this.isCameraActive = false;
+        return;
+      }
+
+      // Create video element
+      this._videoEl = document.createElement("video");
+      this._videoEl.setAttribute("playsinline", "true");
+      this._videoEl.style.width = "100%";
+      this._videoEl.style.height = "auto";
+      container.innerHTML = "";
+      container.appendChild(this._videoEl);
+
+      try {
+        this._mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+          audio: false,
+        });
+
+        this._videoEl.srcObject = this._mediaStream;
+        await this._videoEl.play();
+
+        this.isCameraActive = true;
+
+        if (hasBarcodeDetector) {
+          // Use native BarcodeDetector
+          try {
+            const formats = [
+              "ean_13",
+              "ean_8",
+              "upc_a",
+              "upc_e",
+              "code_128",
+              "qr_code",
+            ];
+            const detector = new (window as any).BarcodeDetector({
+              formats,
+            });
+
+            const scanFrame = async () => {
+              if (!this._videoEl || this._videoEl.readyState < 2) return;
+              try {
+                // draw to canvas and detect
+                const canvas = document.createElement("canvas");
+                canvas.width = this._videoEl.videoWidth;
+                canvas.height = this._videoEl.videoHeight;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return;
+                ctx.drawImage(this._videoEl, 0, 0, canvas.width, canvas.height);
+                const barcodes = await detector.detect(canvas);
+                if (barcodes && barcodes.length) {
+                  for (const b of barcodes) {
+                    const raw = b.rawValue || b.raw || b.value || null;
+                    if (raw) {
+                      this.handleCameraDetected(String(raw));
+                      // stop after first detection to avoid duplicates
+                      this.toggleCameraScanner();
+                      return;
+                    }
+                  }
+                }
+              } catch (e) {
+                // ignore single-frame errors
+              }
+            };
+
+            // Poll at ~8 FPS
+            this._scanTimer = setInterval(scanFrame, 125);
+          } catch (e) {
+            console.warn(
+              "BarcodeDetector failed, falling back to simple preview",
+              e
+            );
+          }
+        } else {
+          // No detector available: keep preview only
         }
-      );
-
-      this.isCameraActive = true;
+      } catch (err) {
+        console.error("Error accessing camera:", err);
+        alert("Unable to access camera. Make sure permissions are granted.");
+        this.stopCameraScanner();
+      }
     } catch (err) {
       console.error("Error starting camera scanner:", err);
       alert("Failed to start camera scanner");
@@ -357,11 +585,47 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   stopCameraScanner(): void {
-    if (this.cameraScanner) {
-      this.cameraScanner.stop().then(() => {
+    // Stop Html5Qrcode scanner if present
+    if (this.cameraScanner && typeof this.cameraScanner.stop === "function") {
+      try {
+        this.cameraScanner.stop().then(() => {
+          this.cameraScanner = null;
+          this.isCameraActive = false;
+        });
+      } catch (e) {
+        // ignore
         this.cameraScanner = null;
         this.isCameraActive = false;
-      });
+      }
+    }
+
+    // Stop native media stream if used
+    try {
+      if (this._scanTimer) {
+        clearInterval(this._scanTimer);
+        this._scanTimer = null;
+      }
+
+      if (this._videoEl) {
+        try {
+          this._videoEl.pause();
+          this._videoEl.srcObject = null;
+        } catch (e) {
+          /* ignore */
+        }
+        const container = document.getElementById("camera-scanner");
+        if (container) container.innerHTML = "";
+        this._videoEl = null;
+      }
+
+      if (this._mediaStream) {
+        this._mediaStream.getTracks().forEach((t) => t.stop());
+        this._mediaStream = null;
+      }
+
+      this.isCameraActive = false;
+    } catch (e) {
+      console.warn("Error stopping native camera scanner", e);
     }
   }
 
@@ -376,15 +640,17 @@ export class PosComponent implements OnInit, OnDestroy {
     }
   }
 
-  addToCart(product: Product, weight?: number): void {
+  addToCart(product: Product, weight?: number, skipFocus = false): void {
     if (product.requiresScale && !weight && this.scaleConnected) {
       weight = this.currentWeight;
     }
 
     this.cartService.addItem(product, 1, weight);
 
-    // Focus search input after adding product
-    setTimeout(() => this.focusSearchInput(), 50);
+    // Focus search input after adding product unless suppressed (camera scanner)
+    if (!skipFocus) {
+      setTimeout(() => this.focusSearchInput(), 50);
+    }
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -509,21 +775,40 @@ export class PosComponent implements OnInit, OnDestroy {
         try {
           const currentUser = this.authService.getCurrentUser();
           const change = this.changeAmount;
-          this.receiptGeneratorService
-            .generateReceipt(
-              completedSale,
-              this.paymentMethod,
-              change,
-              currentUser
-            )
-            .subscribe({
-              next: (receiptContent) => {
-                this.receiptGeneratorService.printReceipt(receiptContent);
-              },
-              error: (err) => {
-                console.error("Error generating receipt:", err);
-              },
-            });
+          const mode = localStorage.getItem("printer.mode") || "plain";
+          if (mode === "styled") {
+            this.receiptGeneratorService
+              .generateReceipt(
+                completedSale,
+                this.paymentMethod,
+                change,
+                currentUser
+              )
+              .subscribe({
+                next: (receiptContent) => {
+                  this.receiptGeneratorService.printReceipt(receiptContent);
+                },
+                error: (err) => {
+                  console.error("Error generating styled receipt:", err);
+                },
+              });
+          } else {
+            this.receiptGeneratorService
+              .generatePlainTextReceipt(
+                completedSale,
+                this.paymentMethod,
+                change,
+                currentUser
+              )
+              .subscribe({
+                next: (receiptContent) => {
+                  this.receiptGeneratorService.printReceipt(receiptContent);
+                },
+                error: (err) => {
+                  console.error("Error generating plain-text receipt:", err);
+                },
+              });
+          }
         } catch (e) {
           console.error("Receipt generation failed:", e);
         }

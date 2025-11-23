@@ -482,54 +482,107 @@
     }
   }
 
-  // ===== CAMERA OVERLAY =====
-  .camera-overlay {
+  // Mobile floating scan button
+  .mobile-scan-button {
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba($black, 0.8);
-    display: flex;
+    right: 1rem;
+    bottom: 5.5rem; // above favorites bar
+    z-index: 1200;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: $primary;
+    color: white;
+    box-shadow: 0 6px 18px rgba($black, 0.18);
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
 
-    .camera-content {
-      position: relative;
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 600px;
-      width: 90%;
+  @media (max-width: 768px) {
+    .mobile-scan-button {
+      display: inline-flex;
+      right: auto;
+      left: 1rem;
+      bottom: 5.5rem;
+    }
 
-      .close-camera {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
-        background: #fed7d7;
-        color: #c53030;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1;
+    // Hide mobile favorites and quick access on small screens as requested
+    .mobile-favorites-bar {
+      display: none !important;
+    }
 
-        &:hover {
-          background: #feb2b2;
+    .bottom-sections {
+      display: none !important;
+    }
+
+    // Make camera overlay use full viewport on mobile so video is visible
+    .camera-overlay {
+      .camera-content {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+
+        #camera-scanner {
+          min-height: 100vh !important;
+          height: 100vh !important;
+          border-radius: 0 !important;
         }
       }
+    }
+  }
+
+  /* Top-level rules: button and mobile bars are outside .pos-content in the template */
+  .mobile-scan-button {
+    display: none;
+    position: fixed;
+    left: 1rem;
+    bottom: 5.5rem;
+    z-index: 1200;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: $primary;
+    color: white;
+    box-shadow: 0 6px 18px rgba($black, 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-scan-button {
+      display: inline-flex;
+    }
+
+    .mobile-favorites-bar {
+      display: none !important;
+    }
+
+    .bottom-sections {
+      display: none !important;
+    }
+
+    .camera-overlay .camera-content {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
 
       #camera-scanner {
-        width: 100%;
-        border-radius: 12px;
-        overflow: hidden;
-        min-height: 300px;
-        background: $bg-tertiary;
+        min-height: 100vh !important;
+        height: 100vh !important;
+        border-radius: 0 !important;
       }
     }
   }
@@ -1008,6 +1061,52 @@
   }
 }
 
+/* Strong top-level overrides to ensure mobile scan button visibility and hide mobile bars
+   These use !important to override any nested selectors that may target .mobile-scan-button
+   inside .pos-content. Placed at the end so they win the cascade. */
+.mobile-scan-button {
+  position: fixed !important;
+  left: 1rem !important;
+  bottom: 5.5rem !important;
+  z-index: 12000 !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: $primary !important;
+  color: white !important;
+  box-shadow: 0 6px 18px rgba($black, 0.18) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.25rem !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-scan-button {
+    display: inline-flex !important;
+  }
+  .mobile-favorites-bar {
+    display: none !important;
+  }
+  .bottom-sections {
+    display: none !important;
+  }
+  .camera-overlay .camera-content {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  .camera-overlay #camera-scanner {
+    min-height: 100vh !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
+
 // ===== MOBILE FAVORITES BAR (Outside .pos-content) =====
 .mobile-favorites-bar {
   display: none;
@@ -1152,5 +1251,100 @@
     span {
       font-size: 12px;
     }
+  }
+}
+// ===== CAMERA OVERLAY =====
+.camera-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 120000 !important;
+
+  .camera-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+
+    .close-camera {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #fed7d7;
+      color: #c53030;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+
+      &:hover {
+        background: #feb2b2;
+      }
+    }
+
+    #camera-scanner {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 300px;
+      background: $bg-tertiary;
+
+      video {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+/* Small camera toast shown near the header on successful camera scans */
+.camera-toast {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 130000 !important;
+  pointer-events: none;
+
+  .toast-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    font-weight: 600;
+    font-size: 0.95rem;
+    pointer-events: auto;
+    transform-origin: center;
+    animation: toast-pop 260ms ease-out;
+  }
+}
+
+@keyframes toast-pop {
+  from {
+    transform: translateX(-50%) translateY(-6px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
   }
 }

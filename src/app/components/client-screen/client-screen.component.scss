@@ -3,9 +3,9 @@
 .client-screen {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: $primary;
-  color: $white;
+  min-height: 100vh;
+  background: $bg-secondary;
+  color: $text-primary;
   padding: $spacing-lg $spacing-2xl;
 
   .client-header {
@@ -15,17 +15,18 @@
 
     .store {
       .store-name {
-        font-size: 2rem;
-        font-weight: 800;
+        font-size: $font-size-4xl;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
       }
 
       .meta {
         margin-top: $spacing-xs;
-        font-size: 0.95rem;
-        color: rgba($white, 0.9);
+        font-size: $font-size-base;
+        color: rgba($text-secondary, 1);
 
         .sale-id {
-          font-weight: 700;
+          font-weight: $font-weight-bold;
           margin-right: $spacing-xs;
         }
 
@@ -37,18 +38,41 @@
     }
 
     .clock {
-      font-size: 1.2rem;
+      font-size: 4rem;
       font-weight: 600;
-      color: rgba($white, 0.95);
+      color: $text-secondary;
+    }
+  }
+
+  .tabs {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+
+    .tab-button {
+      @include button-base;
+      padding: $spacing-xs $spacing-md;
+      border-radius: $radius-full;
+      background: transparent;
+      color: $text-secondary;
+      border: 1px solid transparent;
+      cursor: pointer;
+
+      &.active,
+      &.active:hover {
+        background: $primary;
+        color: $white;
+        border-color: $primary-dark;
+      }
     }
   }
 
   .body-grid {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 360px;
     gap: $spacing-lg;
     margin-top: $spacing-lg;
-    height: calc(100vh - 100px);
+    min-height: calc(100vh - 140px);
 
     .items {
       background: transparent;
@@ -57,30 +81,69 @@
       display: flex;
       flex-direction: column;
       gap: $spacing-sm;
+      @include smooth-scroll;
 
       .empty {
         text-align: center;
-        font-size: 1.2rem;
-        color: rgba($white, 0.9);
+        font-size: $font-size-lg;
+        color: $text-secondary;
         margin-top: $spacing-lg;
       }
 
+      /* header row for items list */
+      .items-header {
+        display: grid;
+        grid-template-columns: 1fr 80px 110px 120px;
+        gap: $spacing-md;
+        padding: $spacing-xs $spacing-md;
+        color: $text-secondary;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        align-items: center;
+        background: rgba($bg-secondary, 0.02);
+        border-bottom: 1px solid rgba($border-color, 0.06);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+
+        .col {
+          &.product {
+            display: flex;
+            gap: $spacing-sm;
+            align-items: center;
+          }
+          &.qty {
+            text-align: center;
+          }
+          &.price,
+          &.subtotal {
+            text-align: right;
+          }
+        }
+
+        @media (max-width: 767px) {
+          grid-template-columns: 1fr 64px 80px 100px;
+          padding: $spacing-xs $spacing-sm;
+        }
+      }
+
       .item-row {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 80px 110px 120px;
+        gap: $spacing-md;
         align-items: center;
         padding: $spacing-md;
         background: $bg-tertiary;
         border-radius: $radius-md;
         box-shadow: $shadow-sm;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        border: 1px solid $border-color;
+        transition: $transition-fast;
 
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: $shadow-lg;
-        }
+        @include hover-lift;
 
-        .left {
+        .col.product {
           display: flex;
           gap: $spacing-md;
           align-items: center;
@@ -91,7 +154,7 @@
             min-width: 64px;
             border-radius: $radius-md;
             overflow: hidden;
-            background: rgba($white, 0.04);
+            background: $bg-primary;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -102,12 +165,6 @@
               object-fit: cover;
               display: block;
             }
-
-            .placeholder {
-              font-size: 1.4rem;
-              font-weight: 700;
-              color: rgba($white, 0.85);
-            }
           }
 
           .text {
@@ -115,50 +172,73 @@
             flex-direction: column;
 
             .item-name {
-              font-size: 1.6rem;
-              font-weight: 700;
+              font-size: $font-size-3xl;
+              font-weight: $font-weight-bold;
               color: $text-primary;
             }
 
             .item-sub {
-              font-size: 0.95rem;
+              font-size: $font-size-base;
               opacity: 0.85;
               color: $text-secondary;
             }
           }
         }
 
-        .right {
-          display: flex;
-          gap: $spacing-md;
-          align-items: center;
-          text-align: right;
+        .col.qty {
+          justify-self: center;
 
           .qty {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            color: $text-secondary;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 36px;
+            padding: 0 $spacing-sm;
+            border-radius: $radius-full;
+            background: $primary;
+            color: $white;
+            font-weight: $font-weight-bold;
+            font-size: $font-size-base;
+            box-shadow: $shadow-sm;
+            line-height: 1;
           }
+        }
 
-          .price,
-          .subtotal {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: $text-primary;
-          }
+        .col.price,
+        .col.subtotal {
+          justify-self: end;
+          font-weight: $font-weight-bold;
+          color: $text-primary;
+        }
+
+        @media (max-width: 767px) {
+          grid-template-columns: 1fr 64px 80px 100px;
+          padding: $spacing-sm;
         }
       }
     }
 
     .summary {
+      /* make the summary card visually distinct and sticky on larger screens */
+      align-self: start;
+
       .summary-card {
-        background: rgba($white, 0.06);
+        @include card;
         padding: $spacing-lg;
-        border-radius: $radius-lg;
-        height: 100%;
+        width: 100%;
+        min-height: 140px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
+        gap: $spacing-sm;
+        border-radius: $radius-md;
+        box-shadow: $shadow-md;
+        border: 1px solid rgba($border-color, 0.9);
+
+        /* keep the summary visible while scrolling the items list */
+        position: sticky;
+        top: $spacing-lg;
 
         .summary-row {
           display: flex;
@@ -168,20 +248,268 @@
 
           &.total {
             margin-top: $spacing-md;
+            border-top: 1px dashed rgba($text-secondary, 0.06);
+            padding-top: $spacing-md;
           }
 
           .label {
-            color: rgba($white, 0.9);
-            font-size: 1rem;
+            color: $text-secondary;
+            font-size: $font-size-sm;
           }
 
           .value {
-            font-weight: 700;
-            font-size: 1.05rem;
+            font-weight: $font-weight-bold;
+            font-size: $font-size-base;
+            color: $text-primary;
 
             &.large {
-              font-size: 2rem;
-              color: $white;
+              font-size: $font-size-2xl;
+              color: $primary;
+              letter-spacing: -0.5px;
+            }
+          }
+        }
+      }
+
+      /* responsive: on small screens place summary after items and remove sticky */
+      @media (max-width: 767px) {
+        .summary-card {
+          position: static;
+          width: 100%;
+          min-height: auto;
+          box-shadow: $shadow-sm;
+        }
+      }
+    }
+  }
+
+  .panel {
+    &.fast-cashier {
+      margin-top: $spacing-lg;
+      .fast-cashier-panel {
+        padding: $spacing-lg;
+        border-radius: $radius-md;
+        color: $text-primary;
+
+        h3 {
+          margin: 0 0 $spacing-sm 0;
+          font-size: $font-size-2xl;
+        }
+
+        .muted {
+          color: $text-secondary;
+        }
+
+        .fast-items {
+          margin-top: $spacing-md;
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-sm;
+          max-height: 60vh;
+          overflow-y: auto;
+          @include smooth-scroll;
+
+          .empty {
+            text-align: center;
+            color: $text-secondary;
+            padding: $spacing-md 0;
+          }
+
+          /* header row for fast items */
+          .items-header {
+            display: grid;
+            grid-template-columns: 1fr 80px 110px 120px;
+            gap: $spacing-md;
+            padding: $spacing-xs $spacing-md;
+            color: $text-secondary;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-semibold;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            align-items: center;
+            background: rgba($bg-secondary, 0.02);
+            border-bottom: 1px solid rgba($border-color, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+
+            @media (max-width: 767px) {
+              grid-template-columns: 1fr 64px 80px 100px;
+              padding: $spacing-xs $spacing-sm;
+            }
+
+            .col {
+              &.product {
+                display: flex;
+                gap: $spacing-sm;
+                align-items: center;
+              }
+              &.qty {
+                text-align: center;
+              }
+              &.price,
+              &.subtotal {
+                text-align: right;
+              }
+            }
+          }
+
+          .item-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 110px 120px;
+            gap: $spacing-md;
+            align-items: center;
+            padding: $spacing-md;
+            background: $bg-tertiary;
+            border-radius: $radius-md;
+            box-shadow: $shadow-sm;
+            border: 1px solid $border-color;
+            transition: $transition-fast;
+
+            @include hover-lift;
+
+            .col.product {
+              display: flex;
+              gap: $spacing-md;
+              align-items: center;
+
+              .product-image {
+                width: 56px;
+                height: 56px;
+                min-width: 56px;
+                border-radius: $radius-md;
+                overflow: hidden;
+                background: $bg-primary;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: block;
+                }
+              }
+
+              .text {
+                display: flex;
+                flex-direction: column;
+
+                .item-name {
+                  font-size: $font-size-lg;
+                  font-weight: $font-weight-bold;
+                  color: $text-primary;
+                }
+
+                .item-sub {
+                  font-size: $font-size-base;
+                  color: $text-secondary;
+                }
+              }
+            }
+
+            .col.qty {
+              justify-self: center;
+
+              .qty {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 40px;
+                height: 34px;
+                padding: 0 $spacing-sm;
+                border-radius: $radius-full;
+                background: $primary;
+                color: $white;
+                font-weight: $font-weight-bold;
+                font-size: $font-size-base;
+                box-shadow: $shadow-sm;
+                line-height: 1;
+              }
+            }
+
+            .col.price,
+            .col.subtotal {
+              justify-self: end;
+              font-weight: $font-weight-bold;
+              color: $text-primary;
+            }
+
+            @media (max-width: 767px) {
+              grid-template-columns: 1fr 64px 80px 100px;
+              padding: $spacing-sm;
+            }
+          }
+        }
+        /* layout: items + summary column (match .body-grid) */
+        .fast-grid {
+          display: grid;
+          grid-template-columns: 1fr 360px;
+          gap: $spacing-lg;
+          align-items: start;
+
+          @media (max-width: 767px) {
+            grid-template-columns: 1fr;
+            gap: $spacing-md;
+          }
+        }
+
+        /* ensure fast-cashier summary uses the same card styles */
+        .summary {
+          align-self: start;
+
+          .summary-card {
+            @include card;
+            padding: $spacing-lg;
+            width: 100%;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: $spacing-sm;
+            border-radius: $radius-md;
+            box-shadow: $shadow-md;
+            border: 1px solid rgba($border-color, 0.9);
+
+            position: sticky;
+            top: $spacing-lg;
+
+            .summary-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: $spacing-xs 0;
+
+              &.total {
+                margin-top: $spacing-md;
+                border-top: 1px dashed rgba($text-secondary, 0.06);
+                padding-top: $spacing-md;
+              }
+
+              .label {
+                color: $text-secondary;
+                font-size: $font-size-sm;
+              }
+
+              .value {
+                font-weight: $font-weight-bold;
+                font-size: $font-size-base;
+                color: $text-primary;
+
+                &.large {
+                  font-size: $font-size-2xl;
+                  color: $primary;
+                  letter-spacing: -0.5px;
+                }
+              }
+            }
+
+            @media (max-width: 767px) {
+              position: static;
+              width: 100%;
+              min-height: auto;
+              box-shadow: $shadow-sm;
             }
           }
         }

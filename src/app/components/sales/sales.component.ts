@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Subject, takeUntil, skip } from "rxjs";
 import { SaleService } from "../../services/sale.service";
+import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { AuthService } from "../../services/auth.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { Sale, SaleItem, User } from "../../models";
@@ -66,7 +67,8 @@ export class SalesComponent implements OnInit, OnDestroy {
   constructor(
     private saleService: SaleService,
     private authService: AuthService,
-    private searchStateService: SearchStateService
+    private searchStateService: SearchStateService,
+    private receiptGeneratorService: ReceiptGeneratorService
   ) {}
 
   ngOnInit(): void {
@@ -148,9 +150,36 @@ export class SalesComponent implements OnInit, OnDestroy {
   }
 
   printReceipt(sale: Sale): void {
-    // TODO: Implement receipt printing
-    console.log("Print receipt for sale:", sale.saleNumber);
-    alert("Receipt printing functionality will be implemented");
+    const currentUser = this.currentUser || this.authService.getCurrentUser();
+    const paymentMethod = sale.paymentMethod || "cash";
+    const change = sale.paymentDetails?.change ?? 0;
+
+    const mode = localStorage.getItem("printer.mode") || "plain";
+    if (mode === "styled") {
+      this.receiptGeneratorService
+        .generateReceipt(sale, paymentMethod, change, currentUser)
+        .subscribe({
+          next: (receiptContent) => {
+            this.receiptGeneratorService.printReceipt(receiptContent);
+          },
+          error: (err) => {
+            console.error("Error generating styled receipt for sale:", err);
+            alert("Failed to generate receipt. See console for details.");
+          },
+        });
+    } else {
+      this.receiptGeneratorService
+        .generatePlainTextReceipt(sale, paymentMethod, change, currentUser)
+        .subscribe({
+          next: (receiptContent) => {
+            this.receiptGeneratorService.printReceipt(receiptContent);
+          },
+          error: (err) => {
+            console.error("Error generating plain-text receipt for sale:", err);
+            alert("Failed to generate receipt. See console for details.");
+          },
+        });
+    }
   }
 
   nextPage(): void {

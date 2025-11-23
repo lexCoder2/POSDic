@@ -1,6 +1,6 @@
 <div class="app-layout">
   <!-- Left Sidebar Navigation -->
-  <aside class="sidebar">
+  <aside class="sidebar" [class.mobile-open]="mobileSidebarOpen">
     <div class="sidebar-header">
       <i class="fas fa-store"></i>
     </div>
@@ -89,6 +89,15 @@
     <!-- Top Header -->
     <header class="top-header">
       <div class="header-content">
+        <!-- Mobile: sidebar toggle -->
+        <button
+          class="mobile-sidebar-toggle"
+          aria-label="Toggle menu"
+          (click)="toggleSidebar()"
+          type="button"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
         <!-- Global Search Bar -->
         <div class="global-search">
           <i class="fas fa-search search-icon"></i>

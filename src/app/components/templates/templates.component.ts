@@ -370,17 +370,17 @@ export class TemplatesComponent implements OnInit {
     const formValue = this.templateForm.value;
     const fontSize =
       formValue.fontSize === "small"
-        ? "12px"
-        : formValue.fontSize === "medium"
         ? "14px"
-        : "16px";
+        : formValue.fontSize === "medium"
+        ? "16px"
+        : "18px";
     const align = formValue.textAlign;
 
     // Helper function to convert size name to px
     const getSizeInPx = (size: string) => {
-      if (size === "small") return "10px";
-      if (size === "large") return "14px";
-      return "12px"; // medium
+      if (size === "small") return "12px";
+      if (size === "large") return "16px";
+      return "14px"; // medium
     };
 
     // Helper function to get font style CSS
@@ -396,11 +396,11 @@ export class TemplatesComponent implements OnInit {
         : formValue.paperSize === "80mm"
         ? "280px"
         : "800px"
-    }; margin: 0 auto; padding: 10px; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.4;">`;
+    }; margin: 0 auto; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.2;">`;
 
     // Header
     if (formValue.showLogo) {
-      preview += `<div style="font-size: 14px; margin-bottom: 5px;">🏪</div>`;
+      preview += `<div style="font-size: 18px; margin-bottom: 6px;">🏪</div>`;
     }
     if (formValue.showStoreName && formValue.storeName) {
       const storeNameStyle = getFontStyle(
@@ -447,7 +447,7 @@ export class TemplatesComponent implements OnInit {
     preview += `<div style="display: grid; grid-template-columns: 1fr 60px; gap: 5px; margin-bottom: 5px; font-weight: bold; ${productStyle}">`;
     preview += `<span>Item</span>`;
     if (formValue.showQuantity || formValue.showUnitPrice) {
-      preview += `<span style="text-align: right;">Qty×Price</span>`;
+      preview += `<span style="text-align: right;">Qty Price</span>`;
     }
     preview += `</div>`;
 
@@ -460,7 +460,9 @@ export class TemplatesComponent implements OnInit {
     items.forEach((item) => {
       let itemLine = `${item.name}`;
       if (formValue.showQuantity || formValue.showUnitPrice) {
-        const qtyPrice = `${item.qty}×$${item.price.toFixed(2)}`;
+        const qtyPrice = `${item.qty} $${item.price.toFixed(2)} $${(
+          item.qty * item.price
+        ).toFixed(2)}`;
         preview += `<div style="display: grid; grid-template-columns: 1fr 60px; gap: 5px; ${productStyle}"><span>${itemLine}</span><span style="text-align: right;">${qtyPrice}</span></div>`;
       } else {
         preview += `<div style="${productStyle}">${itemLine}</div>`;
@@ -530,10 +532,10 @@ export class TemplatesComponent implements OnInit {
   generateTemplatePreview(template: PrintTemplate): string {
     const fontSize =
       template.body?.fontSize === "small"
-        ? "12px"
-        : template.body?.fontSize === "medium"
         ? "14px"
-        : "16px";
+        : template.body?.fontSize === "medium"
+        ? "16px"
+        : "18px";
     const align = template.styles?.textAlign || "center";
 
     let preview = `<div style="font-family: monospace; width: ${
@@ -542,7 +544,7 @@ export class TemplatesComponent implements OnInit {
         : template.paperSize === "80mm"
         ? "210px"
         : "600px"
-    }; margin: 0 auto; padding: 8px; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.3; background: white;">`;
+    }; margin: 0 auto; padding: 11px; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.3; background: white;">`;
 
     // Header
     if (template.header?.showLogo) {
@@ -567,7 +569,7 @@ export class TemplatesComponent implements OnInit {
     // Items
     preview += `<div style="font-size: 9px; margin-bottom: 3px;">Product A</div>`;
     if (template.body?.showQuantity || template.body?.showUnitPrice) {
-      preview += `<div style="font-size: 9px; text-align: right;">2×$10.00=$20.00</div>`;
+      preview += `<div style="font-size: 9px; text-align: right;">2 $10.00 $20.00</div>`;
     }
 
     // Divider

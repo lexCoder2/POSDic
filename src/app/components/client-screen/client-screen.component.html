@@ -8,88 +8,221 @@
         <span class="cashier">{{ cashierName }}</span>
       </div>
     </div>
-    <div class="clock">{{ currentTime }}</div>
+
+    <div class="clock">{{ currentTime() }}</div>
   </div>
 
-  <div class="body-grid">
-    <div class="items">
-      <ng-container *ngIf="cartItems$ | async as items">
-        <div *ngIf="items.length === 0" class="empty">
-          {{ "CART.EMPTY" | translate }}
-        </div>
+  <div class="tabs">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'fast'"
+      (click)="setTab('fast')"
+    >
+      {{ "FAST_CASHIER.TITLE" | translate }}
+    </button>
 
-        <div *ngFor="let it of items" class="item-row">
-          <div class="left">
-            <div class="product-image">
-              <img
-                [src]="
-                  it.product.image_url ||
-                  it.product.local_image ||
-                  'assets/placeholder-product.png'
-                "
-                [alt]="it.product.name"
-                loading="lazy"
-              />
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'pos'"
+      (click)="setTab('pos')"
+    >
+      {{ "POS_SALES" | translate }}
+    </button>
+  </div>
+
+  <!-- Fast Cashier panel (left: items, right: summary) -->
+  <div class="panel fast-cashier" *ngIf="activeTab === 'fast'">
+    <div class="fast-cashier-panel">
+      <div class="fast-grid">
+        <div class="fast-items">
+          <div *ngIf="currentCart().length === 0" class="empty">
+            {{ "CART.EMPTY" | translate }}
+          </div>
+
+          <!-- header row for columns -->
+          <div class="items-header" aria-hidden="true">
+            <div class="col product">
+              {{ "CART.COLUMN.PRODUCT" | translate }}
             </div>
-
-            <div class="text">
-              <div class="item-name">{{ it.product.name }}</div>
-              <div class="item-sub">{{ it.product.brand || "" }}</div>
+            <div class="col qty">{{ "CART.COLUMN.QTY" | translate }}</div>
+            <div class="col price">{{ "CART.COLUMN.PRICE" | translate }}</div>
+            <div class="col subtotal">
+              {{ "CART.COLUMN.SUBTOTAL" | translate }}
             </div>
           </div>
 
-          <div class="right">
-            <div class="qty">x{{ it.quantity }}</div>
-            <div class="price">
-              {{ it.product.price | currency : "MXN" : "symbol" : "1.2-2" }}
+          <div *ngFor="let it of currentCart()" class="item-row">
+            <div class="col product">
+              <div class="product-image">
+                <img
+                  src="/assets/placeholder-product.png"
+                  [alt]="it.description || it.product?.name || 'product'"
+                  loading="lazy"
+                />
+              </div>
+
+              <div class="text">
+                <div class="item-name">
+                  {{ it.description || it.product?.name }}
+                </div>
+                <div class="item-sub">{{ it.brand || "" }}</div>
+              </div>
             </div>
-            <div class="subtotal">
+
+            <div class="col qty">x{{ it.quantity }}</div>
+            <div class="col price">
+              {{ it.unitPrice | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+            <div class="col subtotal">
               {{ it.subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
         </div>
-      </ng-container>
-    </div>
 
-    <aside class="summary">
-      <div class="summary-card">
-        <div class="summary-row">
-          <div class="label">{{ "CART.SUMMARY.ITEMS" | translate }}</div>
-          <div class="value">{{ itemCount }}</div>
-        </div>
+        <aside class="summary">
+          <div class="summary-card">
+            <div class="summary-row">
+              <div class="label">{{ "CART.SUMMARY.ITEMS" | translate }}</div>
+              <div class="value">{{ currentCartItemCount }}</div>
+            </div>
 
-        <div class="summary-row">
-          <div class="label">
-            {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
-          </div>
-          <div class="value">
-            {{ subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
-          </div>
-        </div>
+            <div class="summary-row">
+              <div class="label">
+                {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
+              </div>
+              <div class="value">
+                {{
+                  currentCartSubtotal | currency : "MXN" : "symbol" : "1.2-2"
+                }}
+              </div>
+            </div>
 
-        <div class="summary-row">
-          <div class="label">
-            {{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}
-          </div>
-          <div class="value">
-            -{{ discount | currency : "MXN" : "symbol" : "1.2-2" }}
-          </div>
-        </div>
+            <div class="summary-row">
+              <div class="label">
+                {{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}
+              </div>
+              <div class="value">
+                -{{
+                  currentCartDiscount | currency : "MXN" : "symbol" : "1.2-2"
+                }}
+              </div>
+            </div>
 
-        <div class="summary-row">
-          <div class="label">{{ "SALES.DETAILS.TOTALS.TAX" | translate }}</div>
-          <div class="value">
-            {{ tax | currency : "MXN" : "symbol" : "1.2-2" }}
-          </div>
-        </div>
+            <div class="summary-row">
+              <div class="label">
+                {{ "SALES.DETAILS.TOTALS.TAX" | translate }}
+              </div>
+              <div class="value">
+                {{ currentCartTax | currency : "MXN" : "symbol" : "1.2-2" }}
+              </div>
+            </div>
 
-        <div class="summary-row total">
-          <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
-          <div class="value large">
-            {{ total | currency : "MXN" : "symbol" : "1.2-2" }}
+            <div class="summary-row total">
+              <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
+              <div class="value large">
+                {{ currentCartTotal | currency : "MXN" : "symbol" : "1.2-2" }}
+              </div>
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
-    </aside>
+    </div>
+  </div>
+
+  <!-- POS Sales panel -->
+  <div class="panel pos-sales" *ngIf="activeTab === 'pos'">
+    <div class="body-grid">
+      <div class="items">
+        <ng-container *ngIf="cartItems$ | async as items">
+          <div *ngIf="items.length === 0" class="empty">
+            {{ "CART.EMPTY" | translate }}
+          </div>
+
+          <!-- header row for POS tab -->
+          <div class="items-header" aria-hidden="true">
+            <div class="col product">
+              {{ "CART.COLUMN.PRODUCT" | translate }}
+            </div>
+            <div class="col qty">{{ "CART.COLUMN.QTY" | translate }}</div>
+            <div class="col price">{{ "CART.COLUMN.PRICE" | translate }}</div>
+            <div class="col subtotal">
+              {{ "CART.COLUMN.SUBTOTAL" | translate }}
+            </div>
+          </div>
+
+          <div *ngFor="let it of items" class="item-row">
+            <div class="col product">
+              <div class="product-image">
+                <img
+                  [src]="
+                    it.product.image_url ||
+                    it.product.local_image ||
+                    '/src/assets/placeholder-product.png'
+                  "
+                  [alt]="it.product.name"
+                  loading="lazy"
+                />
+              </div>
+
+              <div class="text">
+                <div class="item-name">{{ it.product.name }}</div>
+                <div class="item-sub">{{ it.product.brand || "" }}</div>
+              </div>
+            </div>
+
+            <div class="col qty">x{{ it.quantity }}</div>
+            <div class="col price">
+              {{ it.product.price | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+            <div class="col subtotal">
+              {{ it.subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <aside class="summary">
+        <div class="summary-card">
+          <div class="summary-row">
+            <div class="label">{{ "CART.SUMMARY.ITEMS" | translate }}</div>
+            <div class="value">{{ itemCount }}</div>
+          </div>
+
+          <div class="summary-row">
+            <div class="label">
+              {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
+            </div>
+            <div class="value">
+              {{ subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="label">
+              {{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}
+            </div>
+            <div class="value">
+              -{{ discount | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="label">
+              {{ "SALES.DETAILS.TOTALS.TAX" | translate }}
+            </div>
+            <div class="value">
+              {{ tax | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+
+          <div class="summary-row total">
+            <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
+            <div class="value large">
+              {{ total | currency : "MXN" : "symbol" : "1.2-2" }}
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
   </div>
 </div>

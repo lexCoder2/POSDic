@@ -102,6 +102,17 @@
     gap: $spacing-2xl;
   }
 
+  .mobile-sidebar-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: $text-primary;
+    font-size: 1.25rem;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-md;
+    cursor: pointer;
+  }
+
   // Global Search Bar
   .global-search {
     flex: 1;
@@ -353,6 +364,20 @@
     .header-content {
       padding: $spacing-md $spacing-lg;
       gap: $spacing-md;
+    }
+
+    .mobile-sidebar-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: $spacing-sm;
+      font-size: 1.1rem;
+      color: $text-primary;
+      background: transparent;
+      border: none;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $radius-md;
+      cursor: pointer;
     }
 
     .global-search {

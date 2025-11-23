@@ -102,6 +102,29 @@
       "RECEIPT_TEMPLATES": "Receipt Templates"
     }
   },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Configure system settings",
+    "PRINTING": {
+      "TITLE": "Printing",
+      "PLAIN": "Print (Plain Text)",
+      "PLAIN_DESC": "Minimal, fixed-width text receipts (best for thermal/ESC-POS printers)",
+      "PREVIEW": "Preview",
+      "STYLED": "Print (Styled)",
+      "STYLED_DESC": "Styled HTML receipts with branding and layout (may vary by printer)"
+    },
+    "USER_PREFERENCES": {
+      "TITLE": "User Preferences",
+      "DISPLAY_NAME": "Display Name",
+      "DISPLAY_NAME_PLACEHOLDER": "Your name shown in receipts",
+      "LANGUAGE": "Language",
+      "PRINTER_MODE": "Default Printer Mode",
+      "PRINTER_INHERIT": "Use Global Setting",
+      "SAVE": "Save Preferences"
+    },
+    "SAVED": "Settings saved",
+    "SAVE_FAILED": "Failed to save settings"
+  },
   "PROVIDERS": {
     "TITLE": "Supplier Management",
     "DESCRIPTION": "Manage suppliers and vendors",
@@ -479,6 +502,12 @@
     "REMOVE_ALL": "Remove all",
     "EMPTY": "No items in cart",
     "REMOVE_ITEM": "Remove item",
+    "COLUMN": {
+      "PRODUCT": "Product",
+      "QTY": "Qty",
+      "PRICE": "Price",
+      "SUBTOTAL": "Subtotal"
+    },
     "SUMMARY": {
       "ITEMS": "Items:",
       "TOTAL": "Total:"
@@ -583,5 +612,26 @@
     "UPDATE_FAILED": "Failed to update template",
     "DELETED": "Template deleted successfully!",
     "DELETE_FAILED": "Failed to delete template"
+  },
+  "FAST_CASHIER": {
+    "TITLE": "Fast Cashier",
+    "DESCRIPTION": "Quickly add items and complete a sale with minimal input"
+  },
+  "POS_SALES": "POS Sales",
+  "RECEIPT": {
+    "TITLE": " ",
+    "ITEM": "Item",
+    "QTY": "Qty",
+    "UNIT": "Unit",
+    "TOTAL": "Total",
+    "TOTAL_LABEL": "TOTAL:",
+    "SUBTOTAL": "Subtotal:",
+    "TAX": "Tax:",
+    "PAYMENT_METHOD": "Payment Method:",
+    "CASH_RECEIVED": "Cash Received:",
+    "CHANGE": "Change:",
+    "CASHIER": "Cashier:",
+    "SALE_NUMBER": "Sale #:",
+    "THANK_YOU": "Thank you!"
   }
 }

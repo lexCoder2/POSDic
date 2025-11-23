@@ -1,13 +1,33 @@
-<app-page-title
-  title="{{ 'CASHIER.TITLE' | translate }}"
-  description="{{ 'CASHIER.DESCRIPTION' | translate }}"
-  icon="fa-calculator"
->
-</app-page-title>
 <div class="cashier-container">
   <div class="cashier-content">
+    <!-- Mobile Tabs (calculator / sales) -->
+    <div class="mobile-tabs" role="tablist" aria-label="Cashier Tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        aria-selected="{{ activeTab() === 'calculator' }}"
+        (click)="activeTab.set('calculator')"
+      >
+        <i class="fas fa-calculator"></i>
+        <span>Calc</span>
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        aria-selected="{{ activeTab() === 'sales' }}"
+        (click)="activeTab.set('sales')"
+      >
+        <i class="fas fa-list"></i>
+        <span>Sales</span>
+      </button>
+    </div>
     <!-- Left Side - Calculator -->
-    <div class="calculator-section">
+    <div
+      class="calculator-section"
+      [class.mobile-hidden]="activeTab() !== 'calculator'"
+    >
       <div class="calculator">
         <div class="display">
           <ng-container *ngIf="isMultiplying()">
@@ -147,32 +167,37 @@
 
     <!-- Right Side - Items & Payment -->
     <div class="sales-section">
-      <!-- Items List -->
-      <div class="items-panel">
+      <!-- Items List (hidden on mobile when sales tab inactive) -->
+      <div class="items-panel" [class.mobile-hidden]="activeTab() !== 'sales'">
         <div class="panel-header">
           <h3>
             <i class="fas fa-list"></i>
             {{ "CASHIER.ITEMS.TITLE" | translate }}
           </h3>
           <div class="header-actions">
-            <span class="item-count"
-              >{{ items().length }}
-              {{ "CASHIER.ITEMS.TITLE" | translate }}</span
-            >
-            <button
-              class="clear-all-btn"
-              (click)="clearAllItems()"
-              [disabled]="items().length === 0"
-              title="{{ 'GLOBAL.CLEAR' | translate }}"
-            >
-              <i class="fas fa-trash"></i>
-              {{ "GLOBAL.CLEAR" | translate }}
-            </button>
+            <!-- Item count and clear button moved to total section -->
           </div>
         </div>
 
         <div class="items-list" *ngIf="items().length > 0; else noItems">
           <div class="item-row" *ngFor="let item of items()">
+            <div class="item-actions">
+              <button
+                class="qty-btn decrease"
+                (click)="decreaseQuantity(item.id); $event.stopPropagation()"
+                title="Decrease quantity"
+              >
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="qty-display">{{ item.quantity }}</span>
+              <button
+                class="qty-btn increase"
+                (click)="increaseQuantity(item.id); $event.stopPropagation()"
+                title="Increase quantity"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
             <div
               class="item-info"
               (click)="editItem(item.id)"
@@ -206,25 +231,11 @@
                 </span>
               </div>
             </div>
-            <div class="item-actions">
-              <button
-                class="qty-btn decrease"
-                (click)="decreaseQuantity(item.id); $event.stopPropagation()"
-                title="Decrease quantity"
-              >
-                <i class="fas fa-minus"></i>
-              </button>
-              <span class="qty-display">{{ item.quantity }}</span>
-              <button
-                class="qty-btn increase"
-                (click)="increaseQuantity(item.id); $event.stopPropagation()"
-                title="Increase quantity"
-              >
-                <i class="fas fa-plus"></i>
-              </button>
+            <div class="item-end-actions">
               <button
                 class="remove-btn"
                 (click)="removeItem(item.id); $event.stopPropagation()"
+                title="Remove item"
               >
                 <i class="fas fa-times"></i>
               </button>
@@ -248,6 +259,20 @@
             "CASHIER.TOTAL_LABEL" | translate
           }}</span>
           <span class="total-value">${{ total().toFixed(2) }}</span>
+        </div>
+        <div class="total-actions">
+          <span class="item-count"
+            >{{ items().length }} {{ "CASHIER.ITEMS.TITLE" | translate }}</span
+          >
+          <button
+            class="clear-all-btn"
+            (click)="clearAllItems()"
+            [disabled]="items().length === 0"
+            title="{{ 'GLOBAL.CLEAR' | translate }}"
+          >
+            <i class="fas fa-trash"></i>
+            <span class="btn-text">{{ "GLOBAL.CLEAR" | translate }}</span>
+          </button>
         </div>
       </div>
 

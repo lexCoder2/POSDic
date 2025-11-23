@@ -7,8 +7,8 @@
       (productSelected)="addToCart($event)"
     ></app-search-results>
 
-    <!-- Bottom Section: Favorites and Quick Access -->
-    <div class="bottom-sections">
+    <!-- Bottom Section: Favorites and Quick Access (hidden on mobile) -->
+    <div class="bottom-sections" *ngIf="!isMobileView">
       <app-favorites
         [products]="favoriteProducts"
         (productSelected)="addToCart($event)"
@@ -49,6 +49,14 @@
       <i class="fas fa-times"></i>
     </button>
     <div id="camera-scanner"></div>
+  </div>
+</div>
+
+<!-- Small header toast for camera scans -->
+<div class="camera-toast" *ngIf="showScanToast">
+  <div class="toast-inner">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ scanToastText }}</span>
   </div>
 </div>
 
@@ -202,7 +210,7 @@
 </div>
 
 <!-- Mobile Favorites Bar (Fixed at Bottom) -->
-<div class="mobile-favorites-bar">
+<div class="mobile-favorites-bar" *ngIf="!isMobileView">
   <div class="favorites-header">
     <i class="fas fa-star"></i>
     <span>{{ "POS.MOBILE_QUICK_ACCESS" | translate }}</span>
@@ -232,3 +240,14 @@
     </div>
   </div>
 </div>
+
+<!-- Mobile Scan Floating Button -->
+<button
+  class="mobile-scan-button"
+  aria-label="Start camera scan"
+  (click)="toggleCameraScanner()"
+  title="{{ 'POS.BUTTONS.SCAN' | translate }}"
+  [style.display]="isMobileView ? 'inline-flex' : 'none'"
+>
+  <i class="fas fa-camera"></i>
+</button>

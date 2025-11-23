@@ -47,6 +47,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   @ViewChild("globalSearchInput")
   globalSearchInput!: ElementRef<HTMLInputElement>;
   currentLang = "en";
+  mobileSidebarOpen = false;
 
   get isAdminOrManager(): boolean {
     return (
@@ -84,6 +85,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     // Focus the global search input when navigating to /pos
     this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        // close mobile sidebar on navigation to avoid leaving it open
+        this.mobileSidebarOpen = false;
         const url =
           (event as NavigationEnd).urlAfterRedirects || (event as any).url;
         if (url && (url === "/pos" || url.startsWith("/pos"))) {
@@ -110,6 +113,14 @@ export class LayoutComponent implements OnInit, OnDestroy {
     } catch (e) {
       // ignore
     }
+  }
+
+  toggleSidebar(): void {
+    this.mobileSidebarOpen = !this.mobileSidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.mobileSidebarOpen = false;
   }
 
   ngOnDestroy(): void {
@@ -160,6 +171,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLElement;
     const searchContainer = target.closest(".global-search");
     const userDropdown = target.closest(".user-info");
+    const clickedSidebar = target.closest(".sidebar");
+    const clickedToggle = target.closest(".mobile-sidebar-toggle");
 
     if (!searchContainer && this.searchResults.length > 0) {
       this.hideSearchResults();
@@ -167,6 +180,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
     if (!userDropdown && this.showUserDropdown) {
       this.showUserDropdown = false;
+    }
+
+    // Close mobile sidebar when clicking outside of it (but ignore clicks on the toggle)
+    if (!clickedSidebar && !clickedToggle && this.mobileSidebarOpen) {
+      this.mobileSidebarOpen = false;
     }
   }
 

@@ -91,7 +91,7 @@
     "CLEAR": "Limpiar",
     "SIDEBAR": {
       "DASHBOARD": "Panel",
-      "POS": "POS",
+      "POS": "Tienda Diconsa",
       "QUICK_CASHIER": "Cajero Rápido",
       "STATISTICS": "Estadísticas",
       "INVENTORY": "Inventario",
@@ -101,6 +101,29 @@
       "USERS": "Usuarios",
       "RECEIPT_TEMPLATES": "Plantillas de Recibo"
     }
+  },
+  "SETTINGS": {
+    "TITLE": "Ajustes",
+    "DESCRIPTION": "Configura los ajustes del sistema",
+    "PRINTING": {
+      "TITLE": "Impresión",
+      "PLAIN": "Imprimir (Texto Plano)",
+      "PLAIN_DESC": "Recibos de texto mínimos y ancho fijo (mejor para impresoras térmicas/ESC-POS)",
+      "PREVIEW": "Vista previa",
+      "STYLED": "Imprimir (Con Estilos)",
+      "STYLED_DESC": "Recibos HTML con estilo y marca (puede variar según la impresora)"
+    },
+    "USER_PREFERENCES": {
+      "TITLE": "Preferencias de Usuario",
+      "DISPLAY_NAME": "Nombre mostrado",
+      "DISPLAY_NAME_PLACEHOLDER": "Tu nombre que aparecerá en los recibos",
+      "LANGUAGE": "Idioma",
+      "PRINTER_MODE": "Modo de Impresora Predeterminado",
+      "PRINTER_INHERIT": "Usar configuración global",
+      "SAVE": "Guardar Preferencias"
+    },
+    "SAVED": "Ajustes guardados",
+    "SAVE_FAILED": "Error al guardar ajustes"
   },
   "PROVIDERS": {
     "TITLE": "Gestión de Proveedores",
@@ -137,6 +160,12 @@
       "NAME_PLACEHOLDER": "Nombre de la Empresa",
       "CONTACT_LABEL": "Persona de Contacto",
       "CONTACT_PLACEHOLDER": "Juan Pérez",
+      "COLUMN": {
+        "PRODUCT": "Producto",
+        "QTY": "Cant",
+        "PRICE": "Precio",
+        "SUBTOTAL": "Subtotal"
+      },
       "EMAIL_LABEL": "Email",
       "EMAIL_PLACEHOLDER": "contacto@proveedor.com",
       "PHONE_LABEL": "Teléfono",
@@ -383,7 +412,7 @@
     "ITEMS": {
       "TITLE": "Artículos",
       "EMPTY": "No hay artículos agregados",
-      "HINT": "Ingrese un precio y haga clic en ADD"
+      "HINT": "Ingrese un precio y haga clic en Agregar"
     },
     "TOTAL_LABEL": "Total",
     "PAYMENTS": {
@@ -479,6 +508,12 @@
     "REMOVE_ALL": "Eliminar todo",
     "EMPTY": "No hay artículos en el carrito",
     "REMOVE_ITEM": "Eliminar artículo",
+    "COLUMN": {
+      "PRODUCT": "Producto",
+      "QTY": "Cant",
+      "PRICE": "Precio",
+      "SUBTOTAL": "Subtotal"
+    },
     "SUMMARY": {
       "ITEMS": "Artículos:",
       "TOTAL": "Total:"
@@ -583,5 +618,26 @@
     "UPDATE_FAILED": "Error al actualizar la plantilla",
     "DELETED": "Plantilla eliminada con éxito",
     "DELETE_FAILED": "Error al eliminar la plantilla"
+  },
+  "FAST_CASHIER": {
+    "TITLE": "Cajero Rápido",
+    "DESCRIPTION": "Agrega artículos rápidamente y completa una venta con la mínima entrada"
+  },
+  "POS_SALES": "Ventas POS",
+  "RECEIPT": {
+    "TITLE": " ",
+    "ITEM": "Artículo",
+    "QTY": "Cant",
+    "UNIT": "Precio Unit.",
+    "TOTAL": "Total ",
+    "TOTAL_LABEL": "TOTAL:",
+    "SUBTOTAL": "Subtotal:",
+    "TAX": "Impuesto:",
+    "PAYMENT_METHOD": "Método de Pago:",
+    "CASH_RECEIVED": "Efectivo Recibido:",
+    "CHANGE": "Cambio:",
+    "CASHIER": "Cajero:",
+    "SALE_NUMBER": "Venta #:",
+    "THANK_YOU": "¡Gracias por su compra!"
   }
 }

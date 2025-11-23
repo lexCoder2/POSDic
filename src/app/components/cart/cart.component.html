@@ -59,8 +59,6 @@
 
     <!-- Group items by supplier -->
     <div class="supplier-group" *ngFor="let group of getItemsBySupplier()">
-      <h3 class="supplier-name">{{ group.supplier }}</h3>
-
       <div class="cart-item" *ngFor="let item of group.items">
         <div class="item-header">
           <div class="item-title">
