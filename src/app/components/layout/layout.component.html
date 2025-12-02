@@ -6,12 +6,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/dashboard"
-        routerLinkActive="active"
-      >
+      <button *ngIf="isAdminOrManager" class="sidebar-btn" routerLink="/dashboard" routerLinkActive="active">
         <i class="fas fa-chart-line"></i>
         <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
       </button>
@@ -19,56 +14,32 @@
         <i class="fas fa-cash-register"></i>
         <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>
       </button>
-      <button
-        class="sidebar-btn"
-        routerLink="/cashier"
-        routerLinkActive="active"
-      >
+      <button class="sidebar-btn" routerLink="/cashier" routerLinkActive="active">
         <i class="fas fa-calculator"></i>
         <span>{{ "GLOBAL.SIDEBAR.QUICK_CASHIER" | translate }}</span>
       </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/statistics"
-        routerLinkActive="active"
-      >
+      <button *ngIf="isAdminOrManager" class="sidebar-btn" routerLink="/statistics" routerLinkActive="active">
         <i class="fas fa-chart-bar"></i>
-        <span>Statistics</span>
+        <span>{{ "GLOBAL.SIDEBAR.STATISTICS" | translate }}</span>
       </button>
-      <button
-        class="sidebar-btn"
-        routerLink="/inventory"
-        routerLinkActive="active"
-      >
+      <button class="sidebar-btn" routerLink="/inventory" routerLinkActive="active">
         <i class="fas fa-warehouse"></i>
         <span>{{ "GLOBAL.SIDEBAR.INVENTORY" | translate }}</span>
       </button>
 
-      <button
-        *ngIf="isAdmin"
-        class="sidebar-btn"
-        routerLink="/providers"
-        routerLinkActive="active"
-      >
+      <button *ngIf="isAdmin" class="sidebar-btn" routerLink="/providers" routerLinkActive="active">
         <i class="fas fa-truck"></i>
         <span>{{ "GLOBAL.SIDEBAR.SUPPLIERS" | translate }}</span>
       </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/sales"
-        routerLinkActive="active"
-      >
+      <button *ngIf="isAdminOrManager" class="sidebar-btn" routerLink="/sales" routerLinkActive="active">
         <i class="fas fa-shopping-cart"></i>
         <span>{{ "GLOBAL.SIDEBAR.SALES" | translate }}</span>
       </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/users"
-        routerLinkActive="active"
-      >
+      <button *ngIf="isAdminOrManager" class="sidebar-btn" routerLink="/registers" routerLinkActive="active">
+        <i class="fas fa-cash-register"></i>
+        <span>{{ "GLOBAL.SIDEBAR.REGISTERS" | translate }}</span>
+      </button>
+      <button *ngIf="isAdminOrManager" class="sidebar-btn" routerLink="/users" routerLinkActive="active">
         <i class="fas fa-users"></i>
         <span>{{ "GLOBAL.SIDEBAR.USERS" | translate }}</span>
       </button>
@@ -78,82 +49,97 @@
 
   <!-- Main Content -->
   <div class="main-wrapper">
+    <!-- Register Auto-Close Warning -->
+    <div *ngIf="currentRegister && isRegisterApproachingAutoClose()" class="auto-close-warning"
+      [class.critical]="isRegisterOverdue()">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span *ngIf="!isRegisterOverdue()">
+        {{ 'REGISTER.AUTO_CLOSE_WARNING' | translate }} ({{ getRegisterDurationHours() | number:'1.1-1' }} {{
+        'REGISTER.HOURS' | translate }})
+      </span>
+      <span *ngIf="isRegisterOverdue()">
+        {{ 'REGISTER.AUTO_CLOSE_CRITICAL' | translate }}
+      </span>
+      <button class="btn-small" (click)="manageRegister()">
+        {{ 'REGISTER.CLOSE_NOW' | translate }}
+      </button>
+    </div>
+
     <!-- Top Header -->
     <header class="top-header">
       <div class="header-content">
         <!-- Mobile: sidebar toggle -->
-        <button
-          class="mobile-sidebar-toggle"
-          aria-label="Toggle menu"
-          (click)="toggleSidebar()"
-          type="button"
-        >
+        <button class="mobile-sidebar-toggle" aria-label="Toggle menu" (click)="toggleSidebar()" type="button">
           <i class="fas fa-bars"></i>
         </button>
-        <!-- Global Search Bar -->
-        <div class="global-search">
-          <i class="fas fa-search search-icon"></i>
-          <input
-            #globalSearchInput
-            type="text"
-            [(ngModel)]="searchQuery"
-            (input)="onSearchChange(searchQuery)"
-            placeholder="{{ 'GLOBAL.SEARCH_PLACEHOLDER' | translate }}"
-            class="search-input"
-          />
-        </div>
 
-        <!-- language picker moved into user dropdown -->
-
+        <!-- Global Search Component -->
+        <app-global-search></app-global-search>
+        <button class="dropdown-item" (click)="switchUser()">
+          <i class="fas fa-exchange-alt"></i>
+          <span>{{ "GLOBAL.SWITCH_USER" | translate }}</span>
+        </button>
         <div class="user-info" (click)="toggleUserDropdown()">
           <span class="user-name">{{
             currentUser?.firstName || ("GLOBAL.USER" | translate)
-          }}</span>
-          <span class="user-role">{{
-            currentUser?.role || ("GLOBAL.EMPLOYEE" | translate)
-          }}</span>
+            }}</span>
+
           <i class="fas fa-user-circle user-avatar"></i>
 
           <!-- User Dropdown Menu -->
-          <div
-            class="user-dropdown"
-            *ngIf="showUserDropdown"
-            (click)="$event.stopPropagation()"
-          >
+          <div class="user-dropdown" *ngIf="showUserDropdown" (click)="$event.stopPropagation()">
             <div class="dropdown-header">
               <div class="dropdown-user-name">
-                {{ currentUser?.firstName || ("GLOBAL.USER" | translate) }}
+                {{ currentUser?.firstName || ("GLOBAL.USER" | translate) }} <span class="user-role">{{
+                  currentUser?.role || ("GLOBAL.EMPLOYEE" | translate)
+                  }}</span>
               </div>
-              <div class="dropdown-user-email">
-                {{ currentUser?.email || currentUser?.username }}
-              </div>
+
             </div>
             <div class="dropdown-language">
               <div class="language-label">
                 {{ "GLOBAL.LANGUAGE" | translate }}
               </div>
               <div class="language-options">
-                <button
-                  class="dropdown-item lang-item"
-                  [class.lang-active]="currentLang === 'en'"
-                  (click)="setLanguage('en')"
-                >
+                <button class="dropdown-item lang-item" [class.lang-active]="currentLang === 'en'"
+                  (click)="setLanguage('en')">
                   <span class="lang-name">{{
                     "GLOBAL.ENGLISH" | translate
-                  }}</span>
+                    }}</span>
                 </button>
-                <button
-                  class="dropdown-item lang-item"
-                  [class.lang-active]="currentLang === 'es'"
-                  (click)="setLanguage('es')"
-                >
+                <button class="dropdown-item lang-item" [class.lang-active]="currentLang === 'es'"
+                  (click)="setLanguage('es')">
                   <span class="lang-name">{{
                     "GLOBAL.SPANISH" | translate
-                  }}</span>
+                    }}</span>
                 </button>
               </div>
             </div>
+
+            <!-- Theme Toggle -->
+            <div class="language-section">
+              <div class="language-label">
+                {{ "GLOBAL.THEME.LABEL" | translate }}
+              </div>
+              <button class="dropdown-item theme-toggle-btn" (click)="toggleTheme()">
+                <span class="theme-icon">{{ isDarkMode ? '🌙' : '☀️' }}</span>
+                <span class="theme-label">{{ (isDarkMode ? 'GLOBAL.THEME.DARK_MODE' : 'GLOBAL.THEME.LIGHT_MODE') |
+                  translate }}</span>
+              </button>
+            </div>
+
             <div class="dropdown-divider"></div>
+
+            <button class="dropdown-item" (click)="manageRegister()"
+              *ngIf="currentUser?.role === 'cashier' || currentUser?.role === 'manager' || currentUser?.role === 'admin'">
+              <i class="fas fa-cash-register"></i>
+              <span>{{ (currentRegister ? 'REGISTER.CLOSE' : 'REGISTER.OPEN') | translate }}</span>
+            </button>
+            <button class="dropdown-item" (click)="openWithdrawModal()"
+              *ngIf="currentUser?.role === 'admin' && currentRegister">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>{{ "GLOBAL.WITHDRAW_CASH" | translate }}</span>
+            </button>
             <button class="dropdown-item" (click)="navigateToSettings()">
               <i class="fas fa-cog"></i>
               <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
@@ -176,3 +162,150 @@
     </main>
   </div>
 </div>
+
+<!-- Register Management Modal -->
+<app-modal [show]="showRegisterModal"
+  [title]="(currentRegister ? 'REGISTER.MODAL_TITLE_CLOSE' : 'REGISTER.MODAL_TITLE_OPEN') | translate"
+  icon="fas fa-cash-register" size="md" (close)="showRegisterModal = false">
+  <div *ngIf="!currentRegister" class="register-form">
+    <h4>{{ 'REGISTER.MODAL_TITLE_OPEN' | translate }}</h4>
+    <div class="form-group">
+      <label>{{ 'REGISTER.REGISTER_NUMBER' | translate }}</label>
+      <input type="text" #registerNumber value="REG-{{ currentUser?.username || 'MAIN' }}" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>{{ 'REGISTER.OPENING_CASH' | translate }}</label>
+      <input type="number" #openingCash value="0" step="0.01" class="form-control" />
+    </div>
+    <button class="btn btn-primary" (click)="openRegister(registerNumber.value, openingCash.value)">
+      <i class="fas fa-check"></i> {{ 'REGISTER.OPEN' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="currentRegister" class="register-form">
+    <h4>{{ 'REGISTER.MODAL_TITLE_CLOSE' | translate }}</h4>
+    <div class="register-info">
+      <p><strong>{{ 'REGISTER.OPENED_AT' | translate }}:</strong> {{ currentRegister.openedAt | date:'short'
+        }}</p>
+      <p><strong>{{ 'REGISTER.OPENING_AMOUNT' | translate }}:</strong> {{ currentRegister.openingCash |
+        appCurrency }}</p>
+    </div>
+
+    <!-- Expected Cash Section -->
+    <div class="expected-cash-section" *ngIf="!loadingExpectedCash() && expectedCashData()">
+      <div class="expected-cash-header">
+        <i class="fas fa-calculator"></i>
+        <h5>{{ 'REGISTER.EXPECTED_CLOSING' | translate }}</h5>
+      </div>
+      <div class="expected-cash-details">
+        <div class="cash-row">
+          <span class="label">{{ 'REGISTER.OPENING_CASH' | translate }}:</span>
+          <span class="value">{{ expectedCashData()!.openingCash | appCurrency }}</span>
+        </div>
+        <div class="cash-row">
+          <span class="label">{{ 'REGISTER.CASH_SALES_TODAY' | translate }}:</span>
+          <span class="value cash-sales">+{{ expectedCashData()!.totalCashSales | appCurrency }}</span>
+        </div>
+        <div class="cash-row" *ngIf="expectedCashData()!.totalWithdrawals">
+          <span class="label">{{ 'REGISTER.WITHDRAWALS' | translate }}:</span>
+          <span class="value withdrawals">-{{ expectedCashData()!.totalWithdrawals | appCurrency }}</span>
+        </div>
+        <div class="cash-row total">
+          <span class="label"><strong>{{ 'REGISTER.EXPECTED_CASH' | translate }}:</strong></span>
+          <span class="value"><strong>{{ expectedCashData()!.expectedCash | appCurrency }}</strong></span>
+        </div>
+        <div class="sales-summary">
+          <span><i class="fas fa-receipt"></i> {{ expectedCashData()!.totalTransactions }} {{
+            'REGISTER.TRANSACTIONS' |
+            translate }}</span>
+          <span><i class="fas fa-dollar-sign"></i> {{ expectedCashData()!.totalSales | appCurrency }} {{
+            'REGISTER.TOTAL_SALES' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loadingExpectedCash()" class="loading-expected-cash">
+      <i class="fas fa-spinner fa-spin"></i> {{ 'REGISTER.CALCULATING' | translate }}
+    </div>
+
+    <div *ngIf="currentUser?.role !== 'admin' && currentUser?.role !== 'manager'" class="permission-notice">
+      <i class="fas fa-info-circle"></i>
+      <p>{{ 'REGISTER.PERMISSION_NOTICE' | translate }}</p>
+    </div>
+
+    <div *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'manager'">
+      <div class="form-group">
+        <label>{{ 'REGISTER.CLOSING_CASH' | translate }}</label>
+        <input type="number" #closingCash step="0.01" class="form-control"
+          [placeholder]="expectedCashData() ? (expectedCashData()!.expectedCash | appCurrency) : '0.00'" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'REGISTER.NOTES' | translate }}</label>
+        <textarea #registerNotes rows="3" class="form-control"></textarea>
+      </div>
+      <button class="btn btn-danger" (click)="closeRegister(closingCash.value, registerNotes.value)">
+        <i class="fas fa-times"></i> {{ 'REGISTER.CLOSE' | translate }}
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+<!-- Switch User Modal -->
+<app-modal [show]="showSwitchUserModal" [title]="'REGISTER.SWITCH_USER_TITLE' | translate" icon="fas fa-exchange-alt"
+  size="md" (close)="showSwitchUserModal = false">
+  <div class="switch-user-form">
+    <p class="modal-description">{{ 'REGISTER.SWITCH_USER_DESC' | translate }}</p>
+    <div class="form-group">
+      <label>{{ 'REGISTER.USERNAME' | translate }}</label>
+      <input type="text" #switchUsername class="form-control" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label>{{ 'REGISTER.PASSWORD' | translate }}</label>
+      <input type="password" #switchPassword class="form-control" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary" (click)="performSwitchUser(switchUsername.value, switchPassword.value)">
+      <i class="fas fa-exchange-alt"></i> {{ 'GLOBAL.SWITCH_USER' | translate }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Cash Withdraw Modal -->
+<app-modal [show]="showWithdrawModal" [title]="'WITHDRAW.TITLE' | translate" icon="fas fa-hand-holding-usd" size="md"
+  [closeOnBackdropClick]="false" (close)="showWithdrawModal = false">
+  <div class="withdraw-modal-content">
+    <div class="withdraw-info">
+      <p>{{ 'WITHDRAW.DESCRIPTION' | translate }}</p>
+      <div class="current-cash-info" *ngIf="expectedCashData()">
+        <div class="info-row">
+          <span class="label">{{ 'WITHDRAW.CURRENT_CASH' | translate }}:</span>
+          <span class="value">{{ expectedCashData()!.expectedCash | appCurrency }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="withdrawAmount">{{ 'WITHDRAW.AMOUNT' | translate }} *</label>
+      <input type="number" id="withdrawAmount" #withdrawAmount step="0.01" min="0.01" class="form-control"
+        [placeholder]="'WITHDRAW.AMOUNT_PLACEHOLDER' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label for="withdrawReason">{{ 'WITHDRAW.REASON' | translate }} *</label>
+      <textarea id="withdrawReason" #withdrawReason rows="3" class="form-control"
+        [placeholder]="'WITHDRAW.REASON_PLACEHOLDER' | translate" required></textarea>
+    </div>
+
+  </div>
+
+  <div modal-footer class="modal-footer">
+    <button class="btn btn-secondary" (click)="showWithdrawModal = false">
+      {{ 'GLOBAL.CANCEL' | translate }}
+    </button>
+    <button class="btn btn-danger" (click)="processWithdraw(withdrawAmount.value, withdrawReason.value)"
+      [disabled]="withdrawProcessing">
+      <i class="fas fa-spinner fa-spin" *ngIf="withdrawProcessing"></i>
+      <i class="fas fa-hand-holding-usd" *ngIf="!withdrawProcessing"></i>
+      {{ 'WITHDRAW.CONFIRM' | translate }}
+    </button>
+  </div>
+</app-modal>

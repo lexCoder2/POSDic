@@ -1,0 +1,197 @@
+@use "sass:color";
+@use "../../../styles/theme" as *;
+
+.calculator {
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.display {
+  margin-bottom: 1rem;
+  min-height: 50px;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: $radius-3xl;
+
+  .multiply-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $text-secondary;
+    margin-right: 0.5rem;
+  }
+
+  .quantity-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $primary;
+  }
+
+  .display-separator {
+    font-size: 1.5rem;
+    color: $text-secondary;
+  }
+
+  .display-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+    word-break: break-all;
+    text-align: right;
+  }
+}
+
+.calculator-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+
+  .calc-btn {
+    border: none;
+    min-height: 72px;
+    height: 100%;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    &.number {
+      background: $bg-tertiary;
+      color: $text-primary;
+      border: 2px solid $border-color;
+
+      &:hover {
+        background: $bg-active;
+        border-color: $primary;
+      }
+
+      &.zero {
+        grid-column: span 2;
+      }
+    }
+
+    &.operation {
+      background: $primary;
+      color: white;
+
+      &:hover {
+        background: color.adjust($primary, $lightness: -10%);
+      }
+
+      &.clear {
+        background: $warning;
+
+        &:hover {
+          background: color.adjust($warning, $lightness: -10%);
+        }
+      }
+
+      &.clear-all {
+        background: $danger;
+
+        &:hover {
+          background: color.adjust($danger, $lightness: -10%);
+        }
+      }
+
+      &.backspace {
+        background: $gray-500;
+
+        &:hover {
+          background: color.adjust($gray-500, $lightness: -10%);
+        }
+      }
+
+      &.add {
+        background: $success;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        font-size: 1rem;
+
+        i {
+          font-size: 1.25rem;
+        }
+
+        &:hover {
+          background: color.adjust($success, $lightness: -10%);
+        }
+      }
+    }
+  }
+}
+
+// Loose Product Button
+.loose-product-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background: $gradient-primary;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: $shadow-primary-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  i {
+    font-size: 1.25rem;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 140, 66, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .calculator {
+    padding: 0 1rem;
+
+    .display {
+      padding: 1.5rem;
+
+      .display-value {
+        font-size: 2rem;
+      }
+    }
+
+    .calculator-grid {
+      gap: 0.5rem;
+
+      .calc-btn {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}

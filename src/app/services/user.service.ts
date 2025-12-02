@@ -42,4 +42,22 @@ export class UserService {
   getCurrentUserProfile(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/me/profile`);
   }
+
+  getUserSettings(): Observable<{
+    displayName?: string;
+    language?: string;
+    printerMode?: "inherit" | "plain" | "styled";
+    currency?: string;
+  }> {
+    return this.http.get<any>(`${this.apiUrl}/me/settings`);
+  }
+
+  updateUserSettings(settings: {
+    displayName?: string;
+    language?: string;
+    printerMode?: "inherit" | "plain" | "styled";
+    currency?: string;
+  }): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/me/settings`, settings);
+  }
 }

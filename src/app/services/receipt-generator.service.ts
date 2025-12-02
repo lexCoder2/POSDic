@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
 import { PrintTemplateService } from "./print-template.service";
 import { TranslationService } from "./translation.service";
+import { QzTrayService } from "./qz-tray.service";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
+import bwipjs from "@bwip-js/browser";
 
 @Injectable({
   providedIn: "root",
@@ -10,7 +12,8 @@ import { map } from "rxjs/operators";
 export class ReceiptGeneratorService {
   constructor(
     private printTemplateService: PrintTemplateService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private qzTrayService: QzTrayService
   ) {}
 
   generateReceipt(
@@ -29,78 +32,90 @@ export class ReceiptGeneratorService {
       map((template) => {
         const receiptDate = new Date();
 
+        // Calculate dimensions for 203 DPI thermal printer
+        // 58mm paper = ~464 pixels at 203 DPI (58mm / 25.4 * 203)
+        // 80mm paper = ~640 pixels at 203 DPI (80mm / 25.4 * 203)
+        const paperWidthPx =
+          template.paperSize === "80mm"
+            ? 640
+            : template.paperSize === "A4"
+            ? 1684
+            : 156;
+
         let receiptContent = `
       <html>
         <head>
+          <meta charset="utf-8">
           <style>
             @media print {
-              /* remove page margins so content can be flush; printers add their own feeds */
-              @page { margin: 0mm; size: ${template.paperSize || "58mm"} auto; }
-              body { margin: 0px; padding: 0; }
+              @page { margin: 0; size: ${template.paperSize || "58mm"} auto; }
+              body { margin: 0; padding: 0; }
             }
             body {
               font-family: '${
-                template.styles?.fontFamily || "Courier New"
-              }', monospace;
-              width: ${
-                template.paperSize === "A4"
-                  ? "210mm"
-                  : template.paperSize || "58mm"
-              };
+                template.styles?.fontFamily || "Arial, sans-serif"
+              }';
+              width: ${paperWidthPx}px;
               margin: 0;
-              /* minimize padding to avoid extra feed/white space at bottom */
-              padding: 0mm;
+              padding: 2px;
+              padding-bottom: 0;
               color: #000;
               background: #fff;
               -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
               font-size: ${
                 template.body?.fontSize === "large"
-                  ? "18px"
+                  ? "14px"
                   : template.body?.fontSize === "medium"
-                  ? "16px"
-                  : "14px"
+                  ? "12px"
+                  : "11px"
               };
-              line-height: 1.2;
+              line-height: 1;
             }
             .receipt {
               text-align: ${template.styles?.textAlign || "center"};
-              /* reduce vertical padding inside receipt to avoid extra paper feed */
-              padding: 2mm 0;
+              padding: 0;
               box-sizing: border-box;
               display: block;
+              max-width: 100%;
             }
             .header {
-              font-size: 11px;
+              font-size: 14px;
               font-weight: bold;
-              margin-bottom: 6px;
-              border-bottom: 1px dashed #000;
-              padding-bottom: 5px;
+              margin-bottom: 2px;
+              border-bottom: 2px solid #000;
+              padding-bottom: 6px;
             }
             .info {
               text-align: left;
-              margin: 5px 0;
+              margin: 6px 0;
               font-size: 10px;
-              line-height: 1.3;
+              line-height: 1.4;
             }
             .items {
-              border-top: 1px dashed #000;
-              border-bottom: 1px dashed #000;
-              padding: 5px 0;
-              margin: 5px 0;
+              border-top: 2px solid #000;
+              padding:  0;
+              margin: 6px 0;
             }
             .item {
               display: flex;
               justify-content: space-between;
               margin: 4px 0;
               text-align: left;
-              font-size: 12px;
+              font-size: 11px;
+              line-height: 1.3;
             }
             .item span:first-child {
               flex: 1;
-              padding-right: 3px;
+              padding-right: 8px;
+              word-wrap: break-word;
+            }
+            .item span:last-child {
+              white-space: nowrap;
+              font-weight: bold;
             }
             .totals {
-              margin: 3px 0;
+              margin: 6px 0;
               font-size: 11px;
             }
             .total-row {
@@ -109,25 +124,24 @@ export class ReceiptGeneratorService {
               margin: 2px 0;
             }
             .total-row.grand {
-              font-size: 12px;
+              font-size: 14px;
               font-weight: bold;
-              border-top: 1px solid #000;
-              padding-top: 3px;
-              margin-top: 3px;
+              border-top: 2px solid #000;
+              padding-top: 2px;
+              margin-top: 4px;
             }
             .payment {
-              margin: 3px 0;
-              border-top: 1px dashed #000;
-              padding-top: 3px;
-              font-size: 12px;
+              margin: 2px 0;
+              padding-top: 2px;
+              font-size: 11px;
             }
             .footer {
               text-align: center;
               width: 100%;
-              margin-top: 2px;
-              font-size: 11px;
-              border-top: 1px dashed #000;
-              padding-top: 2px;
+              margin-top: 4px;
+              font-size: 10px;
+              border-top: 1px solid #000;
+              padding-top: 3px;
             }
           </style>
         </head>
@@ -190,15 +204,42 @@ export class ReceiptGeneratorService {
                   }</div>`
                 : ""
             }
-            ${
-              sale.saleNumber
-                ? `<div>${this.translationService.translate(
-                    "RECEIPT.SALE_NUMBER"
-                  )} ${sale.saleNumber}</div>`
-                : ""
-            }
           </div>
         `;
+
+        // Sale number as barcode
+        if (sale.saleNumber) {
+          try {
+            // Generate barcode using bwip-js
+            const canvas = document.createElement("canvas");
+            bwipjs.toCanvas(canvas, {
+              bcid: "code128",
+              text: sale.saleNumber,
+              scale: 4,
+              height: 8,
+              includetext: false,
+              textxalign: "center",
+            });
+            const barcodeDataUrl = canvas.toDataURL("image/png");
+
+            receiptContent += `
+              <div style="text-align: center; margin: 0;">
+                <img src="${barcodeDataUrl}" alt="Barcode" style="max-width: 98%; height: auto;" />
+               
+              </div>
+            `;
+          } catch (err) {
+            console.error("Failed to generate barcode:", err);
+            // Fallback to text if barcode generation fails
+            receiptContent += `
+              <div style="text-align: center; margin: 10px 0; font-size: 10px;">
+                ${this.translationService.translate("RECEIPT.SALE_NUMBER")} ${
+              sale.saleNumber
+            }
+              </div>
+            `;
+          }
+        }
 
         // Items (always include product lines; show qty/price details if requested)
         receiptContent += `<div class="items">`;
@@ -251,7 +292,9 @@ export class ReceiptGeneratorService {
                 <span>${this.translationService.translate(
                   "RECEIPT.PAYMENT_METHOD"
                 )}</span>
-                <span>${paymentMethod.toUpperCase()}</span>
+                <span>${this.translationService.translate(
+                  `RECEIPT.${paymentMethod.toUpperCase()}_PAYMENT`
+                )}</span>
               </div>
             `;
 
@@ -543,59 +586,15 @@ export class ReceiptGeneratorService {
     );
   }
 
-  printReceipt(receiptContent: string): void {
-    // Open print window optimized for thermal printer
-    const printWindow = window.open("", "_blank", "width=220,height=400");
-    if (printWindow) {
-      printWindow.document.write(receiptContent);
-      printWindow.document.close();
-
-      // Make printing idempotent to avoid duplicate print dialogs caused by
-      // load/readyState race conditions or duplicate calls.
-      const doPrint = () => {
-        try {
-          // guard: only print once per opened window
-          if ((printWindow as any).__hasPrinted) return;
-          (printWindow as any).__hasPrinted = true;
-        } catch (e) {
-          // ignore
-        }
-
-        try {
-          printWindow.focus();
-        } catch (e) {
-          /* ignore */
-        }
-
-        setTimeout(() => {
-          try {
-            printWindow.print();
-          } catch (e) {
-            console.error("Print failed", e);
-          }
-          try {
-            printWindow.close();
-          } catch (e) {
-            /* ignore */
-          }
-        }, 700);
-      };
-
-      // Attach onload handler and also attempt immediate print if already loaded.
-      // doPrint() itself is idempotent so both paths are safe.
-      try {
-        printWindow.onload = doPrint;
-      } catch (e) {
-        /* ignore */
-      }
-
-      if (
-        printWindow.document &&
-        printWindow.document.readyState === "complete"
-      ) {
-        // call asynchronously to allow onload handlers to settle
-        setTimeout(doPrint, 50);
-      }
+  async printReceipt(
+    receiptContent: string,
+    format: "plain" | "html" = "plain"
+  ): Promise<void> {
+    try {
+      // Use QZ Tray service for printing
+      await this.qzTrayService.print("POS-58", receiptContent, format);
+    } catch (err) {
+      console.error("QZ Tray print error:", err);
     }
   }
 }

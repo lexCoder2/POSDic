@@ -1,4 +1,4 @@
-@use "../../../styles/_theme.scss" as *;
+@use "../../../styles/theme.scss" as *;
 
 .app-layout {
   display: flex;
@@ -14,12 +14,11 @@
   display: flex;
   flex-direction: column;
   box-shadow: none;
-  z-index: 100;
+  z-index: $z-sidebar;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
 
-  padding: 0 $spacing-sm;
   .sidebar-header {
-    padding: $spacing-xl;
+    padding: $spacing-md;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,14 +38,15 @@
     display: flex;
     flex-direction: column;
     align-items: end;
-    padding: $spacing-sm 0;
+    padding: $spacing-xs;
     gap: 3px;
   }
 
   .sidebar-btn {
-    width: 90%;
+    width: 96%;
     padding: $spacing-md $spacing-lg $spacing-lg;
     border: none;
+    max-height: calc(#{$sidebar-width} - $spacing-sm * 2);
     background: transparent;
     color: $text-secondary;
     cursor: pointer;
@@ -58,11 +58,10 @@
     font-weight: 500;
     transition: all 0.3s ease;
     position: relative;
-    border-radius: 12px;
-    margin: 2px 0;
+    border-radius: $radius-lg;
 
     i {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
 
     &:hover {
@@ -71,7 +70,7 @@
     }
 
     &.active {
-      background: $white;
+      background: $bg-secondary;
       color: $primary;
       font-weight: 600;
       box-shadow: $shadow-neumorphic-sm;
@@ -87,15 +86,81 @@
   overflow: hidden;
 }
 
+// ===== AUTO-CLOSE WARNING BANNER =====
+.auto-close-warning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-lg;
+  background: linear-gradient(
+    135deg,
+    rgba($warning, 0.15) 0%,
+    rgba($warning, 0.25) 100%
+  );
+  border-bottom: 2px solid $warning;
+  color: $warning-dark;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+  z-index: $z-sticky;
+  animation: pulse 2s ease-in-out infinite;
+
+  i {
+    font-size: $font-size-lg;
+    animation: shake 0.5s ease-in-out infinite;
+  }
+
+  &.critical {
+    background: linear-gradient(
+      135deg,
+      rgba($danger, 0.2) 0%,
+      rgba($danger, 0.3) 100%
+    );
+    border-bottom-color: $danger;
+    color: $danger-dark;
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .btn-small {
+    @include button-primary();
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-xs;
+    min-height: auto;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
 // ===== TOP HEADER =====
 .top-header {
-  background: $bg-primary;
+  background: $bg-secondary;
   border-bottom: none;
   box-shadow: none;
-  z-index: 10;
+  z-index: $z-fixed;
 
   .header-content {
-    padding: $spacing-lg $spacing-2xl;
+    padding: $spacing-sm $spacing-2xl;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -131,7 +196,7 @@
 
     .search-input {
       width: 100%;
-      padding: $spacing-md $spacing-lg;
+      padding: $spacing-sm $spacing-lg;
       padding-left: 3rem;
       border: none;
       border-radius: $radius-2xl;
@@ -196,7 +261,7 @@
       border-radius: $radius-lg;
       box-shadow: $shadow-lg;
       min-width: 220px;
-      z-index: 1000;
+      z-index: $z-dropdown;
       overflow: hidden;
       animation: dropdownSlide 0.2s ease;
 
@@ -263,49 +328,41 @@
         }
       }
 
-      .dropdown-item {
-        width: 100%;
-        padding: $spacing-md $spacing-lg;
-        border: none;
-        background: transparent;
-        color: $text-primary;
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: $spacing-md;
-        transition: all 0.2s ease;
-        text-align: left;
+      .language-section {
+        padding: $spacing-sm $spacing-lg;
 
-        i {
-          font-size: 1rem;
-          width: 20px;
+        .language-label {
+          font-size: 0.8rem;
           color: $text-secondary;
+          margin-bottom: $spacing-xs;
         }
 
-        &:hover {
-          background: $bg-tertiary;
-          color: $primary;
+        .theme-toggle-btn {
+          width: 100%;
+          padding: $spacing-sm $spacing-md;
+          border-radius: $radius-md;
+          background: transparent;
+          color: $text-primary;
+          font-size: 0.9rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          border: 1px solid transparent;
+          transition: all 0.2s ease;
 
-          i {
-            color: $primary;
+          .theme-icon {
+            font-size: 1.1rem;
           }
-        }
 
-        &.logout-item {
-          color: $danger;
-
-          i {
-            color: $danger;
+          .theme-label {
+            flex: 1;
+            text-align: left;
           }
 
           &:hover {
-            background: rgba($danger, 0.1);
-            color: $danger-dark;
-
-            i {
-              color: $danger-dark;
-            }
+            background: $bg-tertiary;
+            color: $primary;
           }
         }
       }
@@ -319,6 +376,52 @@
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+  }
+  .dropdown-item {
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    border: none;
+    background: transparent;
+    color: $text-primary;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    transition: all 0.2s ease;
+    text-align: left;
+
+    i {
+      font-size: 1rem;
+      width: 20px;
+      color: $text-secondary;
+    }
+
+    &:hover {
+      background: $bg-tertiary;
+      color: $primary;
+
+      i {
+        color: $primary;
+      }
+    }
+
+    &.logout-item {
+      color: $danger;
+
+      i {
+        color: $danger;
+      }
+
+      &:hover {
+        background: rgba($danger, 0.1);
+        color: $danger-dark;
+
+        i {
+          color: $danger-dark;
+        }
       }
     }
   }
@@ -349,7 +452,7 @@
     top: 0;
     bottom: 0;
     transition: left 0.3s ease;
-    z-index: 1000;
+    z-index: $z-sidebar;
 
     &.mobile-open {
       left: 0;
@@ -409,5 +512,400 @@
         font-size: 1.5rem;
       }
     }
+  }
+}
+
+// ===== MODALS =====
+// Modal content-specific styles
+.register-form,
+.switch-user-form,
+.withdraw-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  h4 {
+    margin: 0 0 $spacing-md 0;
+    color: $text-primary;
+    font-size: 1.1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+      font-weight: 500;
+      color: $text-secondary;
+      font-size: 0.9rem;
+    }
+
+    .form-control {
+      padding: $spacing-sm $spacing-md;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+  }
+
+  .modal-description {
+    color: $text-secondary;
+    font-size: $font-size-base;
+    line-height: $line-height-normal;
+    margin: 0 0 $spacing-lg 0;
+    padding: $spacing-md;
+    background: $bg-secondary;
+    border-radius: $radius-sm;
+    border-left: 3px solid $primary;
+  }
+
+  .register-info,
+  .withdraw-info {
+    background: $bg-primary;
+    padding: $spacing-md;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-sm;
+
+    p {
+      margin: $spacing-xs 0;
+      color: $text-secondary;
+      font-size: 0.95rem;
+
+      strong {
+        color: $text-primary;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .expected-cash-section {
+    background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+    border: 2px solid #91d5ff;
+    border-radius: 12px;
+    padding: $spacing-lg;
+    margin: $spacing-lg 0;
+
+    .expected-cash-header {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-md;
+      color: #0050b3;
+
+      i {
+        font-size: 1.25rem;
+      }
+
+      h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+
+    .expected-cash-details {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .cash-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-xs 0;
+
+        .label {
+          color: #595959;
+          font-size: 0.9rem;
+        }
+
+        .value {
+          font-size: 1rem;
+          font-weight: 500;
+          color: #262626;
+
+          &.cash-sales {
+            color: #52c41a;
+            font-weight: 600;
+          }
+
+          &.withdrawals {
+            color: #ff4d4f;
+            font-weight: 600;
+          }
+        }
+
+        &.total {
+          padding-top: $spacing-sm;
+          margin-top: $spacing-xs;
+          border-top: 2px solid #91d5ff;
+
+          .value {
+            color: #0050b3;
+            font-size: 1.25rem;
+          }
+        }
+      }
+
+      .sales-summary {
+        display: flex;
+        gap: $spacing-lg;
+        margin-top: $spacing-sm;
+        padding-top: $spacing-sm;
+        border-top: 1px solid #d9d9d9;
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+          font-size: 0.85rem;
+          color: #595959;
+
+          i {
+            color: #0050b3;
+          }
+        }
+      }
+    }
+  }
+
+  .loading-expected-cash {
+    background: #f0f9ff;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    padding: $spacing-md;
+    margin: $spacing-md 0;
+    text-align: center;
+    color: #595959;
+
+    i {
+      margin-right: $spacing-xs;
+      color: $primary;
+    }
+  }
+
+  .permission-notice {
+    background: rgba($primary, 0.1);
+    border: 1px solid rgba($primary, 0.3);
+    border-radius: 6px;
+    padding: $spacing-md;
+    display: flex;
+    gap: $spacing-sm;
+    align-items: flex-start;
+    margin-top: $spacing-sm;
+
+    i {
+      color: $primary;
+      font-size: 1.2rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
+      color: $text-secondary;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+  }
+
+  .btn {
+    @include button-base();
+    i {
+      font-size: 1rem;
+    }
+
+    &.btn-primary {
+      @include button-primary();
+    }
+
+    &.btn-secondary {
+      @include button-secondary();
+    }
+
+    &.btn-danger {
+      @include button-base();
+      background: linear-gradient(
+        135deg,
+        $btn-danger-bg 0%,
+        $btn-danger-hover 100%
+      );
+      color: $white;
+      box-shadow: 0 4px 12px rgba($danger, 0.25);
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(
+          135deg,
+          $btn-danger-hover 0%,
+          darken($btn-danger-hover, 5%) 100%
+        );
+        box-shadow: 0 6px 16px rgba($danger, 0.35);
+        transform: translateY(-1px);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba($danger, 0.25);
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-lg;
+  border-top: 1px solid $border-color;
+  background: $gray-50;
+  margin: 0 (-$spacing-lg) (-$spacing-lg);
+  border-radius: 0 0 $radius-lg $radius-lg;
+
+  .btn {
+    @include button-base();
+    min-width: 120px;
+    padding: $spacing-sm $spacing-lg;
+    font-weight: $font-weight-medium;
+
+    &.btn-primary {
+      @include button-primary();
+    }
+
+    &.btn-secondary {
+      @include button-secondary();
+    }
+  }
+}
+
+// Withdrawal Modal Content Specific Styles
+.withdraw-modal-content {
+  .withdraw-info {
+    .current-cash-info {
+      margin-top: $spacing-md;
+      background: $white;
+      border-radius: $radius-md;
+      padding: $spacing-md;
+      box-shadow: $shadow-neumorphic-sm;
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .label {
+          font-size: $font-size-base;
+          color: $text-secondary;
+          font-weight: $font-weight-medium;
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+
+          &::before {
+            content: "💰";
+            font-size: 1.1rem;
+          }
+        }
+
+        .value {
+          font-size: $font-size-2xl;
+          font-weight: $font-weight-bold;
+          color: $success-dark;
+          letter-spacing: -0.5px;
+        }
+      }
+    }
+  }
+
+  .form-group {
+    position: relative;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+      margin-bottom: $spacing-xs;
+
+      &::after {
+        content: "*";
+        color: $danger;
+        margin-left: -$spacing-xs;
+      }
+    }
+
+    .form-control {
+      width: 100%;
+      padding: $spacing-md;
+      border: 2px solid $border-color;
+      border-radius: $radius-md;
+      font-size: $font-size-base;
+      font-family: $font-family-base;
+      color: $text-primary;
+      background: $white;
+      transition: all $transition-base;
+      box-shadow: $shadow-neumorphic-inset;
+
+      &:hover {
+        border-color: $border-dark;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $warning;
+        box-shadow: 0 0 0 3px rgba($warning, 0.15), $shadow-neumorphic-inset;
+      }
+
+      &::placeholder {
+        color: $text-light;
+        font-style: italic;
+      }
+    }
+
+    input[type="number"] {
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        opacity: 1;
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 90px;
+      line-height: $line-height-normal;
+      font-family: $font-family-base;
+    }
+  }
+}
+
+// Withdraw modal footer styles
+.withdraw-modal-content + [modal-footer] {
+  .btn-danger {
+    i.fa-spinner {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

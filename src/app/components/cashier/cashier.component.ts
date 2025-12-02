@@ -1,28 +1,53 @@
-import { Component, signal, effect, HostListener } from "@angular/core";
+import {
+  Component,
+  signal,
+  effect,
+  HostListener,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnInit,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { Router, NavigationEnd } from "@angular/router";
+import { filter } from "rxjs";
 import { SaleService } from "../../services/sale.service";
 import { CartService } from "../../services/cart.service";
 import { AuthService } from "../../services/auth.service";
+import { ToastService } from "../../services/toast.service";
+import { CurrencyService } from "../../services/currency.service";
 import { ScaleService, ScaleReading } from "../../services/scale.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import {
+  CalculatorComponent,
+  CalculatorAddEvent,
+  CalculatorMultiplyConfirmEvent,
+} from "../calculator/calculator.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { environment } from "@environments/environment";
 
 @Component({
   selector: "app-cashier",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CalculatorComponent,
+    TranslatePipe,
+    CurrencyPipe,
+  ],
   templateUrl: "./cashier.component.html",
   styleUrls: ["./cashier.component.scss"],
 })
-export class CashierComponent {
-  display = signal<string>("0");
-  isMultiplying = signal<boolean>(false); // Track if we're in multiplication mode
-  multiplyMode = signal<"add" | "update" | null>(null); // 'add' for new items, 'update' for last item
-  pendingMultiplyValue = signal<number | null>(null); // Store value to multiply
-  currentValue = signal<number>(0);
+export class CashierComponent implements OnInit, AfterViewInit {
+  @ViewChild(CalculatorComponent)
+  calculator!: CalculatorComponent;
+  @ViewChild("cashReceivedInput")
+  cashReceivedInput!: ElementRef<HTMLInputElement>;
+
   items = signal<
     Array<{
       price: number;
@@ -64,6 +89,11 @@ export class CashierComponent {
   // Helper methods for template
   parseFloat = parseFloat;
 
+  getLastItemPrice(): number | null {
+    const items = this.items();
+    return items.length > 0 ? items[items.length - 1].unitPrice : null;
+  }
+
   blurButton(event: Event): void {
     const target = event.target as HTMLElement;
     target?.blur();
@@ -73,8 +103,11 @@ export class CashierComponent {
     private saleService: SaleService,
     private cartService: CartService,
     private authService: AuthService,
+    public currencyService: CurrencyService,
     private scaleService: ScaleService,
-    private receiptGeneratorService: ReceiptGeneratorService
+    private receiptGeneratorService: ReceiptGeneratorService,
+    private toastService: ToastService,
+    private router: Router
   ) {
     // Subscribe to scale readings
     effect(() => {
@@ -94,6 +127,22 @@ export class CashierComponent {
 
     // Handle session cleanup when user leaves or closes window
     this.setupSessionCleanup();
+  }
+
+  ngOnInit(): void {
+    // Focus calculator when route changes to cashier
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (event.url.includes("/cashier")) {
+          setTimeout(() => this.calculator?.focusCalculator(), 100);
+        }
+      });
+  }
+
+  ngAfterViewInit(): void {
+    // Focus calculator on initial load
+    setTimeout(() => this.calculator?.focusCalculator(), 100);
   }
 
   private setupSessionCleanup(): void {
@@ -238,7 +287,7 @@ export class CashierComponent {
     // Numbers 0-9 (check key first, then keyCode as fallback)
     if (/^[0-9]$/.test(key)) {
       event.preventDefault();
-      this.appendNumber(key);
+      this.calculator?.appendNumber(key);
       return;
     }
 
@@ -246,7 +295,7 @@ export class CashierComponent {
     if (/^Numpad[0-9]$/.test(event.code)) {
       event.preventDefault();
       const digit = event.code.replace("Numpad", "");
-      this.appendNumber(digit);
+      this.calculator?.appendNumber(digit);
       return;
     }
 
@@ -260,7 +309,7 @@ export class CashierComponent {
         event.keyCode >= 96
           ? (event.keyCode - 96).toString()
           : (event.keyCode - 48).toString();
-      this.appendNumber(digit);
+      this.calculator?.appendNumber(digit);
       return;
     }
 
@@ -273,25 +322,21 @@ export class CashierComponent {
       event.keyCode === 190
     ) {
       event.preventDefault();
-      this.appendDecimal();
+      this.calculator?.appendDecimal();
       return;
     }
 
     // Enter - Add item or confirm multiplication
     if (key === "Enter") {
       event.preventDefault();
-      if (this.isMultiplying()) {
-        this.confirmMultiply();
-      } else {
-        this.addItem();
-      }
+      this.calculator?.handleEnter();
       return;
     }
 
     // Backspace - Remove last digit
     if (key === "Backspace") {
       event.preventDefault();
-      this.backspace();
+      this.calculator?.backspace();
       return;
     }
 
@@ -305,14 +350,14 @@ export class CashierComponent {
     // Escape - Clear display
     if (key === "Escape") {
       event.preventDefault();
-      this.clear();
+      this.calculator?.clear();
       return;
     }
 
     // Multiply (x or *) - Set quantity or add multiple items
     if (key === "x" || key === "X" || key === "*") {
       event.preventDefault();
-      this.multiplyItem();
+      this.calculator?.handleMultiply();
       return;
     }
 
@@ -337,7 +382,7 @@ export class CashierComponent {
     if (this.deleteKeyPressCount === 1) {
       // First press - Modify last item (put price back in display)
       const lastItem = items[items.length - 1];
-      this.display.set(lastItem.price.toFixed(2));
+      this.calculator?.setDisplay(lastItem.price.toFixed(2));
       this.removeItem(lastItem.id);
 
       // Reset counter after 1 second
@@ -350,37 +395,60 @@ export class CashierComponent {
       if (lastItem) {
         this.removeItem(lastItem.id);
       }
-      this.display.set("0");
+      this.calculator?.setDisplay("0");
       this.deleteKeyPressCount = 0;
       clearTimeout(this.deleteKeyTimer);
     }
   }
 
-  appendNumber(num: string): void {
-    const current = this.display();
-    if (current === "0") {
-      this.display.set(num);
-    } else {
-      this.display.set(current + num);
-    }
+  onCalculatorAdd(event: CalculatorAddEvent): void {
+    const newItem = {
+      price: event.value,
+      unitPrice: event.value,
+      quantity: 1,
+      id: this.itemIdCounter++,
+    };
+    this.items.update((items) => [...items, newItem]);
+    this.total.update((t) => t + event.value);
+    this.debouncedSaveCart();
   }
 
-  appendDecimal(): void {
-    const current = this.display();
-    if (!current.includes(".")) {
-      this.display.set(current + ".");
+  onCalculatorMultiplyConfirm(event: CalculatorMultiplyConfirmEvent): void {
+    if (event.mode === "add") {
+      // Add multiple items with pendingValue
+      const itemPrice = event.pendingValue ?? 0;
+      const newItem = {
+        price: itemPrice * event.quantity,
+        unitPrice: itemPrice,
+        quantity: event.quantity,
+        id: this.itemIdCounter++,
+      };
+      this.items.update((items) => [...items, newItem]);
+      this.total.update((t) => t + newItem.price);
+    } else if (event.mode === "update") {
+      // Multiply last item by entered quantity
+      const items = this.items();
+      if (items.length === 0) return;
+      const lastItem = items[items.length - 1];
+      const newQuantity = event.quantity;
+      const newPrice = lastItem.unitPrice * newQuantity;
+      this.items.update((currentItems) =>
+        currentItems.map((item, index) =>
+          index === currentItems.length - 1
+            ? { ...item, quantity: newQuantity, price: newPrice }
+            : item
+        )
+      );
+      const priceDifference = newPrice - lastItem.price;
+      this.total.update((t) => t + priceDifference);
     }
-  }
-
-  clear(): void {
-    this.display.set("0");
+    this.debouncedSaveCart();
   }
 
   clearAll(): void {
-    this.display.set("0");
+    this.calculator?.setDisplay("0");
     this.items.set([]);
     this.total.set(0);
-    this.currentValue.set(0);
   }
 
   clearAllItems(): void {
@@ -389,7 +457,7 @@ export class CashierComponent {
     if (confirm("Are you sure you want to clear all items?")) {
       this.items.set([]);
       this.total.set(0);
-      this.display.set("0");
+      this.calculator?.setDisplay("0");
 
       // Delete cart from database
       if (this.activeCartId()) {
@@ -403,97 +471,6 @@ export class CashierComponent {
         });
       }
     }
-  }
-
-  backspace(): void {
-    const current = this.display();
-    if (current.length > 1) {
-      this.display.set(current.slice(0, -1));
-    } else {
-      this.display.set("0");
-    }
-  }
-
-  addItem(): void {
-    const value = parseFloat(this.display());
-    if (!isNaN(value) && value > 0) {
-      const newItem = {
-        price: value,
-        unitPrice: value,
-        quantity: 1,
-        id: this.itemIdCounter++,
-      };
-      this.items.update((items) => [...items, newItem]);
-      this.total.update((t) => t + value);
-      this.display.set("0");
-      this.debouncedSaveCart();
-    }
-  }
-
-  multiplyItem(): void {
-    const displayValue = parseFloat(this.display());
-    const items = this.items();
-
-    if (displayValue === 0 || isNaN(displayValue)) {
-      // Multiply last item: show quantity input on display
-      if (items.length === 0) return;
-      this.isMultiplying.set(true);
-      this.multiplyMode.set("update");
-      this.pendingMultiplyValue.set(null); // We'll use display for quantity
-      this.display.set("");
-    } else {
-      // Add multiple items: show quantity input on display
-      this.isMultiplying.set(true);
-      this.multiplyMode.set("add");
-      this.pendingMultiplyValue.set(displayValue); // Store value to add
-      this.display.set("");
-    }
-  }
-
-  confirmMultiply(): void {
-    const quantity = parseFloat(this.display());
-    if (isNaN(quantity) || quantity <= 0) {
-      this.display.set("0");
-      this.isMultiplying.set(false);
-      this.multiplyMode.set(null);
-      this.pendingMultiplyValue.set(null);
-      return;
-    }
-
-    if (this.multiplyMode() === "add") {
-      // Add multiple items with pendingMultiplyValue
-      const itemPrice = this.pendingMultiplyValue() ?? 0;
-      const newItem = {
-        price: itemPrice * quantity,
-        unitPrice: itemPrice,
-        quantity: quantity,
-        id: this.itemIdCounter++,
-      };
-      this.items.update((items) => [...items, newItem]);
-      this.total.update((t) => t + newItem.price);
-      this.display.set("0");
-    } else if (this.multiplyMode() === "update") {
-      // Multiply last item by entered quantity
-      const items = this.items();
-      if (items.length === 0) return;
-      const lastItem = items[items.length - 1];
-      const newQuantity = quantity;
-      const newPrice = lastItem.unitPrice * newQuantity;
-      this.items.update((currentItems) =>
-        currentItems.map((item, index) =>
-          index === currentItems.length - 1
-            ? { ...item, quantity: newQuantity, price: newPrice }
-            : item
-        )
-      );
-      const priceDifference = newPrice - lastItem.price;
-      this.total.update((t) => t + priceDifference);
-      this.display.set("0");
-    }
-    this.isMultiplying.set(false);
-    this.multiplyMode.set(null);
-    this.pendingMultiplyValue.set(null);
-    this.debouncedSaveCart();
   }
 
   increaseQuantity(id: number): void {
@@ -555,10 +532,11 @@ export class CashierComponent {
     this.scaleConnected.set(connected);
     if (connected) {
       this.useScaleWeight.set(true);
-      alert("Scale connected successfully!");
+      this.toastService.show("Scale connected successfully!", "success");
     } else {
-      alert(
-        "Failed to connect to scale. Make sure the scale is connected via USB."
+      this.toastService.show(
+        "Failed to connect to scale. Make sure the scale is connected via USB.",
+        "error"
       );
     }
   }
@@ -572,7 +550,7 @@ export class CashierComponent {
 
   toggleUseScaleWeight(): void {
     if (!this.scaleConnected()) {
-      alert("Please connect to a scale first.");
+      this.toastService.show("Please connect to a scale first.", "info");
       return;
     }
     this.useScaleWeight.update((v) => !v);
@@ -591,12 +569,12 @@ export class CashierComponent {
       this.looseProductDescription().trim() || "Loose Product";
 
     if (isNaN(weight) || weight <= 0) {
-      alert("Please enter a valid weight.");
+      this.toastService.show("Please enter a valid weight.", "info");
       return;
     }
 
     if (isNaN(pricePerKg) || pricePerKg <= 0) {
-      alert("Please enter a valid price per kg.");
+      this.toastService.show("Please enter a valid price per kg.", "info");
       return;
     }
 
@@ -630,7 +608,7 @@ export class CashierComponent {
     const itemToEdit = this.items().find((item) => item.id === id);
     if (itemToEdit) {
       // Put the price back in the display for editing
-      this.display.set(itemToEdit.price.toFixed(2));
+      this.calculator?.setDisplay(itemToEdit.price.toFixed(2));
       // Remove the item from the list
       this.removeItem(id);
     }
@@ -638,9 +616,8 @@ export class CashierComponent {
 
   completeSale(paymentMethod: "cash" | "card" | "transfer"): void {
     // If there's a number in the display, add it first
-    const displayValue = parseFloat(this.display());
-    if (!isNaN(displayValue) && displayValue > 0) {
-      this.addItem();
+    if (this.calculator?.hasPendingValue()) {
+      this.calculator.handleEnter();
     }
 
     if (this.items().length === 0 || this.isProcessing()) {
@@ -653,6 +630,13 @@ export class CashierComponent {
     if (paymentMethod === "cash") {
       this.cashReceived.set("");
       this.change.set(0);
+      // Focus cash input after modal renders
+      setTimeout(() => {
+        if (this.cashReceivedInput?.nativeElement) {
+          this.cashReceivedInput.nativeElement.focus();
+          this.cashReceivedInput.nativeElement.select();
+        }
+      }, 100);
     }
   }
 
@@ -681,8 +665,9 @@ export class CashierComponent {
     if (paymentMethod === "cash") {
       const received = parseFloat(this.cashReceived());
       if (isNaN(received) || received < this.total()) {
-        alert(
-          "Please enter a valid cash amount greater than or equal to the total."
+        this.toastService.show(
+          "Please enter a valid cash amount greater than or equal to the total.",
+          "info"
         );
         return;
       }
@@ -721,17 +706,16 @@ export class CashierComponent {
         this.isProcessing.set(false);
         this.showPaymentModal.set(false);
 
-        let message = `Sale completed successfully!\nTotal: $${saleTotal.toFixed(
+        let message = `Sale completed successfully! Total: $${saleTotal.toFixed(
           2
         )}`;
         if (paymentMethod === "cash" && changeAmount > 0) {
-          message += `\n\nCash Received: $${parseFloat(
+          message += ` | Cash Received: $${parseFloat(
             this.cashReceived()
-          ).toFixed(2)}`;
-          message += `\nChange: $${changeAmount.toFixed(2)}`;
+          ).toFixed(2)} | Change: $${changeAmount.toFixed(2)}`;
         }
 
-        alert(message);
+        this.toastService.show(message, "success");
 
         // Generate and print receipt using the saved template
         const currentUser = this.authService.getCurrentUser();
@@ -747,7 +731,10 @@ export class CashierComponent {
             )
             .subscribe({
               next: (receiptContent) => {
-                this.receiptGeneratorService.printReceipt(receiptContent);
+                this.receiptGeneratorService.printReceipt(
+                  receiptContent,
+                  "html"
+                );
               },
               error: (err) => {
                 console.error("Error generating styled receipt:", err);
@@ -763,7 +750,10 @@ export class CashierComponent {
             )
             .subscribe({
               next: (receiptContent) => {
-                this.receiptGeneratorService.printReceipt(receiptContent);
+                this.receiptGeneratorService.printReceipt(
+                  receiptContent,
+                  "plain"
+                );
               },
               error: (err) => {
                 console.error("Error generating plain-text receipt:", err);
@@ -793,7 +783,10 @@ export class CashierComponent {
       error: (err) => {
         console.error("Error creating sale:", err);
         this.isProcessing.set(false);
-        alert("Error processing sale. Please try again.");
+        this.toastService.show(
+          "Error processing sale. Please try again.",
+          "error"
+        );
       },
     });
   }

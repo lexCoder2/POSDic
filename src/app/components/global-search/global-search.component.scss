@@ -1,0 +1,68 @@
+@use "../../../styles/theme" as *;
+
+.global-search {
+  position: relative;
+  flex: 1;
+  width: 600px;
+
+  .search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: $input-bg;
+    border-radius: $radius-full;
+    box-shadow: $input-shadow;
+    transition: $transition-base;
+
+    &:focus-within {
+      box-shadow: $input-shadow-focus;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: $spacing-lg;
+      color: $gray-400;
+      font-size: $font-size-lg;
+      pointer-events: none;
+    }
+
+    .search-input {
+      @include input-base;
+      padding-left: calc(#{$spacing-lg} + #{$spacing-xl} + #{$spacing-sm});
+      padding-right: calc(#{$spacing-lg} + #{$spacing-xl});
+      font-size: $font-size-base;
+      border-radius: $radius-full;
+
+      &::placeholder {
+        color: $text-muted;
+      }
+    }
+
+    .clear-icon {
+      position: absolute;
+      right: $spacing-lg;
+      color: $text-secondary;
+      font-size: $font-size-lg;
+      cursor: pointer;
+      transition: $transition-fast;
+      padding: $spacing-sm;
+
+      &:hover {
+        color: $text-primary;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: $breakpoint-md) {
+  .global-search {
+    max-width: 100%;
+
+    .search-wrapper {
+      .search-input {
+        font-size: $font-size-sm;
+      }
+    }
+  }
+}

@@ -1,0 +1,423 @@
+@import "../../../styles/theme";
+
+.inventory-session-container {
+  padding: $spacing-lg;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+// Session Info Bar
+.session-info {
+  @include card;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  padding: $spacing-lg $spacing-xl;
+  background: linear-gradient(
+    135deg,
+    rgba($primary, 0.08) 0%,
+    rgba($primary, 0.03) 100%
+  );
+  border: 1px solid rgba($primary, 0.15);
+
+  .session-info-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+
+    i {
+      color: $primary;
+      font-size: $font-size-xl;
+    }
+
+    .stock-registration-toggle {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      cursor: pointer;
+      user-select: none;
+      padding: $spacing-sm $spacing-md;
+      background: rgba($success, 0.1);
+      border: 2px solid rgba($success, 0.3);
+      border-radius: $radius-full;
+      transition: $transition-base;
+
+      &:hover {
+        background: rgba($success, 0.15);
+        border-color: rgba($success, 0.4);
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: $success;
+      }
+
+      i {
+        color: $success;
+        font-size: $font-size-lg;
+      }
+
+      span {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        color: $success-dark;
+      }
+    }
+  }
+}
+
+// Product Editor
+.product-editor {
+  min-height: 400px;
+}
+
+.product-form {
+  @include card;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: $spacing-2xl;
+  padding: $spacing-xl;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Form Left (Image)
+.form-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-md;
+
+  .product-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: $radius-2xl;
+    overflow: hidden;
+    background: $neumorphic-surface;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: $shadow-neumorphic-inset;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .no-image {
+      font-size: 4rem;
+      color: $text-muted;
+      opacity: 0.4;
+    }
+  }
+
+  .product-name {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    text-align: center;
+    line-height: $line-height-tight;
+  }
+
+  .product-category {
+    font-size: $font-size-base;
+    color: $text-secondary;
+    text-align: center;
+    padding: $spacing-xs $spacing-md;
+    background: rgba($primary, 0.08);
+    border-radius: $radius-full;
+  }
+}
+
+// Form Right (Fields)
+.form-right {
+  display: flex;
+  flex-direction: column;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+    flex: 1;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    &.highlight {
+      padding: $spacing-lg;
+      background: linear-gradient(
+        135deg,
+        rgba($primary, 0.06) 0%,
+        rgba($primary, 0.02) 100%
+      );
+      border: 2px solid rgba($primary, 0.2);
+      border-radius: $radius-2xl;
+      box-shadow: $shadow-sm;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $text-primary;
+
+      i {
+        color: $primary;
+        font-size: $font-size-2xl;
+      }
+    }
+
+    .form-control {
+      @include input-base;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-semibold;
+    }
+
+    .input-with-change {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      .change-indicator {
+        position: absolute;
+        right: $spacing-lg;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: $font-size-base;
+        font-weight: $font-weight-bold;
+        padding: $spacing-sm $spacing-md;
+        border-radius: $radius-full;
+        pointer-events: none;
+
+        &.positive {
+          color: $success-dark;
+          background: rgba($success, 0.15);
+          border: 1px solid rgba($success, 0.4);
+        }
+
+        &.negative {
+          color: $danger-dark;
+          background: rgba($danger, 0.15);
+          border: 1px solid rgba($danger, 0.4);
+        }
+      }
+    }
+
+    .old-value {
+      font-size: $font-size-base;
+      color: $text-secondary;
+      padding-left: $spacing-sm;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: $spacing-md;
+    margin-top: auto;
+    padding-top: $spacing-md;
+
+    .btn-primary {
+      @include button-primary;
+      flex: 1;
+      font-size: $font-size-lg;
+    }
+
+    .btn-secondary {
+      @include button-secondary;
+      flex: 1;
+      font-size: $font-size-lg;
+      background: $gray-200;
+
+      &:hover:not(:disabled) {
+        background: $gray-300;
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding: $spacing-4xl;
+  border: 2px dashed $border-light;
+  background: $neumorphic-surface;
+
+  i {
+    font-size: 5rem;
+    color: $text-muted;
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: $font-size-xl;
+    color: $text-secondary;
+    font-weight: $font-weight-medium;
+    text-align: center;
+  }
+}
+
+// Updates Section
+.updates-section {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    margin-bottom: $spacing-lg;
+
+    i {
+      color: $primary;
+      font-size: $font-size-3xl;
+    }
+  }
+
+  .table-container {
+    @include neumorphic-table;
+  }
+
+  .table {
+    th {
+      background: linear-gradient(
+        135deg,
+        rgba($primary, 0.08) 0%,
+        rgba($primary, 0.04) 100%
+      );
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-base;
+      color: $text-primary;
+    }
+
+    .ean-code {
+      font-family: monospace;
+      font-size: $font-size-sm;
+      color: $text-secondary;
+    }
+
+    .change-cell {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      flex-wrap: wrap;
+
+      .old-val {
+        color: $text-secondary;
+        text-decoration: line-through;
+        font-size: $font-size-sm;
+      }
+
+      i {
+        color: $text-secondary;
+        font-size: $font-size-xs;
+      }
+
+      .new-val {
+        color: $text-primary;
+        font-weight: 600;
+      }
+
+      .change-badge {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-bold;
+        padding: $spacing-xs $spacing-md;
+        border-radius: $radius-full;
+
+        &.positive {
+          color: $success-dark;
+          background: rgba($success, 0.15);
+          border: 1px solid rgba($success, 0.4);
+        }
+
+        &.negative {
+          color: $danger-dark;
+          background: rgba($danger, 0.15);
+          border: 1px solid rgba($danger, 0.4);
+        }
+      }
+    }
+  }
+}
+
+// Session Actions
+.session-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-lg;
+  padding-top: $spacing-xl;
+  border-top: 2px solid $border-color;
+
+  .btn-secondary {
+    @include button-secondary;
+    background: $gray-200;
+
+    &:hover:not(:disabled) {
+      background: $gray-300;
+    }
+  }
+
+  .btn-success {
+    @include button-primary;
+    background: linear-gradient(135deg, $success, $success-dark);
+    box-shadow: 0 4px 12px rgba($success, 0.25);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba($success, 0.3);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .inventory-session-container {
+    padding: $spacing-md;
+  }
+
+  .session-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-sm;
+  }
+
+  .product-form {
+    padding: $spacing-md;
+  }
+
+  .form-actions,
+  .session-actions {
+    flex-direction: column;
+
+    .btn {
+      width: 100%;
+    }
+  }
+
+  .updates-section .table-container {
+    overflow-x: auto;
+  }
+}

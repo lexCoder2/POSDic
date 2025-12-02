@@ -1,12 +1,10 @@
-@import "../../../styles/theme";
+@use "../../../styles/theme" as *;
 
 .page-title {
   background: $neumorphic-surface;
   color: $primary;
-  padding: 0.5rem 3.5rem 0.5rem;
+  padding: 0 3.5rem;
   display: flex;
-  margin-bottom: 0.5rem;
-
   align-items: center;
   justify-content: space-between;
 
@@ -27,10 +25,9 @@
       gap: 1.5rem;
       align-items: end;
       h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 600;
         margin: 0;
-        letter-spacing: -0.5px;
       }
 
       p {
@@ -61,32 +58,18 @@
         align-items: center;
       }
       button {
-        padding: 0.4rem 0.8rem;
+        @include button-base();
         font-size: 0.85rem;
-        border-radius: 4px;
-        border: none;
         cursor: pointer;
-        transition: all 0.2s;
-        white-space: nowrap;
 
         &.btn-primary {
           background: $primary-light;
           color: white;
-
-          &:hover {
-            background: $primary;
-            transform: translateY(-1px);
-          }
         }
 
         &.btn-secondary {
-          background: transparent;
-          color: $primary;
-          border: 1px solid $primary;
-
-          &:hover {
-            background: rgba(255, 140, 66, 0.1);
-          }
+          @include button-secondary();
+          color: $text-inverse;
         }
       }
 

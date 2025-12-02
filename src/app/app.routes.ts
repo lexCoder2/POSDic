@@ -44,26 +44,21 @@ export const routes: Routes = [
             (m) => m.CashierComponent
           ),
       },
-      {
-        path: "search",
-        loadComponent: () =>
-          import("./components/search/search.component").then(
-            (m) => m.SearchComponent
-          ),
-      },
-      {
-        path: "products",
-        loadComponent: () =>
-          import("./components/products/products.component").then(
-            (m) => m.ProductsComponent
-          ),
-      },
+
       {
         path: "inventory",
         loadComponent: () =>
           import("./components/inventory/inventory.component").then(
             (m) => m.InventoryComponent
           ),
+        canActivate: [roleGuard(["admin", "manager"])],
+      },
+      {
+        path: "inventory-session",
+        loadComponent: () =>
+          import(
+            "./components/inventory-session/inventory-session.component"
+          ).then((m) => m.InventorySessionComponent),
         canActivate: [roleGuard(["admin", "manager"])],
       },
       {
@@ -95,6 +90,14 @@ export const routes: Routes = [
           import("./components/sales/sales.component").then(
             (m) => m.SalesComponent
           ),
+      },
+      {
+        path: "registers",
+        loadComponent: () =>
+          import("./components/registers/registers.component").then(
+            (m) => m.RegistersComponent
+          ),
+        canActivate: [roleGuard(["admin", "manager"])],
       },
       {
         path: "users",

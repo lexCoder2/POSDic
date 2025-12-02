@@ -53,6 +53,19 @@ export class SaleService {
     });
   }
 
+  refundSale(
+    id: string,
+    refundType: "full" | "partial",
+    reason: string,
+    items?: Array<{ itemId: string; quantity: number }>
+  ): Observable<Sale> {
+    return this.http.post<Sale>(`${this.apiUrl}/${id}/refund`, {
+      refundType,
+      reason,
+      items,
+    });
+  }
+
   getSalesSummary(filters?: {
     startDate?: string;
     endDate?: string;
@@ -63,5 +76,34 @@ export class SaleService {
     if (filters?.endDate) params = params.set("endDate", filters.endDate);
 
     return this.http.get(`${this.apiUrl}/reports/summary`, { params });
+  }
+
+  createInternalSale(internalSale: {
+    items: Array<{ product: string; quantity: number; weight?: number }>;
+    notes?: string;
+  }): Observable<Sale> {
+    return this.http.post<Sale>(`${this.apiUrl}/internal`, internalSale);
+  }
+
+  getInternalSalesStats(filters?: {
+    startDate?: string;
+    endDate?: string;
+  }): Observable<{
+    totalAmount: number;
+    totalCount: number;
+    byUser: Array<{ name: string; count: number; total: number }>;
+    recentSales: Sale[];
+  }> {
+    let params = new HttpParams();
+
+    if (filters?.startDate) params = params.set("startDate", filters.startDate);
+    if (filters?.endDate) params = params.set("endDate", filters.endDate);
+
+    return this.http.get<{
+      totalAmount: number;
+      totalCount: number;
+      byUser: Array<{ name: string; count: number; total: number }>;
+      recentSales: Sale[];
+    }>(`${this.apiUrl}/internal/stats`, { params });
   }
 }

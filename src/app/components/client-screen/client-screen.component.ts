@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { CartService } from "../../services/cart.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { AuthService } from "../../services/auth.service";
+import { environment } from "@environments/environment";
 // using Angular signals for the clock; no rxjs needed here
 
 @Component({
@@ -26,6 +27,7 @@ export class ClientScreenComponent implements OnInit, OnDestroy {
   currentCart = signal<any[]>([]);
   private cartPollTimer: any;
 
+  apiUrl = environment.apiUrl;
   constructor(
     private cartService: CartService,
     private authService: AuthService,

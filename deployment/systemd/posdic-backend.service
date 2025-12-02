@@ -1,0 +1,43 @@
+[Unit]
+Description=POS Dictionary Backend Service
+Documentation=https://github.com/lexCoder2/POSDic
+After=network.target mongodb.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/posdic/backend
+
+# Environment variables
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/var/www/posdic/backend/.env
+
+# Start command
+ExecStart=/usr/bin/node index.js
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Logging
+StandardOutput=append:/var/log/posdic/backend.log
+StandardError=append:/var/log/posdic/backend-error.log
+SyslogIdentifier=posdic-backend
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/posdic/backend/product_images /var/log/posdic
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=512
+
+[Install]
+WantedBy=multi-user.target

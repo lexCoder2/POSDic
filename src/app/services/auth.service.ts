@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, tap } from "rxjs";
 import { Router } from "@angular/router";
@@ -44,8 +44,14 @@ export class AuthService {
           localStorage.setItem(this.tokenKey, response.token);
           localStorage.setItem(this.userKey, JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
+          this.loadUserSettings();
         })
       );
+  }
+
+  private loadUserSettings(): void {
+    // This will be called by services that need user settings
+    // The settings will be loaded from the database by individual services
   }
 
   register(userData: Partial<User>): Observable<AuthResponse> {

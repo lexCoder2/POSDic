@@ -5,6 +5,7 @@
 // Neumorphic Design System
 // SCSS HEX
 @use "sass:color";
+@import url("https://fonts.googleapis.com/css2?family=Average+Sans&family=League+Spartan&display=swap");
 $neumorphic-bg: #e5e7eb;
 $neumorphic-surface: #eceff4;
 $blue-primary: #2d1674;
@@ -130,8 +131,8 @@ $spacing-4xl: 4rem; // 64px
 
 // ===== TYPOGRAPHY =====
 // Font Families
-$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-  "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+$font-family-base: "Average Sans", "League Spartan", BlinkMacSystemFont,
+  "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 $font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier,
   monospace;
 
@@ -171,9 +172,10 @@ $breakpoint-xl: 1280px;
 $breakpoint-2xl: 1536px;
 
 // ===== Z-INDEX =====
-$z-dropdown: 1000;
-$z-sticky: 1020;
+$z-dropdown: 1025;
+$z-sticky: 1010;
 $z-fixed: 1030;
+$z-sidebar: 1035;
 $z-modal-backdrop: 1040;
 $z-modal: 1050;
 $z-popover: 1060;
@@ -186,7 +188,7 @@ $touch-target-md: 34px;
 $touch-target-lg: 56px;
 
 // Sidebar
-$sidebar-width: 140px;
+$sidebar-width: 90px;
 $sidebar-bg: $gradient-primary-vertical;
 $sidebar-text: rgba(255, 255, 255, 0.7);
 $sidebar-text-active: $white;
@@ -204,9 +206,10 @@ $input-border-focus: $primary;
 $input-bg: $neumorphic-surface;
 $input-text: $text-primary;
 $input-placeholder: $gray-400;
-$input-height: 44px;
+$input-height: 34px;
 $input-shadow: $shadow-neumorphic-inset;
-$input-shadow-focus: $shadow-neumorphic-inset, 0 0 0 3px rgba($primary, 0.1);
+$input-shadow-focus: $shadow-neumorphic-inset,
+  0 0 1px 1px rgba($blue-light, 0.7);
 
 // Buttons
 $btn-primary-bg: $primary;
@@ -224,6 +227,40 @@ $card-bg: $neumorphic-surface;
 $card-border: transparent;
 $card-shadow: $shadow-neumorphic;
 $card-hover-shadow: $shadow-neumorphic-lg;
+
+// ===== DARK THEME =====
+.dark-theme {
+  // Override colors for dark mode
+  --neumorphic-bg: #1a1d24;
+  --neumorphic-surface: #222831;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --bg-primary: #1a1d24;
+  --bg-secondary: #222831;
+  --bg-tertiary: #2d3139;
+  --bg-hover: #3a3f4b;
+  --bg-active: #4a5161;
+  --border-color: #3a3f4b;
+  --card-bg: #222831;
+  --input-bg: #2d3139;
+  --sidebar-text: rgba(255, 255, 255, 0.7);
+  --sidebar-text-active: #ffffff;
+
+  // Update shadow for dark mode
+  --shadow-neumorphic: 6px 6px 12px rgba(0, 0, 0, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.02);
+  --shadow-neumorphic-sm: 3px 3px 6px rgba(0, 0, 0, 0.3),
+    -3px -3px 6px rgba(255, 255, 255, 0.02);
+  --shadow-neumorphic-lg: 9px 9px 16px rgba(0, 0, 0, 0.5),
+    -9px -9px 16px rgba(255, 255, 255, 0.03);
+  --shadow-neumorphic-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.3),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.02);
+
+  // Apply CSS variables
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
 
 // ===== MIXINS =====
 @mixin hover-lift {
@@ -271,7 +308,7 @@ $card-hover-shadow: $shadow-neumorphic-lg;
 }
 
 @mixin button-base {
-  padding: $spacing-md $spacing-xl;
+  padding: $spacing-md $spacing-lg;
   border-radius: $radius-2xl;
   border: none;
   font-size: $font-size-base;
@@ -324,7 +361,7 @@ $card-hover-shadow: $shadow-neumorphic-lg;
 
 @mixin input-base {
   width: 100%;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm $spacing-lg;
   border: none;
   border-radius: $radius-2xl;
   font-size: $font-size-base;

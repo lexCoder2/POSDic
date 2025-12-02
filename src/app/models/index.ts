@@ -82,6 +82,7 @@ export interface Product {
   cost?: number;
   provider?: string;
   active?: boolean;
+  incompleteInfo?: boolean;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -98,6 +99,7 @@ export interface User {
   phone?: string;
   active?: boolean;
   permissions?: string[];
+  internalSalesLimit?: number;
   lastLogin?: Date;
   createdAt?: Date;
 }
@@ -166,6 +168,8 @@ export interface Sale {
   cancelledAt?: Date;
   notes?: string;
   printTemplate?: string;
+  isInternal?: boolean;
+  approvedBy?: string | User;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -256,4 +260,25 @@ export interface CartItem {
   discount: number;
   weight?: number;
   subtotal: number;
+}
+
+export interface Register {
+  _id?: string;
+  registerNumber: string;
+  openedBy: string | User;
+  openedAt: Date;
+  closedBy?: string | User;
+  closedAt?: Date;
+  openingCash: number;
+  closingCash?: number;
+  expectedCash?: number;
+  cashDifference?: number;
+  totalSales?: number;
+  totalTransactions?: number;
+  status: "open" | "closed";
+  notes?: string;
+  autoClosedAt?: Date;
+  isAutoClose?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

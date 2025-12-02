@@ -7,6 +7,9 @@ import { RouterLink } from "@angular/router";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { TranslationService } from "../../services/translation.service";
 import { AuthService } from "../../services/auth.service";
+import { CurrencyService } from "../../services/currency.service";
+import { ToastService } from "../../services/toast.service";
+import { UserService } from "../../services/user.service";
 
 @Component({
   selector: "app-settings",
@@ -27,11 +30,15 @@ export class SettingsComponent implements OnInit {
   displayName: string = "";
   preferredLang: string = "";
   userPrinterMode: "inherit" | "plain" | "styled" = "inherit";
+  selectedCurrency: string = "USD";
 
   constructor(
     private receiptGen: ReceiptGeneratorService,
     private translationService: TranslationService,
-    private authService: AuthService
+    private authService: AuthService,
+    public currencyService: CurrencyService,
+    private toastService: ToastService,
+    private userService: UserService
   ) {}
 
   get isAdmin(): boolean {
@@ -40,6 +47,7 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load global printer mode from localStorage (for system-wide setting)
     const stored = localStorage.getItem("printer.mode");
     if (stored === "plain" || stored === "styled") {
       this.printerMode = stored as "plain" | "styled";
@@ -48,24 +56,34 @@ export class SettingsComponent implements OnInit {
       localStorage.setItem("printer.mode", this.printerMode);
     }
 
-    // Load user preferences
-    try {
-      const dn = localStorage.getItem("user.displayName");
-      const ul = localStorage.getItem("user.language");
-      const up = localStorage.getItem("user.printer.mode");
-      if (dn) this.displayName = dn;
-      if (ul) {
-        this.preferredLang = ul;
-        // apply preferred language immediately
-        this.translationService.setLanguage(ul);
-      } else {
+    // Load user preferences from database
+    this.userService.getUserSettings().subscribe({
+      next: (settings) => {
+        this.displayName = settings.displayName || "";
+        this.preferredLang =
+          settings.language || this.translationService.current || "en";
+        this.userPrinterMode = settings.printerMode || "inherit";
+        this.selectedCurrency =
+          settings.currency || this.currencyService.getCode();
+
+        // Apply language immediately
+        if (this.preferredLang) {
+          this.translationService.setLanguage(this.preferredLang);
+        }
+
+        // Apply currency immediately
+        if (this.selectedCurrency) {
+          this.currencyService.setCurrency(this.selectedCurrency);
+        }
+      },
+      error: (err) => {
+        console.error("Failed to load user settings:", err);
+        // Fallback to defaults
         this.preferredLang = this.translationService.current || "en";
-      }
-      if (up === "plain" || up === "styled") this.userPrinterMode = up as any;
-      else this.userPrinterMode = "inherit";
-    } catch (e) {
-      // ignore storage errors
-    }
+        this.selectedCurrency = this.currencyService.getCode();
+        this.userPrinterMode = "inherit";
+      },
+    });
   }
 
   setPrinterMode(mode: "plain" | "styled") {
@@ -74,27 +92,37 @@ export class SettingsComponent implements OnInit {
   }
 
   saveUserSettings() {
-    try {
-      localStorage.setItem("user.displayName", this.displayName || "");
-      if (this.preferredLang) {
-        localStorage.setItem("user.language", this.preferredLang);
-        this.translationService.setLanguage(this.preferredLang);
-      }
-      if (this.userPrinterMode === "inherit") {
-        localStorage.removeItem("user.printer.mode");
-      } else {
-        localStorage.setItem("user.printer.mode", this.userPrinterMode);
-      }
-      // Optionally, reflect user printer mode as current global fallback
-      // if user wants it to immediately apply for demo, leave as-is.
-      alert(this.translationService.translate("SETTINGS.SAVED") || "Saved");
-    } catch (e) {
-      console.error("Failed to save user settings", e);
-      alert(
-        this.translationService.translate("SETTINGS.SAVE_FAILED") ||
-          "Save failed"
-      );
-    }
+    const settings = {
+      displayName: this.displayName || "",
+      language: this.preferredLang,
+      printerMode: this.userPrinterMode,
+      currency: this.selectedCurrency,
+    };
+
+    this.userService.updateUserSettings(settings).subscribe({
+      next: (user) => {
+        // Apply settings immediately
+        if (this.preferredLang) {
+          this.translationService.setLanguage(this.preferredLang);
+        }
+        if (this.selectedCurrency) {
+          this.currencyService.setCurrency(this.selectedCurrency);
+        }
+
+        this.toastService.show(
+          this.translationService.translate("SETTINGS.SAVED") || "Saved",
+          "success"
+        );
+      },
+      error: (err) => {
+        console.error("Failed to save user settings", err);
+        this.toastService.show(
+          this.translationService.translate("SETTINGS.SAVE_FAILED") ||
+            "Save failed",
+          "error"
+        );
+      },
+    });
   }
 
   previewReceipt() {

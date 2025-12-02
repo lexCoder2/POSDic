@@ -2,9 +2,11 @@ import { Component, OnInit, signal, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { SaleService } from "../../services/sale.service";
 import { ProductService } from "../../services/product.service";
 import { Sale, Product } from "../../models";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 interface ChartData {
   labels: string[];
@@ -22,7 +24,13 @@ interface SalesAnalytics {
 @Component({
   selector: "app-statistics",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    CurrencyPipe,
+    PageTitleComponent,
+  ],
   templateUrl: "./statistics.component.html",
   styleUrls: ["./statistics.component.scss"],
 })

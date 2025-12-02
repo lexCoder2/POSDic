@@ -13,19 +13,11 @@
   </div>
 
   <div class="tabs">
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'fast'"
-      (click)="setTab('fast')"
-    >
+    <button class="tab-button" [class.active]="activeTab === 'fast'" (click)="setTab('fast')">
       {{ "FAST_CASHIER.TITLE" | translate }}
     </button>
 
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'pos'"
-      (click)="setTab('pos')"
-    >
+    <button class="tab-button" [class.active]="activeTab === 'pos'" (click)="setTab('pos')">
       {{ "POS_SALES" | translate }}
     </button>
   </div>
@@ -54,11 +46,8 @@
           <div *ngFor="let it of currentCart()" class="item-row">
             <div class="col product">
               <div class="product-image">
-                <img
-                  src="/assets/placeholder-product.png"
-                  [alt]="it.description || it.product?.name || 'product'"
-                  loading="lazy"
-                />
+                <img src="/assets/placeholder-product.png" [alt]="it.description || it.product?.name || 'product'"
+                  loading="lazy" />
               </div>
 
               <div class="text">
@@ -92,7 +81,7 @@
               </div>
               <div class="value">
                 {{
-                  currentCartSubtotal | currency : "MXN" : "symbol" : "1.2-2"
+                currentCartSubtotal | currency : "MXN" : "symbol" : "1.2-2"
                 }}
               </div>
             </div>
@@ -103,7 +92,7 @@
               </div>
               <div class="value">
                 -{{
-                  currentCartDiscount | currency : "MXN" : "symbol" : "1.2-2"
+                currentCartDiscount | currency : "MXN" : "symbol" : "1.2-2"
                 }}
               </div>
             </div>
@@ -153,15 +142,10 @@
           <div *ngFor="let it of items" class="item-row">
             <div class="col product">
               <div class="product-image">
-                <img
-                  [src]="
-                    it.product.image_url ||
-                    it.product.local_image ||
-                    '/src/assets/placeholder-product.png'
-                  "
-                  [alt]="it.product.name"
-                  loading="lazy"
-                />
+                <img [src]="
+                   `${apiUrl}/${it.product.local_image}` ||
+                    '/assets/placeholder-product.png'
+                  " [alt]="it.product.name" loading="lazy" />
               </div>
 
               <div class="text">
