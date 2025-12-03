@@ -19,11 +19,13 @@ Complete guide to deploy the POS System on an Ubuntu server with Nginx as a reve
 ## Prerequisites
 
 ### Local Machine (Build Machine)
+
 - Node.js 18+ and npm
 - Git
 - Access to project repository
 
 ### Ubuntu Server (20.04 LTS or newer)
+
 - Root or sudo access
 - Minimum 2GB RAM, 20GB disk space
 - Public IP address (for internet access)
@@ -116,108 +118,121 @@ sudo nano /etc/mongod.conf
 ```
 
 Add:
+
 ```yaml
 security:
   authorization: enabled
 ```
 
 Restart MongoDB:
+
 ```bash
 sudo systemctl restart mongod
 ```
 
 ---
 
-## Building the Application
+## Configuring Production Environment
 
-### 1. Clone Repository (on local machine)
+Before deploying, you need to configure the production environment settings.
+
+### Option 1: Configure in Repository (Recommended)
 
 ```bash
+# Clone repository locally first
 git clone https://github.com/lexCoder2/POSDic.git
 cd POSDic
-```
 
-### 2. Configure Production Environment
-
-**Frontend:**
-```bash
-# Copy and edit production environment
+# Configure frontend environment
 cp deployment/environment.prod.example.ts src/environments/environment.prod.ts
 nano src/environments/environment.prod.ts
+
+# Update apiUrl to your domain
+# production: true,
+# apiUrl: 'https://yourdomain.com/api',
+
+# Commit changes
+git add src/environments/environment.prod.ts
+git commit -m "Configure production environment"
+git push origin main
 ```
 
-Update `apiUrl` to your domain:
-```typescript
-export const environment = {
-  production: true,
-  apiUrl: 'https://yourdomain.com/api',  // Change this
-  // ... other settings
-};
-```
+### Option 2: Configure on Server (After Deployment)
 
-### 3. Build the Application
-
-```bash
-# Make build script executable
-chmod +x deployment/scripts/build.sh
-
-# Run build
-./deployment/scripts/build.sh
-```
-
-This creates a timestamped archive file (e.g., `posdic-20241202_143022.tar.gz`).
+You can also configure after initial deployment by editing files in `/var/www/posdic/repo/`
 
 ---
 
 ## Deploying to Server
 
-### 1. Upload Files to Server
-
-```bash
-# Using SCP
-scp posdic-*.tar.gz user@your-server-ip:/tmp/
-
-# Upload deployment files
-scp -r deployment user@your-server-ip:/tmp/
-```
-
-### 2. SSH into Server
+### 1. SSH into Server
 
 ```bash
 ssh user@your-server-ip
+```
+
+### 2. Get Deployment Scripts
+
+For **public repositories**:
+
+```bash
 cd /tmp
+git clone https://github.com/lexCoder2/POSDic.git posdic-deploy
+cd posdic-deploy
 ```
 
-### 3. Configure Backend Environment
+For **private repositories**:
 
 ```bash
-# Create .env file
-sudo nano /var/www/posdic/backend/.env
+# Setup SSH deploy key first
+cd /tmp
+git clone https://github.com/lexCoder2/POSDic.git posdic-deploy
+cd posdic-deploy
+chmod +x deployment/scripts/setup-ssh-key.sh
+sudo ./deployment/scripts/setup-ssh-key.sh
+
+# Follow instructions to add the key to GitHub
+# Then edit deploy.sh to use SSH URL:
+sudo nano deployment/scripts/deploy.sh
+# Change GIT_REPO="https://github.com/..."
+# to GIT_REPO="git@github.com:lexCoder2/POSDic.git"
 ```
 
-Copy content from `deployment/.env.production.example` and update:
-- `MONGODB_URI` - Your MongoDB connection string
-- `JWT_SECRET` - Generate with: `openssl rand -base64 32`
-- `CORS_ORIGIN` - Your domain (e.g., `https://yourdomain.com`)
-
-### 4. Run Deployment Script
+### 3. Run Initial Deployment
 
 ```bash
-# Make scripts executable
 chmod +x deployment/scripts/*.sh
-
-# Run deployment
 sudo ./deployment/scripts/deploy.sh
 ```
 
 The script will:
-- Extract the archive
-- Deploy frontend to `/var/www/posdic/frontend`
-- Deploy backend to `/var/www/posdic/backend`
-- Install dependencies
+
+- Clone repository to `/var/www/posdic/repo`
+- Build Angular frontend on the server
+- Install backend dependencies
+- Deploy to `/var/www/posdic/frontend` and `/var/www/posdic/backend`
 - Configure systemd service
 - Configure Nginx
 - Start all services
+
+### 4. Configure Backend Environment
+
+```bash
+# Edit .env file
+sudo nano /var/www/posdic/backend/.env
+```
+
+Update these values:
+
+- `MONGODB_URI` - Your MongoDB connection string
+- `JWT_SECRET` - Generate with: `openssl rand -base64 32`
+- `CORS_ORIGIN` - Your domain (e.g., `https://yourdomain.com`)
+
+Then restart the backend:
+
+```bash
+sudo systemctl restart posdic-backend
+```
 
 ### 5. Update Nginx Configuration
 
@@ -226,6 +241,7 @@ sudo nano /etc/nginx/sites-available/posdic
 ```
 
 Update these lines:
+
 - Replace `your-domain.com` with your actual domain
 - Comment out SSL lines if not using SSL yet
 
@@ -234,6 +250,7 @@ server_name yourdomain.com www.yourdomain.com;  # Change this
 ```
 
 Test and reload:
+
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
@@ -316,6 +333,7 @@ Should return: `{"status":"ok"}`
 Open browser and navigate to: `https://yourdomain.com`
 
 Default login (if using seeded data):
+
 - **Admin**: `admin` / `admin123`
 - **Manager**: `manager` / `manager123`
 - **Cashier**: `cashier` / `cashier123`
@@ -326,19 +344,44 @@ Default login (if using seeded data):
 
 ### Update Application
 
+**Method 1: Git Pull (Recommended)**
+
 ```bash
-# On local machine: build new version
-./deployment/scripts/build.sh
+# SSH to server
+ssh user@server
 
-# Upload to server
-scp posdic-*.tar.gz user@server:/tmp/
+# Update from Git and rebuild
+sudo /var/www/posdic/repo/deployment/scripts/update.sh
 
-# On server: create backup first
-cd /tmp
-sudo ./deployment/scripts/backup.sh
+# The script will:
+# - Pull latest changes
+# - Rebuild frontend if needed
+# - Update backend dependencies if changed
+# - Restart services
+```
 
-# Deploy update
+**Method 2: Specific Branch/Commit**
+
+```bash
+# Switch to a specific branch
+cd /var/www/posdic/repo
+sudo -u www-data git fetch origin
+sudo -u www-data git checkout develop
 sudo ./deployment/scripts/update.sh
+
+# Or checkout a specific commit/tag
+sudo -u www-data git checkout v1.2.0
+sudo ./deployment/scripts/update.sh
+```
+
+**Method 3: From Scratch (if needed)**
+
+```bash
+# Download latest deploy script
+cd /tmp
+git clone https://github.com/lexCoder2/POSDic.git posdic-latest
+cd posdic-latest
+sudo ./deployment/scripts/deploy.sh
 ```
 
 ### Backup Data
@@ -515,6 +558,7 @@ sudo systemctl reload nginx
 ### Enable HTTP/2
 
 Already enabled in provided Nginx config:
+
 ```nginx
 listen 443 ssl http2;
 ```
@@ -522,6 +566,7 @@ listen 443 ssl http2;
 ### Enable Gzip Compression
 
 Already enabled in provided Nginx config. Verify:
+
 ```bash
 curl -H "Accept-Encoding: gzip" -I https://yourdomain.com
 # Should see: Content-Encoding: gzip
@@ -577,6 +622,7 @@ pm2 monit
 ## Support
 
 For issues or questions:
+
 1. Check logs (backend, nginx, mongodb)
 2. Review this troubleshooting guide
 3. Check GitHub issues: https://github.com/lexCoder2/POSDic/issues

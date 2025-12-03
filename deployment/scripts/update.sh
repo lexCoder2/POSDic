@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Quick update script - Updates only the code without full redeployment
+# Quick update script - Git pull and rebuild
 # Use this for quick updates after initial deployment
 #
 
@@ -10,13 +10,18 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
+DEPLOY_USER="www-data"
 APP_DIR="/var/www/posdic"
+REPO_DIR="$APP_DIR/repo"
+FRONTEND_DIR="$APP_DIR/frontend"
 BACKEND_DIR="$APP_DIR/backend"
+GIT_BRANCH="${GIT_BRANCH:-main}"
 
-echo -e "${YELLOW}Quick Update - POS System${NC}"
+echo -e "${BLUE}Quick Update - POS System${NC}"
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then 
@@ -24,40 +29,84 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Find archive
-ARCHIVE=$(ls -t posdic-*.tar.gz 2>/dev/null | head -n1)
-if [ -z "$ARCHIVE" ]; then
-    echo -e "${RED}Error: No deployment archive found${NC}"
+# Check if repository exists
+if [ ! -d "$REPO_DIR/.git" ]; then
+    echo -e "${RED}Error: Repository not found. Run deploy.sh first${NC}"
     exit 1
 fi
 
-echo "Using: $ARCHIVE"
+# Pull latest changes
+echo -e "\n${YELLOW}[1/6] Pulling latest changes from Git...${NC}"
+cd "$REPO_DIR"
+BEFORE_HASH=$(git rev-parse --short HEAD)
+sudo -u $DEPLOY_USER git fetch origin
+sudo -u $DEPLOY_USER git checkout $GIT_BRANCH
+sudo -u $DEPLOY_USER git pull origin $GIT_BRANCH
+AFTER_HASH=$(git rev-parse --short HEAD)
 
-# Extract
-tar -xzf "$ARCHIVE" -C /tmp/
+if [ "$BEFORE_HASH" = "$AFTER_HASH" ]; then
+    echo -e "${BLUE}No changes detected ($BEFORE_HASH)${NC}"
+else
+    echo -e "${GREEN}✓ Updated from $BEFORE_HASH to $AFTER_HASH${NC}"
+fi
+
+# Build frontend
+echo -e "\n${YELLOW}[2/6] Building frontend...${NC}"
+cd "$REPO_DIR"
+# Check if package.json changed
+if ! git diff --quiet $BEFORE_HASH $AFTER_HASH -- package.json package-lock.json 2>/dev/null; then
+    echo "Dependencies changed, reinstalling..."
+    sudo -u $DEPLOY_USER npm install
+else
+    echo "Dependencies unchanged, skipping npm install"
+fi
+sudo -u $DEPLOY_USER npm run build -- --configuration production
+echo -e "${GREEN}✓ Frontend built${NC}"
 
 # Update frontend
-echo -e "\n${YELLOW}Updating frontend...${NC}"
-rm -rf "$APP_DIR/frontend"/*
-cp -r /tmp/dist/pos-system/browser/* "$APP_DIR/frontend/"
-chown -R www-data:www-data "$APP_DIR/frontend"
+echo -e "\n${YELLOW}[3/6] Deploying frontend...${NC}"
+rm -rf "$FRONTEND_DIR"/*
+cp -r "$REPO_DIR/dist/pos-system/browser"/* "$FRONTEND_DIR/"
+chown -R $DEPLOY_USER:$DEPLOY_USER "$FRONTEND_DIR"
+echo -e "${GREEN}✓ Frontend deployed${NC}"
 
 # Update backend (preserve .env)
-echo -e "${YELLOW}Updating backend...${NC}"
+echo -e "\n${YELLOW}[4/6] Deploying backend...${NC}"
 cp "$BACKEND_DIR/.env" "/tmp/.env.backup"
-rm -rf "$BACKEND_DIR"/*
-cp -r /tmp/server/* "$BACKEND_DIR/"
+rsync -av --delete --exclude='node_modules' --exclude='.env' "$REPO_DIR/server/" "$BACKEND_DIR/"
 cp "/tmp/.env.backup" "$BACKEND_DIR/.env"
+rm -f "/tmp/.env.backup"
+
+# Check if backend dependencies changed
 cd "$BACKEND_DIR"
-npm install --production
-chown -R www-data:www-data "$BACKEND_DIR"
+if ! git -C "$REPO_DIR" diff --quiet $BEFORE_HASH $AFTER_HASH -- server/package.json server/package-lock.json 2>/dev/null; then
+    echo "Backend dependencies changed, reinstalling..."
+    npm install --production
+else
+    echo "Backend dependencies unchanged, skipping npm install"
+fi
+chown -R $DEPLOY_USER:$DEPLOY_USER "$BACKEND_DIR"
+echo -e "${GREEN}✓ Backend deployed${NC}"
 
 # Restart services
-echo -e "${YELLOW}Restarting services...${NC}"
+echo -e "\n${YELLOW}[5/6] Restarting services...${NC}"
 systemctl restart posdic-backend
 systemctl reload nginx
 
-# Cleanup
-rm -rf /tmp/dist /tmp/server /tmp/.env.backup
+if systemctl is-active --quiet posdic-backend; then
+    echo -e "${GREEN}✓ Services restarted${NC}"
+else
+    echo -e "${RED}✗ Backend service failed to start${NC}"
+    echo "Check logs: journalctl -u posdic-backend -n 50"
+    exit 1
+fi
 
-echo -e "${GREEN}✓ Update complete!${NC}"
+# Show changes
+echo -e "\n${YELLOW}[6/6] Deployment summary...${NC}"
+if [ "$BEFORE_HASH" != "$AFTER_HASH" ]; then
+    echo -e "${BLUE}Changes deployed:${NC}"
+    git -C "$REPO_DIR" log --oneline $BEFORE_HASH..$AFTER_HASH | head -n 10
+fi
+
+echo -e "\n${GREEN}✓ Update complete!${NC}"
+echo "Current commit: $AFTER_HASH"

@@ -4,34 +4,48 @@ Fast reference for deploying updates and common operations.
 
 ## Quick Commands
 
-### Build & Deploy (First Time)
+### Initial Deployment (Git-based)
 
 ```bash
-# On local machine
-./deployment/scripts/build.sh
-scp posdic-*.tar.gz user@server:/tmp/
-scp -r deployment user@server:/tmp/
-
-# On server
+# On server - First time setup
 ssh user@server
-cd /tmp
+sudo apt update && sudo apt install -y git nodejs npm nginx mongodb-org
+
+# Clone and deploy
+git clone https://github.com/lexCoder2/POSDic.git /tmp/posdic-deploy
+cd /tmp/posdic-deploy
 chmod +x deployment/scripts/*.sh
 sudo ./deployment/scripts/deploy.sh
+
+# For private repos, setup SSH key first:
+# sudo ./deployment/scripts/setup-ssh-key.sh
 ```
 
 ### Update Existing Deployment
 
 ```bash
-# Local: build
-./deployment/scripts/build.sh
+# SSH to server
+ssh user@server
 
-# Upload
+# Pull latest and rebuild
+sudo /var/www/posdic/repo/deployment/scripts/update.sh
+
+# Or from any location
+cd /tmp
+git clone https://github.com/lexCoder2/POSDic.git posdic-latest
+cd posdic-latest
+sudo ./deployment/scripts/update.sh
+```
+
+### Alternative: Local Build & Upload
+
+```bash
+# On local machine
+./deployment/scripts/build.sh
 scp posdic-*.tar.gz user@server:/tmp/
 
-# Server: update
-ssh user@server
-cd /tmp
-sudo ./deployment/scripts/update.sh
+# Note: deploy.sh now uses Git, not archives
+# Use the Git-based workflow instead
 ```
 
 ## Service Management
@@ -74,18 +88,21 @@ sudo ./deployment/scripts/rollback.sh
 ## Common Issues
 
 ### Backend not starting
+
 ```bash
 sudo journalctl -u posdic-backend -n 50
 sudo systemctl status mongod
 ```
 
 ### 502 Bad Gateway
+
 ```bash
 sudo systemctl status posdic-backend
 sudo netstat -tlnp | grep 3000
 ```
 
 ### SSL Issues
+
 ```bash
 sudo certbot renew
 sudo nginx -t
@@ -93,9 +110,25 @@ sudo nginx -t
 
 ## File Locations
 
-- **Frontend**: `/var/www/posdic/frontend`
-- **Backend**: `/var/www/posdic/backend`
+- **Repository**: `/var/www/posdic/repo` (Git working directory)
+- **Frontend**: `/var/www/posdic/frontend` (Built files served by Nginx)
+- **Backend**: `/var/www/posdic/backend` (Production Node.js app)
 - **Logs**: `/var/log/posdic/`
 - **Nginx Config**: `/etc/nginx/sites-available/posdic`
 - **Service**: `/etc/systemd/system/posdic-backend.service`
 - **Backups**: `/var/backups/posdic/`
+
+## Git Operations
+
+```bash
+# Check current commit
+cd /var/www/posdic/repo && git log -1 --oneline
+
+# Switch branch
+cd /var/www/posdic/repo
+sudo -u www-data git checkout develop
+sudo ./deployment/scripts/update.sh
+
+# View deployment history
+cd /var/www/posdic/repo && git log --oneline -10
+```
