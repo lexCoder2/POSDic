@@ -27,27 +27,33 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Check if repository exists
-if [ ! -d "$REPO_DIR" ]; then
-    echo -e "${RED}Error: Repository not found at $REPO_DIR${NC}"
+if [ ! -d \"$REPO_DIR\" ]; then
+    echo -e \"${RED}Error: Repository not found at $REPO_DIR${NC}\"
     exit 1
 fi
 
-# Configure Git safe directory
-git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
+# Fix npm cache permissions
+NPM_CACHE_DIR=\"/var/www/.npm\"
+if [ -d \"$NPM_CACHE_DIR\" ]; then
+    chown -R $DEPLOY_USER:$DEPLOY_USER \"$NPM_CACHE_DIR\" 2>/dev/null || true
+fi
 
-cd "$REPO_DIR"
+# Configure Git safe directory
+git config --global --add safe.directory \"$REPO_DIR\" 2>/dev/null || true
+
+cd \"$REPO_DIR\"
 # Ensure ownership is correct
-chown -R $DEPLOY_USER:$DEPLOY_USER "$REPO_DIR"
+chown -R $DEPLOY_USER:$DEPLOY_USER \"$REPO_DIR\"
 
 # Install dependencies
-echo -e "\n${YELLOW}[1/3] Installing dependencies...${NC}"
-sudo -u $DEPLOY_USER npm install
+echo -e \"\\n${YELLOW}[1/3] Installing dependencies...${NC}\"
+sudo -u $DEPLOY_USER HOME=/var/www npm install --prefer-offline --no-audit 2>&1 | grep -v \"npm warn tar\" || true
 echo -e "${GREEN}✓ Dependencies installed${NC}"
 
 # Build
-echo -e "\n${YELLOW}[2/3] Building Angular application...${NC}"
-sudo -u $DEPLOY_USER npm run build -- --configuration production
-echo -e "${GREEN}✓ Build complete${NC}"
+echo -e \"\\n${YELLOW}[2/3] Building Angular application...${NC}\"
+sudo -u $DEPLOY_USER HOME=/var/www npm run build -- --configuration production
+echo -e \"${GREEN}✓ Build complete${NC}\"
 
 # Deploy
 echo -e "\n${YELLOW}[3/3] Deploying to frontend directory...${NC}"

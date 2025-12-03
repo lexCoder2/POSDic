@@ -57,6 +57,13 @@ echo -e "\n${YELLOW}[1/9] Creating directories...${NC}"
 mkdir -p "$FRONTEND_DIR" "$BACKEND_DIR" "$LOG_DIR" "$REPO_DIR"
 chown -R $DEPLOY_USER:$DEPLOY_USER "$APP_DIR" "$LOG_DIR"
 
+# Fix npm cache permissions
+NPM_CACHE_DIR="/var/www/.npm"
+if [ -d "$NPM_CACHE_DIR" ]; then
+    echo "Fixing npm cache permissions..."
+    chown -R $DEPLOY_USER:$DEPLOY_USER "$NPM_CACHE_DIR"
+fi
+
 # Configure Git safe directory
 git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
 
@@ -88,10 +95,11 @@ cd "$REPO_DIR"
 # Install dependencies if node_modules doesn't exist or package.json changed
 if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ]; then
     echo "Installing frontend dependencies..."
-    sudo -u $DEPLOY_USER npm install
+    # Set HOME for www-data to avoid cache permission issues
+    sudo -u $DEPLOY_USER HOME=/var/www npm install --prefer-offline --no-audit 2>&1 | grep -v "npm warn tar" || true
 fi
 echo "Building Angular application..."
-sudo -u $DEPLOY_USER npm run build -- --configuration production
+sudo -u $DEPLOY_USER HOME=/var/www npm run build -- --configuration production
 echo -e "${GREEN}✓ Frontend built${NC}"
 
 # Deploy frontend
@@ -128,7 +136,7 @@ fi
 # Install backend dependencies
 cd "$BACKEND_DIR"
 echo "Installing backend dependencies..."
-npm install --production
+sudo -u $DEPLOY_USER HOME=/var/www npm install --production --prefer-offline --no-audit 2>&1 | grep -v "npm warn tar" || true
 chown -R $DEPLOY_USER:$DEPLOY_USER "$BACKEND_DIR"
 echo -e "${GREEN}✓ Backend deployed${NC}"
 

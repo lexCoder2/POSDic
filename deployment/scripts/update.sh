@@ -35,6 +35,12 @@ if [ ! -d "$REPO_DIR/.git" ]; then
     exit 1
 fi
 
+# Fix npm cache permissions
+NPM_CACHE_DIR="/var/www/.npm"
+if [ -d "$NPM_CACHE_DIR" ]; then
+    chown -R $DEPLOY_USER:$DEPLOY_USER "$NPM_CACHE_DIR" 2>/dev/null || true
+fi
+
 # Configure Git safe directory
 git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
 
@@ -61,11 +67,11 @@ cd "$REPO_DIR"
 # Check if package.json changed
 if ! git diff --quiet $BEFORE_HASH $AFTER_HASH -- package.json package-lock.json 2>/dev/null; then
     echo "Dependencies changed, reinstalling..."
-    sudo -u $DEPLOY_USER npm install
+    sudo -u $DEPLOY_USER HOME=/var/www npm install --prefer-offline --no-audit 2>&1 | grep -v "npm warn tar" || true
 else
     echo "Dependencies unchanged, skipping npm install"
 fi
-sudo -u $DEPLOY_USER npm run build -- --configuration production
+sudo -u $DEPLOY_USER HOME=/var/www npm run build -- --configuration production
 echo -e "${GREEN}✓ Frontend built${NC}"
 
 # Update frontend
@@ -86,7 +92,7 @@ rm -f "/tmp/.env.backup"
 cd "$BACKEND_DIR"
 if ! git -C "$REPO_DIR" diff --quiet $BEFORE_HASH $AFTER_HASH -- server/package.json server/package-lock.json 2>/dev/null; then
     echo "Backend dependencies changed, reinstalling..."
-    npm install --production
+    sudo -u $DEPLOY_USER HOME=/var/www npm install --production --prefer-offline --no-audit 2>&1 | grep -v "npm warn tar" || true
 else
     echo "Backend dependencies unchanged, skipping npm install"
 fi
