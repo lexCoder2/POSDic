@@ -32,7 +32,12 @@ if [ ! -d "$REPO_DIR" ]; then
     exit 1
 fi
 
+# Configure Git safe directory
+git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
+
 cd "$REPO_DIR"
+# Ensure ownership is correct
+chown -R $DEPLOY_USER:$DEPLOY_USER "$REPO_DIR"
 
 # Install dependencies
 echo -e "\n${YELLOW}[1/3] Installing dependencies...${NC}"

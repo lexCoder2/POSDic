@@ -35,14 +35,19 @@ if [ ! -d "$REPO_DIR/.git" ]; then
     exit 1
 fi
 
+# Configure Git safe directory
+git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
+
 # Pull latest changes
 echo -e "\n${YELLOW}[1/6] Pulling latest changes from Git...${NC}"
 cd "$REPO_DIR"
-BEFORE_HASH=$(git rev-parse --short HEAD)
+# Ensure ownership is correct
+chown -R $DEPLOY_USER:$DEPLOY_USER "$REPO_DIR"
+BEFORE_HASH=$(sudo -u $DEPLOY_USER git rev-parse --short HEAD)
 sudo -u $DEPLOY_USER git fetch origin
 sudo -u $DEPLOY_USER git checkout $GIT_BRANCH
 sudo -u $DEPLOY_USER git pull origin $GIT_BRANCH
-AFTER_HASH=$(git rev-parse --short HEAD)
+AFTER_HASH=$(sudo -u $DEPLOY_USER git rev-parse --short HEAD)
 
 if [ "$BEFORE_HASH" = "$AFTER_HASH" ]; then
     echo -e "${BLUE}No changes detected ($BEFORE_HASH)${NC}"
@@ -105,7 +110,7 @@ fi
 echo -e "\n${YELLOW}[6/6] Deployment summary...${NC}"
 if [ "$BEFORE_HASH" != "$AFTER_HASH" ]; then
     echo -e "${BLUE}Changes deployed:${NC}"
-    git -C "$REPO_DIR" log --oneline $BEFORE_HASH..$AFTER_HASH | head -n 10
+    sudo -u $DEPLOY_USER git -C "$REPO_DIR" log --oneline $BEFORE_HASH..$AFTER_HASH | head -n 10
 fi
 
 echo -e "\n${GREEN}✓ Update complete!${NC}"

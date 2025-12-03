@@ -57,11 +57,16 @@ echo -e "\n${YELLOW}[1/9] Creating directories...${NC}"
 mkdir -p "$FRONTEND_DIR" "$BACKEND_DIR" "$LOG_DIR" "$REPO_DIR"
 chown -R $DEPLOY_USER:$DEPLOY_USER "$APP_DIR" "$LOG_DIR"
 
+# Configure Git safe directory
+git config --global --add safe.directory "$REPO_DIR" 2>/dev/null || true
+
 # Clone or pull repository
 echo -e "\n${YELLOW}[2/9] Getting code from Git...${NC}"
 if [ -d "$REPO_DIR/.git" ]; then
     echo "Repository exists, pulling latest changes..."
     cd "$REPO_DIR"
+    # Ensure ownership is correct
+    chown -R $DEPLOY_USER:$DEPLOY_USER "$REPO_DIR"
     sudo -u $DEPLOY_USER git fetch origin
     sudo -u $DEPLOY_USER git checkout $GIT_BRANCH
     sudo -u $DEPLOY_USER git pull origin $GIT_BRANCH
@@ -74,7 +79,7 @@ else
 fi
 
 cd "$REPO_DIR"
-COMMIT_HASH=$(git rev-parse --short HEAD)
+COMMIT_HASH=$(sudo -u $DEPLOY_USER git rev-parse --short HEAD)
 echo -e "${BLUE}Current commit: $COMMIT_HASH${NC}"
 
 # Build frontend
