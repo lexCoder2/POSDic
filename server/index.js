@@ -112,21 +112,46 @@ const startServer = async () => {
     const PORT = process.env.PORT || 3001;
     const HOST = "0.0.0.0"; // Listen on all network interfaces
 
-    // Load SSL certificates
-    const httpsOptions = {
-      key: fs.readFileSync(path.join(__dirname, "certs", "localhost-key.pem")),
-      cert: fs.readFileSync(
-        path.join(__dirname, "certs", "localhost-cert.pem")
-      ),
-    };
+    // In production, run HTTP (nginx handles SSL termination)
+    // In development, run HTTPS with local certificates
+    if (process.env.NODE_ENV === "production") {
+      const http = require("http");
+      http.createServer(app).listen(PORT, HOST, () => {
+        console.log(`HTTP Server is running on port ${PORT}`);
+        console.log(`Local: http://localhost:${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV}`);
+        console.log("Ready to accept requests!");
+      });
+    } else {
+      // Development mode - use HTTPS with local certificates
+      const certsPath = path.join(__dirname, "certs");
+      const keyPath = path.join(certsPath, "localhost-key.pem");
+      const certPath = path.join(certsPath, "localhost-cert.pem");
 
-    // Create HTTPS server
-    https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
-      console.log(`HTTPS Server is running on port ${PORT}`);
-      console.log(`Local: https://localhost:${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV}`);
-      console.log("Ready to accept requests!");
-    });
+      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        const httpsOptions = {
+          key: fs.readFileSync(keyPath),
+          cert: fs.readFileSync(certPath),
+        };
+
+        https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
+          console.log(`HTTPS Server is running on port ${PORT}`);
+          console.log(`Local: https://localhost:${PORT}`);
+          console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+          console.log("Ready to accept requests!");
+        });
+      } else {
+        // Fallback to HTTP if no certs
+        const http = require("http");
+        console.warn("SSL certificates not found, starting HTTP server...");
+        http.createServer(app).listen(PORT, HOST, () => {
+          console.log(`HTTP Server is running on port ${PORT}`);
+          console.log(`Local: http://localhost:${PORT}`);
+          console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+          console.log("Ready to accept requests!");
+        });
+      }
+    }
   } catch (error) {
     console.error("Failed to start server:", error.message);
     process.exit(1);
