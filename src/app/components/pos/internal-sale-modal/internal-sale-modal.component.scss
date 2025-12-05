@@ -1,0 +1,241 @@
+@use "../../../../styles/theme" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $spacing-lg;
+}
+
+.modal-content {
+  background: $white;
+  border-radius: $radius-2xl;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: $shadow-xl;
+  @include smooth-scroll;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xl;
+  background: $gradient-primary;
+  color: $white;
+  border-radius: $radius-2xl $radius-2xl 0 0;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .btn-close {
+    @include button-base;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: $radius-full;
+    background: rgba($white, 0.2);
+    color: $white;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba($white, 0.3);
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-xl;
+}
+
+.modal-footer {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: $bg-tertiary;
+  border-radius: 0 0 $radius-2xl $radius-2xl;
+
+  .btn-cancel {
+    @include button-secondary;
+    flex: 1;
+    background: $white;
+    color: $gray-500;
+    border: 2px solid $border-color;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+
+  .btn-complete {
+    @include button-primary;
+    flex: 1;
+    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba($success, 0.3);
+    }
+  }
+}
+
+// Internal Sale Warning
+.internal-sale-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: rgba($warning, 0.1);
+  border: 2px solid $warning;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-xl;
+
+  i {
+    color: $warning;
+    font-size: $font-size-3xl;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    color: $warning-dark;
+    font-size: $font-size-sm;
+    line-height: $line-height-normal;
+  }
+}
+
+// Cart Summary
+.cart-summary {
+  margin-bottom: $spacing-xl;
+
+  h4 {
+    margin: 0 0 $spacing-lg;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+  }
+
+  .item-list {
+    background: $bg-tertiary;
+    border-radius: $radius-md;
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+  }
+
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .item-name {
+      flex: 1;
+      font-size: $font-size-sm;
+      color: $gray-700;
+    }
+
+    .item-qty {
+      font-size: $font-size-sm;
+      color: $gray-500;
+      margin: 0 $spacing-lg;
+    }
+
+    .item-price {
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+    }
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-lg;
+    background: linear-gradient(135deg, $secondary 0%, $secondary-dark 100%);
+    border-radius: $radius-md;
+    color: $white;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-xl;
+
+    .total-amount {
+      font-size: $font-size-2xl;
+    }
+  }
+}
+
+// Form Group
+.form-group {
+  margin-bottom: $spacing-lg;
+
+  label {
+    display: block;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-sm;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: $spacing-md;
+    border: 2px solid $border-light;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    transition: $transition-all;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      @include focus-ring($primary);
+    }
+  }
+}
+
+// Limit Info
+.limit-info {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: rgba($info, 0.1);
+  border-radius: $radius-sm;
+  color: $info-dark;
+  font-size: $font-size-sm;
+  margin-top: $spacing-lg;
+
+  i {
+    color: $info;
+  }
+}
+
+// Internal Sale Button
+.btn-internal {
+  @include button-primary;
+  background: linear-gradient(135deg, $secondary 0%, $secondary-dark 100%);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba($secondary, 0.4);
+  }
+}

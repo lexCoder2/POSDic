@@ -1,23 +1,49 @@
 <div class="cashier-container">
+  <!-- Register Warning Banner -->
+  <div class="register-warning" *ngIf="!currentRegister()">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ "CASHIER.REGISTER_WARNING" | translate }}</span>
+    <a routerLink="/registers" class="open-register-link">
+      {{ "CASHIER.OPEN_REGISTER" | translate }}
+    </a>
+  </div>
+
   <div class="cashier-content">
     <!-- Mobile Tabs (calculator / sales) -->
     <div class="mobile-tabs" role="tablist" aria-label="Cashier Tabs">
-      <button type="button" class="tab-btn" role="tab" aria-selected="{{ activeTab() === 'calculator' }}"
-        (click)="activeTab.set('calculator')">
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        aria-selected="{{ activeTab() === 'calculator' }}"
+        (click)="activeTab.set('calculator')"
+      >
         <i class="fas fa-calculator"></i>
         <span>Calc</span>
       </button>
-      <button type="button" class="tab-btn" role="tab" aria-selected="{{ activeTab() === 'sales' }}"
-        (click)="activeTab.set('sales')">
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        aria-selected="{{ activeTab() === 'sales' }}"
+        (click)="activeTab.set('sales')"
+      >
         <i class="fas fa-list"></i>
         <span>Sales</span>
       </button>
     </div>
     <!-- Left Side - Calculator -->
-    <div class="calculator-section" [class.mobile-hidden]="activeTab() !== 'calculator'">
-      <app-calculator [lastItemPrice]="getLastItemPrice()" [itemsCount]="items().length"
-        (addItem)="onCalculatorAdd($event)" (multiplyConfirm)="onCalculatorMultiplyConfirm($event)"
-        (looseProductRequest)="openLooseProductModal()">
+    <div
+      class="calculator-section"
+      [class.mobile-hidden]="activeTab() !== 'calculator'"
+    >
+      <app-calculator
+        [lastItemPrice]="getLastItemPrice()"
+        [itemsCount]="items().length"
+        (addItem)="onCalculatorAdd($event)"
+        (multiplyConfirm)="onCalculatorMultiplyConfirm($event)"
+        (looseProductRequest)="openLooseProductModal()"
+      >
       </app-calculator>
     </div>
 
@@ -38,22 +64,36 @@
         <div class="items-list" *ngIf="items().length > 0; else noItems">
           <div class="item-row" *ngFor="let item of items()">
             <div class="item-actions">
-              <button class="qty-btn decrease" (click)="decreaseQuantity(item.id); $event.stopPropagation()"
-                title="Decrease quantity">
+              <button
+                class="qty-btn decrease"
+                (click)="decreaseQuantity(item.id); $event.stopPropagation()"
+                title="Decrease quantity"
+              >
                 <i class="fas fa-minus"></i>
               </button>
               <span class="qty-display">{{ item.quantity }}</span>
-              <button class="qty-btn increase" (click)="increaseQuantity(item.id); $event.stopPropagation()"
-                title="Increase quantity">
+              <button
+                class="qty-btn increase"
+                (click)="increaseQuantity(item.id); $event.stopPropagation()"
+                title="Increase quantity"
+              >
                 <i class="fas fa-plus"></i>
               </button>
             </div>
-            <div class="item-info" (click)="editItem(item.id)" title="Click to edit">
+            <div
+              class="item-info"
+              (click)="editItem(item.id)"
+              title="Click to edit"
+            >
               <div class="item-header">
                 <span class="item-number">#{{ item.id + 1 }}</span>
                 <div class="item-price-section">
-                  <span class="item-quantity" *ngIf="item.quantity > 1">{{ item.quantity }}x</span>
-                  <span class="item-unit-price" *ngIf="item.quantity > 1">{{ item.unitPrice | appCurrency }} =</span>
+                  <span class="item-quantity" *ngIf="item.quantity > 1"
+                    >{{ item.quantity }}x</span
+                  >
+                  <span class="item-unit-price" *ngIf="item.quantity > 1"
+                    >{{ item.unitPrice | appCurrency }} =</span
+                  >
                   <span class="item-price">{{ item.price | appCurrency }}</span>
                 </div>
               </div>
@@ -62,16 +102,22 @@
                   <i class="fas fa-tag"></i>
                   {{ item.description }}
                 </span>
-                <span class="item-weight" *ngIf="item.weight && item.pricePerKg">
+                <span
+                  class="item-weight"
+                  *ngIf="item.weight && item.pricePerKg"
+                >
                   <i class="fas fa-weight"></i>
-                  {{ item.weight.toFixed(3) }}kg @ {{
-                  item.pricePerKg | appCurrency
-                  }}/kg
+                  {{ item.weight.toFixed(3) }}kg @
+                  {{ item.pricePerKg | appCurrency }}/kg
                 </span>
               </div>
             </div>
             <div class="item-end-actions">
-              <button class="remove-btn" (click)="removeItem(item.id); $event.stopPropagation()" title="Remove item">
+              <button
+                class="remove-btn"
+                (click)="removeItem(item.id); $event.stopPropagation()"
+                title="Remove item"
+              >
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -92,13 +138,19 @@
         <div class="total-display">
           <span class="total-label">{{
             "CASHIER.TOTAL_LABEL" | translate
-            }}</span>
+          }}</span>
           <span class="total-value">{{ total() | appCurrency }}</span>
         </div>
         <div class="total-actions">
-          <span class="item-count">{{ items().length }} {{ "CASHIER.ITEMS.TITLE" | translate }}</span>
-          <button class="clear-all-btn" (click)="clearAllItems()" [disabled]="items().length === 0"
-            title="{{ 'GLOBAL.CLEAR' | translate }}">
+          <span class="item-count"
+            >{{ items().length }} {{ "CASHIER.ITEMS.TITLE" | translate }}</span
+          >
+          <button
+            class="clear-all-btn"
+            (click)="clearAllItems()"
+            [disabled]="items().length === 0"
+            title="{{ 'GLOBAL.CLEAR' | translate }}"
+          >
             <i class="fas fa-trash"></i>
             <span class="btn-text">{{ "GLOBAL.CLEAR" | translate }}</span>
           </button>
@@ -108,18 +160,27 @@
       <!-- Payment Buttons -->
       <div class="payment-section">
         <div class="payment-buttons">
-          <button class="payment-btn cash" (click)="completeSale('cash')"
-            [disabled]="items().length === 0 || isProcessing()">
+          <button
+            class="payment-btn cash"
+            (click)="completeSale('cash')"
+            [disabled]="items().length === 0 || isProcessing()"
+          >
             <i class="fas fa-money-bill-wave"></i>
             <span>{{ "CASHIER.PAYMENTS.CASH" | translate }}</span>
           </button>
-          <button class="payment-btn card" (click)="completeSale('card')"
-            [disabled]="items().length === 0 || isProcessing()">
+          <button
+            class="payment-btn card"
+            (click)="completeSale('card')"
+            [disabled]="items().length === 0 || isProcessing()"
+          >
             <i class="fas fa-credit-card"></i>
             <span>{{ "CASHIER.PAYMENTS.CARD" | translate }}</span>
           </button>
-          <button class="payment-btn transfer" (click)="completeSale('transfer')"
-            [disabled]="items().length === 0 || isProcessing()">
+          <button
+            class="payment-btn transfer"
+            (click)="completeSale('transfer')"
+            [disabled]="items().length === 0 || isProcessing()"
+          >
             <i class="fas fa-exchange-alt"></i>
             <span>{{ "CASHIER.PAYMENTS.TRANSFER" | translate }}</span>
           </button>
@@ -129,19 +190,26 @@
   </div>
 
   <!-- Payment Confirmation Modal -->
-  <div class="modal-overlay" *ngIf="showPaymentModal()" (click)="cancelPayment()">
+  <div
+    class="modal-overlay"
+    *ngIf="showPaymentModal()"
+    (click)="cancelPayment()"
+  >
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>
-          <i class="fas" [class.fa-money-bill-wave]="selectedPaymentMethod() === 'cash'"
+          <i
+            class="fas"
+            [class.fa-money-bill-wave]="selectedPaymentMethod() === 'cash'"
             [class.fa-credit-card]="selectedPaymentMethod() === 'card'"
-            [class.fa-exchange-alt]="selectedPaymentMethod() === 'transfer'"></i>
+            [class.fa-exchange-alt]="selectedPaymentMethod() === 'transfer'"
+          ></i>
           {{
-          selectedPaymentMethod() === "cash"
-          ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
-          : selectedPaymentMethod() === "card"
-          ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
-          : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
+            selectedPaymentMethod() === "cash"
+              ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
+              : selectedPaymentMethod() === "card"
+              ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
+              : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
           }}
         </h2>
         <button class="close-btn" (click)="cancelPayment()">
@@ -153,7 +221,7 @@
         <div class="sale-total">
           <span class="label">{{
             "CASHIER.PAYMENT.TOTAL_AMOUNT" | translate
-            }}</span>
+          }}</span>
           <span class="value">{{ total() | appCurrency }}</span>
         </div>
 
@@ -162,58 +230,88 @@
           <div class="form-group">
             <label for="cashReceived">{{
               "CASHIER.PAYMENT.CASH_RECEIVED" | translate
-              }}</label>
-            <input #cashReceivedInput id="cashReceived" type="number" step="0.01" min="0" [(ngModel)]="cashReceived"
-              (ngModelChange)="onCashReceivedChange()" placeholder="{{ 'CASHIER.PAYMENT.CASH_RECEIVED' | translate }}"
-              class="cash-input" [class.invalid]="
+            }}</label>
+            <input
+              #cashReceivedInput
+              id="cashReceived"
+              type="number"
+              step="0.01"
+              min="0"
+              [(ngModel)]="cashReceived"
+              (ngModelChange)="onCashReceivedChange()"
+              placeholder="{{ 'CASHIER.PAYMENT.CASH_RECEIVED' | translate }}"
+              class="cash-input"
+              [class.invalid]="
                 cashReceived() && parseFloat(cashReceived()) < total()
-              " />
+              "
+            />
           </div>
 
           <div class="change-display" *ngIf="change() > 0">
             <span class="change-label">{{
               "CASHIER.PAYMENT.CHANGE" | translate
-              }}</span>
+            }}</span>
             <span class="change-value">{{ change() | appCurrency }}</span>
           </div>
 
-          <div class="error-message" *ngIf="cashReceived() && parseFloat(cashReceived()) < total()">
+          <div
+            class="error-message"
+            *ngIf="cashReceived() && parseFloat(cashReceived()) < total()"
+          >
             <i class="fas fa-exclamation-triangle"></i>
             {{ "CASHIER.PAYMENT.AMOUNT_TOO_LOW" | translate }}
           </div>
         </div>
 
         <!-- Card/Transfer Confirmation -->
-        <div class="confirmation-message" *ngIf="selectedPaymentMethod() !== 'cash'">
+        <div
+          class="confirmation-message"
+          *ngIf="selectedPaymentMethod() !== 'cash'"
+        >
           <i class="fas fa-check-circle"></i>
           <p>
             {{
-            "CASHIER.PAYMENT.CONFIRM_MESSAGE"
-            | translate : { method: selectedPaymentMethod() }
+              "CASHIER.PAYMENT.CONFIRM_MESSAGE"
+                | translate : { method: selectedPaymentMethod() }
             }}
           </p>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="modal-btn cancel" (click)="cancelPayment()" [disabled]="isProcessing()">
+        <button
+          class="modal-btn cancel"
+          (click)="cancelPayment()"
+          [disabled]="isProcessing()"
+        >
           {{ "GLOBAL.CANCEL" | translate }}
         </button>
-        <button class="modal-btn confirm" (click)="confirmPayment()" [disabled]="isProcessing()">
+        <button
+          class="modal-btn confirm"
+          (click)="confirmPayment()"
+          [disabled]="isProcessing()"
+        >
           <span *ngIf="!isProcessing()">{{
             "CASHIER.PAYMENT.CONFIRM_PAYMENT" | translate
-            }}</span>
+          }}</span>
           <span *ngIf="isProcessing()">{{
             "CASHIER.PAYMENT.PROCESSING" | translate
-            }}</span>
+          }}</span>
         </button>
       </div>
     </div>
   </div>
 
   <!-- Loose Product Modal -->
-  <div class="modal-overlay" *ngIf="showLooseProductModal()" (click)="cancelLooseProduct()">
-    <div class="modal-content loose-product-modal" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    *ngIf="showLooseProductModal()"
+    (click)="cancelLooseProduct()"
+  >
+    <div
+      class="modal-content loose-product-modal"
+      (click)="$event.stopPropagation()"
+    >
       <div class="modal-header">
         <h2>
           <i class="fas fa-weight"></i>
@@ -228,40 +326,61 @@
         <!-- Scale Connection Section -->
         <div class="scale-connection">
           <div class="scale-status">
-            <i class="fas fa-scale-balanced" [class.connected]="scaleConnected()"></i>
+            <i
+              class="fas fa-scale-balanced"
+              [class.connected]="scaleConnected()"
+            ></i>
             <span>
               {{ "CASHIER.SCALE.LABEL" | translate }}:
               {{
-              scaleConnected()
-              ? ("CASHIER.SCALE.CONNECTED" | translate)
-              : ("CASHIER.SCALE.NOT_CONNECTED" | translate)
+                scaleConnected()
+                  ? ("CASHIER.SCALE.CONNECTED" | translate)
+                  : ("CASHIER.SCALE.NOT_CONNECTED" | translate)
               }}
             </span>
           </div>
-          <button class="scale-btn" *ngIf="!scaleConnected()" (click)="connectToScale()">
+          <button
+            class="scale-btn"
+            *ngIf="!scaleConnected()"
+            (click)="connectToScale()"
+          >
             <i class="fas fa-plug"></i>
             {{ "CASHIER.SCALE.CONNECT" | translate }}
           </button>
-          <button class="scale-btn disconnect" *ngIf="scaleConnected()" (click)="disconnectScale()">
+          <button
+            class="scale-btn disconnect"
+            *ngIf="scaleConnected()"
+            (click)="disconnectScale()"
+          >
             <i class="fas fa-unlink"></i>
             {{ "CASHIER.SCALE.DISCONNECT" | translate }}
           </button>
         </div>
 
         <!-- Current Scale Reading -->
-        <div class="scale-reading" *ngIf="currentScaleReading() && scaleConnected()">
-          <div class="reading-display" [class.stable]="currentScaleReading()!.stable">
+        <div
+          class="scale-reading"
+          *ngIf="currentScaleReading() && scaleConnected()"
+        >
+          <div
+            class="reading-display"
+            [class.stable]="currentScaleReading()!.stable"
+          >
             <i class="fas fa-weight-hanging"></i>
             <span class="weight">{{
               currentScaleReading()!.weight.toFixed(3)
-              }}</span>
+            }}</span>
             <span class="unit">{{ currentScaleReading()!.unit }}</span>
             <span class="status-badge" *ngIf="currentScaleReading()!.stable">
               <i class="fas fa-check"></i> Stable
             </span>
           </div>
           <label class="checkbox-label">
-            <input type="checkbox" [checked]="useScaleWeight()" (change)="toggleUseScaleWeight()" />
+            <input
+              type="checkbox"
+              [checked]="useScaleWeight()"
+              (change)="toggleUseScaleWeight()"
+            />
             <span>{{ "CASHIER.SCALE.USE_SCALE_LABEL" | translate }}</span>
           </label>
         </div>
@@ -270,18 +389,33 @@
         <div class="form-group">
           <label for="productDescription">{{
             "CASHIER.LOOSE_PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER" | translate
-            }}</label>
-          <input id="productDescription" type="text" [(ngModel)]="looseProductDescription" placeholder="{{
+          }}</label>
+          <input
+            id="productDescription"
+            type="text"
+            [(ngModel)]="looseProductDescription"
+            placeholder="{{
               'CASHIER.LOOSE_PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER' | translate
-            }}" class="form-input" />
+            }}"
+            class="form-input"
+          />
         </div>
 
         <div class="form-group">
           <label for="weight">Weight (kg):</label>
-          <input id="weight" type="number" step="0.001" min="0" [(ngModel)]="looseProductWeight"
-            placeholder="Enter weight in kg" class="form-input" [class.invalid]="
+          <input
+            id="weight"
+            type="number"
+            step="0.001"
+            min="0"
+            [(ngModel)]="looseProductWeight"
+            placeholder="Enter weight in kg"
+            class="form-input"
+            [class.invalid]="
               looseProductWeight() && parseFloat(looseProductWeight()) <= 0
-            " [readonly]="useScaleWeight() && scaleConnected()" />
+            "
+            [readonly]="useScaleWeight() && scaleConnected()"
+          />
           <small *ngIf="useScaleWeight() && scaleConnected()" class="help-text">
             <i class="fas fa-info-circle"></i>
             {{ "CASHIER.SCALE.WEIGHT_AUTOMATIC" | translate }}
@@ -290,27 +424,36 @@
 
         <div class="form-group">
           <label for="pricePerKg">Price per kg ($):</label>
-          <input id="pricePerKg" type="number" step="0.01" min="0" [(ngModel)]="looseProductPricePerKg"
-            placeholder="Enter price per kg" class="form-input" [class.invalid]="
+          <input
+            id="pricePerKg"
+            type="number"
+            step="0.01"
+            min="0"
+            [(ngModel)]="looseProductPricePerKg"
+            placeholder="Enter price per kg"
+            class="form-input"
+            [class.invalid]="
               looseProductPricePerKg() &&
               parseFloat(looseProductPricePerKg()) <= 0
-            " />
+            "
+          />
         </div>
 
         <!-- Total Preview -->
-        <div class="total-preview" *ngIf="
+        <div
+          class="total-preview"
+          *ngIf="
             looseProductWeight() &&
             looseProductPricePerKg() &&
             parseFloat(looseProductWeight()) > 0 &&
             parseFloat(looseProductPricePerKg()) > 0
-          ">
+          "
+        >
           <span class="preview-label">Total Price:</span>
           <span class="preview-value">
             {{
-            (
-            parseFloat(looseProductWeight()) *
-            parseFloat(looseProductPricePerKg())
-            ) | appCurrency
+              parseFloat(looseProductWeight()) *
+                parseFloat(looseProductPricePerKg()) | appCurrency
             }}
           </span>
         </div>

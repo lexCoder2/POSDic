@@ -19,6 +19,8 @@ import { ToastService } from "../../services/toast.service";
 import { CurrencyService } from "../../services/currency.service";
 import { ScaleService, ScaleReading } from "../../services/scale.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
+import { RegisterService } from "../../services/register.service";
+import { Register } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import {
   CalculatorComponent,
@@ -27,6 +29,7 @@ import {
 } from "../calculator/calculator.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
+import { RouterLink } from "@angular/router";
 import { environment } from "@environments/environment";
 
 @Component({
@@ -35,6 +38,7 @@ import { environment } from "@environments/environment";
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     CalculatorComponent,
     TranslatePipe,
     CurrencyPipe,
@@ -80,6 +84,9 @@ export class CashierComponent implements OnInit, AfterViewInit {
   // Mobile UI: active tab for small screens ('calculator' | 'sales')
   activeTab = signal<"calculator" | "sales">("calculator");
 
+  // Register status
+  currentRegister = signal<Register | null>(null);
+
   private itemIdCounter = 0;
   private deleteKeyPressCount = 0;
   private deleteKeyTimer: any = null;
@@ -106,6 +113,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
     public currencyService: CurrencyService,
     private scaleService: ScaleService,
     private receiptGeneratorService: ReceiptGeneratorService,
+    private registerService: RegisterService,
     private toastService: ToastService,
     private router: Router
   ) {
@@ -130,6 +138,14 @@ export class CashierComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // Subscribe to register state
+    this.registerService.currentRegister$.subscribe((register) => {
+      this.currentRegister.set(register);
+    });
+
+    // Load active register
+    this.registerService.getActiveRegister().subscribe();
+
     // Focus calculator when route changes to cashier
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -615,6 +631,15 @@ export class CashierComponent implements OnInit, AfterViewInit {
   }
 
   completeSale(paymentMethod: "cash" | "card" | "transfer"): void {
+    // Check if register is open
+    if (!this.currentRegister()) {
+      this.toastService.show(
+        "Please open a register before making sales.",
+        "info"
+      );
+      return;
+    }
+
     // If there's a number in the display, add it first
     if (this.calculator?.hasPendingValue()) {
       this.calculator.handleEnter();
@@ -677,6 +702,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
     const saleTotal = this.total();
     const changeAmount = this.change();
+    const register = this.currentRegister();
 
     const sale = {
       items: this.items().map((item, index) => ({
@@ -699,6 +725,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
             }
           : {},
       status: "completed" as const,
+      register: register?._id,
     };
 
     this.saleService.createSale(sale).subscribe({

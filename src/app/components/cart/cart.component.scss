@@ -8,18 +8,18 @@
 
 .cart-panel {
   width: $cart-width;
-  background: $bg-secondary;
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
   position: relative;
   height: 100%;
+  border-bottom: 1px solid $border-color;
 
   // Sales Tabs
   .sales-tabs {
-    background: $bg-primary;
     border-bottom: none;
-    padding: 0.5rem 0.75rem 0;
+    padding: 0;
+    border-bottom: 1px solid $border-color;
 
     .tabs-container {
       display: flex;

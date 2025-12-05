@@ -52,7 +52,7 @@ router.get("/categories", protect, async (req, res) => {
 });
 
 // @route   GET /api/products/favorites
-// @desc    Get favorite products based on sales volume (last 4 months)
+// @desc    Get favorite products based on sales volume (last 4 months), fallback to recent products
 // @access  Private
 router.get("/favorites", protect, async (req, res) => {
   try {
@@ -86,19 +86,34 @@ router.get("/favorites", protect, async (req, res) => {
     // Get product IDs
     const productIds = topProducts.map((p) => p._id);
 
-    // Fetch full product details
-    const products = await Product.find({
-      _id: { $in: productIds },
-      available: true,
-      active: true,
-    }).populate("provider", "name code");
+    let sortedProducts = [];
 
-    // Sort products by sales volume
-    const sortedProducts = products.sort((a, b) => {
-      const aIndex = productIds.findIndex((id) => id.equals(a._id));
-      const bIndex = productIds.findIndex((id) => id.equals(b._id));
-      return aIndex - bIndex;
-    });
+    if (productIds.length > 0) {
+      // Fetch full product details
+      const products = await Product.find({
+        _id: { $in: productIds },
+        available: true,
+        active: true,
+      }).populate("provider", "name code");
+
+      // Sort products by sales volume
+      sortedProducts = products.sort((a, b) => {
+        const aIndex = productIds.findIndex((id) => id.equals(a._id));
+        const bIndex = productIds.findIndex((id) => id.equals(b._id));
+        return aIndex - bIndex;
+      });
+    }
+
+    // Fallback: if no sales data, return recently added active products
+    if (sortedProducts.length === 0) {
+      sortedProducts = await Product.find({
+        available: true,
+        active: true,
+      })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .populate("provider", "name code");
+    }
 
     res.json(sortedProducts);
   } catch (error) {

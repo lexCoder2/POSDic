@@ -90,6 +90,9 @@
     "SWITCH_USER": "Switch User",
     "WELCOME": "Welcome, {{name}}",
     "CLEAR": "Clear",
+    "LOADING": "Loading...",
+    "ERROR": "Failed to load",
+    "RETRY": "Retry",
     "THEME": {
       "LABEL": "Theme",
       "DARK_MODE": "Dark Mode",
@@ -554,6 +557,8 @@
   "CASHIER": {
     "TITLE": "Quick Cashier",
     "DESCRIPTION": "Fast product entry and payment processing",
+    "REGISTER_WARNING": "No register is open. Please open a register to make sales.",
+    "OPEN_REGISTER": "Open Register",
     "ADD": "Add",
     "MULTIPLY": {
       "ADD_LABEL": "Enter quantity to add:",
@@ -632,6 +637,37 @@
     "NO_DATA": "No data available for this period"
   },
   "POS": {
+    "FAVORITES": "Favorites",
+    "QUICK_ACCESS": "Quick Access",
+    "ACTIONS": {
+      "OPEN_REGISTER": "Open Register",
+      "CLOSE_REGISTER": "Close Register",
+      "CALCULATOR": "Calculator",
+      "LOOSE": "Loose",
+      "WITHDRAW": "Withdraw",
+      "RETURNS": "Returns"
+    },
+    "WITHDRAW": {
+      "TITLE": "Cash Withdrawal",
+      "AMOUNT": "Amount",
+      "REASON": "Reason",
+      "REASON_PLACEHOLDER": "Enter reason for withdrawal...",
+      "CONFIRM": "Confirm Withdrawal"
+    },
+    "REGISTER": {
+      "OPEN_TITLE": "Open Register",
+      "CLOSE_TITLE": "Close Register",
+      "NUMBER": "Register Number",
+      "NUMBER_PLACEHOLDER": "e.g., Register 1",
+      "OPENING_CASH": "Opening Cash",
+      "CLOSING_CASH": "Closing Cash",
+      "EXPECTED_CASH": "Expected Cash",
+      "DIFFERENCE": "Difference",
+      "NOTES": "Notes",
+      "NOTES_PLACEHOLDER": "Optional notes...",
+      "OPEN": "Open Register",
+      "CLOSE": "Close Register"
+    },
     "CHECKOUT": {
       "TITLE": "Checkout",
       "ITEMS": "items",
@@ -684,7 +720,16 @@
     },
     "CALCULATOR": {
       "TITLE": "Quick Calculator",
-      "INFO": "Enter prices directly to add generic items to the cart. Perfect for unlabeled products or quick entries."
+      "INFO": "Enter prices directly to add generic items to the cart."
+    },
+    "LOOSE_PRODUCT": {
+      "TITLE": "Loose Product",
+      "WEIGHT": "Weight",
+      "PRICE_PER_KG": "Price per kg",
+      "DESCRIPTION": "Description",
+      "DESCRIPTION_PLACEHOLDER": "e.g., Bananas, Apples...",
+      "TOTAL": "Total",
+      "ADD_TO_CART": "Add to Cart"
     }
   },
   "CART": {
@@ -828,5 +873,9 @@
     "CARD_PAYMENT": "Card",
     "TRANSFER_PAYMENT": "Transfer",
     "CASH_PAYMENT": "Cash"
+  },
+  "FAVORITES": {
+    "EMPTY": "No favorite products yet",
+    "TITLE": "Favorites"
   }
 }

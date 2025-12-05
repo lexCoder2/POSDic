@@ -1,166 +1,92 @@
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { Subject, takeUntil, timeout, catchError, of } from "rxjs";
 import { Product } from "../../models";
+import { ProductService } from "../../services/product.service";
+import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
+import { environment } from "@environments/environment";
 
 @Component({
   selector: "app-favorites",
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="favorites">
-      <h3 class="section-title">
-        <i class="fas fa-star"></i>
-        Favorite Products
-      </h3>
-      <div class="products-grid" *ngIf="products.length > 0">
-        <div
-          class="product-card"
-          *ngFor="let product of products"
-          (click)="productSelected.emit(product)"
-        >
-          <div class="product-image">
-            <img
-              [src]="product.image_url || 'assets/placeholder-product.png'"
-              [alt]="product.name"
-              (error)="onImageError($event)"
-            />
-          </div>
-          <div class="product-info">
-            <h4 class="product-name">{{ product.name }}</h4>
-            <p class="product-brand" *ngIf="product.brand">
-              {{ product.brand }}
-            </p>
-            <p class="product-price">
-              {{ product.price | currency : "PHP" : "symbol" : "1.2-2" }}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="empty-state" *ngIf="products.length === 0">
-        <i class="fas fa-star"></i>
-        <p>No favorite products</p>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .favorites {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        height: 100%;
-      }
-
-      .section-title {
-        margin: 0 0 1rem 0;
-        color: #333;
-        font-size: 1.1rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .section-title i {
-        color: #ffd166;
-      }
-
-      .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.75rem;
-        max-height: 350px;
-        overflow-y: auto;
-      }
-
-      .product-card {
-        background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 0.75rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .product-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
-        border-color: #ff8c42;
-      }
-
-      .product-image {
-        width: 100%;
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.5rem;
-        background: #f5f5f5;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-
-      .product-image img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-      }
-
-      .product-info {
-        text-align: center;
-      }
-
-      .product-name {
-        margin: 0 0 0.5rem 0;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #333;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .product-brand {
-        margin: 0 0 0.25rem 0;
-        font-size: 0.75rem;
-        color: #666;
-      }
-
-      .product-price {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #ff8c42;
-      }
-
-      .empty-state {
-        text-align: center;
-        padding: 2rem 1rem;
-        color: #999;
-      }
-
-      .empty-state i {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-      }
-
-      .empty-state p {
-        margin: 0;
-        font-size: 0.95rem;
-      }
-    `,
-  ],
+  imports: [CommonModule, TranslatePipe, CurrencyPipe],
+  templateUrl: "./favorites.component.html",
+  styleUrls: ["./favorites.component.scss"],
 })
-export class FavoritesComponent implements OnInit {
-  @Input() products: Product[] = [];
+export class FavoritesComponent implements OnInit, OnDestroy {
   @Output() productSelected = new EventEmitter<Product>();
 
-  ngOnInit(): void {}
+  products: Product[] = [];
+  isLoading = false;
+  loadError = false;
+  private destroy$ = new Subject<void>();
+
+  constructor(private productService: ProductService) {}
+
+  ngOnInit(): void {
+    this.loadTopProducts();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadTopProducts(): void {
+    this.isLoading = true;
+    this.loadError = false;
+    
+    this.productService
+      .getFavoriteProducts(20)
+      .pipe(
+        timeout(10000), // 10 second timeout
+        catchError((err) => {
+          console.error("Error or timeout loading favorite products:", err);
+          this.loadError = true;
+          return of([]);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (products) => {
+          this.products = products;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error("Error loading favorite products:", err);
+          this.isLoading = false;
+          this.loadError = true;
+        },
+      });
+  }
+
+  selectProduct(product: Product): void {
+    this.productSelected.emit(product);
+  }
+
+  getProductImageUrl(product: Product): string {
+    if (product.local_image) {
+      return `${environment.apiUrl}/products/image/${product.local_image}`;
+    }
+    return "";
+  }
 
   onImageError(event: any): void {
-    event.target.src = "assets/placeholder-product.png";
+    event.target.style.display = "none";
+    // Show the no-image fallback
+    const parent = event.target.parentElement;
+    if (parent) {
+      const noImage = document.createElement("div");
+      noImage.className = "no-image";
+      noImage.innerHTML = '<i class="fas fa-box"></i>';
+      parent.appendChild(noImage);
+    }
   }
 }

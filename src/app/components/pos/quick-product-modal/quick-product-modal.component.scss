@@ -1,0 +1,288 @@
+@use "../../../../styles/theme" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $spacing-lg;
+}
+
+.modal-content {
+  background: $white;
+  border-radius: $radius-2xl;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: $shadow-xl;
+  @include smooth-scroll;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xl;
+  background: $gradient-primary;
+  color: $white;
+  border-radius: $radius-2xl $radius-2xl 0 0;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .btn-close {
+    @include button-base;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: $radius-full;
+    background: rgba($white, 0.2);
+    color: $white;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba($white, 0.3);
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-xl;
+}
+
+.modal-footer {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: $bg-tertiary;
+  border-radius: 0 0 $radius-2xl $radius-2xl;
+
+  .btn-cancel {
+    @include button-secondary;
+    flex: 1;
+    background: $white;
+    color: $gray-500;
+    border: 2px solid $border-color;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+
+  .btn-complete {
+    @include button-primary;
+    flex: 1;
+    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba($success, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Quick Product Modal Specific
+.quick-product-modal {
+  max-width: 550px;
+
+  .quick-product-info {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+    background: linear-gradient(
+      135deg,
+      rgba($primary, 0.1) 0%,
+      rgba($primary, 0.05) 100%
+    );
+    border-radius: $radius-md;
+    margin-bottom: $spacing-xl;
+    border-left: 4px solid $primary;
+
+    i {
+      color: $primary;
+      font-size: $font-size-2xl;
+      margin-top: 2px;
+    }
+
+    p {
+      margin: 0;
+      color: $gray-700;
+      font-size: $font-size-base;
+      line-height: $line-height-normal;
+    }
+  }
+
+  .barcode-display {
+    margin-bottom: $spacing-xl;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+      margin-bottom: $spacing-sm;
+      font-size: $font-size-sm;
+
+      i {
+        color: $primary;
+      }
+    }
+
+    .barcode-value {
+      padding: $spacing-lg;
+      background: $bg-tertiary;
+      border-radius: $radius-md;
+      font-family: $font-family-mono;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-semibold;
+      text-align: center;
+      color: $gray-800;
+      border: 2px dashed $primary;
+    }
+  }
+
+  .form-group {
+    margin-bottom: $spacing-lg;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+      margin-bottom: $spacing-sm;
+      font-size: $font-size-sm;
+
+      i {
+        color: $primary;
+      }
+    }
+
+    .form-control {
+      width: 100%;
+      padding: $spacing-md;
+      border: 2px solid $border-light;
+      border-radius: $radius-md;
+      font-size: $font-size-lg;
+      transition: $transition-all;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        @include focus-ring($primary);
+      }
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .currency {
+        position: absolute;
+        left: $spacing-lg;
+        font-weight: $font-weight-semibold;
+        color: $gray-600;
+        font-size: $font-size-lg;
+      }
+
+      .price-input {
+        padding-left: $spacing-3xl;
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-semibold;
+      }
+    }
+
+    &.checkbox-group {
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        cursor: pointer;
+        padding: $spacing-lg;
+        background: $bg-tertiary;
+        border-radius: $radius-md;
+        border: 2px solid $border-light;
+        transition: $transition-all;
+
+        &:hover {
+          border-color: $primary;
+          background: rgba($primary, 0.05);
+        }
+
+        input[type="checkbox"] {
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+          margin: 0;
+        }
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          font-weight: $font-weight-medium;
+          color: $gray-700;
+
+          i {
+            color: $primary;
+          }
+        }
+      }
+    }
+  }
+
+  .quick-product-note {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+    background: rgba($warning, 0.1);
+    border-radius: $radius-md;
+    margin-top: $spacing-xl;
+    border-left: 4px solid $warning;
+
+    i {
+      color: $warning;
+      font-size: $font-size-2xl;
+      margin-top: 2px;
+    }
+
+    p {
+      margin: 0;
+      color: $gray-700;
+      font-size: $font-size-sm;
+      line-height: $line-height-normal;
+    }
+  }
+
+  .btn-create {
+    @include button-primary;
+    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba($success, 0.4);
+    }
+  }
+}

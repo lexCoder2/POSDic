@@ -69,12 +69,12 @@
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+      gap: 1rem;
 
       .stat-card {
         background: $bg-secondary;
         border-radius: 20px;
-        padding: 1.5rem;
+        padding: 1rem;
         box-shadow: $shadow-neumorphic;
         display: flex;
         gap: 1.5rem;

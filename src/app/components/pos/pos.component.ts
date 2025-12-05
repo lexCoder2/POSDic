@@ -10,9 +10,8 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
-import { Html5Qrcode } from "html5-qrcode";
 import { Router } from "@angular/router";
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { CartService } from "../../services/cart.service";
 import { ProductService } from "../../services/product.service";
@@ -35,7 +34,28 @@ import {
 } from "../calculator/calculator.component";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 
-// Html5Qrcode is imported above; keep the variable dynamic in case of fallbacks
+// Modal Components
+import {
+  CheckoutModalComponent,
+  CheckoutResult,
+} from "./checkout-modal/checkout-modal.component";
+import {
+  WeightModalComponent,
+  WeightConfirmEvent,
+} from "./weight-modal/weight-modal.component";
+import {
+  QuickProductModalComponent,
+  QuickProductData,
+} from "./quick-product-modal/quick-product-modal.component";
+import {
+  InternalSaleModalComponent,
+  InternalSaleResult,
+} from "./internal-sale-modal/internal-sale-modal.component";
+import { CameraScannerComponent } from "./camera-scanner/camera-scanner.component";
+import {
+  LooseProductModalComponent,
+  LooseProductData,
+} from "./loose-product-modal/loose-product-modal.component";
 
 @Component({
   selector: "app-pos",
@@ -50,6 +70,13 @@ import { CurrencyPipe } from "../../pipes/currency.pipe";
     CalculatorComponent,
     TranslatePipe,
     CurrencyPipe,
+    // Modal Components
+    CheckoutModalComponent,
+    WeightModalComponent,
+    QuickProductModalComponent,
+    InternalSaleModalComponent,
+    CameraScannerComponent,
+    LooseProductModalComponent,
   ],
   templateUrl: "./pos.component.html",
   styleUrls: ["./pos.component.scss"],
@@ -61,7 +88,6 @@ export class PosComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
   currentRegister: Register | null = null;
   products: Product[] = [];
-  favoriteProducts: Product[] = [];
   categories: Category[] = [];
   searchResults: Product[] = [];
   quickAccessProducts: Product[] = [];
@@ -76,53 +102,53 @@ export class PosComponent implements OnInit, OnDestroy {
   activeSaleTabIndex: number = 0;
 
   // Camera scanner
-  cameraScanner: any = null;
   isCameraActive = false;
-  // native camera/video elements for BarcodeDetector fallback
-  private _mediaStream: MediaStream | null = null;
-  private _videoEl: HTMLVideoElement | null = null;
-  private _scanTimer: any = null;
-  // Prevent duplicate camera scans
-  private _lastScannedValue: string | null = null;
-  private _lastScannedAt = 0;
-  // UI scan toast
-  showScanToast = false;
-  scanToastText = "";
 
   // Scale
   scaleConnected = false;
   currentWeight: number = 0;
   currentWeightUnit: string = "kg";
   currentWeightStable: boolean = false;
+
+  // Weight Modal
   showWeightModal = false;
   weightModalProduct: Product | null = null;
-  manualWeight: number = 0;
 
-  // Checkout
+  // Checkout Modal
   showCheckout = false;
-  paymentMethod: "cash" | "card" | "transfer" | "mixed" = "cash";
-  cashAmount: number = 0;
-  cardAmount: number = 0;
-  transferAmount: number = 0;
 
-  // Internal Sale
+  // Internal Sale Modal
   showInternalSaleConfirm = false;
-  internalSaleNotes = "";
 
-  // Quick Product Creation
+  // Quick Product Creation Modal
   showQuickProductModal = false;
   quickProductBarcode = "";
-  quickProductName = "";
-  quickProductPrice: number = 0;
-  quickProductRequiresScale = false;
 
   // Calculator Modal for Generic Products
   showCalculatorModal = false;
+
+  // Loose Product Modal
+  showLooseProductModal = false;
+
+  // Withdraw Modal
+  showWithdrawModal = false;
+  withdrawAmount: number | null = null;
+  withdrawReason = "";
+
+  // Register Modals
+  showOpenRegisterModal = false;
+  showCloseRegisterModal = false;
+  registerNumber = "";
+  openingCash: number | null = null;
+  closingCash: number | null = null;
+  closeRegisterNotes = "";
+  expectedCash = 0;
 
   // UI State
   showMenu = false;
   isMobileCartOpen = false;
   isMobileView = false;
+  bottomTab: "favorites" | "quick-access" = "favorites";
 
   private destroy$ = new Subject<void>();
   // timestamp of last Enter key press for double-Enter detection
@@ -155,7 +181,7 @@ export class PosComponent implements OnInit, OnDestroy {
 
     this.loadCategories();
     this.loadProducts();
-    this.loadFavoriteProducts();
+    this.loadQuickAccessProducts();
 
     // Subscribe to global search state from header
     this.searchStateService.searchQuery$
@@ -222,7 +248,6 @@ export class PosComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.stopCameraScanner();
   }
 
   @HostListener("window:resize", [])
@@ -253,15 +278,13 @@ export class PosComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadFavoriteProducts(): void {
-    this.productService.getFavoriteProducts(20).subscribe({
+  loadQuickAccessProducts(): void {
+    this.productService.getFavoriteProducts(10).subscribe({
       next: (products) => {
-        this.favoriteProducts = products;
-        // Quick access is the top 10 favorites
-        this.quickAccessProducts = products.slice(0, 10);
+        this.quickAccessProducts = products;
       },
       error: (err) => {
-        console.error("Error loading favorite products:", err);
+        console.error("Error loading quick access products:", err);
       },
     });
   }
@@ -368,7 +391,6 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   searchByBarcode(barcode: string, fromCamera = false): void {
-    // (dedupe handled earlier for camera-originated scans)
     this.productService.getProductByBarcode(barcode).subscribe({
       next: (product) => {
         // addToCart will handle opening weight modal if needed
@@ -376,11 +398,6 @@ export class PosComponent implements OnInit, OnDestroy {
 
         // Visual feedback for successful scan
         console.log(`✓ Added to cart: ${product.name}`);
-
-        // If camera scanner is active, provide haptic feedback on mobile
-        if (this.isCameraActive && navigator.vibrate) {
-          navigator.vibrate(100);
-        }
       },
       error: (err) => {
         console.error("Product not found for barcode:", barcode);
@@ -388,10 +405,6 @@ export class PosComponent implements OnInit, OnDestroy {
         // Open quick product creation modal
         this.openQuickProductModal(barcode);
 
-        // Error vibration on mobile
-        if (this.isCameraActive && navigator.vibrate) {
-          navigator.vibrate([100, 50, 100]);
-        }
         // Play an error beep to indicate the code was not recognized
         try {
           this.playErrorBeep();
@@ -403,62 +416,17 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle a raw value detected by the camera: de-dupe, play beep and show small toast,
-   * then proceed to fetch/add the product.
+   * Handle barcode detected by camera scanner component
    */
-  handleCameraDetected(raw: string): void {
-    const now = Date.now();
-    if (this._lastScannedValue === raw && now - this._lastScannedAt < 1000) {
-      return; // ignore duplicates
-    }
-
-    this._lastScannedValue = raw;
-    this._lastScannedAt = now;
-
-    // Play beep and show toast
-    this.playBeep();
-    this.scanToastText = raw;
-    this.showScanToast = true;
-    setTimeout(() => (this.showScanToast = false), 900);
-
-    // Call the normal search flow (mark as fromCamera so addToCart won't refocus)
-    this.searchByBarcode(raw, true);
+  onCameraBarcodeDetected(barcode: string): void {
+    this.searchByBarcode(barcode, true);
   }
 
-  /** Play a short beep using WebAudio API. */
-  playBeep(): void {
-    try {
-      const AudioCtx =
-        window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "sine";
-      o.frequency.value = 1000;
-      g.gain.value = 0.15;
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.start();
-      setTimeout(() => {
-        try {
-          o.stop();
-          ctx.close();
-        } catch (e) {
-          /* ignore */
-        }
-      }, 120);
-    } catch (e) {
-      // fallback: try simple Audio beep (if available)
-      try {
-        const audio = new Audio();
-        // tiny base64 beep (440Hz short) - not included to avoid payload; skip
-        // audio.src = 'data:audio/wav;base64,...';
-        // audio.play();
-      } catch (err) {
-        // ignore
-      }
-    }
+  /**
+   * Toggle camera scanner visibility
+   */
+  toggleCameraScanner(): void {
+    this.isCameraActive = !this.isCameraActive;
   }
 
   /** Play a short low-frequency error beep using WebAudio API. */
@@ -476,7 +444,6 @@ export class PosComponent implements OnInit, OnDestroy {
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      // Quick short downward pitch effect (very short)
       const now = ctx.currentTime;
       o.frequency.setValueAtTime(360, now);
       o.frequency.exponentialRampToValueAtTime(220, now + 0.06);
@@ -489,200 +456,7 @@ export class PosComponent implements OnInit, OnDestroy {
         }
       }, 80);
     } catch (e) {
-      // fallback: try simple Audio beep (if available)
-      try {
-        const audio = new Audio();
-        // No embedded audio data provided; skip fallback playback if not available
-      } catch (err) {
-        // ignore
-      }
-    }
-  }
-
-  async toggleCameraScanner(): Promise<void> {
-    if (this.isCameraActive) {
-      this.stopCameraScanner();
-    } else {
-      await this.startCameraScanner();
-    }
-  }
-
-  async startCameraScanner(): Promise<void> {
-    try {
-      // Make overlay visible first so the container element exists in the DOM
-      this.isCameraActive = true;
-      // Wait a tick for Angular to render the overlay and camera container
-      await new Promise((res) => setTimeout(res, 50));
-
-      // Check if Html5Qrcode library is loaded
-      if (typeof Html5Qrcode !== "undefined") {
-        this.cameraScanner = new Html5Qrcode("camera-scanner");
-
-        await this.cameraScanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: 250 },
-          (decodedText: string) => {
-            this.handleCameraDetected(String(decodedText));
-          },
-          (error: any) => {
-            // Ignore decode errors
-          }
-        );
-
-        this.isCameraActive = true;
-        return;
-      }
-
-      // Fallback: try using native BarcodeDetector (modern browsers)
-      const hasBarcodeDetector = (window as any).BarcodeDetector;
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        this.toastService.show(
-          "Camera not available on this device/browser.",
-          "error",
-          2000
-        );
-        this.isCameraActive = false;
-        return;
-      }
-
-      const container = document.getElementById("camera-scanner");
-      if (!container) {
-        // If container still missing, hide overlay and abort
-        console.error("HTML Element with id=camera-scanner not found");
-        this.toastService.show("Camera container not found.", "error", 1800);
-        this.isCameraActive = false;
-        return;
-      }
-
-      // Create video element
-      this._videoEl = document.createElement("video");
-      this._videoEl.setAttribute("playsinline", "true");
-      this._videoEl.style.width = "100%";
-      this._videoEl.style.height = "auto";
-      container.innerHTML = "";
-      container.appendChild(this._videoEl);
-
-      try {
-        this._mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
-          audio: false,
-        });
-
-        this._videoEl.srcObject = this._mediaStream;
-        await this._videoEl.play();
-
-        this.isCameraActive = true;
-
-        if (hasBarcodeDetector) {
-          // Use native BarcodeDetector
-          try {
-            const formats = [
-              "ean_13",
-              "ean_8",
-              "upc_a",
-              "upc_e",
-              "code_128",
-              "qr_code",
-            ];
-            const detector = new (window as any).BarcodeDetector({
-              formats,
-            });
-
-            const scanFrame = async () => {
-              if (!this._videoEl || this._videoEl.readyState < 2) return;
-              try {
-                // draw to canvas and detect
-                const canvas = document.createElement("canvas");
-                canvas.width = this._videoEl.videoWidth;
-                canvas.height = this._videoEl.videoHeight;
-                const ctx = canvas.getContext("2d");
-                if (!ctx) return;
-                ctx.drawImage(this._videoEl, 0, 0, canvas.width, canvas.height);
-                const barcodes = await detector.detect(canvas);
-                if (barcodes && barcodes.length) {
-                  for (const b of barcodes) {
-                    const raw = b.rawValue || b.raw || b.value || null;
-                    if (raw) {
-                      this.handleCameraDetected(String(raw));
-                      // stop after first detection to avoid duplicates
-                      this.toggleCameraScanner();
-                      return;
-                    }
-                  }
-                }
-              } catch (e) {
-                // ignore single-frame errors
-              }
-            };
-
-            // Poll at ~8 FPS
-            this._scanTimer = setInterval(scanFrame, 125);
-          } catch (e) {
-            console.warn(
-              "BarcodeDetector failed, falling back to simple preview",
-              e
-            );
-          }
-        } else {
-          // No detector available: keep preview only
-        }
-      } catch (err) {
-        console.error("Error accessing camera:", err);
-        this.toastService.show(
-          "Unable to access camera. Make sure permissions are granted.",
-          "error",
-          2200
-        );
-        this.stopCameraScanner();
-      }
-    } catch (err) {
-      console.error("Error starting camera scanner:", err);
-      this.toastService.show("Failed to start camera scanner", "error", 1600);
-    }
-  }
-
-  stopCameraScanner(): void {
-    // Stop Html5Qrcode scanner if present
-    if (this.cameraScanner && typeof this.cameraScanner.stop === "function") {
-      try {
-        this.cameraScanner.stop().then(() => {
-          this.cameraScanner = null;
-          this.isCameraActive = false;
-        });
-      } catch (e) {
-        // ignore
-        this.cameraScanner = null;
-        this.isCameraActive = false;
-      }
-    }
-
-    // Stop native media stream if used
-    try {
-      if (this._scanTimer) {
-        clearInterval(this._scanTimer);
-        this._scanTimer = null;
-      }
-
-      if (this._videoEl) {
-        try {
-          this._videoEl.pause();
-          this._videoEl.srcObject = null;
-        } catch (e) {
-          /* ignore */
-        }
-        const container = document.getElementById("camera-scanner");
-        if (container) container.innerHTML = "";
-        this._videoEl = null;
-      }
-
-      if (this._mediaStream) {
-        this._mediaStream.getTracks().forEach((t) => t.stop());
-        this._mediaStream = null;
-      }
-
-      this.isCameraActive = false;
-    } catch (e) {
-      console.warn("Error stopping native camera scanner", e);
+      // ignore audio errors
     }
   }
 
@@ -715,13 +489,15 @@ export class PosComponent implements OnInit, OnDestroy {
 
   openWeightModal(product: Product): void {
     this.weightModalProduct = product;
-    this.manualWeight = this.scaleConnected ? this.currentWeight : 0;
     this.showWeightModal = true;
   }
 
-  confirmWeight(): void {
-    if (this.weightModalProduct && this.manualWeight > 0) {
-      this.cartService.addItem(this.weightModalProduct, 1, this.manualWeight);
+  /**
+   * Handle weight confirmation from weight modal component
+   */
+  onWeightConfirm(event: WeightConfirmEvent): void {
+    if (event.product && event.weight > 0) {
+      this.cartService.addItem(event.product, 1, event.weight);
       this.closeWeightModal();
       setTimeout(() => this.focusSearchInput(), 50);
     }
@@ -730,7 +506,6 @@ export class PosComponent implements OnInit, OnDestroy {
   closeWeightModal(): void {
     this.showWeightModal = false;
     this.weightModalProduct = null;
-    this.manualWeight = 0;
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -785,14 +560,11 @@ export class PosComponent implements OnInit, OnDestroy {
     }
 
     this.showCheckout = true;
-    this.cashAmount = this.total;
   }
 
   /**
    * Handle quick-pay from cart (cash or card).
-   * Both open the checkout modal.
-   * - cash: open checkout with `cash` selected and prefill `cashAmount` so cashier can adjust/confirm
-   * - card: open checkout with `card` selected and prefill `cardAmount` for quick confirmation
+   * Opens the checkout modal.
    */
   handleQuickPay(method: string): void {
     if (this.cartItems.length === 0) {
@@ -809,35 +581,18 @@ export class PosComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (method === "cash") {
-      this.paymentMethod = "cash";
-      this.cashAmount = this.total;
-    } else if (method === "card") {
-      this.paymentMethod = "card";
-      this.cardAmount = this.total;
-    } else if (method === "transfer") {
-      this.paymentMethod = "transfer";
-      this.transferAmount = this.total;
-    }
-
     // Open checkout modal for cashier confirmation
     this.showCheckout = true;
   }
 
   closeCheckout(): void {
     this.showCheckout = false;
-    this.paymentMethod = "cash";
-    this.cashAmount = 0;
-    this.cardAmount = 0;
-    this.transferAmount = 0;
   }
 
-  completeSale(): void {
-    if (!this.validatePayment()) {
-      this.toastService.show("Invalid payment amount", "error");
-      return;
-    }
-
+  /**
+   * Handle checkout completion from checkout modal component
+   */
+  onCheckoutComplete(result: CheckoutResult): void {
     const sale = {
       items: this.cartItems.map((item) => ({
         product: item.product._id!,
@@ -862,8 +617,8 @@ export class PosComponent implements OnInit, OnDestroy {
       discountTotal: this.totalDiscount,
       taxTotal: this.totalTax,
       total: this.total,
-      paymentMethod: this.paymentMethod,
-      paymentDetails: this.getPaymentDetails(),
+      paymentMethod: result.paymentMethod,
+      paymentDetails: result.paymentDetails,
       status: "completed" as const,
     };
 
@@ -876,13 +631,13 @@ export class PosComponent implements OnInit, OnDestroy {
         // Generate and print receipt using the saved/default template
         try {
           const currentUser = this.authService.getCurrentUser();
-          const change = this.changeAmount;
+          const change = result.paymentDetails.change || 0;
           const mode = localStorage.getItem("printer.mode") || "plain";
           if (mode === "styled") {
             this.receiptGeneratorService
               .generateReceipt(
                 completedSale,
-                this.paymentMethod,
+                result.paymentMethod,
                 change,
                 currentUser
               )
@@ -901,7 +656,7 @@ export class PosComponent implements OnInit, OnDestroy {
             this.receiptGeneratorService
               .generatePlainTextReceipt(
                 completedSale,
-                this.paymentMethod,
+                result.paymentMethod,
                 change,
                 currentUser
               )
@@ -931,54 +686,6 @@ export class PosComponent implements OnInit, OnDestroy {
         );
       },
     });
-  }
-
-  validatePayment(): boolean {
-    const total = this.total;
-
-    switch (this.paymentMethod) {
-      case "cash":
-        return this.cashAmount >= total;
-      case "card":
-        return this.cardAmount >= total;
-      case "transfer":
-        return this.transferAmount >= total;
-      case "mixed":
-        return this.cashAmount + this.cardAmount + this.transferAmount >= total;
-      default:
-        return false;
-    }
-  }
-
-  getPaymentDetails(): any {
-    const details: any = {};
-
-    if (this.paymentMethod === "cash") {
-      details.cash = this.cashAmount;
-      details.change = this.cashAmount - this.total;
-    } else if (this.paymentMethod === "card") {
-      details.card = this.cardAmount;
-    } else if (this.paymentMethod === "transfer") {
-      details.transfer = this.transferAmount;
-    } else if (this.paymentMethod === "mixed") {
-      details.cash = this.cashAmount;
-      details.card = this.cardAmount;
-      details.transfer = this.transferAmount;
-      const totalPaid = this.cashAmount + this.cardAmount + this.transferAmount;
-      details.change = totalPaid - this.total;
-    }
-
-    return details;
-  }
-
-  get changeAmount(): number {
-    if (this.paymentMethod === "cash") {
-      return Math.max(0, this.cashAmount - this.total);
-    } else if (this.paymentMethod === "mixed") {
-      const totalPaid = this.cashAmount + this.cardAmount + this.transferAmount;
-      return Math.max(0, totalPaid - this.total);
-    }
-    return 0;
   }
 
   get canMakeInternalSale(): boolean {
@@ -1022,14 +729,17 @@ export class PosComponent implements OnInit, OnDestroy {
     this.showInternalSaleConfirm = true;
   }
 
-  completeInternalSale(): void {
+  /**
+   * Handle internal sale confirmation from modal component
+   */
+  onInternalSaleConfirm(result: InternalSaleResult): void {
     const internalSale = {
       items: this.cartItems.map((item) => ({
         product: item.product._id!,
         quantity: item.quantity,
         weight: item.weight,
       })),
-      notes: this.internalSaleNotes || "Internal consumption",
+      notes: result.notes || "Internal consumption",
     };
 
     this.saleService.createInternalSale(internalSale).subscribe({
@@ -1053,7 +763,6 @@ export class PosComponent implements OnInit, OnDestroy {
 
   closeInternalSale(): void {
     this.showInternalSaleConfirm = false;
-    this.internalSaleNotes = "";
   }
 
   logout(): void {
@@ -1235,35 +944,32 @@ export class PosComponent implements OnInit, OnDestroy {
 
   openQuickProductModal(barcode: string): void {
     this.quickProductBarcode = barcode;
-    this.quickProductName = `Product ${barcode}`;
-    this.quickProductPrice = 0;
-    this.quickProductRequiresScale = false;
     this.showQuickProductModal = true;
   }
 
   closeQuickProductModal(): void {
     this.showQuickProductModal = false;
     this.quickProductBarcode = "";
-    this.quickProductName = "";
-    this.quickProductPrice = 0;
-    this.quickProductRequiresScale = false;
   }
 
-  createQuickProduct(): void {
-    if (!this.quickProductPrice || this.quickProductPrice <= 0) {
+  /**
+   * Handle quick product creation from modal component
+   */
+  onQuickProductCreate(data: QuickProductData): void {
+    if (!data.price || data.price <= 0) {
       this.toastService.show("Please enter a valid price", "error");
       return;
     }
 
     const newProduct = {
-      product_id: `QUICK-${this.quickProductBarcode}-${Date.now()}`,
-      sku: this.quickProductBarcode,
-      ean: this.quickProductBarcode,
-      name: this.quickProductName,
-      price: this.quickProductPrice,
+      product_id: `QUICK-${data.barcode}-${Date.now()}`,
+      sku: data.barcode,
+      ean: data.barcode,
+      name: data.name,
+      price: data.price,
       stock: 1000,
       active: true,
-      requiresScale: this.quickProductRequiresScale,
+      requiresScale: data.requiresScale,
       incompleteInfo: true,
       category: "Quick Entry",
       description: "Created during sale - requires completion",
@@ -1277,11 +983,7 @@ export class PosComponent implements OnInit, OnDestroy {
         );
 
         // Add product to cart immediately
-        if (this.quickProductRequiresScale) {
-          this.addToCart(createdProduct);
-        } else {
-          this.addToCart(createdProduct);
-        }
+        this.addToCart(createdProduct);
 
         this.closeQuickProductModal();
 
@@ -1324,5 +1026,177 @@ export class PosComponent implements OnInit, OnDestroy {
       "success",
       1000
     );
+  }
+
+  // Loose Product Modal handlers
+  openLooseProductModal(): void {
+    this.showCalculatorModal = false; // Close calculator when opening loose product
+    this.showLooseProductModal = true;
+  }
+
+  closeLooseProductModal(): void {
+    this.showLooseProductModal = false;
+  }
+
+  onLooseProductConfirm(data: LooseProductData): void {
+    // Create a loose product for the cart
+    const looseProduct: Product = {
+      _id: `loose-${Date.now()}`,
+      product_id: `LOOSE-${Date.now()}`,
+      name: data.description,
+      price: data.totalPrice,
+      stock: 1,
+      active: true,
+      category: "Loose",
+      requiresScale: true,
+    };
+
+    this.cartService.addItem(looseProduct, 1);
+    this.toastService.show(
+      `Added: ${data.description} (${data.weight}kg × $${data.pricePerKg}/kg)`,
+      "success",
+      2000
+    );
+    this.closeLooseProductModal();
+  }
+
+  // Register Actions
+  toggleRegister(): void {
+    if (this.currentRegister) {
+      this.openCloseRegisterModal();
+    } else {
+      this.openOpenRegisterModal();
+    }
+  }
+
+  openOpenRegisterModal(): void {
+    this.registerNumber = "";
+    this.openingCash = null;
+    this.showOpenRegisterModal = true;
+  }
+
+  closeOpenRegisterModal(): void {
+    this.showOpenRegisterModal = false;
+  }
+
+  confirmOpenRegister(): void {
+    if (!this.registerNumber) return;
+
+    this.registerService
+      .openRegister(this.openingCash || 0, this.registerNumber)
+      .subscribe({
+        next: (register) => {
+          this.toastService.show(
+            `Register ${register.registerNumber} opened successfully`,
+            "success"
+          );
+          this.closeOpenRegisterModal();
+        },
+        error: (err) => {
+          console.error("Error opening register:", err);
+          this.toastService.show(
+            err.error?.message || "Failed to open register",
+            "error"
+          );
+        },
+      });
+  }
+
+  openCloseRegisterModal(): void {
+    this.closingCash = null;
+    this.closeRegisterNotes = "";
+    this.expectedCash = 0;
+
+    // Load expected cash
+    this.registerService.getExpectedCash().subscribe({
+      next: (data) => {
+        this.expectedCash = data.expectedCash;
+      },
+      error: (err) => {
+        console.error("Error loading expected cash:", err);
+      },
+    });
+
+    this.showCloseRegisterModal = true;
+  }
+
+  closeCloseRegisterModal(): void {
+    this.showCloseRegisterModal = false;
+  }
+
+  confirmCloseRegister(): void {
+    if (!this.currentRegister || this.closingCash === null) return;
+
+    this.registerService
+      .closeRegister(
+        this.currentRegister._id!,
+        this.closingCash,
+        this.closeRegisterNotes
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.show("Register closed successfully", "success");
+          this.closeCloseRegisterModal();
+        },
+        error: (err) => {
+          console.error("Error closing register:", err);
+          this.toastService.show(
+            err.error?.message || "Failed to close register",
+            "error"
+          );
+        },
+      });
+  }
+
+  // Withdraw Modal
+  openWithdrawModal(): void {
+    if (!this.currentRegister) {
+      this.toastService.show("No register open", "error");
+      return;
+    }
+    this.withdrawAmount = null;
+    this.withdrawReason = "";
+    this.showWithdrawModal = true;
+  }
+
+  closeWithdrawModal(): void {
+    this.showWithdrawModal = false;
+  }
+
+  confirmWithdraw(): void {
+    if (
+      !this.currentRegister ||
+      !this.withdrawAmount ||
+      this.withdrawAmount <= 0
+    )
+      return;
+
+    this.registerService
+      .recordWithdrawal(
+        this.currentRegister._id!,
+        this.withdrawAmount,
+        this.withdrawReason
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.show(
+            `Withdrawal of $${this.withdrawAmount?.toFixed(2)} recorded`,
+            "success"
+          );
+          this.closeWithdrawModal();
+        },
+        error: (err) => {
+          console.error("Error recording withdrawal:", err);
+          this.toastService.show(
+            err.error?.message || "Failed to record withdrawal",
+            "error"
+          );
+        },
+      });
+  }
+
+  // Navigate to Returns
+  navigateToReturns(): void {
+    this.router.navigate(["/sales"], { queryParams: { tab: "returns" } });
   }
 }

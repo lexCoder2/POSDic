@@ -3,7 +3,8 @@
 .page-title {
   background: $neumorphic-surface;
   color: $primary;
-  padding: 0 3.5rem;
+  width: 144px;
+  padding: 0 0.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,10 +23,10 @@
     .text {
       flex: 1;
       display: flex;
-      gap: 1.5rem;
+      gap: 1rem;
       align-items: end;
       h1 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 600;
         margin: 0;
       }

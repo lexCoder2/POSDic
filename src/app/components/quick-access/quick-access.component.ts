@@ -8,10 +8,6 @@ import { Product } from "../../models";
   imports: [CommonModule],
   template: `
     <div class="quick-access">
-      <h3 class="section-title">
-        <i class="fas fa-bolt"></i>
-        Quick Access
-      </h3>
       <div class="products-grid" *ngIf="products.length > 0">
         <div
           class="product-card"
@@ -47,7 +43,7 @@ import { Product } from "../../models";
       .quick-access {
         background: white;
         border-radius: 12px;
-        padding: 1.5rem;
+        padding: 0.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         height: 100%;
       }

@@ -11,6 +11,47 @@
   display: flex;
   flex-direction: column;
 
+  .register-warning {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    background: linear-gradient(
+      135deg,
+      rgba($warning, 0.15),
+      rgba($warning, 0.1)
+    );
+    border: 1px solid rgba($warning, 0.3);
+    border-radius: $radius-lg;
+    margin-bottom: $spacing-md;
+    color: $warning-dark;
+    font-weight: $font-weight-medium;
+
+    i {
+      font-size: $font-size-xl;
+      color: $warning;
+    }
+
+    span {
+      flex: 1;
+    }
+
+    .open-register-link {
+      color: $primary;
+      text-decoration: none;
+      font-weight: $font-weight-semibold;
+      padding: $spacing-xs $spacing-md;
+      background: $white;
+      border-radius: $radius-md;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+
   .cashier-content {
     .mobile-tabs {
       display: none;

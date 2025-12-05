@@ -1,0 +1,86 @@
+<div class="modal-overlay" *ngIf="show" (click)="onClose()">
+  <div class="modal-content weight-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-weight"></i>
+        {{ "POS.WEIGHT_MODAL.TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="product-info">
+        <i class="fas fa-box"></i>
+        <span>{{ product?.name }}</span>
+      </div>
+
+      <div class="weight-display">
+        <div
+          class="scale-status"
+          [class.connected]="scaleConnected"
+          [class.disconnected]="!scaleConnected"
+        >
+          <i
+            [class.fa-link]="scaleConnected"
+            [class.fa-unlink]="!scaleConnected"
+            class="fas"
+          ></i>
+          <span>{{
+            scaleConnected
+              ? ("POS.WEIGHT_MODAL.SCALE_CONNECTED" | translate)
+              : ("POS.WEIGHT_MODAL.SCALE_DISCONNECTED" | translate)
+          }}</span>
+        </div>
+
+        <div class="current-weight" *ngIf="scaleConnected">
+          <div class="weight-value" [class.stable]="currentWeightStable">
+            <span class="number">{{ currentWeight | number : "1.3-3" }}</span>
+            <span class="unit">{{ currentWeightUnit }}</span>
+          </div>
+          <div class="stability-indicator" *ngIf="!currentWeightStable">
+            <i class="fas fa-sync fa-spin"></i>
+            <span>{{ "POS.WEIGHT_MODAL.STABILIZING" | translate }}</span>
+          </div>
+        </div>
+
+        <div class="manual-weight-input">
+          <label>
+            <i class="fas fa-keyboard"></i>
+            {{ "POS.WEIGHT_MODAL.MANUAL_WEIGHT" | translate }}
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="number"
+              [(ngModel)]="manualWeight"
+              placeholder="0.000"
+              min="0.001"
+              step="0.001"
+            />
+            <span class="unit">{{ currentWeightUnit }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="weight-info">
+        <i class="fas fa-info-circle"></i>
+        <span>{{ "POS.WEIGHT_MODAL.INFO" | translate }}</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="onClose()">
+        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button
+        class="btn-complete"
+        (click)="onConfirm()"
+        [disabled]="!manualWeight || manualWeight <= 0"
+      >
+        <i class="fas fa-check"></i>
+        {{ "POS.WEIGHT_MODAL.CONFIRM" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

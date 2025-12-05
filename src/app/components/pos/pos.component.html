@@ -1,346 +1,164 @@
 <div class="pos-content">
   <!-- Products Section -->
   <div class="products-section">
+    <!-- Action Buttons Bar -->
+    <div class="action-buttons-bar">
+      <button
+        class="action-btn"
+        [class.register-open]="currentRegister"
+        [class.register-closed]="!currentRegister"
+        (click)="toggleRegister()"
+      >
+        <i
+          class="fas"
+          [class.fa-cash-register]="!currentRegister"
+          [class.fa-door-open]="currentRegister"
+        ></i>
+        <span>{{
+          (currentRegister
+            ? "POS.ACTIONS.CLOSE_REGISTER"
+            : "POS.ACTIONS.OPEN_REGISTER"
+          ) | translate
+        }}</span>
+      </button>
+
+      <button class="action-btn" (click)="openCalculatorModal()">
+        <i class="fas fa-calculator"></i>
+        <span>{{ "POS.ACTIONS.CALCULATOR" | translate }}</span>
+      </button>
+
+      <button class="action-btn" (click)="openLooseProductModal()">
+        <i class="fas fa-balance-scale"></i>
+        <span>{{ "POS.ACTIONS.LOOSE" | translate }}</span>
+      </button>
+
+      <button
+        class="action-btn"
+        [disabled]="!currentRegister"
+        (click)="openWithdrawModal()"
+      >
+        <i class="fas fa-money-bill-wave"></i>
+        <span>{{ "POS.ACTIONS.WITHDRAW" | translate }}</span>
+      </button>
+
+      <button class="action-btn" (click)="navigateToReturns()">
+        <i class="fas fa-undo-alt"></i>
+        <span>{{ "POS.ACTIONS.RETURNS" | translate }}</span>
+      </button>
+    </div>
+
     <!-- Search Results Component -->
-    <app-search-results [products]="searchResults" [isLoading]="isSearching"
-      (productSelected)="addToCart($event)"></app-search-results>
+    <app-search-results
+      [products]="searchResults"
+      [isLoading]="isSearching"
+      (productSelected)="addToCart($event)"
+    ></app-search-results>
 
-    <!-- Bottom Section: Favorites and Quick Access (hidden on mobile) -->
-    <div class="bottom-sections" *ngIf="!isMobileView">
-      <app-favorites [products]="favoriteProducts" (productSelected)="addToCart($event)"></app-favorites>
+    <!-- Bottom Section: Favorites and Quick Access Tabs (hidden on mobile) -->
+    <div class="bottom-tabs-container" *ngIf="!isMobileView">
+      <div class="tabs-header">
+        <button
+          class="tab-btn"
+          [class.active]="bottomTab === 'favorites'"
+          (click)="bottomTab = 'favorites'"
+        >
+          <i class="fas fa-star"></i>
+          {{ "POS.FAVORITES" | translate }}
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="bottomTab === 'quick-access'"
+          (click)="bottomTab = 'quick-access'"
+        >
+          <i class="fas fa-bolt"></i>
+          {{ "POS.QUICK_ACCESS" | translate }}
+        </button>
+      </div>
+      <div class="tabs-content">
+        <app-favorites
+          *ngIf="bottomTab === 'favorites'"
+          (productSelected)="addToCart($event)"
+        ></app-favorites>
 
-      <app-quick-access [products]="quickAccessProducts" (productSelected)="addToCart($event)"></app-quick-access>
+        <app-quick-access
+          *ngIf="bottomTab === 'quick-access'"
+          [products]="quickAccessProducts"
+          (productSelected)="addToCart($event)"
+        ></app-quick-access>
+      </div>
     </div>
   </div>
 
   <!-- Cart Component -->
-  <app-cart [cartItems]="cartItems" [salesTabs]="salesTabs" [activeSaleTabIndex]="activeSaleTabIndex"
-    [isMobileCartOpen]="isMobileCartOpen" [registerOpen]="!!currentRegister" [canMakeInternalSale]="canMakeInternalSale"
-    (switchTab)="switchSaleTab($event)" (addTab)="addSaleTab()" (closeTab)="closeSaleTab($event)"
-    (removeItem)="removeFromCart($event)" (clearCart)="cartService.clearCart()" (placeOrder)="openCheckout()"
-    (placeOrderWithMethod)="handleQuickPay($event)" (internalSale)="openInternalSale()"
-    (closeMobileCart)="toggleMobileCart()"></app-cart>
+  <app-cart
+    [cartItems]="cartItems"
+    [salesTabs]="salesTabs"
+    [activeSaleTabIndex]="activeSaleTabIndex"
+    [isMobileCartOpen]="isMobileCartOpen"
+    [registerOpen]="!!currentRegister"
+    [canMakeInternalSale]="canMakeInternalSale"
+    (switchTab)="switchSaleTab($event)"
+    (addTab)="addSaleTab()"
+    (closeTab)="closeSaleTab($event)"
+    (removeItem)="removeFromCart($event)"
+    (clearCart)="cartService.clearCart()"
+    (placeOrder)="openCheckout()"
+    (placeOrderWithMethod)="handleQuickPay($event)"
+    (internalSale)="openInternalSale()"
+    (closeMobileCart)="toggleMobileCart()"
+  ></app-cart>
 </div>
 
-<!-- Camera Scanner Overlay -->
-@if (isCameraActive) {
-<div class="camera-overlay" (click)="toggleCameraScanner()">
-  <div class="camera-content" (click)="$event.stopPropagation()">
-    <button class="close-camera" (click)="toggleCameraScanner()">
-      <i class="fas fa-times"></i>
-    </button>
-    <div id="camera-scanner"></div>
-  </div>
-</div>
-}
-<!-- Small header toast for camera scans -->
-@if (showScanToast) {
-<div class="camera-toast">
-  <div class="toast-inner">
-    <i class="fas fa-check-circle"></i>
-    <span>{{ scanToastText }}</span>
-  </div>
-</div>
-}
-<!-- Checkout Modal -->
-<div class="modal-overlay" *ngIf="showCheckout" (click)="showCheckout = false">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-cash-register"></i>
-        {{ "POS.CHECKOUT.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="showCheckout = false">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+<!-- Camera Scanner Component -->
+<app-camera-scanner
+  [isActive]="isCameraActive"
+  (barcodeDetected)="onCameraBarcodeDetected($event)"
+  (close)="isCameraActive = false"
+>
+</app-camera-scanner>
 
-    <div class="modal-body">
-      <div class="checkout-summary">
-        <div class="summary-item">
-          <i class="fas fa-shopping-basket"></i>
-          <span>{{ cartItems.length }} {{ "POS.CHECKOUT.ITEMS" | translate }}</span>
-        </div>
-        <div class="summary-item total">
-          <i class="fas fa-dollar-sign"></i>
-          <span>{{ calculateTotal() | appCurrency }}</span>
-        </div>
-      </div>
+<!-- Checkout Modal Component -->
+<app-checkout-modal
+  [show]="showCheckout"
+  [cartItems]="cartItems"
+  [total]="total"
+  (close)="closeCheckout()"
+  (completeSale)="onCheckoutComplete($event)"
+>
+</app-checkout-modal>
 
-      <div class="payment-methods">
-        <h4>
-          <i class="fas fa-wallet"></i>
-          {{ "POS.CHECKOUT.PAYMENT_METHOD" | translate }}
-        </h4>
-        <div class="payment-grid">
-          <button class="payment-btn" [class.active]="paymentMethod === 'cash'" (click)="paymentMethod = 'cash'">
-            <i class="fas fa-money-bill-wave"></i>
-            <span>{{ "POS.PAYMENTS.CASH" | translate }}</span>
-          </button>
-          <button class="payment-btn" [class.active]="paymentMethod === 'card'" (click)="paymentMethod = 'card'">
-            <i class="fas fa-credit-card"></i>
-            <span>{{ "POS.PAYMENTS.CARD" | translate }}</span>
-          </button>
-          <button class="payment-btn" [class.active]="paymentMethod === 'transfer'"
-            (click)="paymentMethod = 'transfer'">
-            <i class="fas fa-exchange-alt"></i>
-            <span>{{ "POS.PAYMENTS.TRANSFER" | translate }}</span>
-          </button>
-          <button class="payment-btn" [class.active]="paymentMethod === 'mixed'" (click)="paymentMethod = 'mixed'">
-            <i class="fas fa-layer-group"></i>
-            <span>{{ "POS.PAYMENTS.MIXED" | translate }}</span>
-          </button>
-        </div>
-      </div>
+<!-- Weight Modal Component -->
+<app-weight-modal
+  [show]="showWeightModal"
+  [product]="weightModalProduct"
+  [scaleConnected]="scaleConnected"
+  [currentWeight]="currentWeight"
+  [currentWeightUnit]="currentWeightUnit"
+  [currentWeightStable]="currentWeightStable"
+  (close)="closeWeightModal()"
+  (confirmWeight)="onWeightConfirm($event)"
+>
+</app-weight-modal>
 
-      <div class="payment-amounts">
-        <div *ngIf="paymentMethod === 'cash' || paymentMethod === 'mixed'" class="amount-input">
-          <label><i class="fas fa-money-bill-wave"></i>
-            {{ "POS.CHECKOUT.CASH_AMOUNT" | translate }}</label>
-          <div class="input-wrapper">
-            <input type="number" [(ngModel)]="cashAmount" placeholder="0.00" min="0" step="0.01" />
-          </div>
-          <div class="change-display" *ngIf="cashAmount > calculateTotal()">
-            <i class="fas fa-hand-holding-usd"></i>
-            {{ "POS.CHECKOUT.CHANGE" | translate }} {{
-            (cashAmount - calculateTotal()) | appCurrency
-            }}
-          </div>
-        </div>
+<!-- Quick Product Modal Component -->
+<app-quick-product-modal
+  [show]="showQuickProductModal"
+  [barcode]="quickProductBarcode"
+  (close)="closeQuickProductModal()"
+  (createProduct)="onQuickProductCreate($event)"
+>
+</app-quick-product-modal>
 
-        <div *ngIf="paymentMethod === 'card' || paymentMethod === 'mixed'" class="amount-input">
-          <label><i class="fas fa-credit-card"></i>
-            {{ "POS.CHECKOUT.CARD_AMOUNT" | translate }}</label>
-          <div class="input-wrapper">
-            <input type="number" [(ngModel)]="cardAmount" placeholder="0.00" min="0" step="0.01" />
-          </div>
-        </div>
-
-        <div *ngIf="paymentMethod === 'transfer' || paymentMethod === 'mixed'" class="amount-input">
-          <label><i class="fas fa-exchange-alt"></i>
-            {{ "POS.CHECKOUT.TRANSFER_AMOUNT" | translate }}</label>
-          <div class="input-wrapper">
-            <span class="currency">$</span>
-            <input type="number" [(ngModel)]="transferAmount" placeholder="0.00" min="0" step="0.01" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="showCheckout = false">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-complete" (click)="completeSale()">
-        <i class="fas fa-check"></i>
-        {{ "POS.BUTTONS.COMPLETE_SALE" | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Weight Modal -->
-<div class="modal-overlay" *ngIf="showWeightModal" (click)="closeWeightModal()">
-  <div class="modal-content weight-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-weight"></i>
-        {{ "POS.WEIGHT_MODAL.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="closeWeightModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="product-info">
-        <i class="fas fa-box"></i>
-        <span>{{ weightModalProduct?.name }}</span>
-      </div>
-
-      <div class="weight-display">
-        <div class="scale-status" [class.connected]="scaleConnected" [class.disconnected]="!scaleConnected">
-          <i [class.fa-link]="scaleConnected" [class.fa-unlink]="!scaleConnected" class="fas"></i>
-          <span>{{ scaleConnected ? ("POS.WEIGHT_MODAL.SCALE_CONNECTED" | translate) :
-            ("POS.WEIGHT_MODAL.SCALE_DISCONNECTED" | translate) }}</span>
-        </div>
-
-        <div class="current-weight" *ngIf="scaleConnected">
-          <div class="weight-value" [class.stable]="currentWeightStable">
-            <span class="number">{{ currentWeight | number : '1.3-3' }}</span>
-            <span class="unit">{{ currentWeightUnit }}</span>
-          </div>
-          <div class="stability-indicator" *ngIf="!currentWeightStable">
-            <i class="fas fa-sync fa-spin"></i>
-            <span>{{ "POS.WEIGHT_MODAL.STABILIZING" | translate }}</span>
-          </div>
-        </div>
-
-        <div class="manual-weight-input">
-          <label>
-            <i class="fas fa-keyboard"></i>
-            {{ "POS.WEIGHT_MODAL.MANUAL_WEIGHT" | translate }}
-          </label>
-          <div class="input-wrapper">
-            <input type="number" [(ngModel)]="manualWeight" placeholder="0.000" min="0.001" step="0.001" />
-            <span class="unit">{{ currentWeightUnit }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="weight-info">
-        <i class="fas fa-info-circle"></i>
-        <span>{{ "POS.WEIGHT_MODAL.INFO" | translate }}</span>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="closeWeightModal()">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-complete" (click)="confirmWeight()" [disabled]="!manualWeight || manualWeight <= 0">
-        <i class="fas fa-check"></i>
-        {{ "POS.WEIGHT_MODAL.CONFIRM" | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Quick Product Creation Modal -->
-<div class="modal-overlay" *ngIf="showQuickProductModal" (click)="closeQuickProductModal()">
-  <div class="modal-content quick-product-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-plus-circle"></i>
-        {{ "POS.QUICK_PRODUCT.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="closeQuickProductModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="quick-product-info">
-        <i class="fas fa-info-circle"></i>
-        <p>{{ "POS.QUICK_PRODUCT.INFO" | translate }}</p>
-      </div>
-
-      <div class="barcode-display">
-        <label>
-          <i class="fas fa-barcode"></i>
-          {{ "POS.QUICK_PRODUCT.BARCODE" | translate }}
-        </label>
-        <div class="barcode-value">{{ quickProductBarcode }}</div>
-      </div>
-
-      <div class="form-group">
-        <label>
-          <i class="fas fa-tag"></i>
-          {{ "POS.QUICK_PRODUCT.PRODUCT_NAME" | translate }}
-        </label>
-        <input type="text" [(ngModel)]="quickProductName"
-          [placeholder]="'POS.QUICK_PRODUCT.NAME_PLACEHOLDER' | translate" class="form-control" autofocus />
-      </div>
-
-      <div class="form-group">
-        <label>
-          <i class="fas fa-dollar-sign"></i>
-          {{ "POS.QUICK_PRODUCT.PRICE" | translate }}
-        </label>
-        <div class="input-wrapper">
-          <span class="currency">$</span>
-          <input type="number" [(ngModel)]="quickProductPrice" placeholder="0.00" min="0" step="0.01"
-            class="form-control price-input" />
-        </div>
-      </div>
-
-      <div class="form-group checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" [(ngModel)]="quickProductRequiresScale" />
-          <span>
-            <i class="fas fa-weight"></i>
-            {{ "POS.QUICK_PRODUCT.REQUIRES_SCALE" | translate }}
-          </span>
-        </label>
-      </div>
-
-      <div class="quick-product-note">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p>{{ "POS.QUICK_PRODUCT.NOTE" | translate }}</p>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="closeQuickProductModal()">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-complete btn-create" (click)="createQuickProduct()"
-        [disabled]="!quickProductPrice || quickProductPrice <= 0">
-        <i class="fas fa-plus"></i>
-        {{ "POS.QUICK_PRODUCT.CREATE_AND_ADD" | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Internal Sale Confirmation Modal -->
-<div class="modal-overlay" *ngIf="showInternalSaleConfirm" (click)="closeInternalSale()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-warehouse"></i>
-        {{ "POS.INTERNAL_SALE.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="closeInternalSale()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="internal-sale-warning">
-        <i class="fas fa-info-circle"></i>
-        <p>{{ "POS.INTERNAL_SALE.WARNING" | translate }}</p>
-      </div>
-
-      <div class="cart-summary">
-        <h4>{{ "POS.INTERNAL_SALE.ITEMS" | translate }}</h4>
-        <div class="item-list">
-          <div class="item-row" *ngFor="let item of cartItems">
-            <span class="item-name">{{ item.product.name }}</span>
-            <span class="item-qty">x{{ item.quantity }}</span>
-            <span class="item-price">{{ (item.product.price * item.quantity) | appCurrency }}</span>
-          </div>
-        </div>
-        <div class="total-row">
-          <span>{{ "POS.INTERNAL_SALE.TOTAL" | translate }}</span>
-          <span class="total-amount">{{ total | appCurrency }}</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>{{ "POS.INTERNAL_SALE.NOTES" | translate }}</label>
-        <textarea [(ngModel)]="internalSaleNotes" rows="3"
-          [placeholder]="'POS.INTERNAL_SALE.NOTES_PLACEHOLDER' | translate" class="form-control"></textarea>
-      </div>
-
-      <div class="limit-info" *ngIf="currentUser?.role === 'manager' && currentUser?.internalSalesLimit">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span>{{ "POS.INTERNAL_SALE.LIMIT" | translate }}: {{ (currentUser?.internalSalesLimit || 0) | appCurrency
-          }}</span>
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="closeInternalSale()">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-complete btn-internal" (click)="completeInternalSale()">
-        <i class="fas fa-check"></i>
-        {{ "POS.INTERNAL_SALE.CONFIRM" | translate }}
-      </button>
-    </div>
-  </div>
-</div>
+<!-- Internal Sale Modal Component -->
+<app-internal-sale-modal
+  [show]="showInternalSaleConfirm"
+  [cartItems]="cartItems"
+  [total]="total"
+  [currentUser]="currentUser"
+  (close)="closeInternalSale()"
+  (confirm)="onInternalSaleConfirm($event)"
+>
+</app-internal-sale-modal>
 
 <!-- Mobile Favorites Bar (Fixed at Bottom) -->
 <div class="mobile-favorites-bar" *ngIf="!isMobileView">
@@ -349,12 +167,21 @@
     <span>{{ "POS.MOBILE_QUICK_ACCESS" | translate }}</span>
   </div>
   <div class="favorites-scroll">
-    <div class="favorite-item" *ngFor="let product of favoriteProducts.slice(0, 10)" (click)="addToCart(product)">
+    <div
+      class="favorite-item"
+      *ngFor="let product of quickAccessProducts"
+      (click)="addToCart(product)"
+    >
       <div class="favorite-image">
-        <img *ngIf="product.local_image" [src]="getProductImageUrl(product)" [alt]="product.name" (error)="
+        <img
+          *ngIf="product.local_image"
+          [src]="getProductImageUrl(product)"
+          [alt]="product.name"
+          (error)="
             $any($event.target).src =
               'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect width=%2250%22 height=%2250%22 fill=%22%23f0f0f0%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2220%22%3E📦%3C/text%3E%3C/svg%3E'
-          " />
+          "
+        />
         <div *ngIf="!product.local_image" class="no-image">
           <i class="fas fa-box"></i>
         </div>
@@ -366,8 +193,15 @@
 </div>
 
 <!-- Calculator Modal -->
-<div class="modal-overlay" *ngIf="showCalculatorModal" (click)="closeCalculatorModal()">
-  <div class="modal-content calculator-modal" (click)="$event.stopPropagation()">
+<div
+  class="modal-overlay"
+  *ngIf="showCalculatorModal"
+  (click)="closeCalculatorModal()"
+>
+  <div
+    class="modal-content calculator-modal"
+    (click)="$event.stopPropagation()"
+  >
     <div class="modal-header">
       <h3>
         <i class="fas fa-calculator"></i>
@@ -384,20 +218,245 @@
         <p>{{ "POS.CALCULATOR.INFO" | translate }}</p>
       </div>
 
-      <app-calculator (addItem)="onCalculatorAddGeneric($event)" (looseProductRequest)="closeCalculatorModal()">
+      <app-calculator
+        (addItem)="onCalculatorAddGeneric($event)"
+        (looseProductRequest)="openLooseProductModal()"
+      >
       </app-calculator>
     </div>
   </div>
 </div>
 
-<!-- Mobile Scan Floating Button -->
-<button class="mobile-scan-button" aria-label="Start camera scan" (click)="toggleCameraScanner()"
-  title="{{ 'POS.BUTTONS.SCAN' | translate }}">
-  <i class="fas fa-camera"></i>
-</button>
+<!-- Loose Product Modal Component -->
+<app-loose-product-modal
+  [show]="showLooseProductModal"
+  [scaleConnected]="scaleConnected"
+  [currentWeight]="currentWeight"
+  [currentWeightStable]="currentWeightStable"
+  (close)="closeLooseProductModal()"
+  (confirm)="onLooseProductConfirm($event)"
+>
+</app-loose-product-modal>
 
-<!-- Calculator Floating Button -->
-<button class="calculator-floating-button" aria-label="Open calculator" (click)="openCalculatorModal()"
-  title="{{ 'POS.CALCULATOR.TITLE' | translate }}">
-  <i class="fas fa-calculator"></i>
+<!-- Withdraw Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showWithdrawModal"
+  (click)="closeWithdrawModal()"
+>
+  <div class="modal-content withdraw-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-money-bill-wave"></i>
+        {{ "POS.WITHDRAW.TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="closeWithdrawModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>
+          <i class="fas fa-dollar-sign"></i>
+          {{ "POS.WITHDRAW.AMOUNT" | translate }}
+        </label>
+        <div class="input-wrapper">
+          <span class="currency">$</span>
+          <input
+            type="number"
+            [(ngModel)]="withdrawAmount"
+            min="0"
+            step="0.01"
+            class="form-control amount-input"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>
+          <i class="fas fa-comment-alt"></i>
+          {{ "POS.WITHDRAW.REASON" | translate }}
+        </label>
+        <textarea
+          [(ngModel)]="withdrawReason"
+          class="form-control"
+          rows="3"
+          [placeholder]="'POS.WITHDRAW.REASON_PLACEHOLDER' | translate"
+        ></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeWithdrawModal()">
+        {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button
+        class="btn-confirm"
+        [disabled]="!withdrawAmount || withdrawAmount <= 0"
+        (click)="confirmWithdraw()"
+      >
+        <i class="fas fa-check"></i>
+        {{ "POS.WITHDRAW.CONFIRM" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Open Register Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showOpenRegisterModal"
+  (click)="closeOpenRegisterModal()"
+>
+  <div class="modal-content register-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-cash-register"></i>
+        {{ "POS.REGISTER.OPEN_TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="closeOpenRegisterModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>
+          <i class="fas fa-hashtag"></i>
+          {{ "POS.REGISTER.NUMBER" | translate }}
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="registerNumber"
+          class="form-control"
+          [placeholder]="'POS.REGISTER.NUMBER_PLACEHOLDER' | translate"
+        />
+      </div>
+      <div class="form-group">
+        <label>
+          <i class="fas fa-dollar-sign"></i>
+          {{ "POS.REGISTER.OPENING_CASH" | translate }}
+        </label>
+        <div class="input-wrapper">
+          <span class="currency">$</span>
+          <input
+            type="number"
+            [(ngModel)]="openingCash"
+            min="0"
+            step="0.01"
+            class="form-control amount-input"
+            placeholder="0.00"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeOpenRegisterModal()">
+        {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button
+        class="btn-confirm"
+        [disabled]="!registerNumber"
+        (click)="confirmOpenRegister()"
+      >
+        <i class="fas fa-door-open"></i>
+        {{ "POS.REGISTER.OPEN" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Close Register Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showCloseRegisterModal"
+  (click)="closeCloseRegisterModal()"
+>
+  <div class="modal-content register-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header warning">
+      <h3>
+        <i class="fas fa-door-closed"></i>
+        {{ "POS.REGISTER.CLOSE_TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="closeCloseRegisterModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="register-summary">
+        <div class="summary-row">
+          <span>{{ "POS.REGISTER.OPENING_CASH" | translate }}:</span>
+          <span class="value">{{
+            currentRegister?.openingCash || 0 | appCurrency
+          }}</span>
+        </div>
+        <div class="summary-row">
+          <span>{{ "POS.REGISTER.EXPECTED_CASH" | translate }}:</span>
+          <span class="value highlight">{{ expectedCash | appCurrency }}</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>
+          <i class="fas fa-dollar-sign"></i>
+          {{ "POS.REGISTER.CLOSING_CASH" | translate }}
+        </label>
+        <div class="input-wrapper">
+          <span class="currency">$</span>
+          <input
+            type="number"
+            [(ngModel)]="closingCash"
+            min="0"
+            step="0.01"
+            class="form-control amount-input"
+            placeholder="0.00"
+          />
+        </div>
+        <div
+          class="difference"
+          *ngIf="closingCash !== null && closingCash !== undefined"
+        >
+          <span
+            [class.positive]="closingCash - expectedCash >= 0"
+            [class.negative]="closingCash - expectedCash < 0"
+          >
+            {{ "POS.REGISTER.DIFFERENCE" | translate }}:
+            {{ closingCash - expectedCash | appCurrency }}
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>
+          <i class="fas fa-sticky-note"></i>
+          {{ "POS.REGISTER.NOTES" | translate }}
+        </label>
+        <textarea
+          [(ngModel)]="closeRegisterNotes"
+          class="form-control"
+          rows="2"
+          [placeholder]="'POS.REGISTER.NOTES_PLACEHOLDER' | translate"
+        ></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeCloseRegisterModal()">
+        {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button
+        class="btn-confirm danger"
+        [disabled]="closingCash === null || closingCash === undefined"
+        (click)="confirmCloseRegister()"
+      >
+        <i class="fas fa-lock"></i>
+        {{ "POS.REGISTER.CLOSE" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Scan Floating Button -->
+<button
+  class="mobile-scan-button"
+  aria-label="Start camera scan"
+  (click)="toggleCameraScanner()"
+  title="{{ 'POS.BUTTONS.SCAN' | translate }}"
+>
+  <i class="fas fa-camera"></i>
 </button>

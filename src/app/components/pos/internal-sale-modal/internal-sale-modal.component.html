@@ -1,0 +1,70 @@
+<div class="modal-overlay" *ngIf="show" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-warehouse"></i>
+        {{ "POS.INTERNAL_SALE.TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="internal-sale-warning">
+        <i class="fas fa-info-circle"></i>
+        <p>{{ "POS.INTERNAL_SALE.WARNING" | translate }}</p>
+      </div>
+
+      <div class="cart-summary">
+        <h4>{{ "POS.INTERNAL_SALE.ITEMS" | translate }}</h4>
+        <div class="item-list">
+          <div class="item-row" *ngFor="let item of cartItems">
+            <span class="item-name">{{ item.product.name }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">{{
+              item.product.price * item.quantity | appCurrency
+            }}</span>
+          </div>
+        </div>
+        <div class="total-row">
+          <span>{{ "POS.INTERNAL_SALE.TOTAL" | translate }}</span>
+          <span class="total-amount">{{ total | appCurrency }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ "POS.INTERNAL_SALE.NOTES" | translate }}</label>
+        <textarea
+          [(ngModel)]="notes"
+          rows="3"
+          [placeholder]="'POS.INTERNAL_SALE.NOTES_PLACEHOLDER' | translate"
+          class="form-control"
+        ></textarea>
+      </div>
+
+      <div
+        class="limit-info"
+        *ngIf="
+          currentUser?.role === 'manager' && currentUser?.internalSalesLimit
+        "
+      >
+        <i class="fas fa-exclamation-triangle"></i>
+        <span
+          >{{ "POS.INTERNAL_SALE.LIMIT" | translate }}:
+          {{ currentUser?.internalSalesLimit || 0 | appCurrency }}</span
+        >
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="onClose()">
+        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button class="btn-complete btn-internal" (click)="onConfirm()">
+        <i class="fas fa-check"></i>
+        {{ "POS.INTERNAL_SALE.CONFIRM" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

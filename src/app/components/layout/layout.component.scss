@@ -6,7 +6,42 @@
   overflow: hidden;
   background: $bg-primary;
 }
+.sidebar-header {
+  padding: $spacing-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
+  i {
+    font-size: 1.5rem;
+  }
+}
+.user-swap {
+  background: transparent;
+  border: none;
+  color: $text-primary;
+  font-size: 1.1rem;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-sm;
+
+  &:hover {
+    background: $bg-tertiary;
+    color: $primary;
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+}
 // ===== SIDEBAR =====
 .sidebar {
   width: $sidebar-width;
@@ -17,21 +52,6 @@
   z-index: $z-sidebar;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
 
-  .sidebar-header {
-    padding: $spacing-md;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $primary;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-
-    i {
-      font-size: 2rem;
-    }
-  }
-
   .sidebar-nav {
     flex: 1;
     overflow-y: auto;
@@ -39,12 +59,12 @@
     flex-direction: column;
     align-items: end;
     padding: $spacing-xs;
-    gap: 3px;
+    gap: $spacing-sm;
   }
 
   .sidebar-btn {
-    width: 96%;
-    padding: $spacing-md $spacing-lg $spacing-lg;
+    width: 98%;
+    padding: $spacing-md $spacing-xs $spacing-lg;
     border: none;
     max-height: calc(#{$sidebar-width} - $spacing-sm * 2);
     background: transparent;
@@ -160,7 +180,7 @@
   z-index: $z-fixed;
 
   .header-content {
-    padding: $spacing-sm $spacing-2xl;
+    padding: $spacing-sm $spacing-2xl $spacing-sm $spacing-lg;
     display: flex;
     justify-content: space-between;
     align-items: center;

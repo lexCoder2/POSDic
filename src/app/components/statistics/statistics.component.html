@@ -1,21 +1,26 @@
-<app-page-title [title]="'STATISTICS.TITLE' | translate" [icon]="'fas fa-chart-bar'">
+<div class="statistics-container">
   <div class="statistics-header">
     <div class="period-selector">
-      <button [class.active]="selectedPeriod() === 'week'" (click)="setPeriod('week')">
+      <button
+        [class.active]="selectedPeriod() === 'week'"
+        (click)="setPeriod('week')"
+      >
         {{ "STATISTICS.PERIOD.WEEK" | translate }}
       </button>
-      <button [class.active]="selectedPeriod() === 'month'" (click)="setPeriod('month')">
+      <button
+        [class.active]="selectedPeriod() === 'month'"
+        (click)="setPeriod('month')"
+      >
         {{ "STATISTICS.PERIOD.MONTH" | translate }}
       </button>
-      <button [class.active]="selectedPeriod() === 'year'" (click)="setPeriod('year')">
+      <button
+        [class.active]="selectedPeriod() === 'year'"
+        (click)="setPeriod('year')"
+      >
         {{ "STATISTICS.PERIOD.YEAR" | translate }}
       </button>
     </div>
   </div>
-</app-page-title>
-<div class="statistics-container">
-
-
   <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner"></div>
     <p>{{ "STATISTICS.LOADING" | translate }}</p>
@@ -33,7 +38,7 @@
           <p class="metric-value">{{ totalRevenue() | appCurrency }}</p>
           <span class="metric-label">{{
             "STATISTICS.METRICS.ALL_TIME" | translate
-            }}</span>
+          }}</span>
         </div>
       </div>
 
@@ -46,7 +51,7 @@
           <p class="metric-value">{{ totalSales() }}</p>
           <span class="metric-label">{{
             "STATISTICS.METRICS.COMPLETED" | translate
-            }}</span>
+          }}</span>
         </div>
       </div>
 
@@ -61,7 +66,7 @@
           </p>
           <span class="metric-label">{{
             "STATISTICS.METRICS.PER_SALE" | translate
-            }}</span>
+          }}</span>
         </div>
       </div>
 
@@ -74,11 +79,11 @@
           <p class="metric-value">{{ periodRevenue() | appCurrency }}</p>
           <span class="metric-label">{{
             selectedPeriod() === "week"
-            ? ("STATISTICS.PERIOD.WEEK" | translate)
-            : selectedPeriod() === "month"
-            ? ("STATISTICS.PERIOD.MONTH" | translate)
-            : ("STATISTICS.PERIOD.YEAR" | translate)
-            }}</span>
+              ? ("STATISTICS.PERIOD.WEEK" | translate)
+              : selectedPeriod() === "month"
+              ? ("STATISTICS.PERIOD.MONTH" | translate)
+              : ("STATISTICS.PERIOD.YEAR" | translate)
+          }}</span>
         </div>
       </div>
     </div>
@@ -94,23 +99,33 @@
           </h2>
         </div>
         <div class="chart-body">
-          <div class="bar-chart" *ngIf="analytics().salesTrend.values.length > 0; else noData">
+          <div
+            class="bar-chart"
+            *ngIf="analytics().salesTrend.values.length > 0; else noData"
+          >
             <div class="chart-bars">
-              <div class="bar-wrapper" *ngFor="
+              <div
+                class="bar-wrapper"
+                *ngFor="
                   let value of analytics().salesTrend.values;
                   let i = index
-                " [title]="
+                "
+                [title]="
                   analytics().salesTrend.labels[i] + ': $' + value.toFixed(2)
-                ">
+                "
+              >
                 <div class="bar-value">
                   {{ value > 0 ? (value | appCurrency : 0) : "" }}
                 </div>
-                <div class="bar" [style.height.%]="
+                <div
+                  class="bar"
+                  [style.height.%]="
                     getBarHeight(
                       value,
                       getMaxValue(analytics().salesTrend.values)
                     )
-                  "></div>
+                  "
+                ></div>
                 <div class="bar-label">
                   {{ analytics().salesTrend.labels[i].split("/")[1] }}
                 </div>
@@ -129,21 +144,31 @@
           </h2>
         </div>
         <div class="chart-body">
-          <div class="bar-chart vertical" *ngIf="analytics().monthlySales.values.length > 0; else noData">
+          <div
+            class="bar-chart vertical"
+            *ngIf="analytics().monthlySales.values.length > 0; else noData"
+          >
             <div class="chart-bars">
-              <div class="bar-wrapper" *ngFor="
+              <div
+                class="bar-wrapper"
+                *ngFor="
                   let value of analytics().monthlySales.values;
                   let i = index
-                " [title]="
+                "
+                [title]="
                   analytics().monthlySales.labels[i] + ': ' + value + ' sales'
-                ">
+                "
+              >
                 <div class="bar-value">{{ value > 0 ? value : "" }}</div>
-                <div class="bar" [style.height.%]="
+                <div
+                  class="bar"
+                  [style.height.%]="
                     getBarHeight(
                       value,
                       getMaxValue(analytics().monthlySales.values)
                     )
-                  "></div>
+                  "
+                ></div>
                 <div class="bar-label">
                   {{ analytics().monthlySales.labels[i].split(" ")[0] }}
                 </div>
@@ -162,21 +187,30 @@
           </h2>
         </div>
         <div class="chart-body">
-          <div class="horizontal-bar-chart" *ngIf="analytics().topCategories.values.length > 0; else noData">
-            <div class="h-bar-item" *ngFor="
+          <div
+            class="horizontal-bar-chart"
+            *ngIf="analytics().topCategories.values.length > 0; else noData"
+          >
+            <div
+              class="h-bar-item"
+              *ngFor="
                 let value of analytics().topCategories.values;
                 let i = index
-              ">
+              "
+            >
               <div class="h-bar-label">
                 {{ analytics().topCategories.labels[i] }}
               </div>
               <div class="h-bar-container">
-                <div class="h-bar" [style.width.%]="
+                <div
+                  class="h-bar"
+                  [style.width.%]="
                     getBarHeight(
                       value,
                       getMaxValue(analytics().topCategories.values)
                     )
-                  ">
+                  "
+                >
                   <span class="h-bar-value">{{ value | appCurrency }}</span>
                 </div>
               </div>
@@ -194,24 +228,35 @@
           </h2>
         </div>
         <div class="chart-body">
-          <div class="payment-chart" *ngIf="analytics().paymentMethods.values.length > 0; else noData">
-            <div class="payment-item" *ngFor="
+          <div
+            class="payment-chart"
+            *ngIf="analytics().paymentMethods.values.length > 0; else noData"
+          >
+            <div
+              class="payment-item"
+              *ngFor="
                 let value of analytics().paymentMethods.values;
                 let i = index
-              ">
+              "
+            >
               <div class="payment-info">
                 <span class="payment-name">{{
                   analytics().paymentMethods.labels[i]
-                  }}</span>
-                <span class="payment-count">{{ value }} {{ "STATISTICS.TRANSACTIONS" | translate }}</span>
+                }}</span>
+                <span class="payment-count"
+                  >{{ value }} {{ "STATISTICS.TRANSACTIONS" | translate }}</span
+                >
               </div>
               <div class="payment-bar-container">
-                <div class="payment-bar" [style.width.%]="
+                <div
+                  class="payment-bar"
+                  [style.width.%]="
                     getBarHeight(
                       value,
                       getMaxValue(analytics().paymentMethods.values)
                     )
-                  "></div>
+                  "
+                ></div>
               </div>
               <div class="payment-percentage">
                 {{ ((value / totalSales()) * 100).toFixed(1) }}%
@@ -230,21 +275,31 @@
           </h2>
         </div>
         <div class="chart-body">
-          <div class="bar-chart small" *ngIf="analytics().dailySales.values.length > 0; else noData">
+          <div
+            class="bar-chart small"
+            *ngIf="analytics().dailySales.values.length > 0; else noData"
+          >
             <div class="chart-bars">
-              <div class="bar-wrapper" *ngFor="
+              <div
+                class="bar-wrapper"
+                *ngFor="
                   let value of analytics().dailySales.values;
                   let i = index
-                " [title]="
+                "
+                [title]="
                   analytics().dailySales.labels[i] + ': ' + value + ' sales'
-                ">
+                "
+              >
                 <div class="bar-value">{{ value > 0 ? value : "" }}</div>
-                <div class="bar" [style.height.%]="
+                <div
+                  class="bar"
+                  [style.height.%]="
                     getBarHeight(
                       value,
                       getMaxValue(analytics().dailySales.values)
                     )
-                  "></div>
+                  "
+                ></div>
                 <div class="bar-label">
                   {{ analytics().dailySales.labels[i].split("/")[1] }}
                 </div>

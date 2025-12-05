@@ -158,6 +158,9 @@
     "SWITCH_USER": "Cambiar Usuario",
     "WELCOME": "Bienvenido, {{name}}",
     "CLEAR": "Limpiar",
+    "LOADING": "Cargando...",
+    "ERROR": "Error al cargar",
+    "RETRY": "Reintentar",
     "THEME": {
       "LABEL": "Tema",
       "DARK_MODE": "Modo Oscuro",
@@ -524,6 +527,8 @@
   "CASHIER": {
     "TITLE": "Cajero Rápido",
     "DESCRIPTION": "Entrada rápida de productos y procesamiento de pagos",
+    "REGISTER_WARNING": "No hay caja abierta. Por favor abra una caja para hacer ventas.",
+    "OPEN_REGISTER": "Abrir Caja",
     "ADD": "Agregar",
     "MULTIPLY": {
       "ADD_LABEL": "Ingrese la cantidad para agregar:",
@@ -602,6 +607,37 @@
     "NO_DATA": "No hay datos disponibles para este período"
   },
   "POS": {
+    "FAVORITES": "Favoritos",
+    "QUICK_ACCESS": "Acceso Rápido",
+    "ACTIONS": {
+      "OPEN_REGISTER": "Abrir Caja",
+      "CLOSE_REGISTER": "Cerrar Caja",
+      "CALCULATOR": "Calculadora",
+      "LOOSE": "Granel",
+      "WITHDRAW": "Retiro",
+      "RETURNS": "Devoluciones"
+    },
+    "WITHDRAW": {
+      "TITLE": "Retiro de Efectivo",
+      "AMOUNT": "Monto",
+      "REASON": "Razón",
+      "REASON_PLACEHOLDER": "Ingrese razón del retiro...",
+      "CONFIRM": "Confirmar Retiro"
+    },
+    "REGISTER": {
+      "OPEN_TITLE": "Abrir Caja",
+      "CLOSE_TITLE": "Cerrar Caja",
+      "NUMBER": "Número de Caja",
+      "NUMBER_PLACEHOLDER": "ej., Caja 1",
+      "OPENING_CASH": "Efectivo Inicial",
+      "CLOSING_CASH": "Efectivo Final",
+      "EXPECTED_CASH": "Efectivo Esperado",
+      "DIFFERENCE": "Diferencia",
+      "NOTES": "Notas",
+      "NOTES_PLACEHOLDER": "Notas opcionales...",
+      "OPEN": "Abrir Caja",
+      "CLOSE": "Cerrar Caja"
+    },
     "CHECKOUT": {
       "TITLE": "Checkout",
       "ITEMS": "artículos",
@@ -654,7 +690,16 @@
     },
     "CALCULATOR": {
       "TITLE": "Calculadora Rápida",
-      "INFO": "Ingresa precios directamente para agregar artículos genéricos al carrito. Perfecto para productos sin etiqueta o entradas rápidas."
+      "INFO": "Ingresa precios directamente para agregar artículos genéricos al carrito."
+    },
+    "LOOSE_PRODUCT": {
+      "TITLE": "Producto a Granel",
+      "WEIGHT": "Peso",
+      "PRICE_PER_KG": "Precio por kg",
+      "DESCRIPTION": "Descripción",
+      "DESCRIPTION_PLACEHOLDER": "ej., Plátanos, Manzanas...",
+      "TOTAL": "Total",
+      "ADD_TO_CART": "Agregar al Carrito"
     }
   },
   "CART": {
@@ -798,5 +843,9 @@
     "CARD_PAYMENT": "Tarjeta",
     "TRANSFER_PAYMENT": "Transferencia",
     "CASH_PAYMENT": "Efectivo"
+  },
+  "FAVORITES": {
+    "EMPTY": "Aún no hay productos favoritos",
+    "TITLE": "Favoritos"
   }
 }

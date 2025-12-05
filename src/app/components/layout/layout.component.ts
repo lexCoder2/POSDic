@@ -6,7 +6,7 @@ import {
   ViewChild,
   ElementRef,
   signal,
-  effect,
+  TemplateRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -17,6 +17,7 @@ import {
   Router,
   NavigationEnd,
 } from "@angular/router";
+import { filter } from "rxjs/operators";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { TranslationService } from "../../services/translation.service";
@@ -30,6 +31,7 @@ import { ToastComponent } from "../toast/toast.component";
 import { ModalComponent } from "../modal/modal.component";
 import { GlobalSearchComponent } from "../global-search/global-search.component";
 import { User, Register } from "../../models";
+import { PageTitleComponent } from "../page-title/page-title.component";
 @Component({
   selector: "app-layout",
   standalone: true,
@@ -44,6 +46,7 @@ import { User, Register } from "../../models";
     CurrencyPipe,
     ModalComponent,
     GlobalSearchComponent,
+    PageTitleComponent,
   ],
   templateUrl: "./layout.component.html",
   styleUrls: ["./layout.component.scss"],
@@ -60,6 +63,43 @@ export class LayoutComponent implements OnInit, OnDestroy {
   currentLang = "en";
   mobileSidebarOpen = false;
   isDarkMode = false;
+
+  // Page title configuration
+  pageTitle = "";
+  pageIcon = "";
+  pageActions: TemplateRef<any> | null = null;
+
+  // Route to title/icon mapping
+  private routeTitleMap: { [key: string]: { title: string; icon: string } } = {
+    "/pos": { title: "GLOBAL.SIDEBAR.POS", icon: "fa-cash-register" },
+    "/dashboard": {
+      title: "GLOBAL.SIDEBAR.DASHBOARD",
+      icon: "fa-tachometer-alt",
+    },
+    "/cashier": {
+      title: "GLOBAL.SIDEBAR.QUICK_CASHIER",
+      icon: "fa-calculator",
+    },
+    "/statistics": { title: "GLOBAL.SIDEBAR.STATISTICS", icon: "fa-chart-bar" },
+    "/inventory": { title: "GLOBAL.SIDEBAR.INVENTORY", icon: "fa-boxes" },
+    "/categories": { title: "GLOBAL.SIDEBAR.CATEGORIES", icon: "fa-tags" },
+    "/providers": { title: "GLOBAL.SIDEBAR.SUPPLIERS", icon: "fa-truck" },
+    "/sales": { title: "GLOBAL.SIDEBAR.SALES", icon: "fa-receipt" },
+    "/registers": {
+      title: "GLOBAL.SIDEBAR.REGISTERS",
+      icon: "fa-cash-register",
+    },
+    "/users": { title: "GLOBAL.SIDEBAR.USERS", icon: "fa-users" },
+    "/templates": {
+      title: "GLOBAL.SIDEBAR.RECEIPT_TEMPLATES",
+      icon: "fa-file-alt",
+    },
+    "/settings": { title: "SETTINGS.TITLE", icon: "fa-cog" },
+    "/inventory-session": {
+      title: "INVENTORY_SESSION.TITLE",
+      icon: "fa-clipboard-list",
+    },
+  };
 
   // Expected cash data using signals
   expectedCashData = signal<{
@@ -90,15 +130,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private registerService: RegisterService,
     private userService: UserService,
     private themeService: ThemeService
-  ) {
-    // Set up effect to reload expected cash when register changes
-    effect(() => {
-      const register = this.currentRegister;
-      if (register) {
-        this.loadExpectedCash();
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -106,36 +138,77 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.currentLang = this.translation.current || "en";
     this.translation.currentLanguage$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((l) => (this.currentLang = l));
+      .subscribe((l) => {
+        this.currentLang = l;
+        // Update page title when language changes
+        this.updatePageTitle(this.router.url);
+      });
 
     // Subscribe to theme changes
     this.themeService.isDarkMode$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isDark) => (this.isDarkMode = isDark));
 
-    // Load current register
+    // Load current register and expected cash when register changes
     this.registerService.currentRegister$
       .pipe(takeUntil(this.destroy$))
       .subscribe((register) => {
+        const wasOpen = !!this.currentRegister;
+        const isNowOpen = !!register;
         this.currentRegister = register;
+
+        // Load expected cash only when register opens (not on every update)
+        if (!wasOpen && isNowOpen) {
+          this.loadExpectedCash();
+        } else if (!isNowOpen) {
+          // Clear expected cash data when register closes
+          this.expectedCashData.set(null);
+        }
       });
 
     // Check for active register on load
-    this.registerService.getActiveRegister().subscribe();
+    this.registerService.getActiveRegister().subscribe((register) => {
+      // Load expected cash on initial load if register is open
+      if (register) {
+        this.loadExpectedCash();
+      }
+    });
 
-    // Auto-refresh expected cash every 30 seconds when register is open
+    // Auto-refresh expected cash every 60 seconds when register is open
     setInterval(() => {
       if (this.currentRegister && !this.loadingExpectedCash()) {
         this.loadExpectedCash();
       }
-    }, 30000);
+    }, 60000);
 
-    // Close mobile sidebar on navigation
-    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
-      if (event instanceof NavigationEnd) {
+    // Update page title on navigation and close mobile sidebar
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event) => {
         this.mobileSidebarOpen = false;
-      }
-    });
+        this.updatePageTitle((event as NavigationEnd).urlAfterRedirects);
+      });
+
+    // Set initial page title
+    this.updatePageTitle(this.router.url);
+  }
+
+  private updatePageTitle(url: string): void {
+    // Find matching route (handle query params and fragments)
+    const path = url.split("?")[0].split("#")[0];
+    const routeConfig = this.routeTitleMap[path];
+
+    if (routeConfig) {
+      this.pageTitle = this.translation.translate(routeConfig.title);
+      this.pageIcon = routeConfig.icon;
+    } else {
+      // Default fallback
+      this.pageTitle = "";
+      this.pageIcon = "";
+    }
   }
 
   toggleSidebar(): void {

@@ -1,0 +1,240 @@
+@use "../../../../styles/theme" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $spacing-lg;
+}
+
+.modal-content {
+  background: $white;
+  border-radius: $radius-2xl;
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: $shadow-xl;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xl;
+  background: $gradient-primary;
+  color: $white;
+  border-radius: $radius-2xl $radius-2xl 0 0;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .btn-close {
+    @include button-base;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: $radius-full;
+    background: rgba($white, 0.2);
+    color: $white;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba($white, 0.3);
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.scale-status {
+  background: $bg-secondary;
+  padding: $spacing-lg;
+  border-radius: $radius-xl;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  .scale-connected {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    color: $success;
+    font-weight: $font-weight-medium;
+  }
+
+  .btn-use-scale {
+    @include button-base;
+    background: $white;
+    color: $text-primary;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    border: 1px solid $border-color;
+
+    &.active {
+      background: $blue-primary;
+      color: $white;
+      border-color: $blue-primary;
+    }
+  }
+
+  .current-weight {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-xs;
+    padding: $spacing-sm $spacing-md;
+    background: rgba($blue-primary, 0.1);
+    border-radius: $radius-lg;
+
+    .weight-value {
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      color: $blue-primary;
+    }
+
+    .weight-unit {
+      font-size: $font-size-base;
+      color: $text-secondary;
+    }
+
+    .weight-status {
+      margin-left: auto;
+      font-size: $font-size-sm;
+      padding: 2px 8px;
+      border-radius: $radius-full;
+      background: $warning;
+      color: $white;
+
+      &.stable {
+        background: $success;
+      }
+    }
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    i {
+      color: $blue-primary;
+      width: 16px;
+    }
+  }
+
+  input {
+    @include input-base;
+    padding: $spacing-md;
+    font-size: $font-size-lg;
+
+    &[readonly] {
+      background: $bg-tertiary;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.total-preview {
+  background: rgba($success, 0.1);
+  padding: $spacing-lg;
+  border-radius: $radius-xl;
+  text-align: center;
+  border: 1px solid rgba($success, 0.3);
+
+  .total-label {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .total-value {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: $success;
+    margin: $spacing-xs 0;
+  }
+
+  .total-breakdown {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: $bg-tertiary;
+  border-radius: 0 0 $radius-2xl $radius-2xl;
+
+  .btn-cancel {
+    @include button-secondary;
+    flex: 1;
+    background: $white;
+    color: $gray-500;
+    border: 2px solid $border-color;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+
+  .btn-confirm {
+    @include button-primary;
+    flex: 2;
+    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba($success, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
