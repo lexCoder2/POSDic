@@ -91,9 +91,9 @@ fi
 
 sudo -u $DEPLOY_USER HOME=/var/www npm run build -- --configuration production
 
-BUILD_OUTPUT="$REPO_DIR/dist/pos-system/browser"
+BUILD_OUTPUT="$REPO_DIR/dist/retail-pos/browser"
 if [ ! -d "$BUILD_OUTPUT" ]; then
-    BUILD_OUTPUT="$REPO_DIR/dist/pos-system"
+    BUILD_OUTPUT="$REPO_DIR/dist/retail-pos"
 fi
 echo -e "${GREEN} Frontend built${NC}"
 

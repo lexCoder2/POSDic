@@ -29,7 +29,7 @@ npm run build -- --configuration production
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Frontend build successful${NC}"
-    echo "Output: dist/pos-system/browser/"
+    echo "Output: dist/retail-pos/"
 else
     echo -e "${RED}✗ Frontend build failed${NC}"
     exit 1
@@ -58,7 +58,7 @@ tar -czf "$ARCHIVE_NAME" \
     --exclude='.git' \
     --exclude='*.log' \
     --exclude='.angular' \
-    dist/pos-system/browser \
+    dist/retail-pos \
     server
 
 if [ $? -eq 0 ]; then

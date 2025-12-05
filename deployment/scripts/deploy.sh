@@ -125,11 +125,11 @@ fi
 echo "Building Angular application..."
 sudo -u $DEPLOY_USER HOME=/var/www npm run build -- --configuration production
 
-BUILD_OUTPUT="$REPO_DIR/dist/pos-system/browser"
+BUILD_OUTPUT="$REPO_DIR/dist/retail-pos/browser"
 if [ ! -d "$BUILD_OUTPUT" ]; then
-    BUILD_OUTPUT="$REPO_DIR/dist/pos-system"
+    BUILD_OUTPUT="$REPO_DIR/dist/retail-pos"
     if [ ! -d "$BUILD_OUTPUT" ]; then
-        echo -e "${RED}Error: Build output not found. Expected at dist/pos-system/browser${NC}"
+        echo -e "${RED}Error: Build output not found. Expected at dist/retail-pos${NC}"
         exit 1
     fi
 fi

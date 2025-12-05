@@ -217,7 +217,7 @@ Sync flow:
    Output: ✔ Browser bundle generation complete.
 
 6. Deploy built files
-   cp -r dist/pos-system/browser/* /var/www/posdic/frontend/
+   cp -r dist/retail-pos/* /var/www/posdic/frontend/
    rsync -av server/ /var/www/posdic/backend/
 
 7. Restart services
