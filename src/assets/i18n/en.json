@@ -896,5 +896,23 @@
   "FAVORITES": {
     "EMPTY": "No favorite products yet",
     "TITLE": "Favorites"
+  },
+  "LOGIN": {
+    "SUBTITLE": "Point of Sale System",
+    "USERNAME": "Username",
+    "USERNAME_PLACEHOLDER": "Enter your username",
+    "PASSWORD": "Password",
+    "PASSWORD_PLACEHOLDER": "Enter your password",
+    "SUBMIT": "Sign In",
+    "LOADING": "Signing in...",
+    "SECURE_ACCESS": "Secure access for authorized personnel",
+    "ERROR_REQUIRED": "Please enter username and password",
+    "ERROR_CONNECTION": "Unable to connect to server",
+    "ERROR_INVALID": "Invalid username or password",
+    "WELCOME_TITLE": "Welcome to POSDic",
+    "WELCOME_DESCRIPTION": "The complete point of sale solution for your business. Manage sales, inventory, and reports all in one place.",
+    "FEATURE_FAST": "Fast & Easy Sales",
+    "FEATURE_REPORTS": "Real-time Reports",
+    "FEATURE_INVENTORY": "Inventory Control"
   }
 }

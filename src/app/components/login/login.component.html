@@ -1,42 +1,52 @@
-<div class="login-layout">
-  <!-- Left Side Panel -->
+<div class="login-container">
+  <!-- Left Panel - Description & Image -->
   <div class="left-panel">
-    <div class="nav-menu">
-      <div class="nav-item active">
-        <i class="fas fa-check-circle"></i>
-        <span>Home</span>
-      </div>
-      <div class="nav-item">
-        <i class="fas fa-check-circle"></i>
-        <span>Contacto</span>
-      </div>
+    <div class="panel-image">
+      <img src="assets/login.png" alt="POS Illustration" />
     </div>
-
     <div class="panel-content">
-      <div class="tab-buttons">
-        <button class="tab-btn active">Login</button>
-        <button class="tab-btn">Sign up</button>
+      <h2 class="welcome-title">{{ "LOGIN.WELCOME_TITLE" | translate }}</h2>
+      <p class="welcome-description">
+        {{ "LOGIN.WELCOME_DESCRIPTION" | translate }}
+      </p>
+      <div class="feature-list">
+        <div class="feature-item">
+          <i class="fas fa-bolt"></i>
+          <span>{{ "LOGIN.FEATURE_FAST" | translate }}</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-chart-line"></i>
+          <span>{{ "LOGIN.FEATURE_REPORTS" | translate }}</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-boxes"></i>
+          <span>{{ "LOGIN.FEATURE_INVENTORY" | translate }}</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Right Side Card -->
+  <!-- Right Panel - Login Form -->
   <div class="right-panel">
     <div class="login-card">
       <!-- Logo -->
-      <div class="logo-circles">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
+      <div class="logo-section">
+        <div class="logo-icon">
+          <i class="fas fa-cash-register"></i>
+        </div>
+        <h1 class="logo-title">POSDic</h1>
+        <p class="logo-subtitle">{{ "LOGIN.SUBTITLE" | translate }}</p>
       </div>
 
       <form (ngSubmit)="onSubmit()" class="login-form">
         <div *ngIf="error" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
           {{ error }}
         </div>
 
-        <!-- Email/Username Input -->
+        <!-- Username Input -->
         <div class="form-group">
+          <label for="username">{{ "LOGIN.USERNAME" | translate }}</label>
           <div class="input-wrapper">
             <i class="fas fa-user"></i>
             <input
@@ -44,15 +54,17 @@
               id="username"
               [(ngModel)]="username"
               name="username"
-              placeholder="Email"
+              [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate"
               required
               [disabled]="loading"
+              autocomplete="username"
             />
           </div>
         </div>
 
         <!-- Password Input -->
         <div class="form-group">
+          <label for="password">{{ "LOGIN.PASSWORD" | translate }}</label>
           <div class="input-wrapper">
             <i class="fas fa-lock"></i>
             <input
@@ -60,38 +72,31 @@
               id="password"
               [(ngModel)]="password"
               name="password"
-              placeholder="Password"
+              [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
               required
               [disabled]="loading"
+              autocomplete="current-password"
             />
           </div>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" class="btn-submit" [disabled]="loading">
-          <span *ngIf="!loading">Get started</span>
+          <span *ngIf="!loading">
+            <i class="fas fa-sign-in-alt"></i>
+            {{ "LOGIN.SUBMIT" | translate }}
+          </span>
           <span *ngIf="loading">
-            <i class="fas fa-spinner fa-spin"></i> Loading...
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ "LOGIN.LOADING" | translate }}
           </span>
         </button>
-
-        <!-- Divider -->
-        <div class="divider">
-          <span>OR</span>
-        </div>
-
-        <!-- Social Login Buttons -->
-        <div class="social-buttons">
-          <button type="button" class="social-btn google-btn">
-            <i class="fab fa-google"></i>
-            <span>Google</span>
-          </button>
-          <button type="button" class="social-btn facebook-btn">
-            <i class="fab fa-facebook-f"></i>
-            <span>Facebook</span>
-          </button>
-        </div>
       </form>
+
+      <div class="footer-text">
+        <i class="fas fa-shield-alt"></i>
+        {{ "LOGIN.SECURE_ACCESS" | translate }}
+      </div>
     </div>
   </div>
 </div>

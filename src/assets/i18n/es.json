@@ -866,5 +866,23 @@
   "FAVORITES": {
     "EMPTY": "Aún no hay productos favoritos",
     "TITLE": "Favoritos"
+  },
+  "LOGIN": {
+    "SUBTITLE": "Sistema Punto de Venta",
+    "USERNAME": "Usuario",
+    "USERNAME_PLACEHOLDER": "Ingrese su usuario",
+    "PASSWORD": "Contraseña",
+    "PASSWORD_PLACEHOLDER": "Ingrese su contraseña",
+    "SUBMIT": "Iniciar Sesión",
+    "LOADING": "Iniciando sesión...",
+    "SECURE_ACCESS": "Acceso seguro para personal autorizado",
+    "ERROR_REQUIRED": "Por favor ingrese usuario y contraseña",
+    "ERROR_CONNECTION": "No se pudo conectar al servidor",
+    "ERROR_INVALID": "Usuario o contraseña inválidos",
+    "WELCOME_TITLE": "Bienvenido a POSDic",
+    "WELCOME_DESCRIPTION": "La solución completa de punto de venta para tu negocio. Gestiona ventas, inventario y reportes en un solo lugar.",
+    "FEATURE_FAST": "Ventas Rápidas y Fáciles",
+    "FEATURE_REPORTS": "Reportes en Tiempo Real",
+    "FEATURE_INVENTORY": "Control de Inventario"
   }
 }
