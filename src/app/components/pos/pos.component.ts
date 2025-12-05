@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -21,12 +22,18 @@ import { ScaleService } from "../../services/scale.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { ToastService } from "../../services/toast.service";
-import { Product, Category, CartItem, User } from "../../models";
+import { RegisterService } from "../../services/register.service";
+import { Product, Category, CartItem, User, Register } from "../../models";
 import { environment } from "@environments/environment";
 import { CartComponent } from "../cart/cart.component";
 import { SearchResultsComponent } from "../search-results/search-results.component";
 import { FavoritesComponent } from "../favorites/favorites.component";
 import { QuickAccessComponent } from "../quick-access/quick-access.component";
+import {
+  CalculatorComponent,
+  CalculatorAddEvent,
+} from "../calculator/calculator.component";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 
 // Html5Qrcode is imported above; keep the variable dynamic in case of fallbacks
 
@@ -40,7 +47,9 @@ import { QuickAccessComponent } from "../quick-access/quick-access.component";
     SearchResultsComponent,
     FavoritesComponent,
     QuickAccessComponent,
+    CalculatorComponent,
     TranslatePipe,
+    CurrencyPipe,
   ],
   templateUrl: "./pos.component.html",
   styleUrls: ["./pos.component.scss"],
@@ -50,6 +59,7 @@ export class PosComponent implements OnInit, OnDestroy {
   @ViewChild("searchInput") searchInput!: ElementRef;
 
   currentUser: User | null = null;
+  currentRegister: Register | null = null;
   products: Product[] = [];
   favoriteProducts: Product[] = [];
   categories: Category[] = [];
@@ -82,6 +92,11 @@ export class PosComponent implements OnInit, OnDestroy {
   // Scale
   scaleConnected = false;
   currentWeight: number = 0;
+  currentWeightUnit: string = "kg";
+  currentWeightStable: boolean = false;
+  showWeightModal = false;
+  weightModalProduct: Product | null = null;
+  manualWeight: number = 0;
 
   // Checkout
   showCheckout = false;
@@ -89,6 +104,20 @@ export class PosComponent implements OnInit, OnDestroy {
   cashAmount: number = 0;
   cardAmount: number = 0;
   transferAmount: number = 0;
+
+  // Internal Sale
+  showInternalSaleConfirm = false;
+  internalSaleNotes = "";
+
+  // Quick Product Creation
+  showQuickProductModal = false;
+  quickProductBarcode = "";
+  quickProductName = "";
+  quickProductPrice: number = 0;
+  quickProductRequiresScale = false;
+
+  // Calculator Modal for Generic Products
+  showCalculatorModal = false;
 
   // UI State
   showMenu = false;
@@ -109,7 +138,9 @@ export class PosComponent implements OnInit, OnDestroy {
     private receiptGeneratorService: ReceiptGeneratorService,
     private searchStateService: SearchStateService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private registerService: RegisterService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -133,15 +164,18 @@ export class PosComponent implements OnInit, OnDestroy {
         this.searchQuery = query;
         if (query && query.trim().length > 0) {
           this.isSearching = true;
+          this.cdr.markForCheck();
           // Call API with fuzzy search - search ALL products (no category filter, higher limit)
           this.productService.searchProducts(query, undefined, 500).subscribe({
             next: (products) => {
               this.searchResults = products;
               this.isSearching = false;
+              this.cdr.markForCheck();
             },
             error: (err) => {
               console.error("Error searching products:", err);
               this.isSearching = false;
+              this.cdr.markForCheck();
               // Fallback to local filtering
               this.filterProducts();
             },
@@ -151,6 +185,7 @@ export class PosComponent implements OnInit, OnDestroy {
           this.searchResults = [];
           this.isSearching = false;
           this.filterProducts();
+          this.cdr.markForCheck();
         }
       });
 
@@ -165,10 +200,23 @@ export class PosComponent implements OnInit, OnDestroy {
     this.scaleService.currentWeight$
       .pipe(takeUntil(this.destroy$))
       .subscribe((reading) => {
-        if (reading && reading.stable) {
+        if (reading) {
           this.currentWeight = reading.weight;
+          this.currentWeightUnit = reading.unit;
+          this.currentWeightStable = reading.stable;
         }
       });
+
+    // Subscribe to register state
+    this.registerService.currentRegister$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((register) => {
+        this.currentRegister = register;
+        this.cdr.markForCheck();
+      });
+
+    // Load active register
+    this.registerService.getActiveRegister().subscribe();
   }
 
   ngOnDestroy(): void {
@@ -323,11 +371,8 @@ export class PosComponent implements OnInit, OnDestroy {
     // (dedupe handled earlier for camera-originated scans)
     this.productService.getProductByBarcode(barcode).subscribe({
       next: (product) => {
-        if (product.requiresScale && this.scaleConnected) {
-          this.addToCart(product, this.currentWeight, fromCamera);
-        } else {
-          this.addToCart(product, undefined, fromCamera);
-        }
+        // addToCart will handle opening weight modal if needed
+        this.addToCart(product, undefined, fromCamera);
 
         // Visual feedback for successful scan
         console.log(`✓ Added to cart: ${product.name}`);
@@ -339,11 +384,9 @@ export class PosComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error("Product not found for barcode:", barcode);
-        this.toastService.show(
-          "Product not found for barcode: " + barcode,
-          "error",
-          1400
-        );
+
+        // Open quick product creation modal
+        this.openQuickProductModal(barcode);
 
         // Error vibration on mobile
         if (this.isCameraActive && navigator.vibrate) {
@@ -648,15 +691,18 @@ export class PosComponent implements OnInit, OnDestroy {
     this.scaleConnected = connected;
 
     if (!connected) {
-      alert(
-        "Failed to connect to scale. Make sure it is connected and try again."
+      this.toastService.show(
+        "Failed to connect to scale. Make sure it is connected and try again.",
+        "error"
       );
     }
   }
 
   addToCart(product: Product, weight?: number, skipFocus = false): void {
-    if (product.requiresScale && !weight && this.scaleConnected) {
-      weight = this.currentWeight;
+    // If product requires scale and no weight is provided, open weight modal
+    if (product.requiresScale && !weight) {
+      this.openWeightModal(product);
+      return;
     }
 
     this.cartService.addItem(product, 1, weight);
@@ -665,6 +711,26 @@ export class PosComponent implements OnInit, OnDestroy {
     if (!skipFocus) {
       setTimeout(() => this.focusSearchInput(), 50);
     }
+  }
+
+  openWeightModal(product: Product): void {
+    this.weightModalProduct = product;
+    this.manualWeight = this.scaleConnected ? this.currentWeight : 0;
+    this.showWeightModal = true;
+  }
+
+  confirmWeight(): void {
+    if (this.weightModalProduct && this.manualWeight > 0) {
+      this.cartService.addItem(this.weightModalProduct, 1, this.manualWeight);
+      this.closeWeightModal();
+      setTimeout(() => this.focusSearchInput(), 50);
+    }
+  }
+
+  closeWeightModal(): void {
+    this.showWeightModal = false;
+    this.weightModalProduct = null;
+    this.manualWeight = 0;
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -705,9 +771,19 @@ export class PosComponent implements OnInit, OnDestroy {
 
   openCheckout(): void {
     if (this.cartItems.length === 0) {
-      alert("Cart is empty");
+      this.toastService.show("Cart is empty", "error");
       return;
     }
+
+    // Check if register is open
+    if (!this.currentRegister) {
+      this.toastService.show(
+        "Please open the register before making sales",
+        "error"
+      );
+      return;
+    }
+
     this.showCheckout = true;
     this.cashAmount = this.total;
   }
@@ -720,7 +796,16 @@ export class PosComponent implements OnInit, OnDestroy {
    */
   handleQuickPay(method: string): void {
     if (this.cartItems.length === 0) {
-      alert("Cart is empty");
+      this.toastService.show("Cart is empty", "error");
+      return;
+    }
+
+    // Check if register is open
+    if (!this.currentRegister) {
+      this.toastService.show(
+        "Please open the register before making sales",
+        "error"
+      );
       return;
     }
 
@@ -749,7 +834,7 @@ export class PosComponent implements OnInit, OnDestroy {
 
   completeSale(): void {
     if (!this.validatePayment()) {
-      alert("Invalid payment amount");
+      this.toastService.show("Invalid payment amount", "error");
       return;
     }
 
@@ -784,7 +869,10 @@ export class PosComponent implements OnInit, OnDestroy {
 
     this.saleService.createSale(sale).subscribe({
       next: (completedSale) => {
-        alert("Sale completed successfully! Sale #" + completedSale.saleNumber);
+        this.toastService.show(
+          "Sale completed successfully! Sale #" + completedSale.saleNumber,
+          "success"
+        );
         // Generate and print receipt using the saved/default template
         try {
           const currentUser = this.authService.getCurrentUser();
@@ -800,7 +888,10 @@ export class PosComponent implements OnInit, OnDestroy {
               )
               .subscribe({
                 next: (receiptContent) => {
-                  this.receiptGeneratorService.printReceipt(receiptContent);
+                  this.receiptGeneratorService.printReceipt(
+                    receiptContent,
+                    "html"
+                  );
                 },
                 error: (err) => {
                   console.error("Error generating styled receipt:", err);
@@ -816,7 +907,10 @@ export class PosComponent implements OnInit, OnDestroy {
               )
               .subscribe({
                 next: (receiptContent) => {
-                  this.receiptGeneratorService.printReceipt(receiptContent);
+                  this.receiptGeneratorService.printReceipt(
+                    receiptContent,
+                    "plain"
+                  );
                 },
                 error: (err) => {
                   console.error("Error generating plain-text receipt:", err);
@@ -831,8 +925,9 @@ export class PosComponent implements OnInit, OnDestroy {
         this.closeCheckout();
       },
       error: (err) => {
-        alert(
-          "Error completing sale: " + (err.error?.message || "Unknown error")
+        this.toastService.show(
+          "Error completing sale: " + (err.error?.message || "Unknown error"),
+          "error"
         );
       },
     });
@@ -884,6 +979,81 @@ export class PosComponent implements OnInit, OnDestroy {
       return Math.max(0, totalPaid - this.total);
     }
     return 0;
+  }
+
+  get canMakeInternalSale(): boolean {
+    return (
+      this.currentUser?.role === "admin" || this.currentUser?.role === "manager"
+    );
+  }
+
+  openInternalSale(): void {
+    if (this.cartItems.length === 0) {
+      this.toastService.show("Cart is empty", "error");
+      return;
+    }
+
+    if (!this.canMakeInternalSale) {
+      this.toastService.show(
+        "Only admins and managers can create internal sales",
+        "error"
+      );
+      return;
+    }
+
+    // Check manager limit
+    if (
+      this.currentUser?.role === "manager" &&
+      this.currentUser.internalSalesLimit
+    ) {
+      if (this.total > this.currentUser.internalSalesLimit) {
+        this.toastService.show(
+          `Internal sale amount ($${this.total.toFixed(
+            2
+          )}) exceeds your limit of $${this.currentUser.internalSalesLimit.toFixed(
+            2
+          )}`,
+          "error"
+        );
+        return;
+      }
+    }
+
+    this.showInternalSaleConfirm = true;
+  }
+
+  completeInternalSale(): void {
+    const internalSale = {
+      items: this.cartItems.map((item) => ({
+        product: item.product._id!,
+        quantity: item.quantity,
+        weight: item.weight,
+      })),
+      notes: this.internalSaleNotes || "Internal consumption",
+    };
+
+    this.saleService.createInternalSale(internalSale).subscribe({
+      next: (completedSale) => {
+        this.toastService.show(
+          `Internal sale completed. Amount: $${completedSale.total.toFixed(2)}`,
+          "success"
+        );
+        this.cartService.clearCart();
+        this.closeInternalSale();
+      },
+      error: (err) => {
+        this.toastService.show(
+          "Error completing internal sale: " +
+            (err.error?.message || "Unknown error"),
+          "error"
+        );
+      },
+    });
+  }
+
+  closeInternalSale(): void {
+    this.showInternalSaleConfirm = false;
+    this.internalSaleNotes = "";
   }
 
   logout(): void {
@@ -1061,5 +1231,98 @@ export class PosComponent implements OnInit, OnDestroy {
 
   toggleMobileCart(): void {
     this.isMobileCartOpen = !this.isMobileCartOpen;
+  }
+
+  openQuickProductModal(barcode: string): void {
+    this.quickProductBarcode = barcode;
+    this.quickProductName = `Product ${barcode}`;
+    this.quickProductPrice = 0;
+    this.quickProductRequiresScale = false;
+    this.showQuickProductModal = true;
+  }
+
+  closeQuickProductModal(): void {
+    this.showQuickProductModal = false;
+    this.quickProductBarcode = "";
+    this.quickProductName = "";
+    this.quickProductPrice = 0;
+    this.quickProductRequiresScale = false;
+  }
+
+  createQuickProduct(): void {
+    if (!this.quickProductPrice || this.quickProductPrice <= 0) {
+      this.toastService.show("Please enter a valid price", "error");
+      return;
+    }
+
+    const newProduct = {
+      product_id: `QUICK-${this.quickProductBarcode}-${Date.now()}`,
+      sku: this.quickProductBarcode,
+      ean: this.quickProductBarcode,
+      name: this.quickProductName,
+      price: this.quickProductPrice,
+      stock: 1000,
+      active: true,
+      requiresScale: this.quickProductRequiresScale,
+      incompleteInfo: true,
+      category: "Quick Entry",
+      description: "Created during sale - requires completion",
+    };
+
+    this.productService.createProduct(newProduct).subscribe({
+      next: (createdProduct) => {
+        this.toastService.show(
+          `Product created: ${createdProduct.name}`,
+          "success"
+        );
+
+        // Add product to cart immediately
+        if (this.quickProductRequiresScale) {
+          this.addToCart(createdProduct);
+        } else {
+          this.addToCart(createdProduct);
+        }
+
+        this.closeQuickProductModal();
+
+        // Refresh products list
+        this.loadProducts();
+      },
+      error: (err) => {
+        console.error("Error creating quick product:", err);
+        this.toastService.show(
+          "Error creating product: " + (err.error?.message || "Unknown error"),
+          "error"
+        );
+      },
+    });
+  }
+
+  openCalculatorModal(): void {
+    this.showCalculatorModal = true;
+  }
+
+  closeCalculatorModal(): void {
+    this.showCalculatorModal = false;
+  }
+
+  onCalculatorAddGeneric(event: CalculatorAddEvent): void {
+    // Create a generic product for the cart
+    const genericProduct: Product = {
+      _id: `temp-${Date.now()}`,
+      product_id: `GENERIC-${Date.now()}`,
+      name: `Generic Item - ${event.value.toFixed(2)}`,
+      price: event.value,
+      stock: 1,
+      active: true,
+      category: "Generic",
+    };
+
+    this.cartService.addItem(genericProduct, 1);
+    this.toastService.show(
+      `Added generic item: ${event.value.toFixed(2)}`,
+      "success",
+      1000
+    );
   }
 }

@@ -5,15 +5,23 @@ import { Subject, takeUntil, skip } from "rxjs";
 import { ProviderService } from "../../services/provider.service";
 import { AuthService } from "../../services/auth.service";
 import { SearchStateService } from "../../services/search-state.service";
+import { ToastService } from "../../services/toast.service";
 import { Provider, User } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
+import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 
 @Component({
   selector: "app-providers",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageTitleComponent,
+    TranslatePipe,
+    ToggleSwitchComponent,
+  ],
   templateUrl: "./providers.component.html",
   styleUrls: ["./providers.component.scss"],
 })
@@ -50,7 +58,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   );
 
   providerForm: Partial<Provider> = {
-    code: "",
     name: "",
     contactName: "",
     email: "",
@@ -67,7 +74,8 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     private providerService: ProviderService,
     private authService: AuthService,
     private searchStateService: SearchStateService,
-    private translation: TranslationService
+    private translation: TranslationService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -78,7 +86,9 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     // Subscribe to header search bar
     this.searchStateService.searchQuery$
       .pipe(skip(1), takeUntil(this.destroy$))
-      .subscribe((query) => this.searchQuery.set(query));
+      .subscribe((query) => {
+        this.searchQuery.set(query);
+      });
   }
 
   ngOnDestroy(): void {
@@ -107,7 +117,6 @@ export class ProvidersComponent implements OnInit, OnDestroy {
     } else {
       this.isEditing = false;
       this.providerForm = {
-        code: "",
         name: "",
         contactName: "",
         email: "",
@@ -122,8 +131,11 @@ export class ProvidersComponent implements OnInit, OnDestroy {
   }
 
   saveProvider(): void {
-    if (!this.providerForm.code || !this.providerForm.name) {
-      alert(this.translation.translate("PROVIDERS.ALERTS.FILL_REQUIRED"));
+    if (!this.providerForm.name) {
+      this.toastService.show(
+        this.translation.translate("PROVIDERS.ALERTS.FILL_REQUIRED"),
+        "info"
+      );
       return;
     }
 
@@ -157,7 +169,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   deleteProvider(id: string): void {
     if (!this.isAdmin()) {
-      alert(this.translation.translate("PROVIDERS.ALERTS.ADMIN_DELETE"));
+      this.toastService.show(
+        this.translation.translate("PROVIDERS.ALERTS.ADMIN_DELETE"),
+        "error"
+      );
       return;
     }
 

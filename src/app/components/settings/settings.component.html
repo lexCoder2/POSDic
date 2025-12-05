@@ -1,18 +1,10 @@
 <div class="page-container">
-  <app-page-title
-    [title]="'SETTINGS.TITLE' | translate"
-    [description]="'SETTINGS.DESCRIPTION' | translate"
-  >
+  <app-page-title [title]="'SETTINGS.TITLE' | translate" [description]="'SETTINGS.DESCRIPTION' | translate">
     <div class="header-actions">
       <button class="btn btn-primary" (click)="previewReceipt()">
         {{ "SETTINGS.PRINTING.PREVIEW" | translate }}
       </button>
-      <button
-        *ngIf="isAdmin"
-        class="btn btn-secondary"
-        routerLink="/templates"
-        title="Manage receipt templates"
-      >
+      <button *ngIf="isAdmin" class="btn btn-secondary" routerLink="/templates" title="Manage receipt templates">
         {{ "TEMPLATES.TITLE" | translate }}
       </button>
     </div>
@@ -24,15 +16,9 @@
     </div>
 
     <div class="options" role="radiogroup" aria-label="Printer Mode">
-      <div
-        class="option-card"
-        role="radio"
-        tabindex="0"
-        [attr.aria-checked]="printerMode === 'plain'"
-        [class.active]="printerMode === 'plain'"
-        (click)="setPrinterMode('plain')"
-        (keydown.enter)="setPrinterMode('plain')"
-      >
+      <div class="option-card" role="radio" tabindex="0" [attr.aria-checked]="printerMode === 'plain'"
+        [class.active]="printerMode === 'plain'" (click)="setPrinterMode('plain')"
+        (keydown.enter)="setPrinterMode('plain')">
         <div class="option-left">
           <div class="icon">T</div>
         </div>
@@ -45,15 +31,9 @@
         <div class="option-right"><span class="check">✓</span></div>
       </div>
 
-      <div
-        class="option-card"
-        role="radio"
-        tabindex="0"
-        [attr.aria-checked]="printerMode === 'styled'"
-        [class.active]="printerMode === 'styled'"
-        (click)="setPrinterMode('styled')"
-        (keydown.enter)="setPrinterMode('styled')"
-      >
+      <div class="option-card" role="radio" tabindex="0" [attr.aria-checked]="printerMode === 'styled'"
+        [class.active]="printerMode === 'styled'" (click)="setPrinterMode('styled')"
+        (keydown.enter)="setPrinterMode('styled')">
         <div class="option-left">
           <div class="icon">S</div>
         </div>
@@ -74,20 +54,16 @@
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.DISPLAY_NAME" | translate
-      }}</label>
-      <input
-        type="text"
-        [(ngModel)]="displayName"
-        placeholder="{{
+        }}</label>
+      <input type="text" [(ngModel)]="displayName" placeholder="{{
           'SETTINGS.USER_PREFERENCES.DISPLAY_NAME_PLACEHOLDER' | translate
-        }}"
-      />
+        }}" />
     </div>
 
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.LANGUAGE" | translate
-      }}</label>
+        }}</label>
       <select [(ngModel)]="preferredLang">
         <option value="en">{{ "GLOBAL.ENGLISH" | translate }}</option>
         <option value="es">{{ "GLOBAL.SPANISH" | translate }}</option>
@@ -97,7 +73,7 @@
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.PRINTER_MODE" | translate
-      }}</label>
+        }}</label>
       <select [(ngModel)]="userPrinterMode">
         <option value="inherit">
           {{ "SETTINGS.USER_PREFERENCES.PRINTER_INHERIT" | translate }}
@@ -107,6 +83,17 @@
         </option>
         <option value="styled">
           {{ "SETTINGS.PRINTING.STYLED" | translate }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label class="label">{{
+        "SETTINGS.USER_PREFERENCES.CURRENCY" | translate
+        }}</label>
+      <select [(ngModel)]="selectedCurrency">
+        <option *ngFor="let currency of currencyService.currencies" [value]="currency.code">
+          {{ currency.symbol }} - {{ currency.name }} ({{ currency.code }})
         </option>
       </select>
     </div>

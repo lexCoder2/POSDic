@@ -1,13 +1,15 @@
 import { Component, Input, Output, EventEmitter, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { CartService } from "../../services/cart.service";
-import { CartItem } from "../../models";
+import { CartItem, Product } from "../../models";
+import { environment } from "@environments/environment";
 
 @Component({
   selector: "app-cart",
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./cart.component.html",
   styleUrls: ["./cart.component.scss"],
 })
@@ -16,6 +18,8 @@ export class CartComponent {
   @Input() salesTabs: { items: CartItem[] }[] = [];
   @Input() activeSaleTabIndex: number = 0;
   @Input() isMobileCartOpen: boolean = false;
+  @Input() registerOpen: boolean = false;
+  @Input() canMakeInternalSale: boolean = false;
 
   showCloseConfirmation = signal<boolean>(false);
   tabToClose = signal<number | null>(null);
@@ -27,6 +31,7 @@ export class CartComponent {
   @Output() clearCart = new EventEmitter<void>();
   @Output() placeOrder = new EventEmitter<void>();
   @Output() placeOrderWithMethod = new EventEmitter<string>();
+  @Output() internalSale = new EventEmitter<void>();
   @Output() closeMobileCart = new EventEmitter<void>();
 
   constructor(public cartService: CartService) {}
@@ -46,6 +51,12 @@ export class CartComponent {
       supplier,
       items: groups[supplier],
     }));
+  }
+  getProductImageUrl(product: Product): string {
+    if (product.local_image) {
+      return `${environment.imageUrl}/${product.local_image}`;
+    }
+    return "";
   }
 
   getTotalItems(): number {

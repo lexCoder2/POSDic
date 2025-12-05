@@ -2,9 +2,8 @@
 
 .inventory-container {
   padding: $spacing-2xl;
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
-  background: $bg-primary;
   min-height: 100%;
   border-radius: 0;
 }
@@ -81,8 +80,12 @@
 .tabs {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 2rem;
+  margin-bottom: $spacing-lg;
   border-bottom: none;
+  &:last-child {
+    margin-right: 0;
+    justify-self: end;
+  }
 }
 
 .tab {
@@ -154,6 +157,22 @@
     transform: translateY(-50%);
     font-size: 1.2rem;
     color: $text-muted;
+  }
+}
+
+.btn-session {
+  @include button-primary;
+  background: linear-gradient(135deg, $success, $success-dark);
+  box-shadow: 0 4px 12px rgba($success, 0.25);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba($success, 0.3);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba($success, 0.25);
   }
 }
 
@@ -363,11 +382,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba($gray-800, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: $z-modal;
   animation: fadeIn 0.3s ease;
 }
 
@@ -744,11 +763,17 @@ form {
     max-height: 95vh;
   }
 }
+.header-container {
+  display: flex;
 
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+}
 // Pagination Styles
 .row-count {
-  display: flex;
-  align-items: center;
+  display: inline-block;
+  justify-self: end;
   gap: 15px;
   color: #666;
   font-size: 14px;

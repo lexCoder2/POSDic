@@ -1,17 +1,18 @@
-<div class="dashboard-container">
+<app-page-title [title]="'DASHBOARD.TITLE' | translate" [icon]="'fas fa-chart-line'">
   <div class="dashboard-header">
-    <h1 class="dashboard-title">
-      <i class="fas fa-chart-line"></i>
-      {{ "DASHBOARD.TITLE" | translate }}
-    </h1>
+
     <div class="welcome-message">
       {{
-        "GLOBAL.WELCOME"
-          | translate
-            : { name: currentUser?.firstName || currentUser?.username }
+      "GLOBAL.WELCOME"
+      | translate
+      : { name: currentUser?.firstName || currentUser?.username }
       }}
     </div>
   </div>
+</app-page-title>
+
+<div class="dashboard-container">
+
 
   <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner"></div>
@@ -28,7 +29,7 @@
         <div class="stat-content">
           <h3>{{ "DASHBOARD.STATS.TOTAL_REVENUE" | translate }}</h3>
           <p class="stat-value">
-            ${{ stats().totalRevenue | number : "1.2-2" }}
+            {{ stats().totalRevenue | appCurrency }}
           </p>
           <span class="stat-label">{{ "DASHBOARD.ALL_TIME" | translate }}</span>
         </div>
@@ -43,7 +44,7 @@
           <p class="stat-value">{{ stats().totalSales }}</p>
           <span class="stat-label">{{
             "DASHBOARD.COMPLETED_TRANSACTIONS" | translate
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -56,7 +57,7 @@
           <p class="stat-value">{{ stats().totalProducts }}</p>
           <span class="stat-label">{{
             "DASHBOARD.IN_INVENTORY" | translate
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -69,7 +70,91 @@
           <p class="stat-value">{{ stats().totalUsers }}</p>
           <span class="stat-label">{{
             "DASHBOARD.ACTIVE_USERS" | translate
-          }}</span>
+            }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incomplete Products -->
+    <div class="section-card incomplete-products-card"
+      *ngIf="stats().incompleteProducts && stats().incompleteProducts!.length > 0">
+      <div class="card-header">
+        <h2>
+          <i class="fas fa-exclamation-circle"></i>
+          {{ "DASHBOARD.INCOMPLETE_PRODUCTS.TITLE" | translate }}
+        </h2>
+        <span class="alert-count">
+          {{ stats().incompleteProducts!.length }}
+          {{ "DASHBOARD.INCOMPLETE_PRODUCTS.COUNT" | translate }}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="incomplete-info">
+          <i class="fas fa-info-circle"></i>
+          <p>{{ "DASHBOARD.INCOMPLETE_PRODUCTS.INFO" | translate }}</p>
+        </div>
+        <div class="incomplete-products-list">
+          <div class="incomplete-product-item" *ngFor="let product of stats().incompleteProducts"
+            (click)="navigateToProduct(product._id)">
+            <div class="product-icon">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <div class="product-details">
+              <span class="product-name">{{ product.name }}</span>
+              <div class="product-meta">
+                <span class="product-sku">
+                  <i class="fas fa-barcode"></i>
+                  {{ product.sku }}
+                </span>
+                <span class="product-price">
+                  <i class="fas fa-dollar-sign"></i>
+                  {{ product.price | appCurrency }}
+                </span>
+                <span class="product-date">
+                  <i class="fas fa-clock"></i>
+                  {{ product.createdAt | date : 'short' }}
+                </span>
+              </div>
+            </div>
+            <div class="action-icon">
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Internal Sales (Admin/Manager Only) -->
+    <div class="section-card internal-sales-card"
+      *ngIf="stats().internalSales && (currentUser?.role === 'admin' || currentUser?.role === 'manager')">
+      <div class="card-header">
+        <h2>
+          <i class="fas fa-warehouse"></i>
+          {{ "DASHBOARD.INTERNAL_SALES.TITLE" | translate }}
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="internal-stats">
+          <div class="internal-stat">
+            <div class="stat-box total">
+              <span class="label">{{ "DASHBOARD.INTERNAL_SALES.TOTAL" | translate }}</span>
+              <span class="value">{{ stats().internalSales!.totalAmount | appCurrency }}</span>
+              <span class="count">{{ stats().internalSales!.totalCount }} {{ "DASHBOARD.INTERNAL_SALES.TRANSACTIONS" |
+                translate }}</span>
+            </div>
+          </div>
+          <div class="internal-stat">
+            <div class="stat-box today">
+              <span class="label">{{ "DASHBOARD.INTERNAL_SALES.TODAY" | translate }}</span>
+              <span class="value">{{ stats().internalSales!.todayAmount | appCurrency }}</span>
+              <span class="count">{{ stats().internalSales!.todayCount }} {{ "DASHBOARD.INTERNAL_SALES.TRANSACTIONS" |
+                translate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="internal-note">
+          <i class="fas fa-info-circle"></i>
+          <span>{{ "DASHBOARD.INTERNAL_SALES.NOTE" | translate }}</span>
         </div>
       </div>
     </div>
@@ -87,24 +172,20 @@
           <div class="today-stat">
             <span class="label">{{
               "DASHBOARD.LABELS.SALES_TODAY" | translate
-            }}</span>
+              }}</span>
             <span class="value">{{ stats().todaySales }}</span>
           </div>
           <div class="today-stat">
             <span class="label">{{
               "DASHBOARD.LABELS.REVENUE_TODAY" | translate
-            }}</span>
-            <span class="value"
-              >${{ stats().todayRevenue | number : "1.2-2" }}</span
-            >
+              }}</span>
+            <span class="value">{{ stats().todayRevenue | appCurrency }}</span>
           </div>
           <div class="today-stat" *ngIf="stats().todaySales > 0">
             <span class="label">Average Transaction</span>
-            <span class="value"
-              >${{
-                stats().todayRevenue / stats().todaySales | number : "1.2-2"
-              }}</span
-            >
+            <span class="value">{{
+              (stats().todayRevenue / stats().todaySales) | appCurrency
+              }}</span>
           </div>
         </div>
       </div>
@@ -119,20 +200,14 @@
         </h2>
       </div>
       <div class="card-body">
-        <div
-          class="top-products-list"
-          *ngIf="stats().topProducts.length > 0; else noProducts"
-        >
-          <div
-            class="product-item"
-            *ngFor="let product of stats().topProducts; let i = index"
-          >
+        <div class="top-products-list" *ngIf="stats().topProducts.length > 0; else noProducts">
+          <div class="product-item" *ngFor="let product of stats().topProducts; let i = index">
             <span class="rank">{{ i + 1 }}</span>
             <div class="product-info">
               <span class="product-name">{{ product.name }}</span>
               <span class="product-details">
-                {{ product.quantity }} sold • ${{
-                  product.revenue | number : "1.2-2"
+                {{ product.quantity }} sold • {{
+                product.revenue | appCurrency
                 }}
               </span>
             </div>
@@ -157,24 +232,14 @@
         </span>
       </div>
       <div class="card-body">
-        <div
-          class="restock-list"
-          *ngIf="stats().restockAlerts.length > 0; else noAlerts"
-        >
-          <div
-            class="restock-item"
-            *ngFor="let alert of stats().restockAlerts"
-            [class.critical]="alert.urgency === 'critical'"
-            [class.warning]="alert.urgency === 'warning'"
-            [class.info]="alert.urgency === 'info'"
-          >
+        <div class="restock-list" *ngIf="stats().restockAlerts.length > 0; else noAlerts">
+          <div class="restock-item" *ngFor="let alert of stats().restockAlerts"
+            [class.critical]="alert.urgency === 'critical'" [class.warning]="alert.urgency === 'warning'"
+            [class.info]="alert.urgency === 'info'">
             <div class="urgency-indicator">
-              <i
-                class="fas"
-                [class.fa-times-circle]="alert.urgency === 'critical'"
+              <i class="fas" [class.fa-times-circle]="alert.urgency === 'critical'"
                 [class.fa-exclamation-circle]="alert.urgency === 'warning'"
-                [class.fa-info-circle]="alert.urgency === 'info'"
-              ></i>
+                [class.fa-info-circle]="alert.urgency === 'info'"></i>
             </div>
             <div class="restock-info">
               <span class="product-name">{{ alert.name }}</span>
@@ -202,13 +267,13 @@
             <div class="urgency-label">
               <span *ngIf="alert.urgency === 'critical'">{{
                 "DASHBOARD.URGENCY.CRITICAL" | translate
-              }}</span>
+                }}</span>
               <span *ngIf="alert.urgency === 'warning'">{{
                 "DASHBOARD.URGENCY.WARNING" | translate
-              }}</span>
+                }}</span>
               <span *ngIf="alert.urgency === 'info'">{{
                 "DASHBOARD.URGENCY.LOW_STOCK" | translate
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -230,23 +295,15 @@
         </h2>
       </div>
       <div class="card-body">
-        <div
-          class="payment-methods-list"
-          *ngIf="stats().salesByPaymentMethod.length > 0; else noPayments"
-        >
-          <div
-            class="payment-item"
-            *ngFor="let payment of stats().salesByPaymentMethod"
-          >
+        <div class="payment-methods-list" *ngIf="stats().salesByPaymentMethod.length > 0; else noPayments">
+          <div class="payment-item" *ngFor="let payment of stats().salesByPaymentMethod">
             <div class="payment-header">
               <span class="payment-method">{{ payment.method }}</span>
-              <span class="payment-count"
-                >{{ payment.count }}
-                {{ "DASHBOARD.TRANSACTIONS" | translate }}</span
-              >
+              <span class="payment-count">{{ payment.count }}
+                {{ "DASHBOARD.TRANSACTIONS" | translate }}</span>
             </div>
             <div class="payment-total">
-              ${{ payment.total | number : "1.2-2" }}
+              {{ payment.total | appCurrency }}
             </div>
           </div>
         </div>

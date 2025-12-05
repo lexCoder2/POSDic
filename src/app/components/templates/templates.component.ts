@@ -9,6 +9,7 @@ import {
 } from "@angular/forms";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { PrintTemplateService } from "../../services/print-template.service";
+import { ToastService } from "../../services/toast.service";
 import { PrintTemplate } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
@@ -41,7 +42,8 @@ export class TemplatesComponent implements OnInit {
     private printTemplateService: PrintTemplateService,
     private fb: FormBuilder,
     public sanitizer: DomSanitizer,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private toastService: ToastService
   ) {
     this.templateForm = this.fb.group({
       name: ["", [Validators.required, Validators.minLength(3)]],
@@ -283,26 +285,38 @@ export class TemplatesComponent implements OnInit {
         .updateTemplate(this.selectedTemplate()?._id || "", templateData)
         .subscribe({
           next: () => {
-            alert(this.translationService.translate("TEMPLATES.UPDATED"));
+            this.toastService.show(
+              this.translationService.translate("TEMPLATES.UPDATED"),
+              "success"
+            );
             this.loadTemplates();
             this.cancelEdit();
           },
           error: (err) => {
             console.error("Error updating template:", err);
-            alert(this.translationService.translate("TEMPLATES.UPDATE_FAILED"));
+            this.toastService.show(
+              this.translationService.translate("TEMPLATES.UPDATE_FAILED"),
+              "error"
+            );
           },
         });
     } else {
       // Create new template
       this.printTemplateService.createTemplate(templateData).subscribe({
         next: () => {
-          alert(this.translationService.translate("TEMPLATES.CREATED"));
+          this.toastService.show(
+            this.translationService.translate("TEMPLATES.CREATED"),
+            "success"
+          );
           this.loadTemplates();
           this.cancelEdit();
         },
         error: (err) => {
           console.error("Error creating template:", err);
-          alert(this.translationService.translate("TEMPLATES.CREATE_FAILED"));
+          this.toastService.show(
+            this.translationService.translate("TEMPLATES.CREATE_FAILED"),
+            "error"
+          );
         },
       });
     }
@@ -315,18 +329,20 @@ export class TemplatesComponent implements OnInit {
       .updateTemplate(template._id, { isDefault: true })
       .subscribe({
         next: (updated) => {
-          alert(
+          this.toastService.show(
             this.translationService.translate("TEMPLATES.DEFAULT_SET", {
               name: updated.name,
-            })
+            }),
+            "success"
           );
           this.loadTemplates();
           this.isLoading.set(false);
         },
         error: (err) => {
           console.error("Error setting default template:", err);
-          alert(
-            this.translationService.translate("TEMPLATES.DEFAULT_SET_FAILED")
+          this.toastService.show(
+            this.translationService.translate("TEMPLATES.DEFAULT_SET_FAILED"),
+            "error"
           );
           this.isLoading.set(false);
         },
@@ -340,13 +356,19 @@ export class TemplatesComponent implements OnInit {
       .deleteTemplate(this.selectedTemplate()?._id || "")
       .subscribe({
         next: () => {
-          alert(this.translationService.translate("TEMPLATES.DELETED"));
+          this.toastService.show(
+            this.translationService.translate("TEMPLATES.DELETED"),
+            "success"
+          );
           this.loadTemplates();
           this.cancelEdit();
         },
         error: (err) => {
           console.error("Error deleting template:", err);
-          alert(this.translationService.translate("TEMPLATES.DELETE_FAILED"));
+          this.toastService.show(
+            this.translationService.translate("TEMPLATES.DELETE_FAILED"),
+            "error"
+          );
         },
       });
   }

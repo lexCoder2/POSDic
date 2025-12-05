@@ -50,6 +50,23 @@ router.get("/", protect, async (req, res) => {
   }
 });
 
+// @route   GET /api/providers/code/:code
+// @desc    Get provider by code
+// @access  Private
+router.get("/code/:code", protect, async (req, res) => {
+  try {
+    const provider = await Provider.findOne({ code: req.params.code });
+
+    if (!provider) {
+      return res.status(404).json({ message: "Provider not found" });
+    }
+
+    res.json(provider);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // @route   GET /api/providers/:id
 // @desc    Get provider by ID
 // @access  Private

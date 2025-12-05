@@ -235,6 +235,51 @@
   }
 }
 
+.btn-delete {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateX(10px);
+
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  i {
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    width: 28px;
+    height: 28px;
+    opacity: 1;
+    transform: translateX(0);
+
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+.result-item:hover .btn-delete {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .no-results {
   padding: 48px 24px;
   text-align: center;
@@ -309,6 +354,158 @@
   }
 }
 
+// Delete Modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+.modal-content {
+  background: $white;
+  border-radius: 12px;
+  box-shadow: $shadow-lg;
+  width: 90%;
+  max-width: 480px;
+  animation: slideUp 0.3s ease;
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: $text-muted;
+      font-size: 20px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: $bg-secondary;
+        color: $text-primary;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 24px;
+
+    p {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+      color: $text-secondary;
+
+      strong {
+        color: $text-primary;
+        font-weight: 600;
+      }
+    }
+
+    .warning {
+      color: $danger;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid $border-color;
+
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &.btn-cancel {
+        background: $bg-secondary;
+        color: $text-primary;
+
+        &:hover {
+          background: darken($bg-secondary, 5%);
+        }
+      }
+
+      &.btn-delete-confirm {
+        background: $danger;
+        color: $white;
+        box-shadow: $shadow-sm;
+
+        &:hover {
+          background: darken($danger, 8%);
+          box-shadow: $shadow-md;
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        i {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
 // Mobile-specific optimizations
 @media (max-width: 768px) {
   .search-results-container {
@@ -322,5 +519,17 @@
 
   .results-list {
     padding: 4px;
+  }
+
+  .modal-content {
+    max-width: calc(100% - 32px);
+
+    .modal-header h3 {
+      font-size: 18px;
+    }
+
+    .modal-body p {
+      font-size: 14px;
+    }
   }
 }

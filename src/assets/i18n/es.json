@@ -74,6 +74,74 @@
       }
     }
   },
+  "REGISTER": {
+    "OPEN": "Abrir Caja",
+    "CLOSE": "Cerrar Caja",
+    "STATUS_OPEN": "Caja Abierta",
+    "STATUS_CLOSED": "Caja Cerrada - Abrir para hacer ventas",
+    "MODAL_TITLE_OPEN": "Abrir Caja",
+    "MODAL_TITLE_CLOSE": "Cerrar Caja",
+    "REGISTER_NUMBER": "Número de Caja",
+    "OPENING_CASH": "Efectivo Inicial",
+    "CLOSING_CASH": "Efectivo Final",
+    "OPENED_AT": "Abierta",
+    "OPENED": "abierta",
+    "OPENING_AMOUNT": "Efectivo Inicial",
+    "NOTES": "Notas (Opcional)",
+    "PERMISSION_NOTICE": "Solo gerentes y administradores pueden cerrar la caja. Por favor contacte a un gerente para cerrar esta caja.",
+    "EXPECTED_CLOSING": "Efectivo de Cierre Esperado",
+    "CASH_SALES_TODAY": "Ventas en Efectivo Hoy",
+    "CALCULATING": "Calculando...",
+    "TRANSACTIONS": "transacciones",
+    "SWITCH_USER_TITLE": "Cambiar Usuario",
+    "SWITCH_USER_DESC": "Ingrese sus credenciales para cambiar de usuario:",
+    "USERNAME": "Usuario",
+    "PASSWORD": "Contraseña",
+    "HISTORY": "Historial de Cajas",
+    "EXPORT": "Exportar a CSV",
+    "REFRESH": "Actualizar",
+    "STATUS": "Estado",
+    "ALL": "Todos",
+    "START_DATE": "Fecha Inicio",
+    "END_DATE": "Fecha Fin",
+    "SEARCH": "Buscar",
+    "SEARCH_PLACEHOLDER": "Buscar por caja, usuario...",
+    "CLEAR_FILTERS": "Limpiar Filtros",
+    "LOADING": "Cargando cajas...",
+    "NUMBER": "Caja #",
+    "OPENED_BY": "Abierta Por",
+    "CLOSED": "Cerrada",
+    "CLOSED_BY": "Cerrada Por",
+    "CLOSED_AT": "Cerrada El",
+    "DURATION": "Duración",
+    "EXPECTED_CASH": "Efectivo Esperado",
+    "DIFFERENCE": "Diferencia",
+    "TOTAL_SALES": "Ventas Totales",
+    "TOTAL_TRANSACTIONS": "Transacciones",
+    "ACTIONS": "Acciones",
+    "NO_REGISTERS": "No se encontraron cajas",
+    "PAGE": "Página",
+    "OF": "de",
+    "TOTAL": "total",
+    "DETAILS": "Detalles de Caja",
+    "CONFIRM_DELETE": "Confirmar Eliminación",
+    "DELETE_WARNING": "¿Está seguro de que desea eliminar esta caja? Esta acción no se puede deshacer.",
+    "CANCEL": "Cancelar",
+    "DELETE": "Eliminar",
+    "ERRORS": {
+      "ALREADY_OPEN": "Ya tienes una caja abierta. Por favor ciérrala primero.",
+      "NOT_FOUND": "Caja no encontrada",
+      "ALREADY_CLOSED": "La caja ya está cerrada",
+      "PERMISSION_DENIED": "Solo gerentes y administradores pueden cerrar la caja",
+      "INVALID_AMOUNT": "Por favor ingrese un monto de efectivo válido",
+      "NO_REGISTER": "Por favor abra la caja antes de hacer ventas"
+    },
+    "SUCCESS": {
+      "OPENED": "Caja abierta exitosamente",
+      "CLOSED": "Caja cerrada",
+      "SWITCHED_USER": "Cambiado a {{name}}"
+    }
+  },
   "GLOBAL": {
     "LANGUAGE": "Idioma",
     "ENGLISH": "Inglés",
@@ -87,17 +155,25 @@
     "EMPLOYEE": "Empleado",
     "SETTINGS": "Ajustes",
     "LOGOUT": "Cerrar sesión",
+    "SWITCH_USER": "Cambiar Usuario",
     "WELCOME": "Bienvenido, {{name}}",
     "CLEAR": "Limpiar",
+    "THEME": {
+      "LABEL": "Tema",
+      "DARK_MODE": "Modo Oscuro",
+      "LIGHT_MODE": "Modo Claro"
+    },
+
     "SIDEBAR": {
       "DASHBOARD": "Panel",
-      "POS": "Tienda Diconsa",
+      "POS": " Diconsa",
       "QUICK_CASHIER": "Cajero Rápido",
       "STATISTICS": "Estadísticas",
       "INVENTORY": "Inventario",
       "CATEGORIES": "Categorías",
       "SUPPLIERS": "Proveedores",
       "SALES": "Ventas",
+      "REGISTERS": "Cajas",
       "USERS": "Usuarios",
       "RECEIPT_TEMPLATES": "Plantillas de Recibo"
     }
@@ -124,6 +200,33 @@
     },
     "SAVED": "Ajustes guardados",
     "SAVE_FAILED": "Error al guardar ajustes"
+  },
+  "INVENTORY_SESSION": {
+    "TITLE": "Sesión de Inventario",
+    "SCAN_OR_SEARCH": "Escanear o buscar producto",
+    "ENTER_SEARCH": "Por favor ingrese un término de búsqueda",
+    "PRODUCT_NOT_FOUND": "Producto no encontrado",
+    "SEARCH_ERROR": "Error al buscar producto",
+    "LOADING": "Cargando producto...",
+    "EMPTY_STATE": "Use la barra de búsqueda arriba para encontrar un producto",
+    "CURRENT": "Actual",
+    "UPDATE": "Actualizar y Siguiente",
+    "SKIP": "Omitir",
+    "INVALID_VALUES": "El precio y el stock no pueden ser negativos",
+    "NO_CHANGES": "No se detectaron cambios",
+    "PRODUCT_UPDATED": "Producto actualizado exitosamente",
+    "UPDATE_ERROR": "Error al actualizar producto",
+    "RECENT_UPDATES": "Actualizaciones Recientes",
+    "UPDATES": "actualizaciones",
+    "TIME": "Hora",
+    "PRICE_CHANGE": "Cambio de Precio",
+    "STOCK_CHANGE": "Cambio de Stock",
+    "NO_UPDATES": "No se han actualizado productos aún",
+    "COMPLETE": "Completar y Guardar Reporte",
+    "CANCEL": "Cancelar Sesión",
+    "CONFIRM_CANCEL": "¿Está seguro que desea cancelar? Todas las actualizaciones han sido guardadas, pero el reporte no será generado.",
+    "REPORT_GENERATED": "Reporte de inventario descargado exitosamente",
+    "STOCK_REGISTRATION_MODE": "Modo de Registro de Stock"
   },
   "PROVIDERS": {
     "TITLE": "Gestión de Proveedores",
@@ -231,7 +334,10 @@
       "PHONE_PLACEHOLDER": "+63 123 456 7890",
       "ROLE_LABEL": "Rol *",
       "NOTES_LABEL": "Notas",
-      "ACTIVE_LABEL": "Activo"
+      "ACTIVE_LABEL": "Activo",
+      "INTERNAL_SALES_LIMIT": "Límite de Ventas Internas",
+      "INTERNAL_SALES_LIMIT_PLACEHOLDER": "0.00 (0 = sin límite)",
+      "INTERNAL_SALES_LIMIT_HINT": "Monto máximo que este gerente puede autorizar para ventas internas (0 = sin límite)"
     },
     "ROLES": {
       "CASHIER": "Cajero",
@@ -247,6 +353,8 @@
   "INVENTORY": {
     "TITLE": "Gestión de Inventario",
     "DESCRIPTION": "Administrar productos y niveles de stock",
+    "ADD_CATEGORY": "Agregar Categoría",
+    "START_SESSION": "Empezar Inventario",
     "BULK_IMPORT": "Importación Masiva",
     "DOWNLOAD_TEMPLATE": "Descargar Plantilla",
     "TABS": {
@@ -262,7 +370,8 @@
       "CATEGORY": "Categoría",
       "PRICE": "Precio",
       "STOCK": "Stock",
-      "ACTIONS": "Acciones"
+      "ACTIONS": "Acciones",
+      "BRAND": "Marca"
     },
     "ACTIONS": {
       "EDIT": "Editar",
@@ -398,7 +507,19 @@
       "TOTAL_USERS": "Usuarios Totales"
     },
     "ACTIVE_USERS": "Usuarios activos",
-    "COMPLETED_TRANSACTIONS": "Transacciones completadas"
+    "COMPLETED_TRANSACTIONS": "Transacciones completadas",
+    "INTERNAL_SALES": {
+      "TITLE": "Consumo Interno",
+      "TOTAL": "Total (Todo el Tiempo)",
+      "TODAY": "Hoy",
+      "TRANSACTIONS": "transacciones",
+      "NOTE": "Las ventas internas representan productos consumidos por la tienda para fines operacionales."
+    },
+    "INCOMPLETE_PRODUCTS": {
+      "TITLE": "Productos Incompletos",
+      "COUNT": "productos necesitan completarse",
+      "INFO": "Estos productos fueron creados rápidamente durante las ventas y requieren información adicional. Haz clic en un producto para editar y completar sus detalles."
+    }
   },
   "CASHIER": {
     "TITLE": "Cajero Rápido",
@@ -499,7 +620,42 @@
     "BUTTONS": {
       "COMPLETE_SALE": "Completar Venta"
     },
-    "MOBILE_QUICK_ACCESS": "Acceso Rápido"
+    "MOBILE_QUICK_ACCESS": "Acceso Rápido",
+    "WEIGHT_MODAL": {
+      "TITLE": "Capturar Peso",
+      "SCALE_CONNECTED": "Báscula Conectada",
+      "SCALE_DISCONNECTED": "Báscula Desconectada",
+      "STABILIZING": "Estabilizando...",
+      "MANUAL_WEIGHT": "Peso Manual",
+      "INFO": "Ingrese el peso manualmente o use la lectura de la báscula conectada",
+      "CONFIRM": "Agregar al Carrito"
+    },
+    "INTERNAL_SALE": {
+      "TITLE": "Venta Interna - Consumo de Tienda",
+      "BUTTON": "Interno",
+      "WARNING": "Esto registrará productos consumidos por la tienda. El inventario se reducirá pero no se requiere pago.",
+      "ITEMS": "Artículos",
+      "TOTAL": "Monto Total",
+      "NOTES": "Notas",
+      "NOTES_PLACEHOLDER": "Razón del consumo interno...",
+      "LIMIT": "Tu límite",
+      "CONFIRM": "Confirmar Venta Interna"
+    },
+    "QUICK_PRODUCT": {
+      "TITLE": "Creación Rápida de Producto",
+      "INFO": "Producto no encontrado. Créalo rápidamente para continuar con tu venta. Puedes completar los detalles más tarde desde el panel.",
+      "BARCODE": "Código de Barras",
+      "PRODUCT_NAME": "Nombre del Producto",
+      "NAME_PLACEHOLDER": "Ingresa el nombre del producto",
+      "PRICE": "Precio",
+      "REQUIRES_SCALE": "Requiere Báscula (Producto a Granel)",
+      "NOTE": "Este producto será marcado como incompleto. Recuerda completar su información desde el panel.",
+      "CREATE_AND_ADD": "Crear y Agregar al Carrito"
+    },
+    "CALCULATOR": {
+      "TITLE": "Calculadora Rápida",
+      "INFO": "Ingresa precios directamente para agregar artículos genéricos al carrito. Perfecto para productos sin etiqueta o entradas rápidas."
+    }
   },
   "CART": {
     "SALE": "Venta",
@@ -638,6 +794,9 @@
     "CHANGE": "Cambio:",
     "CASHIER": "Cajero:",
     "SALE_NUMBER": "Venta #:",
-    "THANK_YOU": "¡Gracias por su compra!"
+    "THANK_YOU": "¡Gracias por su compra!",
+    "CARD_PAYMENT": "Tarjeta",
+    "TRANSFER_PAYMENT": "Transferencia",
+    "CASH_PAYMENT": "Efectivo"
   }
 }

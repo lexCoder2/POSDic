@@ -1,10 +1,13 @@
 import { Component, OnInit, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { SaleService } from "../../services/sale.service";
 import { ProductService } from "../../services/product.service";
 import { UserService } from "../../services/user.service";
 import { AuthService } from "../../services/auth.service";
+import { PageTitleComponent } from "../page-title/page-title.component";
 
 interface DashboardStats {
   totalSales: number;
@@ -23,12 +26,25 @@ interface DashboardStats {
     daysUntilStockout: number;
     urgency: "critical" | "warning" | "info";
   }>;
+  incompleteProducts?: Array<{
+    _id: string;
+    name: string;
+    price: number;
+    sku: string;
+    createdAt: Date;
+  }>;
+  internalSales?: {
+    totalAmount: number;
+    totalCount: number;
+    todayAmount: number;
+    todayCount: number;
+  };
 }
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, CurrencyPipe, PageTitleComponent],
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
 })
@@ -52,11 +68,18 @@ export class DashboardComponent implements OnInit {
     private saleService: SaleService,
     private productService: ProductService,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
+  }
+
+  navigateToProduct(productId: string): void {
+    this.router.navigate(["/inventory"], {
+      queryParams: { productId },
+    });
   }
 
   loadDashboardData(): void {
@@ -223,21 +246,96 @@ export class DashboardComponent implements OnInit {
               return a.daysUntilStockout - b.daysUntilStockout;
             });
 
+            // Get incomplete products
+            const incompleteProducts = allProducts
+              .filter((p) => p.incompleteInfo)
+              .map((p) => ({
+                _id: p._id!,
+                name: p.name,
+                price: p.price,
+                sku: p.sku || p.ean || p.product_id,
+                createdAt: p.createdAt!,
+              }))
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              );
+
             // Load users count
             this.userService.getUsers({ pageSize: 1 }).subscribe({
               next: (userResponse) => {
-                this.stats.set({
-                  totalSales: completedSales.length,
-                  totalRevenue,
-                  totalProducts: prodResponse.pagination.total,
-                  totalUsers: userResponse.pagination.total,
-                  todaySales: todaySales.length,
-                  todayRevenue,
-                  topProducts,
-                  salesByPaymentMethod,
-                  restockAlerts: restockAlerts.slice(0, 15), // Top 15 alerts
-                });
-                this.isLoading.set(false);
+                // Load internal sales if user is admin or manager
+                if (
+                  this.currentUser?.role === "admin" ||
+                  this.currentUser?.role === "manager"
+                ) {
+                  this.saleService.getInternalSalesStats().subscribe({
+                    next: (internalStats) => {
+                      // Calculate today's internal sales
+                      const todayInternalSales =
+                        internalStats.recentSales.filter(
+                          (sale) =>
+                            new Date(sale.createdAt!) >= today &&
+                            new Date(sale.createdAt!) < tomorrow
+                        );
+                      const todayInternalAmount = todayInternalSales.reduce(
+                        (sum, sale) => sum + sale.total,
+                        0
+                      );
+
+                      this.stats.set({
+                        totalSales: completedSales.length,
+                        totalRevenue,
+                        totalProducts: prodResponse.pagination.total,
+                        totalUsers: userResponse.pagination.total,
+                        todaySales: todaySales.length,
+                        todayRevenue,
+                        topProducts,
+                        salesByPaymentMethod,
+                        restockAlerts: restockAlerts.slice(0, 15),
+                        incompleteProducts,
+                        internalSales: {
+                          totalAmount: internalStats.totalAmount,
+                          totalCount: internalStats.totalCount,
+                          todayAmount: todayInternalAmount,
+                          todayCount: todayInternalSales.length,
+                        },
+                      });
+                      this.isLoading.set(false);
+                    },
+                    error: () => {
+                      // If error, just set stats without internal sales
+                      this.stats.set({
+                        totalSales: completedSales.length,
+                        totalRevenue,
+                        totalProducts: prodResponse.pagination.total,
+                        totalUsers: userResponse.pagination.total,
+                        todaySales: todaySales.length,
+                        todayRevenue,
+                        topProducts,
+                        salesByPaymentMethod,
+                        restockAlerts: restockAlerts.slice(0, 15),
+                        incompleteProducts,
+                      });
+                      this.isLoading.set(false);
+                    },
+                  });
+                } else {
+                  this.stats.set({
+                    totalSales: completedSales.length,
+                    totalRevenue,
+                    totalProducts: prodResponse.pagination.total,
+                    totalUsers: userResponse.pagination.total,
+                    todaySales: todaySales.length,
+                    todayRevenue,
+                    topProducts,
+                    salesByPaymentMethod,
+                    restockAlerts: restockAlerts.slice(0, 15),
+                    incompleteProducts,
+                  });
+                  this.isLoading.set(false);
+                }
               },
               error: () => {
                 this.isLoading.set(false);

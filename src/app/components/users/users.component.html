@@ -1,18 +1,10 @@
-<app-page-title
-  title="User Management"
-  description="Manage staff members and permissions"
-  icon="fa-users"
->
+<app-page-title title="User Management" description="Manage staff members and permissions" icon="fa-users">
   <div class="header-actions">
     <div class="row-count">
       <span>{{
         "USERS.TOTAL" | translate : { count: filteredUsers().length }
-      }}</span>
-      <select
-        [(ngModel)]="pageSize"
-        (change)="changePageSize(+$any($event.target).value)"
-        class="page-size-select"
-      >
+        }}</span>
+      <select [(ngModel)]="pageSize" (change)="changePageSize(+$any($event.target).value)" class="page-size-select">
         <option [value]="5">5 per page</option>
         <option [value]="10">10 per page</option>
         <option [value]="25">25 per page</option>
@@ -31,14 +23,7 @@
     <table class="users-table">
       <thead>
         <tr>
-          <th>Username</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Last Login</th>
-          <th>Actions</th>
+
           <th>{{ "USERS.TABLE.USERNAME" | translate }}</th>
           <th>{{ "USERS.TABLE.NAME" | translate }}</th>
           <th>{{ "USERS.TABLE.EMAIL" | translate }}</th>
@@ -63,15 +48,11 @@
             </span>
           </td>
           <td>
-            <span
-              class="status-badge"
-              [class.active]="user.active"
-              [class.inactive]="!user.active"
-            >
+            <span class="status-badge" [class.active]="user.active" [class.inactive]="!user.active">
               {{
-                user.active
-                  ? ("USERS.STATUS.ACTIVE" | translate)
-                  : ("USERS.STATUS.INACTIVE" | translate)
+              user.active
+              ? ("USERS.STATUS.ACTIVE" | translate)
+              : ("USERS.STATUS.INACTIVE" | translate)
               }}
             </span>
           </td>
@@ -80,19 +61,11 @@
           </td>
           <td>
             <div class="action-buttons">
-              <button
-                class="btn-edit"
-                (click)="openUserModal(user)"
-                title="Edit"
-              >
+              <button class="btn-edit" (click)="openUserModal(user)" title="Edit">
                 <i class="fas fa-edit"></i>
               </button>
-              <button
-                class="btn-delete"
-                (click)="deleteUser(user.id!)"
-                [disabled]="!isAdmin() || user.id === currentUser?.id"
-                title="{{ 'USERS.ACTIONS.DELETE' | translate }}"
-              >
+              <button class="btn-delete" (click)="deleteUser(user.id!)"
+                [disabled]="!isAdmin() || user.id === currentUser?.id" title="{{ 'USERS.ACTIONS.DELETE' | translate }}">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -108,49 +81,31 @@
     </table>
 
     <div class="pagination" *ngIf="filteredUsers().length > 0">
-      <button
-        class="pagination-btn"
-        (click)="prevPage()"
-        [disabled]="currentPage() === 1"
-      >
+      <button class="pagination-btn" (click)="prevPage()" [disabled]="currentPage() === 1">
         <i class="fas fa-chevron-left"></i> Previous
       </button>
       <div class="pagination-pages">
-        <button
-          *ngFor="let page of getVisiblePages()"
-          class="pagination-page"
-          [class.active]="currentPage() === page"
-          [class.ellipsis]="page === -1"
-          [disabled]="page === -1"
-          (click)="page > 0 && goToPage(page)"
-        >
+        <button *ngFor="let page of getVisiblePages()" class="pagination-page" [class.active]="currentPage() === page"
+          [class.ellipsis]="page === -1" [disabled]="page === -1" (click)="page > 0 && goToPage(page)">
           {{ page === -1 ? "..." : page }}
         </button>
       </div>
-      <button
-        class="pagination-btn"
-        (click)="nextPage()"
-        [disabled]="currentPage() === totalPages()"
-      >
+      <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">
         Next <i class="fas fa-chevron-right"></i>
       </button>
     </div>
   </div>
 
   <!-- User Modal -->
-  <div
-    class="modal-overlay"
-    *ngIf="showUserModal"
-    (click)="showUserModal = false"
-  >
+  <div class="modal-overlay" *ngIf="showUserModal" (click)="showUserModal = false">
     <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>{{ isEditing ? "Edit User" : "Add New User" }}</h2>
         <h2>
           {{
-            isEditing
-              ? ("USERS.EDIT_TITLE" | translate)
-              : ("USERS.ADD_TITLE" | translate)
+          isEditing
+          ? ("USERS.EDIT_TITLE" | translate)
+          : ("USERS.ADD_TITLE" | translate)
           }}
         </h2>
         <button class="btn-close" (click)="showUserModal = false">×</button>
@@ -162,34 +117,19 @@
               <label for="username">Username *</label>
               <label for="username">{{
                 "USERS.FORM.USERNAME_LABEL" | translate
-              }}</label>
-              <input
-                type="text"
-                id="username"
-                [(ngModel)]="userForm.username"
-                name="username"
-                required
-                placeholder="johndoe"
-                placeholder="{{
+                }}</label>
+              <input type="text" id="username" [(ngModel)]="userForm.username" name="username" required
+                placeholder="johndoe" placeholder="{{
                   'USERS.FORM.USERNAME_PLACEHOLDER' | translate
-                }}"
-                [disabled]="isEditing"
-              />
+                }}" [disabled]="isEditing" />
             </div>
             <div class="form-group">
               <label for="email">Email *</label>
               <label for="email">{{
                 "USERS.FORM.EMAIL_LABEL" | translate
-              }}</label>
-              <input
-                type="email"
-                id="email"
-                [(ngModel)]="userForm.email"
-                name="email"
-                required
-                placeholder="john@example.com"
-                placeholder="{{ 'USERS.FORM.EMAIL_PLACEHOLDER' | translate }}"
-              />
+                }}</label>
+              <input type="email" id="email" [(ngModel)]="userForm.email" name="email" required
+                placeholder="john@example.com" placeholder="{{ 'USERS.FORM.EMAIL_PLACEHOLDER' | translate }}" />
             </div>
           </div>
 
@@ -198,35 +138,21 @@
               <label for="firstName">First Name *</label>
               <label for="firstName">{{
                 "USERS.FORM.FIRST_NAME_LABEL" | translate
-              }}</label>
-              <input
-                type="text"
-                id="firstName"
-                [(ngModel)]="userForm.firstName"
-                name="firstName"
-                required
-                placeholder="John"
-                placeholder="{{
+                }}</label>
+              <input type="text" id="firstName" [(ngModel)]="userForm.firstName" name="firstName" required
+                placeholder="John" placeholder="{{
                   'USERS.FORM.FIRST_NAME_PLACEHOLDER' | translate
-                }}"
-              />
+                }}" />
             </div>
             <div class="form-group">
               <label for="lastName">Last Name *</label>
               <label for="lastName">{{
                 "USERS.FORM.LAST_NAME_LABEL" | translate
-              }}</label>
-              <input
-                type="text"
-                id="lastName"
-                [(ngModel)]="userForm.lastName"
-                name="lastName"
-                required
-                placeholder="Doe"
-                placeholder="{{
+                }}</label>
+              <input type="text" id="lastName" [(ngModel)]="userForm.lastName" name="lastName" required
+                placeholder="Doe" placeholder="{{
                   'USERS.FORM.LAST_NAME_PLACEHOLDER' | translate
-                }}"
-              />
+                }}" />
             </div>
           </div>
 
@@ -235,27 +161,16 @@
               <label for="phone">Phone</label>
               <label for="phone">{{
                 "USERS.FORM.PHONE_LABEL" | translate
-              }}</label>
-              <input
-                type="tel"
-                id="phone"
-                [(ngModel)]="userForm.phone"
-                name="phone"
-                placeholder="+63 123 456 7890"
-                placeholder="{{ 'USERS.FORM.PHONE_PLACEHOLDER' | translate }}"
-              />
+                }}</label>
+              <input type="tel" id="phone" [(ngModel)]="userForm.phone" name="phone" placeholder="+63 123 456 7890"
+                placeholder="{{ 'USERS.FORM.PHONE_PLACEHOLDER' | translate }}" />
             </div>
             <div class="form-group">
               <label for="role">Role *</label>
               <label for="role">{{
                 "USERS.FORM.ROLE_LABEL" | translate
-              }}</label>
-              <select
-                id="role"
-                [(ngModel)]="userForm.role"
-                name="role"
-                required
-              >
+                }}</label>
+              <select id="role" [(ngModel)]="userForm.role" name="role" required>
                 <option value="cashier">Cashier</option>
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -278,41 +193,33 @@
 
           <div class="form-group" *ngIf="!isEditing">
             <label for="password">Password *</label>
-            <input
-              type="password"
-              id="password"
-              [(ngModel)]="userForm.password"
-              name="password"
-              [required]="!isEditing"
-              placeholder="Enter password"
-            />
+            <input type="password" id="password" [(ngModel)]="userForm.password" name="password" [required]="!isEditing"
+              placeholder="Enter password" />
           </div>
 
           <div class="form-group">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                [(ngModel)]="userForm.active"
-                name="active"
-              />
-              Active
-              {{ "USERS.FORM.ACTIVE_LABEL" | translate }}
-            </label>
+            <label>{{ "USERS.FORM.ACTIVE_LABEL" | translate }}</label>
+            <app-toggle-switch [checked]="userForm.active || false"
+              (change)="userForm.active = $event"></app-toggle-switch>
+          </div>
+
+          <div class="form-group" *ngIf="userForm.role === 'manager' && currentUser?.role === 'admin'">
+            <label for="internalSalesLimit">{{ "USERS.FORM.INTERNAL_SALES_LIMIT" | translate }}</label>
+            <input type="number" id="internalSalesLimit" [(ngModel)]="userForm.internalSalesLimit"
+              name="internalSalesLimit" step="0.01" min="0"
+              [placeholder]="'USERS.FORM.INTERNAL_SALES_LIMIT_PLACEHOLDER' | translate" />
+            <small class="form-hint">{{ "USERS.FORM.INTERNAL_SALES_LIMIT_HINT" | translate }}</small>
           </div>
 
           <div class="form-actions">
-            <button
-              type="button"
-              class="btn-cancel"
-              (click)="showUserModal = false"
-            >
+            <button type="button" class="btn-cancel" (click)="showUserModal = false">
               {{ "GLOBAL.CANCEL" | translate }}
             </button>
             <button type="submit" class="btn-save">
               {{
-                isEditing
-                  ? ("USERS.ACTIONS.UPDATE" | translate)
-                  : ("USERS.ACTIONS.CREATE" | translate)
+              isEditing
+              ? ("USERS.ACTIONS.UPDATE" | translate)
+              : ("USERS.ACTIONS.CREATE" | translate)
               }}
             </button>
           </div>

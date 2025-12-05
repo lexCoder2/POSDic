@@ -40,6 +40,30 @@ app.use(
 );
 
 // Routes
+// QZ Tray signing endpoint
+const crypto = require("crypto");
+const privateKeyPath = path.join(__dirname, "private-key.pem");
+let privateKey;
+try {
+  privateKey = fs.readFileSync(privateKeyPath, "utf8");
+} catch (err) {
+  console.error("Could not read private key for signing:", err);
+}
+
+app.post("/api/sign", (req, res) => {
+  const { toSign } = req.body;
+  if (!toSign) return res.status(400).send("Missing toSign");
+  try {
+    const sign = crypto.createSign("SHA1");
+    sign.update(toSign);
+    sign.end();
+    const signature = sign.sign(privateKey, "base64");
+    res.json({ signature });
+  } catch (err) {
+    console.error("Signing error:", err);
+    res.status(500).send("Signing error");
+  }
+});
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/products");
 const categoryRoutes = require("./routes/categories");
@@ -48,6 +72,7 @@ const userRoutes = require("./routes/users");
 const providerRoutes = require("./routes/providers");
 const templateRoutes = require("./routes/templates");
 const cartRoutes = require("./routes/carts");
+const registerRoutes = require("./routes/registers");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -57,6 +82,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/providers", providerRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/carts", cartRoutes);
+app.use("/api/registers", registerRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -72,10 +98,17 @@ app.use((err, req, res, next) => {
     .json({ message: "Something went wrong!", error: err.message });
 });
 
+// Auto-close utility
+const { scheduleAutoClose } = require("./utils/auto-close-registers");
+
 // Connect to MongoDB and start server
 const startServer = async () => {
   try {
     await connectDB();
+
+    // Start auto-close scheduler (runs every hour)
+    scheduleAutoClose(60);
+
     const PORT = process.env.PORT || 3001;
     const HOST = "0.0.0.0"; // Listen on all network interfaces
 

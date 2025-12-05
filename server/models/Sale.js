@@ -119,6 +119,14 @@ const saleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "PrintTemplate",
     },
+    isInternal: {
+      type: Boolean,
+      default: false,
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
@@ -127,12 +135,27 @@ const saleSchema = new mongoose.Schema(
 
 // Auto-increment sale number
 saleSchema.pre("save", async function (next) {
-  if (this.isNew) {
-    const lastSale = await this.constructor.findOne().sort({ createdAt: -1 });
-    const lastNumber = lastSale
-      ? parseInt(lastSale.saleNumber.split("-")[1])
-      : 0;
-    this.saleNumber = `SALE-${String(lastNumber + 1).padStart(6, "0")}`;
+  if (this.isNew && !this.saleNumber) {
+    const lastSale = await this.constructor
+      .findOne({ saleNumber: { $exists: true, $ne: null } })
+      .sort({ createdAt: -1 });
+
+    let lastNumber;
+    if (lastSale && lastSale.saleNumber) {
+      const parts = lastSale.saleNumber.split("-");
+      if (parts.length === 2) {
+        lastNumber = parseInt(parts[1], 16);
+      } else {
+        lastNumber = 0xa0000000 - 1;
+      }
+    } else {
+      lastNumber = 0xa0000000 - 1;
+    }
+
+    this.saleNumber = `SALE-${(lastNumber + 1)
+      .toString(16)
+      .toUpperCase()
+      .padStart(8, "0")}`;
   }
   next();
 });

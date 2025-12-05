@@ -52,14 +52,25 @@ router.get("/categories", protect, async (req, res) => {
 });
 
 // @route   GET /api/products/favorites
-// @desc    Get favorite products based on sales volume
+// @desc    Get favorite products based on sales volume (last 4 months)
 // @access  Private
 router.get("/favorites", protect, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
 
-    // Aggregate sales to find most sold products
+    // Calculate date 4 months ago
+    const fourMonthsAgo = new Date();
+    fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
+
+    // Aggregate sales to find most sold products in last 4 months
     const topProducts = await Sale.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: fourMonthsAgo },
+          status: "completed",
+          isInternal: { $ne: true }, // Exclude internal sales
+        },
+      },
       { $unwind: "$items" },
       {
         $group: {
@@ -79,6 +90,7 @@ router.get("/favorites", protect, async (req, res) => {
     const products = await Product.find({
       _id: { $in: productIds },
       available: true,
+      active: true,
     }).populate("provider", "name code");
 
     // Sort products by sales volume

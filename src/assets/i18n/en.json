@@ -87,8 +87,15 @@
     "EMPLOYEE": "Employee",
     "SETTINGS": "Settings",
     "LOGOUT": "Logout",
+    "SWITCH_USER": "Switch User",
     "WELCOME": "Welcome, {{name}}",
     "CLEAR": "Clear",
+    "THEME": {
+      "LABEL": "Theme",
+      "DARK_MODE": "Dark Mode",
+      "LIGHT_MODE": "Light Mode"
+    },
+
     "SIDEBAR": {
       "DASHBOARD": "Dashboard",
       "POS": "POS",
@@ -98,9 +105,133 @@
       "CATEGORIES": "Categories",
       "SUPPLIERS": "Suppliers",
       "SALES": "Sales",
+      "REGISTERS": "Registers",
       "USERS": "Users",
       "RECEIPT_TEMPLATES": "Receipt Templates"
+    },
+    "WITHDRAW_CASH": "Withdraw Cash"
+  },
+  "REGISTER": {
+    "OPEN": "Open Register",
+    "CLOSE": "Close Register",
+    "STATUS_OPEN": "Register Open",
+    "STATUS_CLOSED": "Register Closed - Open to make sales",
+    "MODAL_TITLE_OPEN": "Open Register",
+    "MODAL_TITLE_CLOSE": "Close Register",
+    "REGISTER_NUMBER": "Register Number",
+    "OPENING_CASH": "Opening Cash Amount",
+    "CLOSING_CASH": "Closing Cash Amount",
+    "OPENED_AT": "Opened",
+    "OPENED": "opened",
+    "OPENING_AMOUNT": "Opening Cash",
+    "NOTES": "Notes (Optional)",
+    "PERMISSION_NOTICE": "Only managers and admins can close the register. Please contact a manager to close this register.",
+    "EXPECTED_CLOSING": "Expected Closing Cash",
+    "CASH_SALES_TODAY": "Cash Sales Today",
+    "WITHDRAWALS": "Withdrawals",
+    "CALCULATING": "Calculating...",
+    "TRANSACTIONS": "transactions",
+    "SWITCH_USER_TITLE": "Switch User",
+    "SWITCH_USER_DESC": "Enter your credentials to switch user:",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "HISTORY": "Register History",
+    "EXPORT": "Export to CSV",
+    "REFRESH": "Refresh",
+    "STATUS": "Status",
+    "ALL": "All",
+    "START_DATE": "Start Date",
+    "END_DATE": "End Date",
+    "SEARCH": "Search",
+    "SEARCH_PLACEHOLDER": "Search by register, user...",
+    "CLEAR_FILTERS": "Clear Filters",
+    "LOADING": "Loading registers...",
+    "NUMBER": "Register #",
+    "OPENED_BY": "Opened By",
+    "CLOSED": "Closed",
+    "CLOSED_BY": "Closed By",
+    "CLOSED_AT": "Closed At",
+    "DURATION": "Duration",
+    "EXPECTED_CASH": "Expected Cash",
+    "DIFFERENCE": "Difference",
+    "TOTAL_SALES": "Total Sales",
+    "TOTAL_TRANSACTIONS": "Transactions",
+    "ACTIONS": "Actions",
+    "NO_REGISTERS": "No registers found",
+    "PAGE": "Page",
+    "OF": "of",
+    "TOTAL": "total",
+    "AUTO_CLOSED": "Auto-Closed",
+    "AUTO_CLOSED_TOOLTIP": "This register was automatically closed after being open for more than 16 hours",
+    "AUTO_CLOSE_WARNING": "Warning: Register has been open for a long time and will be auto-closed at 16 hours",
+    "AUTO_CLOSE_CRITICAL": "CRITICAL: Register will be auto-closed soon! Please close manually now.",
+    "CLOSE_NOW": "Close Now",
+    "HOURS": "hours",
+    "DETAILS": "Register Details",
+    "CONFIRM_DELETE": "Confirm Delete",
+    "DELETE_WARNING": "Are you sure you want to delete this register? This action cannot be undone.",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "CONFIRM_DIFFERENCE": "Cash difference detected: {difference}. Continue?",
+    "ERRORS": {
+      "ALREADY_OPEN": "You already have an open register. Please close it first.",
+      "NOT_FOUND": "Register not found",
+      "ALREADY_CLOSED": "Register is already closed",
+      "PERMISSION_DENIED": "Only managers and admins can close the register",
+      "INVALID_AMOUNT": "Please enter a valid closing cash amount",
+      "NO_REGISTER": "Please open the register before making sales"
+    },
+    "SUCCESS": {
+      "OPENED": "Register opened successfully",
+      "CLOSED": "Register closed",
+      "SWITCHED_USER": "Switched to {{name}}"
     }
+  },
+  "WITHDRAW": {
+    "TITLE": "Cash Withdrawal",
+    "DESCRIPTION": "Record a cash withdrawal from the register. This will reduce the expected cash balance.",
+    "CURRENT_CASH": "Current Expected Cash",
+    "AMOUNT": "Withdrawal Amount",
+    "AMOUNT_PLACEHOLDER": "Enter amount to withdraw",
+    "REASON": "Reason for Withdrawal",
+    "REASON_PLACEHOLDER": "Enter reason (e.g., bank deposit, safe transfer, expenses)",
+    "CONFIRM": "Confirm Withdrawal",
+    "SUCCESS": "Cash withdrawal recorded successfully",
+    "CONFIRM_EXCEED": "Withdraw amount exceeds expected cash. Continue?",
+    "ERRORS": {
+      "NO_REGISTER": "No active register found",
+      "PERMISSION_DENIED": "Only admins can withdraw cash",
+      "INVALID_AMOUNT": "Please enter a valid withdrawal amount",
+      "REASON_REQUIRED": "Please provide a reason for the withdrawal",
+      "FAILED": "Failed to record withdrawal"
+    }
+  },
+  "INVENTORY_SESSION": {
+    "TITLE": "Inventory Session",
+    "SCAN_OR_SEARCH": "Scan barcode or search product...",
+    "ENTER_SEARCH": "Please enter a search term",
+    "PRODUCT_NOT_FOUND": "Product not found",
+    "SEARCH_ERROR": "Error searching for product",
+    "LOADING": "Loading product...",
+    "EMPTY_STATE": "Use the search bar above to find a product",
+    "CURRENT": "Current",
+    "UPDATE": "Update & Next",
+    "SKIP": "Skip",
+    "INVALID_VALUES": "Price and stock cannot be negative",
+    "NO_CHANGES": "No changes detected",
+    "PRODUCT_UPDATED": "Product updated successfully",
+    "UPDATE_ERROR": "Failed to update product",
+    "RECENT_UPDATES": "Recent Updates",
+    "UPDATES": "updates",
+    "TIME": "Time",
+    "PRICE_CHANGE": "Price Change",
+    "STOCK_CHANGE": "Stock Change",
+    "NO_UPDATES": "No products have been updated yet",
+    "COMPLETE": "Complete & Save Report",
+    "CANCEL": "Cancel Session",
+    "CONFIRM_CANCEL": "Are you sure you want to cancel? All updates have been saved, but the report will not be generated.",
+    "REPORT_GENERATED": "Inventory report downloaded successfully",
+    "STOCK_REGISTRATION_MODE": "Stock Registration Mode"
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -120,6 +251,7 @@
       "LANGUAGE": "Language",
       "PRINTER_MODE": "Default Printer Mode",
       "PRINTER_INHERIT": "Use Global Setting",
+      "CURRENCY": "Currency",
       "SAVE": "Save Preferences"
     },
     "SAVED": "Settings saved",
@@ -160,6 +292,12 @@
       "NAME_PLACEHOLDER": "Company Name",
       "CONTACT_LABEL": "Contact Person",
       "CONTACT_PLACEHOLDER": "John Doe",
+      "COLUMN": {
+        "PRODUCT": "Product",
+        "QTY": "Qty",
+        "PRICE": "Price",
+        "SUBTOTAL": "Subtotal"
+      },
       "EMAIL_LABEL": "Email",
       "EMAIL_PLACEHOLDER": "contact@supplier.com",
       "PHONE_LABEL": "Phone",
@@ -225,7 +363,10 @@
       "PHONE_PLACEHOLDER": "+63 123 456 7890",
       "ROLE_LABEL": "Role *",
       "NOTES_LABEL": "Notes",
-      "ACTIVE_LABEL": "Active"
+      "ACTIVE_LABEL": "Active",
+      "INTERNAL_SALES_LIMIT": "Internal Sales Limit",
+      "INTERNAL_SALES_LIMIT_PLACEHOLDER": "0.00 (0 = no limit)",
+      "INTERNAL_SALES_LIMIT_HINT": "Maximum amount this manager can authorize for internal sales (0 = no limit)"
     },
     "ROLES": {
       "CASHIER": "Cashier",
@@ -241,8 +382,10 @@
   "INVENTORY": {
     "TITLE": "Inventory Management",
     "DESCRIPTION": "Manage products and stock levels",
+    "ADD_CATEGORY": "Add Category",
     "BULK_IMPORT": "Bulk Import",
     "DOWNLOAD_TEMPLATE": "Download Template",
+    "START_SESSION": "Start Inventory Session",
     "TABS": {
       "PRODUCTS": "Products",
       "CATEGORIES": "Categories"
@@ -253,6 +396,7 @@
       "IMAGE": "Image",
       "NAME": "Name",
       "BARCODE": "Barcode/EAN",
+      "BRAND": "Brand",
       "CATEGORY": "Category",
       "PRICE": "Price",
       "STOCK": "Stock",
@@ -392,7 +536,20 @@
       "TOTAL_USERS": "Total Users"
     },
     "ACTIVE_USERS": "Active users",
-    "COMPLETED_TRANSACTIONS": "Completed transactions"
+    "COMPLETED_TRANSACTIONS": "Completed transactions",
+    "IN_INVENTORY": "In inventory",
+    "INTERNAL_SALES": {
+      "TITLE": "Internal Consumption",
+      "TOTAL": "Total (All Time)",
+      "TODAY": "Today",
+      "TRANSACTIONS": "transactions",
+      "NOTE": "Internal sales represent products consumed by the store for operational purposes."
+    },
+    "INCOMPLETE_PRODUCTS": {
+      "TITLE": "Incomplete Products",
+      "COUNT": "products need completion",
+      "INFO": "These products were created quickly during sales and require additional information. Click on a product to edit and complete its details."
+    }
   },
   "CASHIER": {
     "TITLE": "Quick Cashier",
@@ -493,7 +650,42 @@
     "BUTTONS": {
       "COMPLETE_SALE": "Complete Sale"
     },
-    "MOBILE_QUICK_ACCESS": "Quick Access"
+    "MOBILE_QUICK_ACCESS": "Quick Access",
+    "WEIGHT_MODAL": {
+      "TITLE": "Capture Weight",
+      "SCALE_CONNECTED": "Scale Connected",
+      "SCALE_DISCONNECTED": "Scale Disconnected",
+      "STABILIZING": "Stabilizing...",
+      "MANUAL_WEIGHT": "Manual Weight",
+      "INFO": "Enter weight manually or use the connected scale reading",
+      "CONFIRM": "Add to Cart"
+    },
+    "INTERNAL_SALE": {
+      "TITLE": "Internal Sale - Store Consumption",
+      "BUTTON": "Internal",
+      "WARNING": "This will register products consumed by the store. Inventory will be decreased but no payment is required.",
+      "ITEMS": "Items",
+      "TOTAL": "Total Amount",
+      "NOTES": "Notes",
+      "NOTES_PLACEHOLDER": "Reason for internal consumption...",
+      "LIMIT": "Your limit",
+      "CONFIRM": "Confirm Internal Sale"
+    },
+    "QUICK_PRODUCT": {
+      "TITLE": "Quick Product Creation",
+      "INFO": "Product not found. Create it quickly to continue with your sale. You can complete the details later from the dashboard.",
+      "BARCODE": "Barcode",
+      "PRODUCT_NAME": "Product Name",
+      "NAME_PLACEHOLDER": "Enter product name",
+      "PRICE": "Price",
+      "REQUIRES_SCALE": "Requires Scale (Loose Product)",
+      "NOTE": "This product will be marked as incomplete. Remember to complete its information from the dashboard.",
+      "CREATE_AND_ADD": "Create & Add to Cart"
+    },
+    "CALCULATOR": {
+      "TITLE": "Quick Calculator",
+      "INFO": "Enter prices directly to add generic items to the cart. Perfect for unlabeled products or quick entries."
+    }
   },
   "CART": {
     "SALE": "Sale",
@@ -632,6 +824,9 @@
     "CHANGE": "Change:",
     "CASHIER": "Cashier:",
     "SALE_NUMBER": "Sale #:",
-    "THANK_YOU": "Thank you!"
+    "THANK_YOU": "Thank you!",
+    "CARD_PAYMENT": "Card",
+    "TRANSFER_PAYMENT": "Transfer",
+    "CASH_PAYMENT": "Cash"
   }
 }

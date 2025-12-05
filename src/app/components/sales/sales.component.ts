@@ -1,19 +1,38 @@
-import { Component, OnInit, OnDestroy, signal, computed } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Subject, takeUntil, skip } from "rxjs";
 import { SaleService } from "../../services/sale.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { AuthService } from "../../services/auth.service";
+import { ToastService } from "../../services/toast.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { Sale, SaleItem, User } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
+import { ModalComponent } from "../modal/modal.component";
 
 @Component({
   selector: "app-sales",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageTitleComponent,
+    TranslatePipe,
+    ModalComponent,
+    CurrencyPipe,
+  ],
   templateUrl: "./sales.component.html",
   styleUrls: ["./sales.component.scss"],
 })
@@ -35,6 +54,15 @@ export class SalesComponent implements OnInit, OnDestroy {
   });
   showSaleModal = false;
   selectedSale: Sale | null = null;
+
+  // Refund modal properties
+  showRefundModal = false;
+  selectedSaleForRefund: Sale | null = null;
+  refundType: "full" | "partial" = "full";
+  refundReason = "";
+  refundItems: Array<{ itemId: string; quantity: number; selected: boolean }> =
+    [];
+  refundTotal = 0;
 
   // Pagination
   currentPage = signal<number>(1);
@@ -68,7 +96,8 @@ export class SalesComponent implements OnInit, OnDestroy {
     private saleService: SaleService,
     private authService: AuthService,
     private searchStateService: SearchStateService,
-    private receiptGeneratorService: ReceiptGeneratorService
+    private receiptGeneratorService: ReceiptGeneratorService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +108,9 @@ export class SalesComponent implements OnInit, OnDestroy {
     // Subscribe to header search bar
     this.searchStateService.searchQuery$
       .pipe(skip(1), takeUntil(this.destroy$))
-      .subscribe((query) => this.searchQuery.set(query));
+      .subscribe((query) => {
+        this.searchQuery.set(query);
+      });
   }
 
   ngOnDestroy(): void {
@@ -160,11 +191,14 @@ export class SalesComponent implements OnInit, OnDestroy {
         .generateReceipt(sale, paymentMethod, change, currentUser)
         .subscribe({
           next: (receiptContent) => {
-            this.receiptGeneratorService.printReceipt(receiptContent);
+            this.receiptGeneratorService.printReceipt(receiptContent, "html");
           },
           error: (err) => {
             console.error("Error generating styled receipt for sale:", err);
-            alert("Failed to generate receipt. See console for details.");
+            this.toastService.show(
+              "Failed to generate receipt. See console for details.",
+              "error"
+            );
           },
         });
     } else {
@@ -172,11 +206,14 @@ export class SalesComponent implements OnInit, OnDestroy {
         .generatePlainTextReceipt(sale, paymentMethod, change, currentUser)
         .subscribe({
           next: (receiptContent) => {
-            this.receiptGeneratorService.printReceipt(receiptContent);
+            this.receiptGeneratorService.printReceipt(receiptContent, "plain");
           },
           error: (err) => {
             console.error("Error generating plain-text receipt for sale:", err);
-            alert("Failed to generate receipt. See console for details.");
+            this.toastService.show(
+              "Failed to generate receipt. See console for details.",
+              "error"
+            );
           },
         });
     }
@@ -231,7 +268,7 @@ export class SalesComponent implements OnInit, OnDestroy {
 
   cancelSale(id: string): void {
     if (!this.isAdmin()) {
-      alert("Only administrators can cancel sales");
+      this.toastService.show("Only administrators can cancel sales", "error");
       return;
     }
 
@@ -249,12 +286,123 @@ export class SalesComponent implements OnInit, OnDestroy {
           this.sales.set(updatedSales);
           this.calculateSummary();
         }
-        alert("Sale cancelled successfully");
+        this.toastService.show("Sale cancelled successfully", "success");
       },
       error: (err) => {
         console.error("Error cancelling sale:", err);
-        alert("Failed to cancel sale");
+        this.toastService.show("Failed to cancel sale", "error");
       },
     });
+  }
+
+  openRefundModal(sale: Sale): void {
+    if (!this.isAdmin()) {
+      this.toastService.show("Only administrators can refund sales", "error");
+      return;
+    }
+
+    this.selectedSaleForRefund = sale;
+    this.refundType = "full";
+    this.refundReason = "";
+
+    // Initialize refund items array
+    this.refundItems = sale.items.map((item) => ({
+      itemId: (item as any)._id || "",
+      quantity: item.quantity,
+      selected: false,
+    }));
+
+    this.refundTotal = 0;
+    this.showRefundModal = true;
+  }
+
+  onRefundTypeChange(): void {
+    if (this.refundType === "full") {
+      // Reset partial refund selections
+      this.refundItems.forEach((item) => {
+        item.selected = false;
+      });
+      this.refundTotal = 0;
+    }
+  }
+
+  updateRefundTotal(): void {
+    if (!this.selectedSaleForRefund) {
+      this.refundTotal = 0;
+      return;
+    }
+
+    this.refundTotal = this.selectedSaleForRefund.items.reduce(
+      (sum, item, index) => {
+        if (this.refundItems[index].selected) {
+          const refundQty = this.refundItems[index].quantity;
+          const itemTotal = item.unitPrice * refundQty;
+          const discountPortion =
+            (item.discountAmount || 0) * (refundQty / item.quantity);
+          return sum + itemTotal - discountPortion;
+        }
+        return sum;
+      },
+      0
+    );
+  }
+
+  hasSelectedItems(): boolean {
+    return this.refundItems.some((item) => item.selected);
+  }
+
+  processRefund(): void {
+    if (!this.selectedSaleForRefund || !this.refundReason) {
+      this.toastService.show("Please provide a reason for the refund", "info");
+      return;
+    }
+
+    if (this.refundType === "partial" && !this.hasSelectedItems()) {
+      this.toastService.show(
+        "Please select at least one item to refund",
+        "info"
+      );
+      return;
+    }
+
+    const itemsToRefund =
+      this.refundType === "partial"
+        ? this.refundItems
+            .filter((item) => item.selected)
+            .map((item) => ({ itemId: item.itemId, quantity: item.quantity }))
+        : undefined;
+
+    this.saleService
+      .refundSale(
+        this.selectedSaleForRefund._id!,
+        this.refundType,
+        this.refundReason,
+        itemsToRefund
+      )
+      .subscribe({
+        next: (updated) => {
+          const index = this.sales().findIndex((s) => s._id === updated._id);
+          if (index !== -1) {
+            const updatedSales = [...this.sales()];
+            updatedSales[index] = updated;
+            this.sales.set(updatedSales);
+            this.calculateSummary();
+          }
+          this.showRefundModal = false;
+          this.toastService.show(
+            `${
+              this.refundType === "full" ? "Full" : "Partial"
+            } refund processed successfully`,
+            "success"
+          );
+        },
+        error: (err) => {
+          console.error("Error processing refund:", err);
+          this.toastService.show(
+            err.error?.message || "Failed to process refund",
+            "error"
+          );
+        },
+      });
   }
 }

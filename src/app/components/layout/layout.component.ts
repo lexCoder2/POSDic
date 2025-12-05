@@ -5,6 +5,8 @@ import {
   HostListener,
   ViewChild,
   ElementRef,
+  signal,
+  effect,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -17,12 +19,17 @@ import {
 } from "@angular/router";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
-import { ProductService } from "../../services/product.service";
-import { SearchStateService } from "../../services/search-state.service";
 import { TranslationService } from "../../services/translation.service";
+import { ToastService } from "../../services/toast.service";
+import { RegisterService } from "../../services/register.service";
+import { UserService } from "../../services/user.service";
+import { ThemeService } from "../../services/theme.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { ToastComponent } from "../toast/toast.component";
-import { User, Product } from "../../models";
+import { ModalComponent } from "../modal/modal.component";
+import { GlobalSearchComponent } from "../global-search/global-search.component";
+import { User, Register } from "../../models";
 @Component({
   selector: "app-layout",
   standalone: true,
@@ -34,22 +41,36 @@ import { User, Product } from "../../models";
     RouterOutlet,
     TranslatePipe,
     ToastComponent,
+    CurrencyPipe,
+    ModalComponent,
+    GlobalSearchComponent,
   ],
   templateUrl: "./layout.component.html",
   styleUrls: ["./layout.component.scss"],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
-  searchQuery = "";
-  searchResults: Product[] = [];
-  isSearching = false;
+  currentRegister: Register | null = null;
   showUserDropdown = false;
-  private searchSubject = new Subject<string>();
+  showRegisterModal = false;
+  showSwitchUserModal = false;
+  showWithdrawModal = false;
+  withdrawProcessing = false;
   private destroy$ = new Subject<void>();
-  @ViewChild("globalSearchInput")
-  globalSearchInput!: ElementRef<HTMLInputElement>;
   currentLang = "en";
   mobileSidebarOpen = false;
+  isDarkMode = false;
+
+  // Expected cash data using signals
+  expectedCashData = signal<{
+    openingCash: number;
+    totalCashSales: number;
+    expectedCash: number;
+    totalSales: number;
+    totalTransactions: number;
+    totalWithdrawals: number;
+  } | null>(null);
+  loadingExpectedCash = signal<boolean>(false);
 
   get isAdminOrManager(): boolean {
     return (
@@ -63,11 +84,21 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private productService: ProductService,
-    private searchStateService: SearchStateService,
     private router: Router,
-    private translation: TranslationService
-  ) {}
+    private translation: TranslationService,
+    private toastService: ToastService,
+    private registerService: RegisterService,
+    private userService: UserService,
+    private themeService: ThemeService
+  ) {
+    // Set up effect to reload expected cash when register changes
+    effect(() => {
+      const register = this.currentRegister;
+      if (register) {
+        this.loadExpectedCash();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -77,44 +108,34 @@ export class LayoutComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((l) => (this.currentLang = l));
 
-    // Setup search debouncing
-    this.searchSubject
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe((query) => {
-        this.performSearch(query);
+    // Subscribe to theme changes
+    this.themeService.isDarkMode$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isDark) => (this.isDarkMode = isDark));
+
+    // Load current register
+    this.registerService.currentRegister$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((register) => {
+        this.currentRegister = register;
       });
 
-    // Focus the global search input when navigating to /pos
+    // Check for active register on load
+    this.registerService.getActiveRegister().subscribe();
+
+    // Auto-refresh expected cash every 30 seconds when register is open
+    setInterval(() => {
+      if (this.currentRegister && !this.loadingExpectedCash()) {
+        this.loadExpectedCash();
+      }
+    }, 30000);
+
+    // Close mobile sidebar on navigation
     this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // close mobile sidebar on navigation to avoid leaving it open
         this.mobileSidebarOpen = false;
-        const url =
-          (event as NavigationEnd).urlAfterRedirects || (event as any).url;
-        if (url && (url === "/pos" || url.startsWith("/pos"))) {
-          // small timeout to ensure the element is present
-          setTimeout(() => {
-            try {
-              this.globalSearchInput?.nativeElement?.focus();
-            } catch (e) {
-              // ignore if element not available
-            }
-          }, 80);
-        }
       }
     });
-
-    // If page loaded already at /pos, focus immediately
-    try {
-      if (
-        this.router.url &&
-        (this.router.url === "/pos" || this.router.url.startsWith("/pos"))
-      ) {
-        setTimeout(() => this.globalSearchInput?.nativeElement?.focus(), 80);
-      }
-    } catch (e) {
-      // ignore
-    }
   }
 
   toggleSidebar(): void {
@@ -130,55 +151,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  onSearchChange(query: string): void {
-    this.searchQuery = query;
-    this.searchStateService.setSearchQuery(query);
-    this.searchSubject.next(query);
-  }
-
-  performSearch(query: string): void {
-    if (!query || query.trim().length === 0) {
-      this.searchResults = [];
-      this.isSearching = false;
-      return;
-    }
-
-    this.isSearching = true;
-    this.productService.searchProducts(query).subscribe({
-      next: (products) => {
-        this.searchResults = products;
-        this.isSearching = false;
-      },
-      error: (err) => {
-        console.error("Error searching products:", err);
-        this.isSearching = false;
-      },
-    });
-  }
-
-  onProductSelected(product: Product): void {
-    // Navigate to POS page and let it handle adding to cart
-    this.router.navigate(["/pos"], { state: { selectedProduct: product } });
-    this.searchQuery = "";
-    this.searchResults = [];
-  }
-
-  @HostListener("document:keydown.escape")
-  onEscapePress(): void {
-    this.hideSearchResults();
-  }
-
   @HostListener("document:click", ["$event"])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    const searchContainer = target.closest(".global-search");
     const userDropdown = target.closest(".user-info");
     const clickedSidebar = target.closest(".sidebar");
     const clickedToggle = target.closest(".mobile-sidebar-toggle");
-
-    if (!searchContainer && this.searchResults.length > 0) {
-      this.hideSearchResults();
-    }
 
     if (!userDropdown && this.showUserDropdown) {
       this.showUserDropdown = false;
@@ -188,11 +166,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
     if (!clickedSidebar && !clickedToggle && this.mobileSidebarOpen) {
       this.mobileSidebarOpen = false;
     }
-  }
-
-  hideSearchResults(): void {
-    this.searchResults = [];
-    this.isSearching = false;
   }
 
   toggleUserDropdown(): void {
@@ -206,6 +179,278 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   setLanguage(lang: string): void {
     this.translation.setLanguage(lang);
+    // Save language preference to database
+    this.userService.updateUserSettings({ language: lang }).subscribe({
+      next: () => {
+        console.log("Language preference saved to database");
+      },
+      error: (err: any) => {
+        console.error("Failed to save language preference:", err);
+      },
+    });
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  switchUser(): void {
+    this.showUserDropdown = false;
+    this.showSwitchUserModal = true;
+  }
+
+  performSwitchUser(username: string, password: string): void {
+    if (!username || !password) {
+      this.toastService.show(
+        this.translation.translate("GLOBAL.REGISTER.USERNAME") +
+          " and " +
+          this.translation.translate("GLOBAL.REGISTER.PASSWORD") +
+          " required",
+        "error"
+      );
+      return;
+    }
+
+    this.authService.login(username, password).subscribe({
+      next: () => {
+        this.currentUser = this.authService.getCurrentUser();
+        this.showSwitchUserModal = false;
+        const message = this.translation
+          .translate("GLOBAL.REGISTER.SUCCESS.SWITCHED_USER")
+          .replace("{{name}}", this.currentUser?.firstName || "");
+        this.toastService.show(message, "success");
+        // Check for active register for new user
+        this.registerService.getActiveRegister().subscribe();
+      },
+      error: (err) => {
+        this.toastService.show("Invalid credentials", "error");
+      },
+    });
+  }
+
+  manageRegister(): void {
+    this.showUserDropdown = false;
+    this.showRegisterModal = true;
+
+    // If register is open, fetch expected cash
+    if (this.currentRegister) {
+      this.loadExpectedCash();
+    }
+  }
+
+  loadExpectedCash(): void {
+    if (!this.currentRegister) return;
+
+    this.loadingExpectedCash.set(true);
+    this.registerService.getExpectedCash().subscribe({
+      next: (data) => {
+        this.expectedCashData.set(data);
+        this.loadingExpectedCash.set(false);
+      },
+      error: (err) => {
+        console.error("Error loading expected cash:", err);
+        this.loadingExpectedCash.set(false);
+      },
+    });
+  }
+
+  // Public method to refresh expected cash (can be called after sales)
+  refreshExpectedCash(): void {
+    this.loadExpectedCash();
+  }
+
+  openRegister(registerNumber: string, openingCash: string): void {
+    const cash = parseFloat(openingCash) || 0;
+
+    this.registerService.openRegister(cash, registerNumber).subscribe({
+      next: (register) => {
+        this.showRegisterModal = false;
+        this.toastService.show(
+          this.translation.translate("GLOBAL.REGISTER.SUCCESS.OPENED"),
+          "success"
+        );
+      },
+      error: (err) => {
+        const message =
+          err.error?.message ||
+          this.translation.translate("GLOBAL.REGISTER.ERRORS.ALREADY_OPEN");
+        this.toastService.show(message, "error");
+      },
+    });
+  }
+
+  closeRegister(closingCash: string, notes: string): void {
+    if (!this.currentRegister) return;
+
+    // Check if user is manager or admin
+    if (
+      this.currentUser?.role !== "admin" &&
+      this.currentUser?.role !== "manager"
+    ) {
+      this.toastService.show(
+        this.translation.translate("GLOBAL.REGISTER.ERRORS.PERMISSION_DENIED"),
+        "error"
+      );
+      return;
+    }
+
+    // Clean the input: remove currency symbols and parse
+    const cleanedValue = closingCash.replace(/[^0-9.-]/g, "");
+    const cash = parseFloat(cleanedValue);
+
+    if (isNaN(cash) || cash < 0) {
+      this.toastService.show(
+        this.translation.translate("GLOBAL.REGISTER.ERRORS.INVALID_AMOUNT"),
+        "error"
+      );
+      return;
+    }
+
+    // Validate against expected cash if available
+    const expectedCash = this.expectedCashData()?.expectedCash;
+    if (expectedCash !== undefined && expectedCash !== null) {
+      const difference = cash - expectedCash;
+      const threshold = 0.01; // Allow 1 cent difference for rounding
+
+      // Warn if difference is significant
+      if (Math.abs(difference) > threshold) {
+        const diffFormatted =
+          difference > 0 ? `+${difference.toFixed(2)}` : difference.toFixed(2);
+        const confirmMsg =
+          this.translation.translate("GLOBAL.REGISTER.CONFIRM_DIFFERENCE") ||
+          `Cash difference detected: ${diffFormatted}. Continue?`;
+
+        if (!confirm(confirmMsg.replace("{difference}", diffFormatted))) {
+          return;
+        }
+      }
+    }
+
+    this.registerService
+      .closeRegister(this.currentRegister._id!, cash, notes)
+      .subscribe({
+        next: (register) => {
+          this.showRegisterModal = false;
+          const diff = register.cashDifference || 0;
+          const diffMsg =
+            diff !== 0
+              ? ` (${diff > 0 ? "+" : ""}${diff.toFixed(2)} difference)`
+              : "";
+          const message =
+            this.translation.translate("GLOBAL.REGISTER.SUCCESS.CLOSED") +
+            diffMsg;
+          this.toastService.show(message, diff === 0 ? "success" : "info");
+        },
+        error: (err) => {
+          const message =
+            err.error?.message ||
+            this.translation.translate(
+              "GLOBAL.REGISTER.ERRORS.PERMISSION_DENIED"
+            );
+          this.toastService.show(message, "error");
+        },
+      });
+  }
+
+  openWithdrawModal(): void {
+    this.showUserDropdown = false;
+    this.showWithdrawModal = true;
+  }
+
+  processWithdraw(amount: string, reason: string): void {
+    if (!this.currentRegister) {
+      this.toastService.show(
+        this.translation.translate("WITHDRAW.ERRORS.NO_REGISTER"),
+        "error"
+      );
+      return;
+    }
+
+    if (this.currentUser?.role !== "admin") {
+      this.toastService.show(
+        this.translation.translate("WITHDRAW.ERRORS.PERMISSION_DENIED"),
+        "error"
+      );
+      return;
+    }
+
+    // Clean and validate amount
+    const cleanedAmount = amount.replace(/[^0-9.-]/g, "");
+    const withdrawAmount = parseFloat(cleanedAmount);
+
+    if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+      this.toastService.show(
+        this.translation.translate("WITHDRAW.ERRORS.INVALID_AMOUNT"),
+        "error"
+      );
+      return;
+    }
+
+    if (!reason || reason.trim().length === 0) {
+      this.toastService.show(
+        this.translation.translate("WITHDRAW.ERRORS.REASON_REQUIRED"),
+        "error"
+      );
+      return;
+    }
+
+    // Check if withdraw amount exceeds expected cash
+    const expectedCash = this.expectedCashData()?.expectedCash;
+    if (expectedCash !== undefined && withdrawAmount > expectedCash) {
+      const confirmMsg =
+        this.translation.translate("WITHDRAW.CONFIRM_EXCEED") ||
+        `Withdraw amount (${withdrawAmount}) exceeds expected cash (${expectedCash}). Continue?`;
+
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+    }
+
+    this.withdrawProcessing = true;
+
+    // Create a withdrawal record via the register service
+    this.registerService
+      .recordWithdrawal(
+        this.currentRegister._id!,
+        withdrawAmount,
+        reason.trim()
+      )
+      .subscribe({
+        next: (response) => {
+          this.showWithdrawModal = false;
+          this.withdrawProcessing = false;
+          this.toastService.show(
+            this.translation.translate("WITHDRAW.SUCCESS"),
+            "success"
+          );
+          // Refresh expected cash after withdrawal
+          this.loadExpectedCash();
+        },
+        error: (err) => {
+          this.withdrawProcessing = false;
+          const message =
+            err.error?.message ||
+            this.translation.translate("WITHDRAW.ERRORS.FAILED");
+          this.toastService.show(message, "error");
+        },
+      });
+  }
+
+  getRegisterDurationHours(): number {
+    if (!this.currentRegister || !this.currentRegister.openedAt) return 0;
+    const openedTime = new Date(this.currentRegister.openedAt).getTime();
+    const now = Date.now();
+    return (now - openedTime) / (1000 * 60 * 60);
+  }
+
+  isRegisterApproachingAutoClose(): boolean {
+    const hours = this.getRegisterDurationHours();
+    return hours >= 14; // Show warning at 14 hours
+  }
+
+  isRegisterOverdue(): boolean {
+    const hours = this.getRegisterDurationHours();
+    return hours >= 16;
   }
 
   logout(): void {

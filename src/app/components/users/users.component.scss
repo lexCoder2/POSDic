@@ -4,7 +4,7 @@
   padding: $spacing-2xl;
   max-width: 1400px;
   margin: 0 auto;
-  background: white;
+  background: $bg-secondary;
   min-height: 100%;
   border-radius: $radius-md;
 }
@@ -204,7 +204,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: $z-modal;
 }
 
 .modal {

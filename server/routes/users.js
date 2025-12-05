@@ -126,4 +126,53 @@ router.get("/me/profile", protect, async (req, res) => {
   }
 });
 
+// @route   PUT /api/users/me/settings
+// @desc    Update current user settings
+// @access  Private
+router.put("/me/settings", protect, async (req, res) => {
+  try {
+    const { displayName, language, printerMode, currency } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update settings
+    if (!user.settings) {
+      user.settings = {};
+    }
+
+    if (displayName !== undefined) user.settings.displayName = displayName;
+    if (language !== undefined) user.settings.language = language;
+    if (printerMode !== undefined) user.settings.printerMode = printerMode;
+    if (currency !== undefined) user.settings.currency = currency;
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select("-password");
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// @route   GET /api/users/me/settings
+// @desc    Get current user settings
+// @access  Private
+router.get("/me/settings", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("settings");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user.settings || {});
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;

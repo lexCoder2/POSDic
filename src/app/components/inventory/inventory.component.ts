@@ -1,27 +1,51 @@
-import { Component, OnInit, OnDestroy, signal, computed } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  signal,
+  computed,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import { Subject, takeUntil, skip, debounceTime } from "rxjs";
 import { ProductService } from "../../services/product.service";
 import { CategoryService } from "../../services/category.service";
 import { AuthService } from "../../services/auth.service";
+import { ToastService } from "../../services/toast.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { Product, Category, User } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
+import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
+import { environment } from "@environments/environment.prod";
+import { ModalComponent } from "../modal/modal.component";
 
 @Component({
   selector: "app-inventory",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalComponent,
+    PageTitleComponent,
+    TranslatePipe,
+    ToggleSwitchComponent,
+  ],
   templateUrl: "./inventory.component.html",
   styleUrls: ["./inventory.component.scss"],
 })
-export class InventoryComponent implements OnInit, OnDestroy {
+export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild("barcodeInput") barcodeInput!: ElementRef<HTMLInputElement>;
+
   currentUser: User | null = null;
   activeTab: "products" | "categories" = "products";
 
+  imgBaseUrl = environment.imageUrl;
   // Products
   products = signal<Product[]>([]);
   searchQuery = signal<string>("");
@@ -79,14 +103,23 @@ export class InventoryComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private authService: AuthService,
     private searchStateService: SearchStateService,
-    private translation: TranslationService
+    private translation: TranslationService,
+    private toastService: ToastService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.searchStateService.clearSearch();
     this.loadProducts();
     this.loadCategories();
+
+    // Subscribe to product edit requests from barcode scan
+    this.searchStateService.productForEdit$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((product) => {
+        console.log("Product for edit received:", product);
+        this.openProductModal(product);
+      });
 
     // Subscribe to header search bar with debounce
     this.searchStateService.searchQuery$
@@ -98,15 +131,28 @@ export class InventoryComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngAfterViewInit(): void {
+    // Focus barcode input when modal is shown
+    setTimeout(() => {
+      if (this.showProductModal && this.barcodeInput) {
+        this.barcodeInput.nativeElement.focus();
+      }
+    }, 100);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.searchStateService.clearSearch();
   }
 
   // Check if user is admin
   isAdmin(): boolean {
     return this.currentUser?.role === "admin";
+  }
+
+  // Navigate to inventory session
+  startInventorySession(): void {
+    this.router.navigate(["/inventory-session"]);
   }
 
   // ===== PRODUCTS =====
@@ -142,6 +188,13 @@ export class InventoryComponent implements OnInit, OnDestroy {
       this.resetProductForm();
     }
     this.showProductModal = true;
+
+    // Focus barcode input after modal is rendered
+    setTimeout(() => {
+      if (this.barcodeInput) {
+        this.barcodeInput.nativeElement.focus();
+      }
+    }, 100);
   }
 
   closeProductModal(): void {
@@ -151,7 +204,10 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   saveProduct(): void {
     if (!this.productForm.name || !this.productForm.price) {
-      alert(this.translation.translate("INVENTORY.ALERTS.FILL_REQUIRED"));
+      this.toastService.show(
+        this.translation.translate("INVENTORY.ALERTS.FILL_REQUIRED"),
+        "info"
+      );
       return;
     }
 
@@ -161,8 +217,9 @@ export class InventoryComponent implements OnInit, OnDestroy {
         .updateProduct(this.selectedProduct._id!, this.productForm)
         .subscribe({
           next: (updatedProduct) => {
-            alert(
-              this.translation.translate("INVENTORY.ALERTS.PRODUCT_UPDATED")
+            this.toastService.show(
+              this.translation.translate("INVENTORY.ALERTS.PRODUCT_UPDATED"),
+              "success"
             );
             // Update local array instead of reloading
             const index = this.products().findIndex(
@@ -177,10 +234,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.error("Error updating product:", err);
-            alert(
+            this.toastService.show(
               this.translation.translate(
                 "INVENTORY.ALERTS.PRODUCT_UPDATE_FAILED"
-              )
+              ),
+              "error"
             );
           },
         });
@@ -188,15 +246,21 @@ export class InventoryComponent implements OnInit, OnDestroy {
       // Create new product
       this.productService.createProduct(this.productForm).subscribe({
         next: (newProduct) => {
-          alert(this.translation.translate("INVENTORY.ALERTS.PRODUCT_CREATED"));
+          this.toastService.show(
+            this.translation.translate("INVENTORY.ALERTS.PRODUCT_CREATED"),
+            "success"
+          );
           // Add to local array instead of reloading
           this.products.set([newProduct, ...this.products()]);
           this.closeProductModal();
         },
         error: (err) => {
           console.error("Error creating product:", err);
-          alert(
-            this.translation.translate("INVENTORY.ALERTS.PRODUCT_CREATE_FAILED")
+          this.toastService.show(
+            this.translation.translate(
+              "INVENTORY.ALERTS.PRODUCT_CREATE_FAILED"
+            ),
+            "error"
           );
         },
       });
@@ -205,7 +269,10 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   deleteProduct(productId: string): void {
     if (!this.isAdmin()) {
-      alert(this.translation.translate("INVENTORY.ALERTS.ADMIN_DELETE"));
+      this.toastService.show(
+        this.translation.translate("INVENTORY.ALERTS.ADMIN_DELETE"),
+        "error"
+      );
       return;
     }
 
@@ -224,7 +291,10 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
     this.productService.deleteProduct(productId).subscribe({
       next: () => {
-        alert(this.translation.translate("INVENTORY.ALERTS.PRODUCT_DELETED"));
+        this.toastService.show(
+          this.translation.translate("INVENTORY.ALERTS.PRODUCT_DELETED"),
+          "success"
+        );
         // Remove from local array instead of reloading
         this.products.set(
           this.products().filter((p: Product) => p._id !== productId)
@@ -232,8 +302,9 @@ export class InventoryComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error("Error deleting product:", err);
-        alert(
-          this.translation.translate("INVENTORY.ALERTS.PRODUCT_DELETE_FAILED")
+        this.toastService.show(
+          this.translation.translate("INVENTORY.ALERTS.PRODUCT_DELETE_FAILED"),
+          "error"
         );
       },
     });
@@ -287,8 +358,9 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   saveCategory(): void {
     if (!this.categoryForm.name) {
-      alert(
-        this.translation.translate("INVENTORY.CATEGORY_ALERTS.FILL_REQUIRED")
+      this.toastService.show(
+        this.translation.translate("INVENTORY.CATEGORY_ALERTS.FILL_REQUIRED"),
+        "info"
       );
       return;
     }
@@ -299,10 +371,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
         .updateCategory(this.selectedCategory._id!, this.categoryForm)
         .subscribe({
           next: (updatedCategory) => {
-            alert(
+            this.toastService.show(
               this.translation.translate(
                 "INVENTORY.CATEGORY_ALERTS.CATEGORY_UPDATED"
-              )
+              ),
+              "success"
             );
             // Update local array instead of reloading
             const index = this.categories.findIndex(
@@ -315,10 +388,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.error("Error updating category:", err);
-            alert(
+            this.toastService.show(
               this.translation.translate(
                 "INVENTORY.CATEGORY_ALERTS.CATEGORY_UPDATE_FAILED"
-              )
+              ),
+              "error"
             );
           },
         });
@@ -326,10 +400,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
       // Create new category
       this.categoryService.createCategory(this.categoryForm).subscribe({
         next: (newCategory) => {
-          alert(
+          this.toastService.show(
             this.translation.translate(
               "INVENTORY.CATEGORY_ALERTS.CATEGORY_CREATED"
-            )
+            ),
+            "success"
           );
           // Add to local array instead of reloading
           this.categories.unshift(newCategory);
@@ -337,10 +412,11 @@ export class InventoryComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error("Error creating category:", err);
-          alert(
+          this.toastService.show(
             this.translation.translate(
               "INVENTORY.CATEGORY_ALERTS.CATEGORY_CREATE_FAILED"
-            )
+            ),
+            "error"
           );
         },
       });
@@ -349,8 +425,9 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   deleteCategory(categoryId: string): void {
     if (!this.isAdmin()) {
-      alert(
-        this.translation.translate("INVENTORY.CATEGORY_ALERTS.ADMIN_DELETE")
+      this.toastService.show(
+        this.translation.translate("INVENTORY.CATEGORY_ALERTS.ADMIN_DELETE"),
+        "error"
       );
       return;
     }
@@ -370,20 +447,22 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
     this.categoryService.deleteCategory(categoryId).subscribe({
       next: () => {
-        alert(
+        this.toastService.show(
           this.translation.translate(
             "INVENTORY.CATEGORY_ALERTS.CATEGORY_DELETED"
-          )
+          ),
+          "success"
         );
         // Remove from local array instead of reloading
         this.categories = this.categories.filter((c) => c._id !== categoryId);
       },
       error: (err) => {
         console.error("Error deleting category:", err);
-        alert(
+        this.toastService.show(
           this.translation.translate(
             "INVENTORY.CATEGORY_ALERTS.CATEGORY_DELETE_FAILED"
-          )
+          ),
+          "error"
         );
       },
     });
@@ -427,18 +506,22 @@ export class InventoryComponent implements OnInit, OnDestroy {
       next: (result) => {
         this.importProgress = 100;
         this.importResults = result;
-        alert(
+        this.toastService.show(
           this.translation.translate("INVENTORY.IMPORT.COMPLETED", {
             successful: result.successful,
             failed: result.failed,
-          })
+          }),
+          "success"
         );
         this.loadProducts();
       },
       error: (err) => {
         console.error("Error importing products:", err);
         this.importProgress = 0;
-        alert(this.translation.translate("INVENTORY.IMPORT.FAILED"));
+        this.toastService.show(
+          this.translation.translate("INVENTORY.IMPORT.FAILED"),
+          "error"
+        );
       },
     });
   }

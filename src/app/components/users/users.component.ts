@@ -12,9 +12,11 @@ import { Subject, takeUntil, skip } from "rxjs";
 import { UserService } from "../../services/user.service";
 import { AuthService } from "../../services/auth.service";
 import { SearchStateService } from "../../services/search-state.service";
+import { ToastService } from "../../services/toast.service";
 import { User } from "../../models";
 import { HttpClient } from "@angular/common/http";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 import { environment } from "@environments/environment";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
@@ -22,7 +24,13 @@ import { TranslationService } from "../../services/translation.service";
 @Component({
   selector: "app-users",
   standalone: true,
-  imports: [CommonModule, FormsModule, PageTitleComponent, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageTitleComponent,
+    TranslatePipe,
+    ToggleSwitchComponent,
+  ],
   templateUrl: "./users.component.html",
   styleUrls: ["./users.component.scss"],
 })
@@ -77,7 +85,8 @@ export class UsersComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private searchStateService: SearchStateService,
     private http: HttpClient,
-    private translation: TranslationService
+    private translation: TranslationService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -147,12 +156,18 @@ export class UsersComponent implements OnInit, OnDestroy {
       !this.userForm.lastName ||
       !this.userForm.role
     ) {
-      alert(this.translation.translate("USERS.ALERTS.FILL_REQUIRED"));
+      this.toastService.show(
+        this.translation.translate("USERS.ALERTS.FILL_REQUIRED"),
+        "info"
+      );
       return;
     }
 
     if (!this.isEditing && !this.userForm.password) {
-      alert(this.translation.translate("USERS.ALERTS.PASSWORD_REQUIRED"));
+      this.toastService.show(
+        this.translation.translate("USERS.ALERTS.PASSWORD_REQUIRED"),
+        "info"
+      );
       return;
     }
 
@@ -233,12 +248,12 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   deleteUser(id: string): void {
     if (!this.isAdmin()) {
-      alert("Only administrators can delete users");
+      this.toastService.show("Only administrators can delete users", "error");
       return;
     }
 
     if (id === this.currentUser?.id) {
-      alert("You cannot delete your own account");
+      this.toastService.show("You cannot delete your own account", "error");
       return;
     }
 

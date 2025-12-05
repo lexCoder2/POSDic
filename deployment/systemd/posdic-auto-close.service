@@ -1,0 +1,34 @@
+[Unit]
+Description=Auto-close POS Registers at Midnight
+Documentation=https://github.com/lexCoder2/POSDic
+After=network.target mongodb.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/posdic/backend
+
+# Environment variables
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/posdic/backend/.env
+
+# Start the auto-close script
+ExecStart=/usr/bin/node utils/auto-close-registers.js
+
+# Restart policy
+Restart=always
+RestartSec=3600
+StartLimitInterval=0
+
+# Logging
+StandardOutput=append:/var/log/posdic/auto-close.log
+StandardError=append:/var/log/posdic/auto-close-error.log
+SyslogIdentifier=posdic-auto-close
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -53,8 +53,31 @@ const userSchema = new mongoose.Schema(
         ],
       },
     ],
+    internalSalesLimit: {
+      type: Number,
+      default: 0,
+    },
     lastLogin: {
       type: Date,
+    },
+    settings: {
+      displayName: {
+        type: String,
+        default: "",
+      },
+      language: {
+        type: String,
+        default: "en",
+      },
+      printerMode: {
+        type: String,
+        enum: ["inherit", "plain", "styled"],
+        default: "inherit",
+      },
+      currency: {
+        type: String,
+        default: "USD",
+      },
     },
     createdAt: {
       type: Date,

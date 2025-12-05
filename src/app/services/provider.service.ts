@@ -45,4 +45,8 @@ export class ProviderService {
   deleteProvider(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getProviderByCode(code: string): Observable<Provider> {
+    return this.http.get<Provider>(`${this.apiUrl}/code/${code}`);
+  }
 }
