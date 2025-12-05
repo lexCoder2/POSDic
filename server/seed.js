@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const connectDB = require("./config/database");
 const User = require("./models/User");
 const Category = require("./models/Category");
-const Product = require("./models/Product");
 const Provider = require("./models/Provider");
 const PrintTemplate = require("./models/PrintTemplate");
 
@@ -21,7 +20,6 @@ const seedDatabase = async () => {
     const existingProviders = await Provider.countDocuments();
     const existingTemplates = await PrintTemplate.countDocuments();
 
-    console.log(`Found ${existingProducts} existing products in database`);
     console.log(`Found ${existingCategories} existing categories`);
     console.log(`Found ${existingProviders} existing providers`);
     console.log(`Found ${existingUsers} existing users`);
@@ -31,10 +29,44 @@ const seedDatabase = async () => {
     console.log("\nCreating users (if needed)...");
     const users = await User.create([
       {
-        username: "admin",
-        email: "admin@pos.com",
-        password: "admin123",
-        firstName: "Admin",
+        username: "dian",
+        email: "dian@pos.com",
+        password: "pass123",
+        firstName: "Dian",
+        lastName: "User",
+        role: "admin",
+        permissions: [
+          "sales",
+          "refunds",
+          "discounts",
+          "reports",
+          "inventory",
+          "users",
+          "settings",
+        ],
+      },
+      {
+        username: "sergio",
+        email: "sergio@pos.com",
+        password: "pass123",
+        firstName: "Sergio",
+        lastName: "User",
+        role: "admin",
+        permissions: [
+          "sales",
+          "refunds",
+          "discounts",
+          "reports",
+          "inventory",
+          "users",
+          "settings",
+        ],
+      },
+      {
+        username: "Ene",
+        email: "ene@pos.com",
+        password: "pass123",
+        firstName: "Eneida",
         lastName: "User",
         role: "admin",
         permissions: [
@@ -149,109 +181,6 @@ const seedDatabase = async () => {
       console.log(`✅ Using ${providers.length} existing providers`);
     }
 
-    // Create sample products ONLY if no products exist
-    console.log("\nChecking products...");
-    const productCount = await Product.countDocuments();
-
-    if (productCount === 0) {
-      console.log("No products found. Creating sample products...");
-      const products = await Product.create([
-        // Electronics
-        {
-          code: "ELEC001",
-          barcode: "1234567890123",
-          name: "Wireless Mouse",
-          description: "Ergonomic wireless mouse",
-          category: categories[0]._id,
-          price: 29.99,
-          cost: 15.0,
-          stock: 50,
-          minStock: 10,
-          unit: "unit",
-          taxRate: 10,
-          provider: providers[0]._id,
-        },
-        {
-          code: "ELEC002",
-          barcode: "1234567890124",
-          name: "USB Cable",
-          description: "USB-C charging cable",
-          category: categories[0]._id,
-          price: 9.99,
-          cost: 3.0,
-          stock: 100,
-          minStock: 20,
-          unit: "unit",
-          taxRate: 10,
-          provider: providers[0]._id,
-        },
-        // Groceries
-        {
-          code: "GROC001",
-          barcode: "2234567890123",
-          name: "Organic Apples",
-          description: "Fresh organic apples",
-          category: categories[1]._id,
-          price: 4.99,
-          cost: 2.5,
-          stock: 25,
-          minStock: 5,
-          unit: "kg",
-          requiresScale: true,
-          taxRate: 5,
-          provider: providers[1]._id,
-        },
-        {
-          code: "GROC002",
-          barcode: "2234567890124",
-          name: "Fresh Bread",
-          description: "Whole wheat bread",
-          category: categories[1]._id,
-          price: 3.49,
-          cost: 1.5,
-          stock: 30,
-          minStock: 10,
-          unit: "unit",
-          taxRate: 5,
-          provider: providers[1]._id,
-        },
-        // Clothing
-        {
-          code: "CLOT001",
-          barcode: "3234567890123",
-          name: "T-Shirt - Blue",
-          description: "Cotton blue t-shirt",
-          category: categories[2]._id,
-          price: 19.99,
-          cost: 8.0,
-          stock: 40,
-          minStock: 10,
-          unit: "unit",
-          taxRate: 10,
-          provider: providers[2]._id,
-        },
-        {
-          code: "CLOT002",
-          barcode: "3234567890124",
-          name: "Jeans",
-          description: "Classic blue jeans",
-          category: categories[2]._id,
-          price: 49.99,
-          cost: 20.0,
-          stock: 25,
-          minStock: 5,
-          unit: "unit",
-          taxRate: 10,
-          provider: providers[2]._id,
-        },
-      ]);
-      console.log(`✅ Created ${products.length} sample products`);
-    } else {
-      console.log(
-        `✅ Database already has ${productCount} products - skipping product creation`
-      );
-    }
-
     // Create default print template if none exists
     console.log("\nChecking print templates...");
     const templateExists = await PrintTemplate.findOne({ isDefault: true });
@@ -262,7 +191,7 @@ const seedDatabase = async () => {
         name: "Default Receipt",
         description: "Standard receipt template",
         templateType: "receipt",
-        paperSize: "80mm",
+        paperSize: "54mm",
         header: {
           showLogo: false,
           storeName: "Retail POS Store",
@@ -306,7 +235,6 @@ const seedDatabase = async () => {
 
     console.log("\n🎉 Database seeding completed successfully!");
     console.log("\n📊 Final Database Status:");
-    console.log(`   Products: ${await Product.countDocuments()}`);
     console.log(`   Categories: ${await Category.countDocuments()}`);
     console.log(`   Providers: ${await Provider.countDocuments()}`);
     console.log(`   Users: ${await User.countDocuments()}`);

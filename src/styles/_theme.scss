@@ -1,52 +1,38 @@
-// Theme Configuration - Modern Frosted Glass Design
+// Theme Configuration - Orange/Yellow Theme
 // This file contains all theme variables for consistent styling across the app
 
 // ===== COLOR PALETTE =====
-// Frosted Glass Design System
+// Neumorphic Design System
 // SCSS HEX
 @use "sass:color";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-
-// Base colors for frosted glass effect
-$glass-bg: #5a5959;
-$glass-surface: rgba(255, 255, 255, 0.85);
-$glass-surface-solid: #f8f9fa;
-$neumorphic-bg: #e8e8e8;
-$neumorphic-surface: #ffffff;
-
-// Primary accent colors (warm orange/coral from image)
-$blue-primary: #2d1674;
-$blue-dark: #1e0f52;
-$blue-light: #4a2d9e;
+@import url("https://fonts.googleapis.com/css2?family=Average+Sans&family=League+Spartan&display=swap");
+$neumorphic-bg: #e5e7eb;
+$neumorphic-surface: #eceff4;
+$blue-primary: #654483;
+$blue-dark: #2563eb;
+$blue-light: #60a5fa;
 
 // SCSS HSL
-$neumorphic-bg-hsl: hsla(0, 0%, 91%, 1);
-$neumorphic-surface-hsl: hsla(0, 0%, 100%, 1);
-$blue-primary-hsl: hsla(256, 68%, 26%, 1);
-$blue-dark-hsl: hsla(256, 68%, 19%, 1);
-$blue-light-hsl: hsla(256, 55%, 40%, 1);
+$neumorphic-bg-hsl: hsla(220, 13%, 91%, 1);
+$neumorphic-surface-hsl: hsla(220, 16%, 94%, 1);
+$blue-primary-hsl: hsla(221, 91%, 60%, 1);
+$blue-dark-hsl: hsla(221, 83%, 53%, 1);
+$blue-light-hsl: hsla(221, 93%, 68%, 1);
 
 // SCSS RGB
-$neumorphic-bg-rgb: rgba(232, 232, 232, 1);
-$neumorphic-surface-rgb: rgba(255, 255, 255, 1);
-$blue-primary-rgb: rgba(45, 22, 116, 1);
-$blue-dark-rgb: rgba(30, 15, 82, 1);
-$blue-light-rgb: rgba(74, 45, 158, 1);
+$neumorphic-bg-rgb: rgba(229, 231, 235, 1);
+$neumorphic-surface-rgb: rgba(236, 239, 244, 1);
+$blue-primary-rgb: rgba(59, 130, 246, 1);
+$blue-dark-rgb: rgba(37, 99, 235, 1);
+$blue-light-rgb: rgba(96, 165, 250, 1);
 
 // Map existing theme tokens to the new palette (preserve variable names used across the app)
 $primary: $blue-primary;
 $primary-dark: $blue-dark;
 $primary-light: $blue-light;
-$secondary: #8e55c7;
-$secondary-dark: #7946b4;
-$secondary-light: #a678d9;
-
-// Accent colors (warm tones from the image)
-$accent-coral: #ff8c64;
-$accent-coral-dark: #ff6450;
-$accent-purple: #8e55c7;
-$accent-pink: #c87896;
-$accent-peach: #ffa078;
+$secondary: #6366f1;
+$secondary-dark: #4f46e5;
+$secondary-light: #818cf8;
 
 // Gradients using the provided palette
 $gradient-primary: linear-gradient(135deg, $blue-primary, $blue-dark);
@@ -68,7 +54,7 @@ $info-dark: #3182ce;
 $info-light: #63b3ed;
 
 // Neutral Colors
-$white: #ffffff;
+$white: #f8f8f8;
 $black: #000000;
 $gray-50: #f9fafb;
 $gray-100: #f3f4f6;

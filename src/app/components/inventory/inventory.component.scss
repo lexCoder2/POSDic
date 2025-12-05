@@ -1,7 +1,7 @@
 @use "../../../styles/_theme.scss" as *;
 
 .inventory-container {
-  padding: $spacing-2xl;
+  padding: 0 $spacing-sm;
   max-width: 1500px;
   margin: 0 auto;
   min-height: 100%;
@@ -12,9 +12,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
   border-bottom: none;
+  gap: $spacing-md;
 
   h1 {
     margin: 0;
@@ -24,95 +25,112 @@
 
   .header-actions {
     display: flex;
-    gap: 0.3rem;
+    gap: $spacing-sm;
   }
 }
 
+// Action buttons (consistent with POS theme)
+.btn-session,
+.btn-add,
 .btn-import,
 .btn-template {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: $shadow-primary;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  color: $gray-600;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: $transition-all;
+  white-space: nowrap;
 
   i {
-    font-size: 1.1rem;
+    font-size: $font-size-base;
+  }
+
+  &:hover:not(:disabled) {
+    background: $bg-tertiary;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-session {
+  background: rgba($success, 0.1);
+  border-color: $success;
+  color: $success-dark;
+
+  &:hover:not(:disabled) {
+    background: rgba($success, 0.2);
+  }
+}
+
+.btn-add {
+  background: rgba($primary, 0.1);
+  border-color: $primary;
+  color: $primary-dark;
+
+  &:hover:not(:disabled) {
+    background: rgba($primary, 0.2);
   }
 }
 
 .btn-import {
-  background: $gradient-primary;
-  color: white;
+  background: rgba($info, 0.1);
+  border-color: $info;
+  color: $info-dark;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-primary-lg;
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: $shadow-primary;
+  &:hover:not(:disabled) {
+    background: rgba($info, 0.2);
   }
 }
 
 .btn-template {
   background: $bg-secondary;
   color: $text-primary;
-  box-shadow: $shadow-neumorphic;
 
-  &:hover {
-    box-shadow: $shadow-neumorphic-lg;
-  }
-
-  &:active {
-    box-shadow: $shadow-neumorphic-pressed;
+  &:hover:not(:disabled) {
+    background: $bg-tertiary;
   }
 }
 
-// Tabs
+// Tabs (period-selector style from statistics)
 .tabs {
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: $spacing-lg;
-  border-bottom: none;
-  &:last-child {
-    margin-right: 0;
-    justify-self: end;
-  }
+  gap: 0.5rem;
+  background: white;
+  padding: 0.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tab {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
-  background: $bg-secondary;
+  background: transparent;
+  color: #6c757d;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-secondary;
-  transition: all 0.3s ease;
-  border-radius: 16px;
-  box-shadow: $shadow-neumorphic-sm;
+  font-weight: 500;
+  transition: all 0.2s;
 
   &:hover {
-    color: $primary;
-    box-shadow: $shadow-neumorphic;
+    background-color: $bg-secondary;
+    color: $text-primary;
   }
 
   &.active {
+    background-color: $primary;
     color: white;
-    background: $gradient-primary;
-    box-shadow: $shadow-primary;
-  }
-
-  &:active {
-    box-shadow: $shadow-neumorphic-pressed;
   }
 }
 
@@ -157,48 +175,6 @@
     transform: translateY(-50%);
     font-size: 1.2rem;
     color: $text-muted;
-  }
-}
-
-.btn-session {
-  @include button-primary;
-  background: linear-gradient(135deg, $success, $success-dark);
-  box-shadow: 0 4px 12px rgba($success, 0.25);
-
-  &:hover:not(:disabled) {
-    box-shadow: 0 6px 20px rgba($success, 0.3);
-    transform: translateY(-1px);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 4px 12px rgba($success, 0.25);
-  }
-}
-
-.btn-add {
-  padding: 0.75rem 1.5rem;
-  background: $primary;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-
-  i {
-    font-size: 1.1rem;
-  }
-
-  &:hover {
-    background: darken($primary, 10%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($primary, 0.3);
   }
 }
 

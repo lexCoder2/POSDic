@@ -56,6 +56,10 @@ import {
   LooseProductModalComponent,
   LooseProductData,
 } from "./loose-product-modal/loose-product-modal.component";
+import {
+  ReturnsModalComponent,
+  RefundResult,
+} from "./returns-modal/returns-modal.component";
 
 @Component({
   selector: "app-pos",
@@ -77,6 +81,7 @@ import {
     InternalSaleModalComponent,
     CameraScannerComponent,
     LooseProductModalComponent,
+    ReturnsModalComponent,
   ],
   templateUrl: "./pos.component.html",
   styleUrls: ["./pos.component.scss"],
@@ -129,6 +134,9 @@ export class PosComponent implements OnInit, OnDestroy {
 
   // Loose Product Modal
   showLooseProductModal = false;
+
+  // Returns Modal
+  showReturnsModal = false;
 
   // Withdraw Modal
   showWithdrawModal = false;
@@ -1195,8 +1203,20 @@ export class PosComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Navigate to Returns
-  navigateToReturns(): void {
-    this.router.navigate(["/sales"], { queryParams: { tab: "returns" } });
+  // Open Returns Modal
+  openReturnsModal(): void {
+    this.showReturnsModal = true;
+  }
+
+  closeReturnsModal(): void {
+    this.showReturnsModal = false;
+  }
+
+  onRefundComplete(result: RefundResult): void {
+    this.toastService.show(
+      `Refund of ${result.refundAmount.toFixed(2)} processed successfully`,
+      "success"
+    );
+    // Optionally reload cart or other data if needed
   }
 }

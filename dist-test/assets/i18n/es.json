@@ -147,7 +147,6 @@
     "ENGLISH": "Inglés",
     "SPANISH": "Español",
     "CANCEL": "Cancelar",
-    "PROCESSING": "Procesando...",
     "PREVIOUS": "Anterior",
     "NEXT": "Siguiente",
     "PER_PAGE": "{{count}} por página",
@@ -639,24 +638,6 @@
       "OPEN": "Abrir Caja",
       "CLOSE": "Cerrar Caja"
     },
-    "RETURNS": {
-      "TITLE": "Devoluciones y Reembolsos",
-      "SEARCH_PLACEHOLDER": "Buscar por número de venta o recibo...",
-      "SEARCH_HINT": "Busque una venta para procesar una devolución",
-      "NO_SALES_FOUND": "No se encontraron ventas con esa búsqueda",
-      "ITEMS": "artículos",
-      "SALE": "Venta",
-      "REFUND_TYPE": "Tipo de Reembolso",
-      "FULL_REFUND": "Reembolso Total",
-      "PARTIAL_REFUND": "Reembolso Parcial",
-      "SELECT_ITEMS": "Seleccionar Artículos a Reembolsar",
-      "REASON": "Motivo de la Devolución",
-      "REASON_PLACEHOLDER": "Ingrese el motivo de la devolución...",
-      "ORIGINAL_TOTAL": "Total Original",
-      "REFUND_AMOUNT": "Monto a Reembolsar",
-      "PROCESS_REFUND": "Procesar Reembolso",
-      "BACK_TO_SEARCH": "Volver a Buscar"
-    },
     "CHECKOUT": {
       "TITLE": "Checkout",
       "ITEMS": "artículos",
@@ -840,7 +821,7 @@
     "DELETE_FAILED": "Error al eliminar la plantilla"
   },
   "FAST_CASHIER": {
-    "TITLE": "Calculadora",
+    "TITLE": "Cajero Rápido",
     "DESCRIPTION": "Agrega artículos rápidamente y completa una venta con la mínima entrada"
   },
   "POS_SALES": "Ventas POS",

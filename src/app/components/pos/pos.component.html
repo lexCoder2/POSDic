@@ -41,7 +41,7 @@
         <span>{{ "POS.ACTIONS.WITHDRAW" | translate }}</span>
       </button>
 
-      <button class="action-btn" (click)="navigateToReturns()">
+      <button class="action-btn" (click)="openReturnsModal()">
         <i class="fas fa-undo-alt"></i>
         <span>{{ "POS.ACTIONS.RETURNS" | translate }}</span>
       </button>
@@ -450,6 +450,13 @@
     </div>
   </div>
 </div>
+
+<!-- Returns Modal -->
+<app-returns-modal
+  [show]="showReturnsModal"
+  (close)="closeReturnsModal()"
+  (refundComplete)="onRefundComplete($event)"
+></app-returns-modal>
 
 <!-- Mobile Scan Floating Button -->
 <button

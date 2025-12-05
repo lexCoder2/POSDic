@@ -1,11 +1,11 @@
 @use "../../../styles/_theme.scss" as *;
 
 .sales-container {
-  padding: $spacing-2xl;
+  padding: $spacing-sm $spacing-xl $spacing-3xl;
   max-width: 1400px;
   margin: 0 auto;
   background: $bg-secondary;
-  min-height: 100%;
+  min-height: calc(100vh + 60px);
   border-radius: $radius-md;
 }
 
@@ -55,48 +55,183 @@
   }
 }
 
+// Summary Cards (Dashboard Style)
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .summary-card {
-  background: linear-gradient(135deg, $primary, $secondary);
-  color: white;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: $bg-secondary;
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: $shadow-neumorphic;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 4px 12px rgba($primary, 0.2);
+  gap: 1.5rem;
+  transition: all 0.2s;
+
+  &:hover {
+    box-shadow: $shadow-neumorphic-lg;
+  }
 
   .card-icon {
-    font-size: 2.5rem;
-    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    font-size: 1.75rem;
   }
 
   .card-content {
+    flex: 1;
+
     h3 {
-      margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       font-weight: 500;
-      opacity: 0.9;
+      color: #6c757d;
+      margin: 0 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .card-value {
-      margin: 0.5rem 0 0 0;
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 700;
+      margin: 0.25rem 0;
+      line-height: 1;
+    }
+  }
+
+  // Card color variants
+  &:nth-child(1) {
+    .card-icon {
+      background-color: rgba($primary, 0.1);
+      color: $primary;
+    }
+    .card-value {
+      color: $primary;
+    }
+  }
+
+  &:nth-child(2) {
+    .card-icon {
+      background-color: rgba($success, 0.1);
+      color: $success;
+    }
+    .card-value {
+      color: $success;
+    }
+  }
+
+  &:nth-child(3) {
+    .card-icon {
+      background-color: rgba($info, 0.1);
+      color: $info;
+    }
+    .card-value {
+      color: $info;
+    }
+  }
+
+  &:nth-child(4) {
+    .card-icon {
+      background-color: rgba($warning, 0.1);
+      color: $warning;
+    }
+    .card-value {
+      color: $warning;
     }
   }
 }
 
 .sales-table-wrapper {
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-neumorphic;
+  background: $white;
+  margin-bottom: $spacing-2xl;
+
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+    background: $bg-tertiary;
+    border-bottom: 1px solid $border-color;
+    align-items: center;
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+
+      label {
+        font-weight: $font-weight-medium;
+        font-size: $font-size-sm;
+        color: $gray-600;
+        white-space: nowrap;
+      }
+
+      select,
+      input {
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        background: $white;
+        color: $gray-700;
+        min-width: 120px;
+        transition: $transition-base;
+
+        &:hover {
+          border-color: $gray-400;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        }
+      }
+    }
+
+    .row-count {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      margin-left: auto;
+
+      span {
+        font-size: $font-size-sm;
+        color: $gray-600;
+        font-weight: $font-weight-medium;
+      }
+
+      .page-size-select {
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $border-color;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        background: $white;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover {
+          border-color: $primary;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        }
+      }
+    }
+  }
 }
 
 .sales-table {
@@ -139,117 +274,124 @@
 
   .payment-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
 
     &.payment-cash {
-      background: #4caf50;
-      color: white;
+      background: rgba($success, 0.1);
+      color: $success-dark;
     }
 
     &.payment-card {
-      background: #2196f3;
-      color: white;
+      background: rgba($info, 0.1);
+      color: $info-dark;
     }
 
     &.payment-transfer {
-      background: #ff9800;
-      color: white;
+      background: rgba($warning, 0.1);
+      color: $warning-dark;
     }
 
     &.payment-mixed {
-      background: #9c27b0;
-      color: white;
+      background: rgba($secondary, 0.1);
+      color: $secondary-dark;
     }
   }
 
   .status-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
 
     &.status-completed {
-      background: #4caf50;
-      color: white;
+      background: rgba($success, 0.1);
+      color: $success-dark;
     }
 
     &.status-cancelled {
-      background: #ff6b6b;
-      color: white;
+      background: rgba($danger, 0.1);
+      color: $danger-dark;
     }
 
     &.status-refunded {
-      background: #ff9800;
-      color: white;
+      background: rgba($warning, 0.1);
+      color: $warning-dark;
+    }
+
+    &.status-in_progress {
+      background: rgba($info, 0.1);
+      color: $info-dark;
     }
   }
 
   .action-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: $spacing-xs;
   }
 
   .btn-view,
   .btn-print,
+  .btn-refund,
   .btn-cancel {
-    padding: 0.5rem 0.75rem;
-    border: none;
-    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid $border-color;
+    background: $white;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-
-    i {
-      color: $primary;
-    }
+    font-size: $font-size-sm;
+    transition: $transition-all;
+    border-radius: $radius-md;
 
     &:hover:not(:disabled) {
-      background: rgba($primary, 0.1);
-      transform: scale(1.1);
+      transform: translateY(-1px);
     }
 
     &:disabled {
-      opacity: 0.3;
+      opacity: 0.4;
       cursor: not-allowed;
+    }
+  }
+
+  .btn-view {
+    color: $primary;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary, 0.1);
+      border-color: $primary;
+    }
+  }
+
+  .btn-print {
+    color: $info;
+
+    &:hover:not(:disabled) {
+      background: rgba($info, 0.1);
+      border-color: $info;
     }
   }
 
   .btn-refund {
-    padding: 0.5rem 0.75rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-
-    i {
-      color: #ff9800;
-    }
+    color: $warning;
 
     &:hover:not(:disabled) {
-      background: rgba(#ff9800, 0.1);
-      transform: scale(1.1);
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
+      background: rgba($warning, 0.1);
+      border-color: $warning;
     }
   }
 
   .btn-cancel {
-    i {
-      color: #ff6b6b;
-    }
+    color: $danger;
 
     &:hover:not(:disabled) {
-      background: rgba(#ff6b6b, 0.1);
+      background: rgba($danger, 0.1);
+      border-color: $danger;
     }
   }
 
@@ -414,34 +556,6 @@
 }
 
 // Pagination Styles
-.row-count {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  color: #666;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.page-size-select {
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    border-color: $primary;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: $primary;
-    box-shadow: 0 0 0 3px rgba($primary, 0.1);
-  }
-}
-
 .pagination {
   display: flex;
   align-items: center;

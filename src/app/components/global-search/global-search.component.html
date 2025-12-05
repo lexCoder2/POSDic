@@ -1,10 +1,19 @@
 <div class="global-search">
   <div class="search-wrapper">
     <i class="fas fa-search search-icon"></i>
-    <input #globalSearchInput type="text" class="search-input" [(ngModel)]="searchQuery"
-      (input)="onSearchChange(searchQuery)" (keypress)="onSearchKeyPress($event)"
-      placeholder="Search products, sales, providers..." />
-    <i *ngIf="searchQuery" class="fas fa-times clear-icon" (click)="searchQuery = ''"></i>
+    <input
+      #globalSearchInput
+      type="text"
+      class="search-input"
+      [(ngModel)]="searchQuery"
+      (input)="onSearchChange(searchQuery)"
+      (keypress)="onSearchKeyPress($event)"
+      [placeholder]="'GLOBAL.SEARCH_PLACEHOLDER' | translate"
+    />
+    <i
+      *ngIf="searchQuery"
+      class="fas fa-times clear-icon"
+      (click)="searchQuery = ''"
+    ></i>
   </div>
-
 </div>

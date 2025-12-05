@@ -79,7 +79,6 @@
     "ENGLISH": "English",
     "SPANISH": "Español",
     "CANCEL": "Cancel",
-    "PROCESSING": "Processing...",
     "PREVIOUS": "Previous",
     "NEXT": "Next",
     "PER_PAGE": "{{count}} per page",
@@ -668,24 +667,6 @@
       "NOTES_PLACEHOLDER": "Optional notes...",
       "OPEN": "Open Register",
       "CLOSE": "Close Register"
-    },
-    "RETURNS": {
-      "TITLE": "Returns & Refunds",
-      "SEARCH_PLACEHOLDER": "Search by sale number or receipt...",
-      "SEARCH_HINT": "Search for a sale to process a return",
-      "NO_SALES_FOUND": "No sales found with that search",
-      "ITEMS": "items",
-      "SALE": "Sale",
-      "REFUND_TYPE": "Refund Type",
-      "FULL_REFUND": "Full Refund",
-      "PARTIAL_REFUND": "Partial Refund",
-      "SELECT_ITEMS": "Select Items to Refund",
-      "REASON": "Reason for Return",
-      "REASON_PLACEHOLDER": "Enter reason for the return...",
-      "ORIGINAL_TOTAL": "Original Total",
-      "REFUND_AMOUNT": "Refund Amount",
-      "PROCESS_REFUND": "Process Refund",
-      "BACK_TO_SEARCH": "Back to Search"
     },
     "CHECKOUT": {
       "TITLE": "Checkout",

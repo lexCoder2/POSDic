@@ -1,0 +1,585 @@
+@use "../../../../styles/theme" as *;
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal;
+  padding: $spacing-lg;
+}
+
+.modal-content {
+  background: $white;
+  border-radius: $radius-2xl;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: $shadow-xl;
+  @include smooth-scroll;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, $warning 0%, $warning-dark 100%);
+  color: $white;
+  border-radius: $radius-2xl $radius-2xl 0 0;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .btn-close {
+    @include button-base;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border-radius: $radius-full;
+    background: rgba($white, 0.2);
+    color: $white;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba($white, 0.3);
+    }
+  }
+}
+
+.modal-body {
+  padding: $spacing-xl;
+}
+
+.modal-footer {
+  display: flex;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: $bg-tertiary;
+  border-radius: 0 0 $radius-2xl $radius-2xl;
+
+  .btn-cancel {
+    @include button-secondary;
+    flex: 1;
+    background: $white;
+    color: $gray-500;
+    border: 2px solid $border-color;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+
+  .btn-refund {
+    @include button-primary;
+    flex: 1;
+    background: linear-gradient(135deg, $warning 0%, $warning-dark 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba($warning, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Search Section
+.search-section {
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background: $bg-tertiary;
+    border: 2px solid $border-color;
+    border-radius: $radius-xl;
+    transition: $transition-base;
+
+    &:focus-within {
+      border-color: $warning;
+      @include focus-ring($warning);
+    }
+
+    i {
+      color: $gray-400;
+      font-size: $font-size-lg;
+    }
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: $font-size-base;
+      color: $gray-700;
+      outline: none;
+
+      &::placeholder {
+        color: $gray-400;
+      }
+    }
+
+    .btn-search {
+      @include button-base;
+      width: 36px;
+      height: 36px;
+      min-height: 36px;
+      padding: 0;
+      border-radius: $radius-md;
+      background: $warning;
+      color: $white;
+      box-shadow: none;
+
+      &:hover:not(:disabled) {
+        background: $warning-dark;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Search Results
+.search-results {
+  margin-top: $spacing-lg;
+  max-height: 400px;
+  overflow-y: auto;
+  @include smooth-scroll;
+
+  .sale-item {
+    padding: $spacing-lg;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    margin-bottom: $spacing-sm;
+    cursor: pointer;
+    transition: $transition-all;
+
+    &:hover {
+      border-color: $warning;
+      background: rgba($warning, 0.05);
+      transform: translateX(4px);
+    }
+
+    .sale-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-xs;
+
+      .sale-number {
+        font-weight: $font-weight-bold;
+        color: $gray-800;
+        font-size: $font-size-base;
+      }
+
+      .sale-date {
+        font-size: $font-size-sm;
+        color: $gray-500;
+      }
+    }
+
+    .sale-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-xs;
+
+      .sale-items {
+        font-size: $font-size-sm;
+        color: $gray-500;
+      }
+
+      .sale-total {
+        font-weight: $font-weight-semibold;
+        color: $primary;
+        font-size: $font-size-lg;
+      }
+    }
+
+    .sale-cashier {
+      font-size: $font-size-sm;
+      color: $gray-500;
+
+      i {
+        margin-right: $spacing-xs;
+      }
+    }
+  }
+}
+
+// No Results & Empty State
+.no-results,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3xl;
+  color: $gray-400;
+
+  i {
+    font-size: 3rem;
+    margin-bottom: $spacing-lg;
+  }
+
+  p {
+    margin: 0;
+    text-align: center;
+    font-size: $font-size-base;
+  }
+}
+
+// Refund Section
+.refund-section {
+  .back-button {
+    margin-bottom: $spacing-lg;
+
+    .btn-back {
+      @include button-base;
+      padding: $spacing-sm $spacing-md;
+      background: transparent;
+      color: $gray-600;
+      border: 1px solid $border-color;
+      box-shadow: none;
+      font-size: $font-size-sm;
+
+      i {
+        margin-right: $spacing-xs;
+      }
+
+      &:hover {
+        background: $bg-tertiary;
+        color: $gray-700;
+      }
+    }
+  }
+
+  .sale-header {
+    padding: $spacing-lg;
+    background: $bg-tertiary;
+    border-radius: $radius-lg;
+    margin-bottom: $spacing-xl;
+
+    .sale-title {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-sm;
+
+      .label {
+        font-size: $font-size-sm;
+        color: $gray-500;
+      }
+
+      .value {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $gray-800;
+      }
+    }
+
+    .sale-meta {
+      display: flex;
+      gap: $spacing-lg;
+      font-size: $font-size-sm;
+      color: $gray-500;
+
+      span {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+      }
+
+      i {
+        color: $warning;
+      }
+    }
+  }
+}
+
+// Refund Type
+.refund-type {
+  margin-bottom: $spacing-xl;
+
+  h4 {
+    margin: 0 0 $spacing-md;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $warning;
+    }
+  }
+
+  .type-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  .type-btn {
+    @include button-base;
+    flex-direction: column;
+    padding: $spacing-lg;
+    border: 2px solid $border-color;
+    background: $white;
+    box-shadow: none;
+
+    i {
+      font-size: $font-size-2xl;
+      color: $gray-500;
+      margin-bottom: $spacing-xs;
+    }
+
+    span {
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $gray-600;
+    }
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+
+    &.active {
+      border-color: $warning;
+      background: $warning;
+
+      i,
+      span {
+        color: $white;
+      }
+    }
+  }
+}
+
+// Items List
+.items-list {
+  margin-bottom: $spacing-xl;
+
+  h4 {
+    margin: 0 0 $spacing-md;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+
+    i {
+      color: $warning;
+    }
+  }
+
+  .items {
+    max-height: 200px;
+    overflow-y: auto;
+    @include smooth-scroll;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-xs;
+    cursor: pointer;
+    transition: $transition-base;
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+
+    &.selected {
+      border-color: $warning;
+      background: rgba($warning, 0.05);
+
+      .item-checkbox i {
+        color: $warning;
+      }
+    }
+
+    .item-checkbox {
+      i {
+        font-size: $font-size-lg;
+        color: $gray-300;
+      }
+    }
+
+    .item-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .item-name {
+        font-weight: $font-weight-medium;
+        color: $gray-700;
+        font-size: $font-size-sm;
+      }
+
+      .item-price {
+        font-size: $font-size-xs;
+        color: $gray-500;
+      }
+    }
+
+    .item-quantity {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      background: $bg-tertiary;
+      border-radius: $radius-md;
+      padding: $spacing-xs;
+
+      .qty-btn {
+        @include button-base;
+        width: 24px;
+        height: 24px;
+        min-height: 24px;
+        padding: 0;
+        border-radius: $radius-sm;
+        font-size: $font-size-sm;
+        box-shadow: none;
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+
+      span {
+        min-width: 24px;
+        text-align: center;
+        font-weight: $font-weight-semibold;
+        font-size: $font-size-sm;
+      }
+    }
+
+    .item-total {
+      font-weight: $font-weight-semibold;
+      color: $gray-700;
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+// Refund Reason
+.refund-reason {
+  margin-bottom: $spacing-xl;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+    font-size: $font-size-sm;
+
+    i {
+      color: $warning;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    padding: $spacing-md;
+    border: 2px solid $border-color;
+    border-radius: $radius-lg;
+    font-size: $font-size-base;
+    color: $gray-700;
+    resize: none;
+    outline: none;
+    transition: $transition-base;
+    font-family: inherit;
+
+    &:focus {
+      border-color: $warning;
+      @include focus-ring($warning);
+    }
+
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
+}
+
+// Refund Summary
+.refund-summary {
+  background: $bg-tertiary;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm 0;
+    font-size: $font-size-base;
+    color: $gray-600;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $border-color;
+    }
+
+    &.total {
+      padding-top: $spacing-md;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $warning-dark;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: $breakpoint-sm) {
+  .modal-content {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    border-radius: 0;
+  }
+
+  .modal-footer {
+    border-radius: 0;
+    flex-direction: column;
+  }
+
+  .refund-type .type-buttons {
+    grid-template-columns: 1fr;
+  }
+}

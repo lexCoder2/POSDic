@@ -15,11 +15,12 @@ import { SearchStateService } from "../../services/search-state.service";
 import { ToastService } from "../../services/toast.service";
 import { ProductService } from "../../services/product.service";
 import { Product } from "@app/models";
+import { TranslatePipe } from "@app/pipes/translate.pipe";
 
 @Component({
   selector: "app-global-search",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: "./global-search.component.html",
   styleUrls: ["./global-search.component.scss"],
 })

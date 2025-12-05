@@ -1,0 +1,248 @@
+<div class="modal-overlay" *ngIf="show" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-undo-alt"></i>
+        {{ "POS.RETURNS.TITLE" | translate }}
+      </h3>
+      <button class="btn-close" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Search Section (shown when no sale selected) -->
+      <div class="search-section" *ngIf="!selectedSale">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="searchSales()"
+            [placeholder]="'POS.RETURNS.SEARCH_PLACEHOLDER' | translate"
+          />
+          <button
+            class="btn-search"
+            (click)="searchSales()"
+            [disabled]="isSearching"
+          >
+            <i
+              class="fas"
+              [class.fa-search]="!isSearching"
+              [class.fa-spinner]="isSearching"
+              [class.fa-spin]="isSearching"
+            ></i>
+          </button>
+        </div>
+
+        <!-- Search Results -->
+        <div class="search-results" *ngIf="searchResults().length > 0">
+          <div
+            class="sale-item"
+            *ngFor="let sale of searchResults()"
+            (click)="selectSale(sale)"
+          >
+            <div class="sale-info">
+              <span class="sale-number">{{ sale.saleNumber }}</span>
+              <span class="sale-date">{{ formatDate(sale.createdAt) }}</span>
+            </div>
+            <div class="sale-details">
+              <span class="sale-items"
+                >{{ sale.items.length }}
+                {{ "POS.RETURNS.ITEMS" | translate }}</span
+              >
+              <span class="sale-total">{{ sale.total | appCurrency }}</span>
+            </div>
+            <div class="sale-cashier">
+              <i class="fas fa-user"></i>
+              {{ getCashierName(sale.cashier) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- No Results -->
+        <div
+          class="no-results"
+          *ngIf="searchResults().length === 0 && searchQuery && !isSearching"
+        >
+          <i class="fas fa-receipt"></i>
+          <p>{{ "POS.RETURNS.NO_SALES_FOUND" | translate }}</p>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          class="empty-state"
+          *ngIf="searchResults().length === 0 && !searchQuery"
+        >
+          <i class="fas fa-search"></i>
+          <p>{{ "POS.RETURNS.SEARCH_HINT" | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Refund Section (shown when sale selected) -->
+      <div class="refund-section" *ngIf="selectedSale">
+        <div class="back-button">
+          <button class="btn-back" (click)="goBackToSearch()">
+            <i class="fas fa-arrow-left"></i>
+            {{ "POS.RETURNS.BACK_TO_SEARCH" | translate }}
+          </button>
+        </div>
+
+        <div class="sale-header">
+          <div class="sale-title">
+            <span class="label">{{ "POS.RETURNS.SALE" | translate }}</span>
+            <span class="value">{{ selectedSale.saleNumber }}</span>
+          </div>
+          <div class="sale-meta">
+            <span
+              ><i class="fas fa-calendar"></i>
+              {{ formatDate(selectedSale.createdAt) }}</span
+            >
+            <span
+              ><i class="fas fa-user"></i>
+              {{ getCashierName(selectedSale.cashier) }}</span
+            >
+          </div>
+        </div>
+
+        <!-- Refund Type Selection -->
+        <div class="refund-type">
+          <h4>
+            <i class="fas fa-exchange-alt"></i>
+            {{ "POS.RETURNS.REFUND_TYPE" | translate }}
+          </h4>
+          <div class="type-buttons">
+            <button
+              class="type-btn"
+              [class.active]="refundType === 'full'"
+              (click)="refundType = 'full'; onRefundTypeChange()"
+            >
+              <i class="fas fa-redo-alt"></i>
+              <span>{{ "POS.RETURNS.FULL_REFUND" | translate }}</span>
+            </button>
+            <button
+              class="type-btn"
+              [class.active]="refundType === 'partial'"
+              (click)="refundType = 'partial'; onRefundTypeChange()"
+            >
+              <i class="fas fa-percentage"></i>
+              <span>{{ "POS.RETURNS.PARTIAL_REFUND" | translate }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Items List (for partial refund) -->
+        <div class="items-list" *ngIf="refundType === 'partial'">
+          <h4>
+            <i class="fas fa-list"></i>
+            {{ "POS.RETURNS.SELECT_ITEMS" | translate }}
+          </h4>
+          <div class="items">
+            <div
+              class="item"
+              *ngFor="let item of refundItems"
+              [class.selected]="item.selected"
+              (click)="toggleItemSelection(item)"
+            >
+              <div class="item-checkbox">
+                <i
+                  class="fas"
+                  [class.fa-check-square]="item.selected"
+                  [class.fa-square]="!item.selected"
+                ></i>
+              </div>
+              <div class="item-info">
+                <span class="item-name">{{ item.productName }}</span>
+                <span class="item-price"
+                  >{{ item.unitPrice | appCurrency }} x
+                  {{ item.maxQuantity }}</span
+                >
+              </div>
+              <div
+                class="item-quantity"
+                *ngIf="item.selected"
+                (click)="$event.stopPropagation()"
+              >
+                <button
+                  class="qty-btn"
+                  (click)="item.quantity = Math.max(1, item.quantity - 1)"
+                  [disabled]="item.quantity <= 1"
+                >
+                  -
+                </button>
+                <span>{{ item.quantity }}</span>
+                <button
+                  class="qty-btn"
+                  (click)="
+                    item.quantity = Math.min(
+                      item.maxQuantity,
+                      item.quantity + 1
+                    )
+                  "
+                  [disabled]="item.quantity >= item.maxQuantity"
+                >
+                  +
+                </button>
+              </div>
+              <div class="item-total">
+                {{
+                  item.unitPrice *
+                    (item.selected ? item.quantity : item.maxQuantity)
+                    | appCurrency
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Refund Reason -->
+        <div class="refund-reason">
+          <label>
+            <i class="fas fa-comment-alt"></i>
+            {{ "POS.RETURNS.REASON" | translate }}
+          </label>
+          <textarea
+            [(ngModel)]="refundReason"
+            [placeholder]="'POS.RETURNS.REASON_PLACEHOLDER' | translate"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Refund Summary -->
+        <div class="refund-summary">
+          <div class="summary-row">
+            <span>{{ "POS.RETURNS.ORIGINAL_TOTAL" | translate }}</span>
+            <span>{{ selectedSale.total | appCurrency }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>{{ "POS.RETURNS.REFUND_AMOUNT" | translate }}</span>
+            <span>{{ refundTotal() | appCurrency }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" *ngIf="selectedSale">
+      <button class="btn-cancel" (click)="goBackToSearch()">
+        {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button
+        class="btn-refund"
+        [disabled]="!canProcessRefund() || isProcessing"
+        (click)="processRefund()"
+      >
+        <i
+          class="fas"
+          [class.fa-undo-alt]="!isProcessing"
+          [class.fa-spinner]="isProcessing"
+          [class.fa-spin]="isProcessing"
+        ></i>
+        {{
+          isProcessing
+            ? ("GLOBAL.PROCESSING" | translate)
+            : ("POS.RETURNS.PROCESS_REFUND" | translate)
+        }}
+      </button>
+    </div>
+  </div>
+</div>

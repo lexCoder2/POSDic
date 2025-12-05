@@ -1,7 +1,7 @@
 @use "../../../styles/theme" as *;
 
 .statistics-container {
-  padding: 2rem;
+  padding: $spacing-sm;
   background-color: $bg-secondary;
   min-height: calc(100vh - 60px);
   overflow-y: auto;
