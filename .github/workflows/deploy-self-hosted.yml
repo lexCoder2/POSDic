@@ -1,0 +1,56 @@
+name: Deploy to Local Ubuntu Server (Self-Hosted)
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Run deployment script
+        run: |
+          echo "Starting deployment..."
+          sudo /var/www/posdic/repo/deployment/scripts/update.sh
+        shell: bash
+
+      - name: Check backend service status
+        run: |
+          sleep 3
+          sudo systemctl status posdic-backend --no-pager
+        shell: bash
+
+      - name: Check nginx status
+        run: |
+          sudo systemctl status nginx --no-pager
+        shell: bash
+
+      - name: Get deployment info
+        run: |
+          echo "Deployment completed successfully!"
+          echo "Current commit: $(git rev-parse --short HEAD)"
+          echo "Backend status:"
+          curl -f http://localhost:3000/api/health || echo "Health check endpoint not available"
+        shell: bash
+
+      - name: Send deployment notification
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Deployment successful on $(hostname)"
+          else
+            echo "❌ Deployment failed on $(hostname)"
+          fi
