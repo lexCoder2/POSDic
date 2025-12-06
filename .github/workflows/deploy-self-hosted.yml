@@ -21,9 +21,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Check runner user
+        run: |
+          echo "Running as user: $(whoami)"
+          echo "Home directory: $HOME"
+          echo "Current directory: $(pwd)"
+        shell: bash
+
       - name: Run deployment script
         run: |
           echo "Starting deployment..."
+          cd $GITHUB_WORKSPACE
+          export GIT_BRANCH="${{ github.ref_name }}"
           sudo /var/www/posdic/repo/deployment/scripts/update.sh
         shell: bash
 
