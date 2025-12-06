@@ -38,8 +38,14 @@
         <p class="logo-subtitle">{{ "LOGIN.SUBTITLE" | translate }}</p>
       </div>
 
-      <form (ngSubmit)="onSubmit()" class="login-form">
-        <div *ngIf="error" class="error-message">
+      <form (ngSubmit)="onSubmit()" class="login-form" [class.has-error]="!!error">
+        <!-- Debug info (remove in production) -->
+        <!-- <div style="padding: 0.5rem; background: #f0f0f0; margin-bottom: 1rem; font-size: 0.75rem;">
+          Loading: {{ loading }}<br>
+          Error: {{ error || 'none' }}
+        </div> -->
+
+        <div *ngIf="error" class="error-message" [@.disabled]="false">
           <i class="fas fa-exclamation-circle"></i>
           {{ error }}
         </div>
@@ -58,6 +64,7 @@
               required
               [disabled]="loading"
               autocomplete="username"
+              (input)="onInputChange()"
             />
           </div>
         </div>
@@ -76,6 +83,7 @@
               required
               [disabled]="loading"
               autocomplete="current-password"
+              (input)="onInputChange()"
             />
           </div>
         </div>

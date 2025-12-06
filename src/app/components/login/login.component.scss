@@ -5,6 +5,12 @@
   align-items: stretch;
   min-height: 100vh;
   background: $bg-primary;
+
+  // Mobile: constrain to 100vh max
+  @media (max-width: 968px) {
+    max-height: 100vh;
+    overflow: hidden;
+  }
 }
 
 // Left Panel - Description & Image
@@ -237,22 +243,34 @@
 
 // Form styles
 .login-form {
+  &.has-error {
+    animation: formShake 0.3s ease;
+  }
+
+  @keyframes formShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
   .error-message {
-    background: rgba($danger, 0.1);
-    border: 1px solid rgba($danger, 0.3);
+    background: rgba($danger, 0.15);
+    border: 2px solid rgba($danger, 0.4);
     color: $danger-dark;
     padding: 0.875rem 1rem;
     border-radius: $radius-lg;
     margin-bottom: 1.5rem;
     font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
+    font-weight: $font-weight-semibold;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    animation: slideDown 0.3s ease;
+    animation: slideDownShake 0.5s ease;
+    box-shadow: 0 4px 12px rgba($danger, 0.15);
 
     i {
-      font-size: 1rem;
+      font-size: 1.1rem;
+      color: $danger;
     }
   }
 
@@ -264,6 +282,32 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDownShake {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    60% {
+      transform: translateX(-5px);
+    }
+    70% {
+      transform: translateX(5px);
+    }
+    80% {
+      transform: translateX(-3px);
+    }
+    90% {
+      transform: translateX(3px);
+    }
+    100% {
+      transform: translateX(0);
     }
   }
 
@@ -397,134 +441,93 @@
     flex-direction: column;
   }
 
+  // Hide left panel on mobile to fit 100vh
   .left-panel {
-    flex: none;
-    padding: 2rem;
-    min-height: auto;
-
-    .panel-content {
-      .welcome-title {
-        font-size: 2rem;
-      }
-
-      .welcome-description {
-        font-size: $font-size-base;
-        margin-bottom: 1.5rem;
-      }
-
-      .feature-list {
-        gap: 0.75rem;
-
-        .feature-item {
-          padding: 0.75rem 1rem;
-          min-width: 110px;
-
-          i {
-            width: 36px;
-            height: 36px;
-            font-size: 1rem;
-          }
-        }
-      }
-    }
-
-    .panel-image {
-      margin-top: 2rem;
-
-      img {
-        max-height: 250px;
-      }
-    }
+    display: none;
   }
 
   .right-panel {
     padding: 2rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
   }
 
   .login-card {
     padding: 2rem 1.5rem;
+    margin: auto 0;
   }
 }
 
 @media (max-width: 576px) {
+  // Left panel already hidden on mobile
   .left-panel {
-    padding: 1.5rem;
-
-    .panel-content {
-      .welcome-title {
-        font-size: 1.5rem;
-      }
-
-      .welcome-description {
-        font-size: $font-size-sm;
-        margin-bottom: 1rem;
-      }
-
-      .feature-list {
-        gap: 0.5rem;
-
-        .feature-item {
-          padding: 0.5rem 0.75rem;
-          min-width: auto;
-          flex: 1;
-
-          span {
-            font-size: $font-size-xs;
-          }
-
-          i {
-            width: 28px;
-            height: 28px;
-            font-size: 0.85rem;
-          }
-        }
-      }
-    }
-
-    .panel-image {
-      margin-top: 1.5rem;
-
-      img {
-        max-height: 180px;
-      }
-    }
+    display: none;
   }
 
   .right-panel {
-    padding: 1.5rem;
+    padding: 1rem;
+    min-height: 100vh;
+    max-height: 100vh;
   }
 
   .login-card {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.25rem;
     border-radius: $radius-2xl;
+    max-width: 100%;
   }
 
   .logo-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 
     .logo-icon {
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
 
       i {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
       }
     }
 
     .logo-title {
-      font-size: $font-size-3xl;
+      font-size: $font-size-2xl;
+    }
+
+    .logo-subtitle {
+      font-size: $font-size-sm;
     }
   }
 
   .login-form {
+    .error-message {
+      padding: 0.75rem 0.875rem;
+      font-size: $font-size-xs;
+      margin-bottom: 1rem;
+    }
+
     .form-group {
+      margin-bottom: 1.25rem;
+
       .input-wrapper input {
         font-size: 16px; // Prevent iOS zoom
+        padding: 0.875rem 0.875rem 0.875rem 2.75rem;
       }
     }
 
     .btn-submit {
       font-size: 16px;
+      padding: 0.875rem 1.25rem;
+      min-height: 48px;
     }
+  }
+
+  .footer-text {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    font-size: $font-size-xs;
   }
 }

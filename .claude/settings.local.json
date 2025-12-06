@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(openssl version:*)",
+      "Bash(openssl genrsa:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

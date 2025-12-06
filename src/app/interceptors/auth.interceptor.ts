@@ -19,7 +19,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Handle the request and catch any errors
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      // Don't logout on 401 if this is a login request (let component handle it)
+      const isLoginRequest = req.url.includes('/auth/login');
+
+      if (error.status === 401 && !isLoginRequest) {
         // Unauthorized - logout and redirect to login
         authService.logout();
       }
