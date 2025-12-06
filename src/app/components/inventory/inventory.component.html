@@ -78,21 +78,22 @@
         <tbody>
           <tr *ngFor="let product of products()">
             <td>
-              @if (product.local_image) {
-              <img
-                [src]="imgBaseUrl + '/' + product.local_image"
-                [alt]="product.name"
-                class="product-thumb"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
-              />
-              } @else {
-              <div
-                class="product-thumb-placeholder"
-                [style.display]="product.image_url ? 'none' : 'flex'"
-              >
-                <i class="fas fa-image"></i>
+              <div class="product-image-container">
+                @if (product.local_image) {
+                <img
+                  [src]="imgBaseUrl + '/' + product.local_image"
+                  [alt]="product.name"
+                  class="product-thumb"
+                  (error)="onImageError($event)"
+                />
+                }
+                <div
+                  class="product-thumb-placeholder"
+                  [style.display]="product.local_image ? 'none' : 'flex'"
+                >
+                  <i class="fas fa-image"></i>
+                </div>
               </div>
-              }
             </td>
             <td>{{ product.name }}</td>
             <td>{{ product.ean || product.ean13 || product.upc }}</td>
