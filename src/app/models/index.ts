@@ -279,6 +279,7 @@ export interface Register {
   notes?: string;
   autoClosedAt?: Date;
   isAutoClose?: boolean;
+  printReceiptsEnabled?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

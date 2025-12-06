@@ -67,6 +67,10 @@ const registerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    printReceiptsEnabled: {
+      type: Boolean,
+      default: true,
+    },
     withdrawals: [
       {
         amount: {

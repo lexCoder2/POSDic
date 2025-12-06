@@ -109,6 +109,21 @@ export class RegisterService {
       );
   }
 
+  updatePrintSetting(
+    registerId: string,
+    printReceiptsEnabled: boolean
+  ): Observable<Register> {
+    return this.http
+      .patch<Register>(`${this.apiUrl}/${registerId}/print-setting`, {
+        printReceiptsEnabled,
+      })
+      .pipe(
+        tap((register) => {
+          this.currentRegisterSubject.next(register);
+        })
+      );
+  }
+
   getActiveRegister(): Observable<Register | null> {
     return this.http.get<Register | null>(`${this.apiUrl}/active`).pipe(
       tap((register) => {

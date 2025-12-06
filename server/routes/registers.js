@@ -199,7 +199,13 @@ router.get("/active/expected-cash", protect, async (req, res) => {
 // Open a new register
 router.post("/open", protect, async (req, res) => {
   try {
-    const { openingCash, registerNumber, deviceId, deviceName } = req.body;
+    const {
+      openingCash,
+      registerNumber,
+      deviceId,
+      deviceName,
+      printReceiptsEnabled,
+    } = req.body;
 
     // Check if user already has an open register
     const existingRegister = await Register.findOne({
@@ -233,6 +239,7 @@ router.post("/open", protect, async (req, res) => {
       openedBy: req.user.id,
       openingCash: openingCash || 0,
       status: "open",
+      printReceiptsEnabled: printReceiptsEnabled !== false,
     });
 
     await register.save();
@@ -242,6 +249,30 @@ router.post("/open", protect, async (req, res) => {
   } catch (error) {
     console.error("Error opening register:", error);
     res.status(500).json({ message: "Error opening register" });
+  }
+});
+
+// Update print receipts setting for active register
+router.patch("/:id/print-setting", protect, async (req, res) => {
+  try {
+    const { printReceiptsEnabled } = req.body;
+    const register = await Register.findById(req.params.id);
+
+    if (!register) {
+      return res.status(404).json({ message: "Register not found" });
+    }
+
+    if (register.status !== "open") {
+      return res.status(400).json({ message: "Register is not open" });
+    }
+
+    register.printReceiptsEnabled = printReceiptsEnabled;
+    await register.save();
+
+    res.json(register);
+  } catch (error) {
+    console.error("Error updating print setting:", error);
+    res.status(500).json({ message: "Error updating print setting" });
   }
 });
 

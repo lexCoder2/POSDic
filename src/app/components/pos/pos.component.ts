@@ -249,6 +249,10 @@ export class PosComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((register) => {
         this.currentRegister = register;
+        // Sync print receipts toggle with register setting
+        if (register) {
+          this.printReceiptsEnabled = register.printReceiptsEnabled !== false;
+        }
         this.cdr.markForCheck();
       });
 
@@ -1227,5 +1231,19 @@ export class PosComponent implements OnInit, OnDestroy {
       "success"
     );
     // Optionally reload cart or other data if needed
+  }
+
+  onPrintToggleChange(): void {
+    if (this.currentRegister?._id) {
+      this.registerService
+        .updatePrintSetting(this.currentRegister._id, this.printReceiptsEnabled)
+        .subscribe({
+          error: (err) => {
+            console.error("Error updating print setting:", err);
+            // Revert the toggle on error
+            this.printReceiptsEnabled = !this.printReceiptsEnabled;
+          },
+        });
+    }
   }
 }

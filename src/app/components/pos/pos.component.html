@@ -51,7 +51,11 @@
         <i class="fas fa-receipt"></i>
         <span class="toggle-label">{{ "POS.ACTIONS.PRINT" | translate }}</span>
         <label class="toggle-switch">
-          <input type="checkbox" [(ngModel)]="printReceiptsEnabled" />
+          <input
+            type="checkbox"
+            [(ngModel)]="printReceiptsEnabled"
+            (ngModelChange)="onPrintToggleChange()"
+          />
           <span class="toggle-slider"></span>
         </label>
       </div>
