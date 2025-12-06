@@ -34,21 +34,21 @@
       border-radius: $radius-full;
 
       &::placeholder {
-        color: $text-muted;
+        color: var(--text-muted);
       }
     }
 
     .clear-icon {
       position: absolute;
       right: $spacing-lg;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: $font-size-lg;
       cursor: pointer;
       transition: $transition-fast;
       padding: $spacing-sm;
 
       &:hover {
-        color: $text-primary;
+        color: var(--text-primary);
       }
     }
   }

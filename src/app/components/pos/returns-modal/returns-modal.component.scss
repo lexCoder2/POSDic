@@ -69,7 +69,7 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: $bg-tertiary;
+  background: var(--bg-tertiary);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
@@ -77,10 +77,10 @@
     flex: 1;
     background: $white;
     color: $gray-500;
-    border: 2px solid $border-color;
+    border: 2px solid var(--border-color);
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
     }
   }
 
@@ -111,8 +111,8 @@
     align-items: center;
     gap: $spacing-sm;
     padding: $spacing-md $spacing-lg;
-    background: $bg-tertiary;
-    border: 2px solid $border-color;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
     border-radius: $radius-xl;
     transition: $transition-base;
 
@@ -172,7 +172,7 @@
   .sale-item {
     padding: $spacing-lg;
     background: $white;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
     border-radius: $radius-lg;
     margin-bottom: $spacing-sm;
     cursor: pointer;
@@ -263,7 +263,7 @@
       padding: $spacing-sm $spacing-md;
       background: transparent;
       color: $gray-600;
-      border: 1px solid $border-color;
+      border: 1px solid var(--border-color);
       box-shadow: none;
       font-size: $font-size-sm;
 
@@ -272,7 +272,7 @@
       }
 
       &:hover {
-        background: $bg-tertiary;
+        background: var(--bg-tertiary);
         color: $gray-700;
       }
     }
@@ -280,7 +280,7 @@
 
   .sale-header {
     padding: $spacing-lg;
-    background: $bg-tertiary;
+    background: var(--bg-tertiary);
     border-radius: $radius-lg;
     margin-bottom: $spacing-xl;
 
@@ -349,7 +349,7 @@
     @include button-base;
     flex-direction: column;
     padding: $spacing-lg;
-    border: 2px solid $border-color;
+    border: 2px solid var(--border-color);
     background: $white;
     box-shadow: none;
 
@@ -366,7 +366,7 @@
     }
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
     }
 
     &.active {
@@ -411,14 +411,14 @@
     gap: $spacing-md;
     padding: $spacing-md;
     background: $white;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
     border-radius: $radius-md;
     margin-bottom: $spacing-xs;
     cursor: pointer;
     transition: $transition-base;
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
     }
 
     &.selected {
@@ -459,7 +459,7 @@
       display: flex;
       align-items: center;
       gap: $spacing-xs;
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
       border-radius: $radius-md;
       padding: $spacing-xs;
 
@@ -516,7 +516,7 @@
   textarea {
     width: 100%;
     padding: $spacing-md;
-    border: 2px solid $border-color;
+    border: 2px solid var(--border-color);
     border-radius: $radius-lg;
     font-size: $font-size-base;
     color: $gray-700;
@@ -538,7 +538,7 @@
 
 // Refund Summary
 .refund-summary {
-  background: $bg-tertiary;
+  background: var(--bg-tertiary);
   border-radius: $radius-lg;
   padding: $spacing-lg;
 
@@ -551,7 +551,7 @@
     color: $gray-600;
 
     &:not(:last-child) {
-      border-bottom: 1px solid $border-color;
+      border-bottom: 1px solid var(--border-color);
     }
 
     &.total {

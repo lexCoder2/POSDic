@@ -4,7 +4,7 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: $bg-primary;
+  background: var(--bg-primary);
 }
 .sidebar-header {
   padding: $spacing-sm;
@@ -23,7 +23,7 @@
 .user-swap {
   background: transparent;
   border: none;
-  color: $text-primary;
+  color: var(--text-primary);
   font-size: 1.1rem;
   padding: $spacing-sm $spacing-md;
   border-radius: $radius-md;
@@ -34,7 +34,7 @@
   margin-right: $spacing-sm;
 
   &:hover {
-    background: $bg-tertiary;
+    background: var(--bg-tertiary);
     color: $primary;
   }
 
@@ -45,7 +45,7 @@
 // ===== SIDEBAR =====
 .sidebar {
   width: $sidebar-width;
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   box-shadow: none;
@@ -68,7 +68,7 @@
     border: none;
     max-height: calc(#{$sidebar-width} - $spacing-sm * 2);
     background: transparent;
-    color: $text-secondary;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -85,15 +85,15 @@
     }
 
     &:hover {
-      background: $bg-primary;
+      background: var(--bg-primary);
       color: $primary;
     }
 
     &.active {
-      background: $bg-secondary;
+      background: var(--bg-secondary);
       color: $primary;
       font-weight: 600;
-      box-shadow: $shadow-neumorphic-sm;
+      box-shadow: var(--shadow-neumorphic-sm);
     }
   }
 }
@@ -174,7 +174,7 @@
 
 // ===== TOP HEADER =====
 .top-header {
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   border-bottom: none;
   box-shadow: none;
   z-index: $z-fixed;
@@ -191,7 +191,7 @@
     display: none;
     background: transparent;
     border: none;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 1.25rem;
     padding: $spacing-xs $spacing-sm;
     border-radius: $radius-md;
@@ -209,7 +209,7 @@
       left: $spacing-lg;
       top: 50%;
       transform: translateY(-50%);
-      color: $text-muted;
+      color: var(--text-muted);
       font-size: 1.1rem;
       z-index: 1;
     }
@@ -222,8 +222,8 @@
       border-radius: $radius-2xl;
       font-size: 0.95rem;
       transition: all 0.3s ease;
-      background: $bg-secondary;
-      box-shadow: $shadow-neumorphic-inset;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-neumorphic-inset);
 
       &:focus {
         outline: none;
@@ -231,7 +231,7 @@
       }
 
       &::placeholder {
-        color: $text-muted;
+        color: var(--text-muted);
       }
     }
   }
@@ -247,21 +247,21 @@
     transition: background 0.2s ease;
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
     }
 
     .user-name {
-      color: $text-primary;
+      color: var(--text-primary);
       font-weight: 600;
       font-size: 0.95rem;
     }
 
     .user-role {
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.85rem;
       font-weight: 500;
       padding: $spacing-xs $spacing-md;
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
       border-radius: $radius-full;
       text-transform: capitalize;
     }
@@ -277,7 +277,7 @@
       top: calc(100% + 0.5rem);
       right: 0;
       background: $white;
-      border: 1px solid $border-color;
+      border: 1px solid var(--border-color);
       border-radius: $radius-lg;
       box-shadow: $shadow-lg;
       min-width: 220px;
@@ -287,25 +287,25 @@
 
       .dropdown-header {
         padding: $spacing-lg;
-        border-bottom: 1px solid $border-color;
-        background: $bg-tertiary;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
 
         .dropdown-user-name {
           font-weight: 600;
-          color: $text-primary;
+          color: var(--text-primary);
           font-size: 0.95rem;
           margin-bottom: $spacing-xs;
         }
 
         .dropdown-user-email {
           font-size: 0.8rem;
-          color: $text-secondary;
+          color: var(--text-secondary);
         }
       }
 
       .dropdown-divider {
         height: 1px;
-        background: $border-color;
+        background: var(--border-color);
       }
 
       .dropdown-language {
@@ -313,7 +313,7 @@
 
         .language-label {
           font-size: 0.8rem;
-          color: $text-secondary;
+          color: var(--text-secondary);
           margin-bottom: $spacing-xs;
         }
 
@@ -325,7 +325,7 @@
             padding: $spacing-xs $spacing-md;
             border-radius: $radius-md;
             background: transparent;
-            color: $text-primary;
+            color: var(--text-primary);
             font-size: 0.9rem;
             cursor: pointer;
             display: inline-flex;
@@ -334,7 +334,7 @@
             border: 1px solid transparent;
 
             &:hover {
-              background: $bg-tertiary;
+              background: var(--bg-tertiary);
               color: $primary;
             }
 
@@ -353,7 +353,7 @@
 
         .language-label {
           font-size: 0.8rem;
-          color: $text-secondary;
+          color: var(--text-secondary);
           margin-bottom: $spacing-xs;
         }
 
@@ -362,7 +362,7 @@
           padding: $spacing-sm $spacing-md;
           border-radius: $radius-md;
           background: transparent;
-          color: $text-primary;
+          color: var(--text-primary);
           font-size: 0.9rem;
           cursor: pointer;
           display: flex;
@@ -381,7 +381,7 @@
           }
 
           &:hover {
-            background: $bg-tertiary;
+            background: var(--bg-tertiary);
             color: $primary;
           }
         }
@@ -404,7 +404,7 @@
     padding: $spacing-md $spacing-lg;
     border: none;
     background: transparent;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 0.9rem;
     cursor: pointer;
     display: flex;
@@ -416,11 +416,11 @@
     i {
       font-size: 1rem;
       width: 20px;
-      color: $text-secondary;
+      color: var(--text-secondary);
     }
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
       color: $primary;
 
       i {
@@ -452,7 +452,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 0;
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   height: calc(100vh - 60px);
 }
 
@@ -495,7 +495,7 @@
       justify-content: center;
       margin-right: $spacing-sm;
       font-size: 1.1rem;
-      color: $text-primary;
+      color: var(--text-primary);
       background: transparent;
       border: none;
       padding: $spacing-xs $spacing-sm;
@@ -546,7 +546,7 @@
 
   h4 {
     margin: 0 0 $spacing-md 0;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 1.1rem;
   }
 
@@ -557,7 +557,7 @@
 
     label {
       font-weight: 500;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.9rem;
     }
 
@@ -582,30 +582,30 @@
   }
 
   .modal-description {
-    color: $text-secondary;
+    color: var(--text-secondary);
     font-size: $font-size-base;
     line-height: $line-height-normal;
     margin: 0 0 $spacing-lg 0;
     padding: $spacing-md;
-    background: $bg-secondary;
+    background: var(--bg-secondary);
     border-radius: $radius-sm;
     border-left: 3px solid $primary;
   }
 
   .register-info,
   .withdraw-info {
-    background: $bg-primary;
+    background: var(--bg-primary);
     padding: $spacing-md;
     border-radius: $radius-md;
     margin-bottom: $spacing-sm;
 
     p {
       margin: $spacing-xs 0;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.95rem;
 
       strong {
-        color: $text-primary;
+        color: var(--text-primary);
         font-weight: 600;
       }
     }
@@ -736,7 +736,7 @@
 
     p {
       margin: 0;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.9rem;
       line-height: 1.5;
     }
@@ -789,7 +789,7 @@
   justify-content: flex-end;
   gap: $spacing-sm;
   padding: $spacing-lg;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid var(--border-color);
   background: $gray-50;
   margin: 0 (-$spacing-lg) (-$spacing-lg);
   border-radius: 0 0 $radius-lg $radius-lg;
@@ -818,7 +818,7 @@
       background: $white;
       border-radius: $radius-md;
       padding: $spacing-md;
-      box-shadow: $shadow-neumorphic-sm;
+      box-shadow: var(--shadow-neumorphic-sm);
 
       .info-row {
         display: flex;
@@ -827,7 +827,7 @@
 
         .label {
           font-size: $font-size-base;
-          color: $text-secondary;
+          color: var(--text-secondary);
           font-weight: $font-weight-medium;
           display: flex;
           align-items: center;
@@ -858,7 +858,7 @@
       gap: $spacing-xs;
       font-size: $font-size-sm;
       font-weight: $font-weight-semibold;
-      color: $text-primary;
+      color: var(--text-primary);
       margin-bottom: $spacing-xs;
 
       &::after {
@@ -871,14 +871,14 @@
     .form-control {
       width: 100%;
       padding: $spacing-md;
-      border: 2px solid $border-color;
+      border: 2px solid var(--border-color);
       border-radius: $radius-md;
       font-size: $font-size-base;
       font-family: $font-family-base;
-      color: $text-primary;
+      color: var(--text-primary);
       background: $white;
       transition: all $transition-base;
-      box-shadow: $shadow-neumorphic-inset;
+      box-shadow: var(--shadow-neumorphic-inset);
 
       &:hover {
         border-color: $border-dark;
@@ -887,11 +887,11 @@
       &:focus {
         outline: none;
         border-color: $warning;
-        box-shadow: 0 0 0 3px rgba($warning, 0.15), $shadow-neumorphic-inset;
+        box-shadow: 0 0 0 3px rgba($warning, 0.15), var(--shadow-neumorphic-inset);
       }
 
       &::placeholder {
-        color: $text-light;
+        color: var(--text-light);
         font-style: italic;
       }
     }

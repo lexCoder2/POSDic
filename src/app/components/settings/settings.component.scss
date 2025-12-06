@@ -32,7 +32,7 @@
 
       .label-text {
         font-size: $font-size-base;
-        color: $text-primary;
+        color: var(--text-primary);
       }
     }
   }
@@ -89,11 +89,11 @@
       flex: 1;
       .title {
         font-weight: 600;
-        color: $text-primary;
+        color: var(--text-primary);
       }
       .desc {
         font-size: 0.85rem;
-        color: $text-secondary;
+        color: var(--text-secondary);
       }
     }
 
@@ -134,7 +134,7 @@
     .label {
       width: 160px;
       font-weight: $font-weight-semibold;
-      color: $text-primary;
+      color: var(--text-primary);
     }
 
     input,

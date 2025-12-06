@@ -20,7 +20,7 @@
 
     &:checked + .toggle-slider {
       background: $gradient-primary;
-      box-shadow: $shadow-neumorphic-inset, inset 0 0 0 2px $primary;
+      box-shadow: var(--shadow-neumorphic-inset), inset 0 0 0 2px $primary;
     }
 
     &:disabled + .toggle-slider {
@@ -33,10 +33,10 @@
     display: inline-block;
     position: relative;
     cursor: pointer;
-    background: $bg-secondary;
+    background: var(--bg-secondary);
     border-radius: 20px;
     transition: all 0.3s ease;
-    box-shadow: $shadow-neumorphic-inset;
+    box-shadow: var(--shadow-neumorphic-inset);
 
     &::before {
       content: "";
@@ -48,7 +48,7 @@
       transition: transform 0.3s ease;
       top: 0;
       left: 0;
-      box-shadow: $shadow-neumorphic-sm;
+      box-shadow: var(--shadow-neumorphic-sm);
     }
   }
 

@@ -84,7 +84,7 @@
 // Product card
 .product-card {
   background: $white;
-  border: 2px solid $border-color;
+  border: 2px solid var(--border-color);
   border-radius: $radius-md;
   padding: $spacing-sm;
   cursor: pointer;
@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: $spacing-xs;
-  background: $bg-tertiary;
+  background: var(--bg-tertiary);
   border-radius: $radius-sm;
   overflow: hidden;
 

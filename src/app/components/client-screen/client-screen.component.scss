@@ -4,8 +4,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: $bg-secondary;
-  color: $text-primary;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   padding: $spacing-lg $spacing-2xl;
 
   .client-header {
@@ -17,13 +17,13 @@
       .store-name {
         font-size: $font-size-4xl;
         font-weight: $font-weight-bold;
-        color: $text-primary;
+        color: var(--text-primary);
       }
 
       .meta {
         margin-top: $spacing-xs;
         font-size: $font-size-base;
-        color: rgba($text-secondary, 1);
+        color: rgba(var(--text-secondary), 1);
 
         .sale-id {
           font-weight: $font-weight-bold;
@@ -40,7 +40,7 @@
     .clock {
       font-size: 4rem;
       font-weight: 600;
-      color: $text-secondary;
+      color: var(--text-secondary);
     }
   }
 
@@ -54,7 +54,7 @@
       padding: $spacing-xs $spacing-md;
       border-radius: $radius-full;
       background: transparent;
-      color: $text-secondary;
+      color: var(--text-secondary);
       border: 1px solid transparent;
       cursor: pointer;
 
@@ -86,7 +86,7 @@
       .empty {
         text-align: center;
         font-size: $font-size-lg;
-        color: $text-secondary;
+        color: var(--text-secondary);
         margin-top: $spacing-lg;
       }
 
@@ -96,14 +96,14 @@
         grid-template-columns: 1fr 80px 110px 120px;
         gap: $spacing-md;
         padding: $spacing-xs $spacing-md;
-        color: $text-secondary;
+        color: var(--text-secondary);
         font-size: $font-size-sm;
         font-weight: $font-weight-semibold;
         text-transform: uppercase;
         letter-spacing: 0.6px;
         align-items: center;
-        background: rgba($bg-secondary, 0.02);
-        border-bottom: 1px solid rgba($border-color, 0.06);
+        background: rgba(var(--bg-secondary), 0.02);
+        border-bottom: 1px solid rgba(var(--border-color), 0.06);
         position: sticky;
         top: 0;
         z-index: 2;
@@ -135,10 +135,10 @@
         gap: $spacing-md;
         align-items: center;
         padding: $spacing-md;
-        background: $bg-tertiary;
+        background: var(--bg-tertiary);
         border-radius: $radius-md;
         box-shadow: $shadow-sm;
-        border: 1px solid $border-color;
+        border: 1px solid var(--border-color);
         transition: $transition-fast;
 
         @include hover-lift;
@@ -154,7 +154,7 @@
             min-width: 64px;
             border-radius: $radius-md;
             overflow: hidden;
-            background: $bg-primary;
+            background: var(--bg-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -174,13 +174,13 @@
             .item-name {
               font-size: $font-size-3xl;
               font-weight: $font-weight-bold;
-              color: $text-primary;
+              color: var(--text-primary);
             }
 
             .item-sub {
               font-size: $font-size-base;
               opacity: 0.85;
-              color: $text-secondary;
+              color: var(--text-secondary);
             }
           }
         }
@@ -209,7 +209,7 @@
         .col.subtotal {
           justify-self: end;
           font-weight: $font-weight-bold;
-          color: $text-primary;
+          color: var(--text-primary);
         }
 
         @media (max-width: 767px) {
@@ -234,7 +234,7 @@
         gap: $spacing-sm;
         border-radius: $radius-md;
         box-shadow: $shadow-md;
-        border: 1px solid rgba($border-color, 0.9);
+        border: 1px solid rgba(var(--border-color), 0.9);
 
         /* keep the summary visible while scrolling the items list */
         position: sticky;
@@ -248,19 +248,19 @@
 
           &.total {
             margin-top: $spacing-md;
-            border-top: 1px dashed rgba($text-secondary, 0.06);
+            border-top: 1px dashed rgba(var(--text-secondary), 0.06);
             padding-top: $spacing-md;
           }
 
           .label {
-            color: $text-secondary;
+            color: var(--text-secondary);
             font-size: $font-size-sm;
           }
 
           .value {
             font-weight: $font-weight-bold;
             font-size: $font-size-base;
-            color: $text-primary;
+            color: var(--text-primary);
 
             &.large {
               font-size: $font-size-2xl;
@@ -289,7 +289,7 @@
       .fast-cashier-panel {
         padding: $spacing-lg;
         border-radius: $radius-md;
-        color: $text-primary;
+        color: var(--text-primary);
 
         h3 {
           margin: 0 0 $spacing-sm 0;
@@ -297,7 +297,7 @@
         }
 
         .muted {
-          color: $text-secondary;
+          color: var(--text-secondary);
         }
 
         .fast-items {
@@ -311,7 +311,7 @@
 
           .empty {
             text-align: center;
-            color: $text-secondary;
+            color: var(--text-secondary);
             padding: $spacing-md 0;
           }
 
@@ -321,14 +321,14 @@
             grid-template-columns: 1fr 80px 110px 120px;
             gap: $spacing-md;
             padding: $spacing-xs $spacing-md;
-            color: $text-secondary;
+            color: var(--text-secondary);
             font-size: $font-size-sm;
             font-weight: $font-weight-semibold;
             text-transform: uppercase;
             letter-spacing: 0.6px;
             align-items: center;
-            background: rgba($bg-secondary, 0.02);
-            border-bottom: 1px solid rgba($border-color, 0.06);
+            background: rgba(var(--bg-secondary), 0.02);
+            border-bottom: 1px solid rgba(var(--border-color), 0.06);
             position: sticky;
             top: 0;
             z-index: 2;
@@ -360,10 +360,10 @@
             gap: $spacing-md;
             align-items: center;
             padding: $spacing-md;
-            background: $bg-tertiary;
+            background: var(--bg-tertiary);
             border-radius: $radius-md;
             box-shadow: $shadow-sm;
-            border: 1px solid $border-color;
+            border: 1px solid var(--border-color);
             transition: $transition-fast;
 
             @include hover-lift;
@@ -379,7 +379,7 @@
                 min-width: 56px;
                 border-radius: $radius-md;
                 overflow: hidden;
-                background: $bg-primary;
+                background: var(--bg-primary);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -399,12 +399,12 @@
                 .item-name {
                   font-size: $font-size-lg;
                   font-weight: $font-weight-bold;
-                  color: $text-primary;
+                  color: var(--text-primary);
                 }
 
                 .item-sub {
                   font-size: $font-size-base;
-                  color: $text-secondary;
+                  color: var(--text-secondary);
                 }
               }
             }
@@ -433,7 +433,7 @@
             .col.subtotal {
               justify-self: end;
               font-weight: $font-weight-bold;
-              color: $text-primary;
+              color: var(--text-primary);
             }
 
             @media (max-width: 767px) {
@@ -470,7 +470,7 @@
             gap: $spacing-sm;
             border-radius: $radius-md;
             box-shadow: $shadow-md;
-            border: 1px solid rgba($border-color, 0.9);
+            border: 1px solid rgba(var(--border-color), 0.9);
 
             position: sticky;
             top: $spacing-lg;
@@ -483,19 +483,19 @@
 
               &.total {
                 margin-top: $spacing-md;
-                border-top: 1px dashed rgba($text-secondary, 0.06);
+                border-top: 1px dashed rgba(var(--text-secondary), 0.06);
                 padding-top: $spacing-md;
               }
 
               .label {
-                color: $text-secondary;
+                color: var(--text-secondary);
                 font-size: $font-size-sm;
               }
 
               .value {
                 font-weight: $font-weight-bold;
                 font-size: $font-size-base;
-                color: $text-primary;
+                color: var(--text-primary);
 
                 &.large {
                   font-size: $font-size-2xl;

@@ -30,7 +30,7 @@
     gap: $spacing-sm;
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: var(--text-primary);
 
     i {
       color: $primary;
@@ -108,7 +108,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: $shadow-neumorphic-inset;
+    box-shadow: var(--shadow-neumorphic-inset);
 
     img {
       width: 100%;
@@ -118,7 +118,7 @@
 
     .no-image {
       font-size: 4rem;
-      color: $text-muted;
+      color: var(--text-muted);
       opacity: 0.4;
     }
   }
@@ -126,14 +126,14 @@
   .product-name {
     font-size: $font-size-2xl;
     font-weight: $font-weight-semibold;
-    color: $text-primary;
+    color: var(--text-primary);
     text-align: center;
     line-height: $line-height-tight;
   }
 
   .product-category {
     font-size: $font-size-base;
-    color: $text-secondary;
+    color: var(--text-secondary);
     text-align: center;
     padding: $spacing-xs $spacing-md;
     background: rgba($primary, 0.08);
@@ -176,7 +176,7 @@
       gap: $spacing-sm;
       font-size: $font-size-lg;
       font-weight: $font-weight-semibold;
-      color: $text-primary;
+      color: var(--text-primary);
 
       i {
         color: $primary;
@@ -223,7 +223,7 @@
 
     .old-value {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: var(--text-secondary);
       padding-left: $spacing-sm;
       font-weight: $font-weight-medium;
     }
@@ -268,13 +268,13 @@
 
   i {
     font-size: 5rem;
-    color: $text-muted;
+    color: var(--text-muted);
     opacity: 0.4;
   }
 
   p {
     font-size: $font-size-xl;
-    color: $text-secondary;
+    color: var(--text-secondary);
     font-weight: $font-weight-medium;
     text-align: center;
   }
@@ -288,7 +288,7 @@
     gap: $spacing-md;
     font-size: $font-size-2xl;
     font-weight: $font-weight-semibold;
-    color: $text-primary;
+    color: var(--text-primary);
     margin-bottom: $spacing-lg;
 
     i {
@@ -310,13 +310,13 @@
       );
       font-weight: $font-weight-semibold;
       font-size: $font-size-base;
-      color: $text-primary;
+      color: var(--text-primary);
     }
 
     .ean-code {
       font-family: monospace;
       font-size: $font-size-sm;
-      color: $text-secondary;
+      color: var(--text-secondary);
     }
 
     .change-cell {
@@ -326,18 +326,18 @@
       flex-wrap: wrap;
 
       .old-val {
-        color: $text-secondary;
+        color: var(--text-secondary);
         text-decoration: line-through;
         font-size: $font-size-sm;
       }
 
       i {
-        color: $text-secondary;
+        color: var(--text-secondary);
         font-size: $font-size-xs;
       }
 
       .new-val {
-        color: $text-primary;
+        color: var(--text-primary);
         font-weight: 600;
       }
 
@@ -369,7 +369,7 @@
   justify-content: flex-end;
   gap: $spacing-lg;
   padding-top: $spacing-xl;
-  border-top: 2px solid $border-color;
+  border-top: 2px solid var(--border-color);
 
   .btn-secondary {
     @include button-secondary;

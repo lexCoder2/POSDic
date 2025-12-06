@@ -145,6 +145,16 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroy$.complete();
   }
 
+  // Handle image load errors
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = "none";
+    const placeholder = img.nextElementSibling as HTMLElement;
+    if (placeholder) {
+      placeholder.style.display = "flex";
+    }
+  }
+
   // Check if user is admin
   isAdmin(): boolean {
     return this.currentUser?.role === "admin";

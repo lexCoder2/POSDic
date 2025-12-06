@@ -4,7 +4,7 @@
   display: flex;
   align-items: stretch;
   min-height: 100vh;
-  background: $bg-primary;
+  background: var(--bg-primary);
 
   // Mobile: constrain to 100vh max
   @media (max-width: 968px) {
@@ -181,16 +181,16 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: $bg-primary;
+  background: var(--bg-primary, var(--bg-primary));
 }
 
 .login-card {
-  background: $bg-secondary;
+  background: var(--bg-secondary, var(--bg-secondary));
   border-radius: $radius-3xl;
   padding: 3rem 2.5rem;
   width: 100%;
   max-width: 420px;
-  box-shadow: $shadow-neumorphic-lg;
+  box-shadow: var(--shadow-neumorphic-lg, var(--shadow-neumorphic-lg));
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -230,13 +230,13 @@
   .logo-title {
     font-size: $font-size-4xl;
     font-weight: $font-weight-bold;
-    color: $text-primary;
+    color: var(--text-primary, var(--text-primary));
     margin: 0 0 0.5rem 0;
   }
 
   .logo-subtitle {
     font-size: $font-size-base;
-    color: $text-muted;
+    color: var(--text-muted, var(--text-muted));
     margin: 0;
   }
 }
@@ -248,9 +248,16 @@
   }
 
   @keyframes formShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
   }
 
   .error-message {
@@ -318,7 +325,7 @@
       display: block;
       font-size: $font-size-sm;
       font-weight: $font-weight-semibold;
-      color: $text-secondary;
+      color: var(--text-secondary, var(--text-secondary));
       margin-bottom: 0.5rem;
     }
 
@@ -330,7 +337,7 @@
       i {
         position: absolute;
         left: 1rem;
-        color: $text-muted;
+        color: var(--text-muted, var(--text-muted));
         font-size: 1rem;
         transition: color 0.3s ease;
       }
@@ -342,13 +349,14 @@
         border-radius: $radius-lg;
         font-size: $font-size-base;
         transition: all 0.3s ease;
-        background: $bg-primary;
-        color: $text-primary;
-        box-shadow: $shadow-neumorphic-inset;
+        background: var(--bg-primary, var(--bg-primary));
+        color: var(--text-primary, var(--text-primary));
+        box-shadow: var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset));
 
         &:focus {
           outline: none;
-          box-shadow: $shadow-neumorphic-inset, 0 0 0 2px rgba($primary, 0.3);
+          box-shadow: var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset)),
+            0 0 0 2px rgba($primary, 0.3);
 
           & + i,
           & ~ i {
@@ -366,7 +374,7 @@
         }
 
         &::placeholder {
-          color: $text-light;
+          color: var(--text-light, var(--text-light));
         }
       }
 
@@ -422,8 +430,8 @@
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid $border-color;
-  color: $text-muted;
+  border-top: 1px solid var(--border-color, var(--border-color));
+  color: var(--text-muted, var(--text-muted));
   font-size: $font-size-sm;
   display: flex;
   align-items: center;

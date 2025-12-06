@@ -2,7 +2,7 @@
 
 .statistics-container {
   padding: $spacing-sm;
-  background-color: $bg-secondary;
+  background-color: var(--bg-secondary);
   min-height: calc(100vh - 60px);
   overflow-y: auto;
 
@@ -17,7 +17,7 @@
     .statistics-title {
       font-size: 2rem;
       font-weight: 600;
-      color: $text-primary;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -47,8 +47,8 @@
         transition: all 0.2s;
 
         &:hover {
-          background-color: $bg-secondary;
-          color: $text-primary;
+          background-color: var(--bg-secondary);
+          color: var(--text-primary);
         }
 
         &.active {
@@ -69,7 +69,7 @@
     .spinner {
       width: 50px;
       height: 50px;
-      border: 4px solid $border-color;
+      border: 4px solid var(--border-color);
       border-top-color: $primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -207,7 +207,7 @@
 
         .chart-header {
           padding: 1.5rem;
-          border-bottom: 1px solid $border-color;
+          border-bottom: 1px solid var(--border-color);
           background-color: #fafbfc;
 
           h2 {
@@ -257,7 +257,7 @@
                 .bar-value {
                   font-size: 0.75rem;
                   font-weight: 600;
-                  color: $text-primary;
+                  color: var(--text-primary);
                   min-height: 1rem;
                 }
 
@@ -311,7 +311,7 @@
                 width: 150px;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: $text-primary;
+                color: var(--text-primary);
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -320,7 +320,7 @@
               .h-bar-container {
                 flex: 1;
                 height: 30px;
-                background-color: $bg-secondary;
+                background-color: var(--bg-secondary);
                 border-radius: 4px;
                 overflow: hidden;
 
@@ -366,7 +366,7 @@
 
                 .payment-name {
                   font-weight: 600;
-                  color: $text-primary;
+                  color: var(--text-primary);
                   text-transform: capitalize;
                   font-size: 0.875rem;
                 }
@@ -380,7 +380,7 @@
               .payment-bar-container {
                 flex: 1;
                 height: 24px;
-                background-color: $bg-secondary;
+                background-color: var(--bg-secondary);
                 border-radius: 12px;
                 overflow: hidden;
 

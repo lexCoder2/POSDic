@@ -3,10 +3,10 @@
 /* Apply neumorphic table styling to all tables globally */
 table {
   width: 100%;
-  background: $bg-tertiary;
+  background: var(--bg-tertiary);
   border-radius: $radius-md;
-  box-shadow: $shadow-neumorphic-sm;
-  border: 1px solid $border-color;
+  box-shadow: var(--shadow-neumorphic-sm);
+  border: 1px solid var(--border-color);
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
@@ -18,12 +18,12 @@ table {
 thead th {
   position: sticky;
   top: 0;
-  background: $bg-tertiary;
-  color: $text-primary;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
   font-weight: $font-weight-medium;
   text-align: left;
   padding: $spacing-sm $spacing-md;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid var(--border-color);
   z-index: $z-sticky;
 }
 
@@ -31,7 +31,7 @@ thead th {
 tbody tr {
   transition: background $transition-fast, transform $transition-fast,
     box-shadow $transition-fast;
-  border-bottom: 1px solid rgba($border-color, 0.6);
+  border-bottom: 1px solid rgba(var(--border-color), 0.6);
 
   &:hover {
     background: rgba(0, 0, 0, 0.02);
@@ -44,7 +44,7 @@ tbody tr {
 td {
   padding: $spacing-md $spacing-lg;
   vertical-align: middle;
-  color: $text-primary;
+  color: var(--text-primary);
   font-size: $font-size-base;
   border: none;
 }
@@ -69,7 +69,7 @@ table.compact {
 .table-empty {
   padding: $spacing-lg;
   text-align: center;
-  color: $text-muted;
+  color: var(--text-muted);
 }
 
 /* Keep the explicit wrapper class for opt-in use if desired */

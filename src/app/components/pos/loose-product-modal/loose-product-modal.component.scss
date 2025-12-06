@@ -80,7 +80,7 @@
 }
 
 .scale-status {
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   padding: $spacing-lg;
   border-radius: $radius-xl;
   display: flex;
@@ -98,13 +98,13 @@
   .btn-use-scale {
     @include button-base;
     background: $white;
-    color: $text-primary;
+    color: var(--text-primary);
     padding: $spacing-sm $spacing-md;
     border-radius: $radius-lg;
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
 
     &.active {
       background: $blue-primary;
@@ -129,7 +129,7 @@
 
     .weight-unit {
       font-size: $font-size-base;
-      color: $text-secondary;
+      color: var(--text-secondary);
     }
 
     .weight-status {
@@ -154,7 +154,7 @@
 
   label {
     font-weight: $font-weight-medium;
-    color: $text-primary;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: $spacing-xs;
@@ -171,7 +171,7 @@
     font-size: $font-size-lg;
 
     &[readonly] {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
       cursor: not-allowed;
     }
   }
@@ -186,7 +186,7 @@
 
   .total-label {
     font-size: $font-size-sm;
-    color: $text-secondary;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
   }
@@ -200,7 +200,7 @@
 
   .total-breakdown {
     font-size: $font-size-sm;
-    color: $text-secondary;
+    color: var(--text-secondary);
   }
 }
 
@@ -208,7 +208,7 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: $bg-tertiary;
+  background: var(--bg-tertiary);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
@@ -216,10 +216,10 @@
     flex: 1;
     background: $white;
     color: $gray-500;
-    border: 2px solid $border-color;
+    border: 2px solid var(--border-color);
 
     &:hover {
-      background: $bg-tertiary;
+      background: var(--bg-tertiary);
     }
   }
 

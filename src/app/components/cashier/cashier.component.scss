@@ -5,7 +5,7 @@
 
 .cashier-container {
   padding: 0.75rem;
-  background-color: $bg-secondary;
+  background-color: var(--bg-secondary);
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -66,7 +66,7 @@
         border-radius: 8px;
         border: none;
         background: rgba($primary, 0.06);
-        color: $text-primary;
+        color: var(--text-primary);
         cursor: pointer;
         font-weight: 700;
 
@@ -213,11 +213,11 @@
 
     .panel-header {
       padding: 0.75rem;
-      border-bottom: 2px solid $border-color;
+      border-bottom: 2px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: $bg-primary;
+      background: var(--bg-primary);
       flex-shrink: 0;
 
       h3 {
@@ -301,7 +301,7 @@
         gap: 0.5rem;
 
         &:hover {
-          background: $bg-tertiary;
+          background: var(--bg-tertiary);
         }
 
         &:last-child {
@@ -334,7 +334,7 @@
 
           .item-number {
             font-weight: 600;
-            color: $text-secondary;
+            color: var(--text-secondary);
             font-size: 0.75rem;
             display: none;
           }
@@ -350,18 +350,18 @@
             .item-quantity {
               font-size: 0.8rem;
               font-weight: 600;
-              color: $text-secondary;
+              color: var(--text-secondary);
             }
 
             .item-unit-price {
               font-size: 0.7rem;
-              color: $text-muted;
+              color: var(--text-muted);
             }
 
             .item-price {
               font-size: 1rem;
               font-weight: 700;
-              color: $text-primary;
+              color: var(--text-primary);
               margin-left: auto;
             }
           }
@@ -371,7 +371,7 @@
             flex-direction: column;
             gap: 0.15rem;
             font-size: 0.7rem;
-            color: $text-muted;
+            color: var(--text-muted);
             margin-top: 0.05rem;
 
             .item-description,
@@ -384,7 +384,7 @@
               white-space: nowrap;
 
               i {
-                color: $text-muted;
+                color: var(--text-muted);
                 font-size: 0.65rem;
                 flex-shrink: 0;
               }
@@ -405,7 +405,7 @@
             height: 22px;
             border: none;
             background: $gray-300;
-            color: $text-primary;
+            color: var(--text-primary);
             border-radius: 4px;
             cursor: pointer;
             display: flex;
@@ -441,7 +441,7 @@
           .qty-display {
             font-weight: 600;
             font-size: 0.85rem;
-            color: $text-primary;
+            color: var(--text-primary);
             text-align: center;
             width: 34px;
           }
@@ -503,7 +503,7 @@
     .no-items {
       padding: 3rem 2rem;
       text-align: center;
-      color: $text-secondary;
+      color: var(--text-secondary);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -529,7 +529,11 @@
   }
 
   .total-section {
-    background: linear-gradient(180deg, $bg-primary 0%, $bg-secondary 100%);
+    background: linear-gradient(
+      180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 100%
+    );
     border-radius: 14px;
     padding: 0 1rem;
     box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
@@ -547,7 +551,7 @@
       .total-label {
         font-size: 0.85rem;
         font-weight: 600;
-        color: $text-secondary;
+        color: var(--text-secondary);
         text-transform: uppercase;
         letter-spacing: 1px;
       }
@@ -632,7 +636,7 @@
     .payment-title {
       font-size: 0.95rem;
       font-weight: 600;
-      color: $text-primary;
+      color: var(--text-primary);
       margin: 0 0 1rem 0;
       text-align: center;
     }
@@ -804,14 +808,14 @@
         justify-content: space-between;
         align-items: center;
         padding: 1.5rem;
-        background: $bg-secondary;
+        background: var(--bg-secondary);
         border-radius: 12px;
         margin-bottom: 2rem;
 
         .label {
           font-size: 1.25rem;
           font-weight: 600;
-          color: $text-secondary;
+          color: var(--text-secondary);
         }
 
         .value {
@@ -828,7 +832,7 @@
           label {
             display: block;
             font-weight: 600;
-            color: $text-primary;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
             font-size: 1rem;
           }
@@ -836,7 +840,7 @@
           .cash-input {
             width: 100%;
             padding: 1rem;
-            border: 2px solid $border-color;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 1.5rem;
             font-weight: 600;
@@ -911,7 +915,7 @@
 
         p {
           font-size: 1.1rem;
-          color: $text-secondary;
+          color: var(--text-secondary);
           margin: 0;
         }
       }
@@ -919,7 +923,7 @@
 
     .modal-footer {
       padding: 1.5rem 2rem;
-      border-top: 1px solid $border-color;
+      border-top: 1px solid var(--border-color);
       display: flex;
       gap: 1rem;
       justify-content: flex-end;
@@ -939,11 +943,11 @@
         }
 
         &.cancel {
-          background: $text-secondary;
+          background: var(--text-secondary);
           color: white;
 
           &:hover:not(:disabled) {
-            background: color.adjust($text-secondary, $lightness: -10%);
+            background: $gray-700;
           }
         }
 
@@ -1071,7 +1075,7 @@
   }
 
   .scale-reading {
-    background: $bg-secondary;
+    background: var(--bg-secondary);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -1105,12 +1109,12 @@
       .weight {
         font-size: 2.5rem;
         font-weight: 700;
-        color: $text-primary;
+        color: var(--text-primary);
       }
 
       .unit {
         font-size: 1.5rem;
-        color: $text-secondary;
+        color: var(--text-secondary);
         font-weight: 600;
       }
 
@@ -1150,7 +1154,7 @@
     label {
       display: block;
       font-weight: 600;
-      color: $text-primary;
+      color: var(--text-primary);
       margin-bottom: 0.5rem;
       font-size: 0.95rem;
     }
@@ -1170,7 +1174,7 @@
       }
 
       &:readonly {
-        background: $bg-secondary;
+        background: var(--bg-secondary);
         cursor: not-allowed;
       }
 
@@ -1186,7 +1190,7 @@
     .help-text {
       display: block;
       margin-top: 0.5rem;
-      color: $text-secondary;
+      color: var(--text-secondary);
       font-size: 0.875rem;
       font-style: italic;
       display: flex;
@@ -1241,7 +1245,7 @@
         flex-direction: column;
         gap: 0.25rem;
         font-size: 0.875rem;
-        color: $text-secondary;
+        color: var(--text-secondary);
 
         .item-description,
         .item-weight {
@@ -1250,7 +1254,7 @@
           gap: 0.5rem;
 
           i {
-            color: $text-muted;
+            color: var(--text-muted);
             font-size: 0.875rem;
           }
         }
@@ -1319,7 +1323,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(180deg, $bg-primary 0%, $bg-secondary 100%);
+      background: linear-gradient(
+        180deg,
+        var(--bg-primary) 0%,
+        var(--bg-secondary) 100%
+      );
 
       .total-display {
         .total-value {
@@ -1342,7 +1350,7 @@
       margin: 0;
       border-radius: 0;
       padding: 0.5rem;
-      background: $bg-primary;
+      background: var(--bg-primary);
       box-shadow: 0 -6px 24px rgba(16, 24, 40, 0.08);
 
       .payment-buttons {

@@ -6,28 +6,43 @@
 :root {
   --primary-color: #{$primary};
   --primary-dark: #{$primary-dark};
+  --primary-light: #{$primary-light};
   --secondary-color: #{$secondary};
   --danger-color: #f56565;
   --warning-color: #ed8936;
+  --success-color: #48bb78;
   --info-color: #4299e1;
 
   --text-primary: #{$text-primary};
   --text-secondary: #{$text-secondary};
   --text-muted: #{$text-muted};
   --text-light: #{$text-light};
+  --text-inverse: #{$white};
 
   --bg-primary: #{$bg-primary};
   --bg-secondary: #{$bg-secondary};
   --bg-tertiary: #{$bg-tertiary};
+  --bg-hover: #{$bg-hover};
+  --bg-active: #{$bg-active};
 
   --border-color: #{$border-color};
   --border-light: #{$border-light};
+
+  --card-bg: #{$card-bg};
+  --input-bg: #{$input-bg};
+  --sidebar-bg: #{$sidebar-bg};
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-neumorphic: 6px 6px 12px rgba(163, 177, 198, 0.6),
     -6px -6px 12px rgba(255, 255, 255, 0.5);
+  --shadow-neumorphic-sm: 3px 3px 6px rgba(163, 177, 198, 0.4),
+    -3px -3px 6px rgba(255, 255, 255, 0.5);
+  --shadow-neumorphic-lg: 9px 9px 16px rgba(163, 177, 198, 0.6),
+    -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --shadow-neumorphic-inset: inset 3px 3px 6px rgba(163, 177, 198, 0.4),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 
   --radius-sm: 8px;
   --radius-md: 12px;

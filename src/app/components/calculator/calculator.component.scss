@@ -22,7 +22,7 @@
   .multiply-label {
     font-size: 0.875rem;
     font-weight: 600;
-    color: $text-secondary;
+    color: var(--text-secondary);
     margin-right: 0.5rem;
   }
 
@@ -34,13 +34,13 @@
 
   .display-separator {
     font-size: 1.5rem;
-    color: $text-secondary;
+    color: var(--text-secondary);
   }
 
   .display-value {
     font-size: 2rem;
     font-weight: 700;
-    color: $text-primary;
+    color: var(--text-primary);
     word-break: break-all;
     text-align: right;
   }
@@ -74,9 +74,9 @@
     }
 
     &.number {
-      background: $bg-tertiary;
-      color: $text-primary;
-      border: 2px solid $border-color;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
 
       &:hover {
         background: $bg-active;

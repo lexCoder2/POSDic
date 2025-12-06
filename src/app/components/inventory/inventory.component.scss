@@ -19,7 +19,7 @@
 
   h1 {
     margin: 0;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 2rem;
   }
 
@@ -39,7 +39,7 @@
   gap: $spacing-xs;
   padding: $spacing-sm $spacing-md;
   background: $white;
-  border: 1px solid $border-color;
+  border: 1px solid var(--border-color);
   border-radius: $radius-md;
   color: $gray-600;
   font-size: $font-size-sm;
@@ -53,7 +53,7 @@
   }
 
   &:hover:not(:disabled) {
-    background: $bg-tertiary;
+    background: var(--bg-tertiary);
     border-color: $primary;
     color: $primary;
   }
@@ -95,11 +95,11 @@
 }
 
 .btn-template {
-  background: $bg-secondary;
-  color: $text-primary;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 
   &:hover:not(:disabled) {
-    background: $bg-tertiary;
+    background: var(--bg-tertiary);
   }
 }
 
@@ -124,8 +124,8 @@
   transition: all 0.2s;
 
   &:hover {
-    background-color: $bg-secondary;
-    color: $text-primary;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
   }
 
   &.active {
@@ -144,7 +144,7 @@
 
   h2 {
     margin: 0;
-    color: $text-primary;
+    color: var(--text-primary);
   }
 }
 
@@ -174,7 +174,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.2rem;
-    color: $text-muted;
+    color: var(--text-muted);
   }
 }
 
@@ -219,8 +219,14 @@
     td {
       padding: 1rem;
       font-size: 0.9rem;
-      color: $text-primary;
+      color: var(--text-primary);
     }
+  }
+
+  .product-image-container {
+    position: relative;
+    width: 50px;
+    height: 50px;
   }
 
   .product-thumb {
@@ -301,7 +307,7 @@
   .empty-state {
     text-align: center;
     padding: 3rem;
-    color: $text-muted;
+    color: var(--text-muted);
     font-size: 1rem;
   }
 }
@@ -333,13 +339,13 @@
 
     h3 {
       margin: 0 0 0.5rem 0;
-      color: $text-primary;
+      color: var(--text-primary);
       font-size: 1.2rem;
     }
 
     .category-desc {
       margin: 0;
-      color: $text-muted;
+      color: var(--text-muted);
       font-size: 0.9rem;
       line-height: 1.4;
     }
@@ -390,7 +396,7 @@
 
   h2 {
     margin: 0;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 1.5rem;
   }
 
@@ -399,7 +405,7 @@
     border: none;
     font-size: 2rem;
     cursor: pointer;
-    color: $text-muted;
+    color: var(--text-muted);
     line-height: 1;
     padding: 0;
     width: 2rem;
@@ -410,7 +416,7 @@
     transition: all 0.2s ease;
 
     &:hover {
-      color: $text-primary;
+      color: var(--text-primary);
       transform: rotate(90deg);
     }
   }
@@ -440,7 +446,7 @@ form {
 
   label {
     font-weight: 600;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 0.9rem;
   }
 
@@ -501,7 +507,7 @@ form {
 
 .btn-cancel {
   background: #e0e0e0;
-  color: $text-primary;
+  color: var(--text-primary);
 
   &:hover {
     background: #d0d0d0;
@@ -528,7 +534,7 @@ form {
 
   p {
     margin: 0 0 1rem 0;
-    color: $text-primary;
+    color: var(--text-primary);
   }
 
   ul {
@@ -537,7 +543,7 @@ form {
 
     li {
       margin-bottom: 0.5rem;
-      color: $text-primary;
+      color: var(--text-primary);
       line-height: 1.4;
     }
   }
@@ -562,7 +568,7 @@ form {
   .btn-upload {
     padding: 0.75rem 1.5rem;
     background: $secondary;
-    color: $text-primary;
+    color: var(--text-primary);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -580,7 +586,7 @@ form {
   }
 
   .file-name {
-    color: $text-muted;
+    color: var(--text-muted);
     font-size: 0.9rem;
   }
 }
@@ -610,7 +616,7 @@ form {
 
   p {
     text-align: center;
-    color: $text-primary;
+    color: var(--text-primary);
     font-weight: 600;
     margin: 0;
   }
@@ -631,12 +637,12 @@ form {
 
     h3 {
       margin: 0 0 0.5rem 0;
-      color: $text-primary;
+      color: var(--text-primary);
     }
 
     p {
       margin: 0.25rem 0;
-      color: $text-primary;
+      color: var(--text-primary);
 
       &.error {
         color: #f44336;

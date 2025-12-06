@@ -228,26 +228,42 @@ $card-border: transparent;
 $card-shadow: $shadow-neumorphic;
 $card-hover-shadow: $shadow-neumorphic-lg;
 
+// ===== CSS CUSTOM PROPERTIES =====
+// Light theme (default) - these are set in styles.scss :root
+// Dark theme overrides below
+
 // ===== DARK THEME =====
 .dark-theme {
   // Override colors for dark mode
   --neumorphic-bg: #1a1d24;
   --neumorphic-surface: #222831;
+  --primary-color: #7c5ba6;
+  --primary-dark: #654483;
+
   --text-primary: #e5e7eb;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
+  --text-light: #4b5563;
+
   --bg-primary: #1a1d24;
   --bg-secondary: #222831;
   --bg-tertiary: #2d3139;
   --bg-hover: #3a3f4b;
   --bg-active: #4a5161;
+
   --border-color: #3a3f4b;
+  --border-light: #4a5161;
+
   --card-bg: #222831;
   --input-bg: #2d3139;
+  --sidebar-bg: #1a1d24;
   --sidebar-text: rgba(255, 255, 255, 0.7);
   --sidebar-text-active: #ffffff;
 
-  // Update shadow for dark mode
+  // Update shadows for dark mode
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
   --shadow-neumorphic: 6px 6px 12px rgba(0, 0, 0, 0.4),
     -6px -6px 12px rgba(255, 255, 255, 0.02);
   --shadow-neumorphic-sm: 3px 3px 6px rgba(0, 0, 0, 0.3),
@@ -257,9 +273,51 @@ $card-hover-shadow: $shadow-neumorphic-lg;
   --shadow-neumorphic-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.3),
     inset -3px -3px 6px rgba(255, 255, 255, 0.02);
 
-  // Apply CSS variables
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  // Apply to html element
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+
+  // Global dark mode overrides for common elements
+  body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  // Cards and surfaces
+  .login-card,
+  .card,
+  .modal-content,
+  .dropdown-menu {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+  }
+
+  // Inputs
+  input,
+  select,
+  textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+
+    &::placeholder {
+      color: var(--text-muted) !important;
+    }
+  }
+
+  // Labels and text
+  label {
+    color: var(--text-secondary) !important;
+  }
+
+  // Scrollbars
+  ::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+  }
 }
 
 // ===== MIXINS =====

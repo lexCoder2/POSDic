@@ -4,7 +4,7 @@
   padding: $spacing-2xl;
   max-width: 1400px;
   margin: 0 auto;
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   min-height: 100%;
   border-radius: $radius-md;
 }
@@ -19,7 +19,7 @@
 
   h1 {
     margin: 0;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 2rem;
   }
 
@@ -95,7 +95,7 @@
     td {
       padding: 1rem;
       font-size: 0.9rem;
-      color: $text-primary;
+      color: var(--text-primary);
     }
   }
 
@@ -188,7 +188,7 @@
   .empty-state {
     text-align: center;
     padding: 3rem;
-    color: $text-muted;
+    color: var(--text-muted);
     font-size: 1rem;
   }
 }
@@ -226,7 +226,7 @@
 
   h2 {
     margin: 0;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 1.5rem;
   }
 
@@ -235,7 +235,7 @@
     border: none;
     font-size: 2rem;
     cursor: pointer;
-    color: $text-muted;
+    color: var(--text-muted);
     padding: 0;
     width: 2rem;
     height: 2rem;
@@ -244,7 +244,7 @@
     justify-content: center;
 
     &:hover {
-      color: $text-primary;
+      color: var(--text-primary);
     }
   }
 }
@@ -268,7 +268,7 @@
   label {
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--text-primary);
     font-size: 0.9rem;
   }
 
@@ -329,7 +329,7 @@
 
 .btn-cancel {
   background: #f0f0f0;
-  color: $text-primary;
+  color: var(--text-primary);
 
   &:hover {
     background: #e0e0e0;

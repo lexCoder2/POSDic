@@ -46,7 +46,7 @@
   align-items: center;
   justify-content: space-between;
   padding: $spacing-lg;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid var(--border-color);
 
   h3 {
     margin: 0;
@@ -54,7 +54,7 @@
     align-items: center;
     gap: $spacing-sm;
     font-size: $font-size-2xl;
-    color: $text-primary;
+    color: var(--text-primary);
     font-weight: $font-weight-semibold;
 
     i {
@@ -67,7 +67,7 @@
     background: transparent;
     border: none;
     font-size: $font-size-xl;
-    color: $text-muted;
+    color: var(--text-muted);
     cursor: pointer;
     padding: $spacing-xs;
     line-height: 1;
@@ -75,15 +75,15 @@
     border-radius: $radius-sm;
 
     &:hover {
-      color: $text-primary;
-      background: $bg-hover;
+      color: var(--text-primary);
+      background: var(--bg-hover);
     }
   }
 }
 
 .modal-body {
   padding: $spacing-lg;
-  color: $text-primary;
+  color: var(--text-primary);
 }
 
 .modal-footer {
@@ -91,7 +91,7 @@
   justify-content: flex-end;
   gap: $spacing-sm;
   padding: $spacing-lg;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid var(--border-color);
   background: $gray-50;
   border-radius: 0 0 $radius-lg $radius-lg;
 }

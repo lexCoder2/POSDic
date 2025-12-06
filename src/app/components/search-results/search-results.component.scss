@@ -6,7 +6,7 @@
   max-height: 60vh;
   overflow-y: auto;
   background: $white;
-  border: 1px solid $border-color;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: $shadow-sm;
   padding: 1rem;
@@ -20,7 +20,7 @@
 .loading-state {
   padding: 32px;
   text-align: center;
-  color: $text-secondary;
+  color: var(--text-secondary);
 
   .spinner {
     width: 40px;
@@ -50,13 +50,13 @@
 
 .results-header {
   padding: 12px 16px;
-  border-bottom: 1px solid $border-color;
-  background: $bg-secondary;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
   border-radius: 8px 8px 0 0;
 
   .results-count {
     font-size: 13px;
-    color: $text-secondary;
+    color: var(--text-secondary);
     font-weight: 500;
   }
 }
@@ -72,7 +72,7 @@
   border: 1px solid transparent;
 
   &:hover {
-    background: $bg-secondary;
+    background: var(--bg-secondary);
     border-color: $primary;
     transform: translateX(4px);
   }
@@ -93,7 +93,7 @@
   height: 60px;
   border-radius: 8px;
   overflow: hidden;
-  background: $bg-secondary;
+  background: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,7 +127,7 @@
 .result-name {
   font-size: 15px;
   font-weight: 600;
-  color: $text-primary;
+  color: var(--text-primary);
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -143,13 +143,13 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: $text-secondary;
+  color: var(--text-secondary);
   margin-bottom: 4px;
   flex-wrap: wrap;
 
   .result-brand {
     padding: 2px 8px;
-    background: $bg-secondary;
+    background: var(--bg-secondary);
     border-radius: 4px;
   }
 
@@ -164,7 +164,7 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: $text-secondary;
+  color: var(--text-secondary);
   padding: 2px 8px;
   background: rgba($primary, 0.1);
   border-radius: 4px;
@@ -241,7 +241,7 @@
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: $text-muted;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,7 +283,7 @@
 .no-results {
   padding: 48px 24px;
   text-align: center;
-  color: $text-secondary;
+  color: var(--text-secondary);
 
   i {
     font-size: 48px;
@@ -294,14 +294,14 @@
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--text-primary);
     margin: 0 0 8px 0;
   }
 
   p {
     font-size: 14px;
     margin: 0;
-    color: $text-secondary;
+    color: var(--text-secondary);
   }
 
   @media (max-width: 768px) {
@@ -324,7 +324,7 @@
 .empty-search {
   padding: 36px 20px;
   text-align: center;
-  color: $text-secondary;
+  color: var(--text-secondary);
 
   i {
     font-size: 44px;
@@ -335,14 +335,14 @@
   h3 {
     font-size: 18px;
     font-weight: 600;
-    color: $text-primary;
+    color: var(--text-primary);
     margin: 8px 0 12px 0;
   }
 
   p {
     font-size: 14px;
     margin: 0 0 12px 0;
-    color: $text-secondary;
+    color: var(--text-secondary);
   }
 
   @media (max-width: 768px) {
@@ -403,19 +403,19 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid var(--border-color);
 
     h3 {
       margin: 0;
       font-size: 20px;
       font-weight: 600;
-      color: $text-primary;
+      color: var(--text-primary);
     }
 
     .close-btn {
       background: transparent;
       border: none;
-      color: $text-muted;
+      color: var(--text-muted);
       font-size: 20px;
       padding: 8px;
       cursor: pointer;
@@ -426,8 +426,8 @@
       justify-content: center;
 
       &:hover {
-        background: $bg-secondary;
-        color: $text-primary;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
       }
     }
   }
@@ -438,10 +438,10 @@
     p {
       margin: 0 0 12px 0;
       font-size: 15px;
-      color: $text-secondary;
+      color: var(--text-secondary);
 
       strong {
-        color: $text-primary;
+        color: var(--text-primary);
         font-weight: 600;
       }
     }
@@ -460,7 +460,7 @@
     justify-content: flex-end;
     gap: 12px;
     padding: 16px 24px;
-    border-top: 1px solid $border-color;
+    border-top: 1px solid var(--border-color);
 
     button {
       padding: 10px 20px;
@@ -475,11 +475,11 @@
       gap: 8px;
 
       &.btn-cancel {
-        background: $bg-secondary;
-        color: $text-primary;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
 
         &:hover {
-          background: darken($bg-secondary, 5%);
+          background: var(--bg-hover);
         }
       }
 
