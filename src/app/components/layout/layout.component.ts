@@ -7,6 +7,7 @@ import {
   ElementRef,
   signal,
   TemplateRef,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -22,7 +23,10 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { TranslationService } from "../../services/translation.service";
 import { ToastService } from "../../services/toast.service";
-import { RegisterService } from "../../services/register.service";
+import {
+  RegisterService,
+  AvailableRegister,
+} from "../../services/register.service";
 import { UserService } from "../../services/user.service";
 import { ThemeService } from "../../services/theme.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
@@ -32,6 +36,8 @@ import { ModalComponent } from "../modal/modal.component";
 import { GlobalSearchComponent } from "../global-search/global-search.component";
 import { User, Register } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { Html5Qrcode } from "html5-qrcode";
+import { catchError, finalize, of } from "rxjs";
 @Component({
   selector: "app-layout",
   standalone: true,
@@ -52,6 +58,8 @@ import { PageTitleComponent } from "../page-title/page-title.component";
   styleUrls: ["./layout.component.scss"],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
+  @ViewChild("switchQrInput") switchQrInputRef!: ElementRef<HTMLInputElement>;
+
   currentUser: User | null = null;
   currentRegister: Register | null = null;
   showUserDropdown = false;
@@ -63,6 +71,25 @@ export class LayoutComponent implements OnInit, OnDestroy {
   currentLang = "en";
   mobileSidebarOpen = false;
   isDarkMode = false;
+
+  // Switch user scanner properties
+  switchLoginMode: "scanner" | "password" = "scanner";
+  switchQrInputValue = "";
+  switchQrLoading = false;
+  showSwitchCameraScanner = false;
+  switchError = "";
+  private switchQrScanner: Html5Qrcode | null = null;
+
+  // Register selection properties
+  availableRegisters: AvailableRegister[] = [];
+  loadingRegisters = false;
+  selectedRegisterNumber = "";
+  showNewRegisterInput = false;
+  canManageOtherRegisters = false;
+  deviceBoundRegister: string | null = null;
+  deviceId = "";
+  deviceName = "";
+  newRegisterNumber = "";
 
   // Page title configuration
   pageTitle = "";
@@ -129,7 +156,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private registerService: RegisterService,
     private userService: UserService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -270,17 +298,150 @@ export class LayoutComponent implements OnInit, OnDestroy {
   switchUser(): void {
     this.showUserDropdown = false;
     this.showSwitchUserModal = true;
+    this.switchError = "";
+    this.switchQrInputValue = "";
+    this.switchLoginMode = "scanner";
+    // Focus scanner input after modal opens
+    setTimeout(() => this.focusSwitchQrInput(), 100);
+  }
+
+  closeSwitchUserModal(): void {
+    this.stopSwitchQrScanner();
+    this.showSwitchUserModal = false;
+    this.showSwitchCameraScanner = false;
+    this.switchError = "";
+    this.switchQrInputValue = "";
+  }
+
+  setSwitchLoginMode(mode: "scanner" | "password"): void {
+    this.switchLoginMode = mode;
+    this.switchError = "";
+    this.cdr.detectChanges();
+    if (mode === "scanner") {
+      setTimeout(() => this.focusSwitchQrInput(), 100);
+    }
+  }
+
+  private focusSwitchQrInput(): void {
+    this.switchQrInputRef?.nativeElement?.focus();
+  }
+
+  onSwitchQrInputEnter(): void {
+    if (this.switchQrInputValue.trim()) {
+      this.handleSwitchQrCodeScanned(this.switchQrInputValue.trim());
+    }
+  }
+
+  async openSwitchCameraScanner(): Promise<void> {
+    this.showSwitchCameraScanner = true;
+    this.switchError = "";
+    this.cdr.detectChanges();
+    await new Promise((res) => setTimeout(res, 100));
+    await this.startSwitchCameraScanner();
+  }
+
+  async closeSwitchCameraScanner(): Promise<void> {
+    await this.stopSwitchQrScanner();
+    this.showSwitchCameraScanner = false;
+    this.cdr.detectChanges();
+    setTimeout(() => this.focusSwitchQrInput(), 100);
+  }
+
+  private async startSwitchCameraScanner(): Promise<void> {
+    try {
+      if (typeof Html5Qrcode !== "undefined") {
+        this.switchQrScanner = new Html5Qrcode("switch-qr-scanner");
+        await this.switchQrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText: string) => {
+            this.handleSwitchQrCodeScanned(decodedText);
+          },
+          () => {
+            // Ignore decode errors
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Failed to start QR scanner:", err);
+      this.switchError = "Failed to start camera. Please check permissions.";
+      this.showSwitchCameraScanner = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private async stopSwitchQrScanner(): Promise<void> {
+    if (this.switchQrScanner) {
+      try {
+        await this.switchQrScanner.stop();
+        await this.switchQrScanner.clear();
+      } catch (err) {
+        console.log("QR scanner cleanup:", err);
+      }
+      this.switchQrScanner = null;
+    }
+  }
+
+  private handleSwitchQrCodeScanned(qrData: string): void {
+    if (this.switchQrLoading) return;
+
+    this.switchQrLoading = true;
+    this.switchQrInputValue = "";
+    this.cdr.detectChanges();
+
+    this.stopSwitchQrScanner();
+
+    this.authService
+      .loginWithQr(qrData)
+      .pipe(
+        catchError((err) => {
+          console.error("QR Switch User error:", err);
+          this.switchQrLoading = false;
+          this.showSwitchCameraScanner = false;
+
+          if (err.status === 401) {
+            this.switchError = this.translation.translate("LOGIN.QR_INVALID");
+          } else if (err.status === 0) {
+            this.switchError = "Unable to connect to server.";
+          } else if (err.error?.message) {
+            this.switchError = err.error.message;
+          } else {
+            this.switchError = "QR login failed. Please try again.";
+          }
+
+          this.cdr.detectChanges();
+          setTimeout(() => this.focusSwitchQrInput(), 100);
+          return of(null);
+        }),
+        finalize(() => {
+          this.switchQrLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.currentUser = this.authService.getCurrentUser();
+            this.showSwitchUserModal = false;
+            this.showSwitchCameraScanner = false;
+            const message = this.translation
+              .translate("GLOBAL.REGISTER.SUCCESS.SWITCHED_USER")
+              .replace("{{name}}", this.currentUser?.firstName || "");
+            this.toastService.show(message, "success");
+            this.registerService.getActiveRegister().subscribe();
+          }
+        },
+      });
   }
 
   performSwitchUser(username: string, password: string): void {
     if (!username || !password) {
-      this.toastService.show(
+      this.switchError =
         this.translation.translate("GLOBAL.REGISTER.USERNAME") +
-          " and " +
-          this.translation.translate("GLOBAL.REGISTER.PASSWORD") +
-          " required",
-        "error"
-      );
+        " and " +
+        this.translation.translate("GLOBAL.REGISTER.PASSWORD") +
+        " required";
+      this.cdr.detectChanges();
       return;
     }
 
@@ -296,7 +457,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this.registerService.getActiveRegister().subscribe();
       },
       error: (err) => {
-        this.toastService.show("Invalid credentials", "error");
+        this.switchError = "Invalid credentials";
+        this.cdr.detectChanges();
       },
     });
   }
@@ -304,10 +466,110 @@ export class LayoutComponent implements OnInit, OnDestroy {
   manageRegister(): void {
     this.showUserDropdown = false;
     this.showRegisterModal = true;
+    this.selectedRegisterNumber = "";
+    this.showNewRegisterInput = false;
+
+    // Get device info
+    this.deviceId = this.registerService.getDeviceId();
+    this.deviceName = this.registerService.getDeviceName();
 
     // If register is open, fetch expected cash
     if (this.currentRegister) {
       this.loadExpectedCash();
+    } else {
+      // Check for device-bound register first
+      this.checkDeviceRegister();
+    }
+  }
+
+  checkDeviceRegister(): void {
+    this.loadingRegisters = true;
+    this.registerService.getDeviceRegister().subscribe({
+      next: (response) => {
+        this.canManageOtherRegisters = response.canManageOthers;
+
+        if (response.register) {
+          // Device has an active register - update current register
+          this.currentRegister = response.register;
+          this.showRegisterModal = false;
+          this.loadExpectedCash();
+        } else if (response.suggestedRegister) {
+          // Device was previously bound to a register - pre-select it
+          this.deviceBoundRegister = response.suggestedRegister;
+          this.selectedRegisterNumber = response.suggestedRegister;
+          this.loadAvailableRegisters();
+        } else {
+          // First time for this device - show new register input
+          this.deviceBoundRegister = null;
+          this.showNewRegisterInput = true;
+          this.loadAvailableRegisters();
+        }
+        this.loadingRegisters = false;
+      },
+      error: (err) => {
+        console.error("Error checking device register:", err);
+        this.loadAvailableRegisters();
+      },
+    });
+  }
+
+  loadAvailableRegisters(): void {
+    this.loadingRegisters = true;
+    this.registerService.getAvailableRegisters().subscribe({
+      next: (response) => {
+        this.availableRegisters = response.registers;
+        this.canManageOtherRegisters = response.canManageOthers;
+
+        // Auto-select device-bound register if available
+        const boundRegister = this.availableRegisters.find(
+          (r) => r.isBoundToThisDevice
+        );
+        if (boundRegister && !this.selectedRegisterNumber) {
+          this.selectedRegisterNumber = boundRegister.registerNumber;
+          this.deviceBoundRegister = boundRegister.registerNumber;
+        }
+
+        this.loadingRegisters = false;
+      },
+      error: (err) => {
+        console.error("Error loading available registers:", err);
+        this.availableRegisters = [];
+        this.loadingRegisters = false;
+      },
+    });
+  }
+
+  selectRegister(registerNumber: string, isBoundToOtherDevice?: boolean): void {
+    // Non-admins can only select their device-bound register or new registers
+    if (
+      isBoundToOtherDevice &&
+      !this.canManageOtherRegisters &&
+      this.deviceBoundRegister !== registerNumber
+    ) {
+      this.toastService.show(
+        this.translation.translate("REGISTER.ERRORS.DEVICE_BOUND"),
+        "error"
+      );
+      return;
+    }
+    this.selectedRegisterNumber = registerNumber;
+    this.showNewRegisterInput = false;
+  }
+
+  toggleNewRegister(): void {
+    // Only admins can create new registers if device is already bound
+    if (this.deviceBoundRegister && !this.canManageOtherRegisters) {
+      this.toastService.show(
+        this.translation.translate("REGISTER.ERRORS.DEVICE_ALREADY_BOUND"),
+        "error"
+      );
+      return;
+    }
+    this.showNewRegisterInput = !this.showNewRegisterInput;
+    if (this.showNewRegisterInput) {
+      this.selectedRegisterNumber = "";
+      // Set default register number
+      this.newRegisterNumber = `REG-${this.currentUser?.username || "MAIN"}`;
     }
   }
 
@@ -333,11 +595,18 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   openRegister(registerNumber: string, openingCash: string): void {
+    // Use selected register or the input value
+    const finalRegisterNumber =
+      this.selectedRegisterNumber ||
+      registerNumber ||
+      `REG-${this.currentUser?.username || "MAIN"}`;
     const cash = parseFloat(openingCash) || 0;
 
-    this.registerService.openRegister(cash, registerNumber).subscribe({
+    this.registerService.openRegister(cash, finalRegisterNumber).subscribe({
       next: (register) => {
         this.showRegisterModal = false;
+        this.selectedRegisterNumber = "";
+        this.showNewRegisterInput = false;
         this.toastService.show(
           this.translation.translate("GLOBAL.REGISTER.SUCCESS.OPENED"),
           "success"

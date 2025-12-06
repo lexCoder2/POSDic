@@ -252,16 +252,130 @@
   (close)="showRegisterModal = false"
 >
   <div *ngIf="!currentRegister" class="register-form">
-    <h4>{{ "REGISTER.MODAL_TITLE_OPEN" | translate }}</h4>
-    <div class="form-group">
+    <h4>{{ "REGISTER.SELECT_REGISTER" | translate }}</h4>
+
+    <!-- Device Info Badge -->
+    <div class="device-info-badge" *ngIf="deviceName">
+      <i class="fas fa-desktop"></i>
+      <span>{{ deviceName }}</span>
+    </div>
+
+    <!-- Device Bound Register Alert -->
+    <div class="device-bound-alert" *ngIf="deviceBoundRegister">
+      <i class="fas fa-link"></i>
+      <span
+        >{{ "REGISTER.DEVICE_BOUND_TO" | translate }}:
+        <strong>{{ deviceBoundRegister }}</strong></span
+      >
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="loadingRegisters" class="loading-registers">
+      <i class="fas fa-spinner fa-spin"></i>
+      {{ "GLOBAL.LOADING" | translate }}
+    </div>
+
+    <!-- Available Registers List -->
+    <div *ngIf="!loadingRegisters" class="register-list">
+      <div
+        *ngFor="let reg of availableRegisters"
+        class="register-item"
+        [class.selected]="selectedRegisterNumber === reg.registerNumber"
+        [class.device-bound]="reg.deviceId === deviceId"
+        [class.other-device]="
+          reg.deviceId && reg.deviceId !== deviceId && !canManageOtherRegisters
+        "
+        (click)="
+          selectRegister(
+            reg.registerNumber,
+            !!(reg.deviceId && reg.deviceId !== deviceId)
+          )
+        "
+      >
+        <div class="register-item-icon">
+          <i class="fas fa-cash-register"></i>
+          <i
+            class="fas fa-link device-link-icon"
+            *ngIf="reg.deviceId === deviceId"
+            title="{{ 'REGISTER.YOUR_DEVICE' | translate }}"
+          ></i>
+          <i
+            class="fas fa-lock device-lock-icon"
+            *ngIf="
+              reg.deviceId &&
+              reg.deviceId !== deviceId &&
+              !canManageOtherRegisters
+            "
+            title="{{ 'REGISTER.OTHER_DEVICE' | translate }}"
+          ></i>
+        </div>
+        <div class="register-item-info">
+          <span class="register-name">{{ reg.registerNumber }}</span>
+          <span class="device-name-tag" *ngIf="reg.deviceId === deviceId">
+            <i class="fas fa-desktop"></i>
+            {{ "REGISTER.YOUR_DEVICE" | translate }}
+          </span>
+          <span
+            class="device-name-tag other"
+            *ngIf="reg.deviceId && reg.deviceId !== deviceId"
+          >
+            <i class="fas fa-desktop"></i>
+            {{ reg.deviceName || ("REGISTER.OTHER_DEVICE" | translate) }}
+          </span>
+          <span class="register-last-used" *ngIf="reg.lastClosedAt">
+            {{ "REGISTER.LAST_CLOSED" | translate }}:
+            {{ reg.lastClosedAt | date : "short" }}
+            <span *ngIf="reg.lastClosedBy"> - {{ reg.lastClosedBy }}</span>
+          </span>
+        </div>
+        <div
+          class="register-item-check"
+          *ngIf="selectedRegisterNumber === reg.registerNumber"
+        >
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+
+      <!-- No registers message -->
+      <div
+        *ngIf="availableRegisters.length === 0 && !showNewRegisterInput"
+        class="no-registers"
+      >
+        <i class="fas fa-info-circle"></i>
+        {{ "REGISTER.NO_REGISTERS" | translate }}
+      </div>
+
+      <!-- Create new register option (only if no device-bound register or admin) -->
+      <div
+        class="register-item new-register"
+        [class.selected]="showNewRegisterInput"
+        [class.disabled]="deviceBoundRegister && !canManageOtherRegisters"
+        (click)="toggleNewRegister()"
+        *ngIf="canManageOtherRegisters || !deviceBoundRegister"
+      >
+        <div class="register-item-icon">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="register-item-info">
+          <span class="register-name">{{
+            "REGISTER.CREATE_NEW" | translate
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Register Input -->
+    <div *ngIf="showNewRegisterInput" class="form-group new-register-input">
       <label>{{ "REGISTER.REGISTER_NUMBER" | translate }}</label>
       <input
         type="text"
-        #registerNumber
-        value="REG-{{ currentUser?.username || 'MAIN' }}"
+        [(ngModel)]="newRegisterNumber"
         class="form-control"
+        [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
       />
     </div>
+
+    <!-- Opening Cash Input (always visible) -->
     <div class="form-group">
       <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
       <input
@@ -272,9 +386,16 @@
         class="form-control"
       />
     </div>
+
     <button
       class="btn btn-primary"
-      (click)="openRegister(registerNumber.value, openingCash.value)"
+      (click)="
+        openRegister(
+          showNewRegisterInput ? newRegisterNumber : '',
+          openingCash.value
+        )
+      "
+      [disabled]="!selectedRegisterNumber && !showNewRegisterInput"
     >
       <i class="fas fa-check"></i> {{ "REGISTER.OPEN" | translate }}
     </button>
@@ -398,38 +519,136 @@
   [title]="'REGISTER.SWITCH_USER_TITLE' | translate"
   icon="fas fa-exchange-alt"
   size="md"
-  (close)="showSwitchUserModal = false"
+  (close)="closeSwitchUserModal()"
 >
   <div class="switch-user-form">
-    <p class="modal-description">
-      {{ "REGISTER.SWITCH_USER_DESC" | translate }}
-    </p>
-    <div class="form-group">
-      <label>{{ "REGISTER.USERNAME" | translate }}</label>
-      <input
-        type="text"
-        #switchUsername
-        class="form-control"
-        autocomplete="username"
-      />
+    <!-- Login Mode Toggle -->
+    <div class="login-mode-toggle">
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="switchLoginMode === 'scanner'"
+        (click)="setSwitchLoginMode('scanner')"
+      >
+        <i class="fas fa-barcode"></i>
+        {{ "LOGIN.MODE_SCANNER" | translate }}
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="switchLoginMode === 'password'"
+        (click)="setSwitchLoginMode('password')"
+      >
+        <i class="fas fa-keyboard"></i>
+        {{ "LOGIN.MODE_PASSWORD" | translate }}
+      </button>
     </div>
-    <div class="form-group">
-      <label>{{ "REGISTER.PASSWORD" | translate }}</label>
-      <input
-        type="password"
-        #switchPassword
-        class="form-control"
-        autocomplete="current-password"
-      />
+
+    <div *ngIf="switchError" class="error-message">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ switchError }}
     </div>
-    <button
-      class="btn btn-primary"
-      (click)="performSwitchUser(switchUsername.value, switchPassword.value)"
-    >
-      <i class="fas fa-exchange-alt"></i> {{ "GLOBAL.SWITCH_USER" | translate }}
-    </button>
+
+    <!-- Scanner Login Mode (Default) -->
+    <div *ngIf="switchLoginMode === 'scanner'" class="scanner-login-section">
+      <p class="scanner-instructions">
+        {{ "LOGIN.SCANNER_INSTRUCTIONS" | translate }}
+      </p>
+
+      <div class="scanner-input-wrapper">
+        <i class="fas fa-qrcode scanner-icon"></i>
+        <input
+          #switchQrInput
+          type="text"
+          class="scanner-input"
+          [(ngModel)]="switchQrInputValue"
+          (keydown.enter)="onSwitchQrInputEnter()"
+          [placeholder]="'LOGIN.SCANNER_PLACEHOLDER' | translate"
+          [disabled]="switchQrLoading"
+        />
+      </div>
+
+      <p class="scanner-hint">
+        <i class="fas fa-info-circle"></i>
+        {{ "LOGIN.SCANNER_HINT" | translate }}
+      </p>
+
+      <div *ngIf="switchQrLoading" class="scanner-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+      </div>
+
+      <!-- Camera option -->
+      <button
+        type="button"
+        class="btn-use-camera"
+        (click)="openSwitchCameraScanner()"
+        [disabled]="switchQrLoading"
+      >
+        <i class="fas fa-camera"></i>
+        {{ "LOGIN.USE_CAMERA_INSTEAD" | translate }}
+      </button>
+    </div>
+
+    <!-- Password Login Mode -->
+    <div *ngIf="switchLoginMode === 'password'" class="password-login-section">
+      <p class="modal-description">
+        {{ "REGISTER.SWITCH_USER_DESC" | translate }}
+      </p>
+      <div class="form-group">
+        <label>{{ "REGISTER.USERNAME" | translate }}</label>
+        <input
+          type="text"
+          #switchUsername
+          class="form-control"
+          autocomplete="username"
+        />
+      </div>
+      <div class="form-group">
+        <label>{{ "REGISTER.PASSWORD" | translate }}</label>
+        <input
+          type="password"
+          #switchPassword
+          class="form-control"
+          autocomplete="current-password"
+        />
+      </div>
+      <button
+        class="btn btn-primary"
+        (click)="performSwitchUser(switchUsername.value, switchPassword.value)"
+      >
+        <i class="fas fa-exchange-alt"></i>
+        {{ "GLOBAL.SWITCH_USER" | translate }}
+      </button>
+    </div>
   </div>
 </app-modal>
+
+<!-- Camera Scanner Modal for Switch User -->
+<div
+  class="qr-modal-overlay"
+  *ngIf="showSwitchCameraScanner"
+  (click)="closeSwitchCameraScanner()"
+>
+  <div class="qr-modal-content" (click)="$event.stopPropagation()">
+    <div class="qr-modal-header">
+      <h3>{{ "LOGIN.CAMERA_SCAN_TITLE" | translate }}</h3>
+      <button class="btn-close" (click)="closeSwitchCameraScanner()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="qr-modal-body">
+      <p class="qr-instructions">
+        {{ "LOGIN.QR_CAMERA_INSTRUCTIONS" | translate }}
+      </p>
+      <div id="switch-qr-scanner" class="qr-scanner-container"></div>
+      <div *ngIf="switchQrLoading" class="qr-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Cash Withdraw Modal -->
 <app-modal

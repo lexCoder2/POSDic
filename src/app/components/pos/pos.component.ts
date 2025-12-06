@@ -158,6 +158,9 @@ export class PosComponent implements OnInit, OnDestroy {
   isMobileView = false;
   bottomTab: "favorites" | "quick-access" = "favorites";
 
+  // Print receipts toggle
+  printReceiptsEnabled = true;
+
   private destroy$ = new Subject<void>();
   // timestamp of last Enter key press for double-Enter detection
   private _lastEnterTime = 0;
@@ -638,6 +641,12 @@ export class PosComponent implements OnInit, OnDestroy {
         );
         // Generate and print receipt using the saved/default template
         try {
+          if (!this.printReceiptsEnabled) {
+            // Skip printing if disabled
+            this.cartService.clearCart();
+            this.closeCheckout();
+            return;
+          }
           const currentUser = this.authService.getCurrentUser();
           const change = result.paymentDetails.change || 0;
           const mode = localStorage.getItem("printer.mode") || "plain";

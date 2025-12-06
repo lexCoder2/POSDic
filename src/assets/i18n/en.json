@@ -122,7 +122,11 @@
     "STATUS_CLOSED": "Register Closed - Open to make sales",
     "MODAL_TITLE_OPEN": "Open Register",
     "MODAL_TITLE_CLOSE": "Close Register",
+    "SELECT_REGISTER": "Select a Register",
     "REGISTER_NUMBER": "Register Number",
+    "REGISTER_NUMBER_PLACEHOLDER": "Enter register name",
+    "CREATE_NEW": "Create New Register",
+    "LAST_CLOSED": "Last closed",
     "OPENING_CASH": "Opening Cash Amount",
     "CLOSING_CASH": "Closing Cash Amount",
     "OPENED_AT": "Opened",
@@ -161,7 +165,7 @@
     "TOTAL_SALES": "Total Sales",
     "TOTAL_TRANSACTIONS": "Transactions",
     "ACTIONS": "Actions",
-    "NO_REGISTERS": "No registers found",
+    "NO_REGISTERS": "No registers found. Create a new one to get started.",
     "PAGE": "Page",
     "OF": "of",
     "TOTAL": "total",
@@ -183,8 +187,13 @@
       "ALREADY_CLOSED": "Register is already closed",
       "PERMISSION_DENIED": "Only managers and admins can close the register",
       "INVALID_AMOUNT": "Please enter a valid closing cash amount",
-      "NO_REGISTER": "Please open the register before making sales"
+      "NO_REGISTER": "Please open the register before making sales",
+      "DEVICE_BOUND": "This register is bound to another device",
+      "DEVICE_ALREADY_BOUND": "This device is already bound to a register"
     },
+    "DEVICE_BOUND_TO": "Your device is linked to",
+    "YOUR_DEVICE": "Your device",
+    "OTHER_DEVICE": "Other device",
     "SUCCESS": {
       "OPENED": "Register opened successfully",
       "CLOSED": "Register closed",
@@ -257,6 +266,14 @@
       "PRINTER_INHERIT": "Use Global Setting",
       "CURRENCY": "Currency",
       "SAVE": "Save Preferences"
+    },
+    "QR_BADGE": {
+      "TITLE": "Login Badge",
+      "DESCRIPTION": "Print your personal QR code badge for quick login with a barcode scanner",
+      "PRINT": "Print Badge",
+      "PRINTED": "Badge sent to printer",
+      "SCAN_TO_LOGIN": "Scan this code to login",
+      "ERROR": "Unable to generate badge"
     },
     "SAVED": "Settings saved",
     "SAVE_FAILED": "Failed to save settings"
@@ -646,7 +663,8 @@
       "CALCULATOR": "Calculator",
       "LOOSE": "Loose",
       "WITHDRAW": "Withdraw",
-      "RETURNS": "Returns"
+      "RETURNS": "Returns",
+      "PRINT": "Print"
     },
     "WITHDRAW": {
       "TITLE": "Cash Withdrawal",
@@ -913,6 +931,15 @@
     "WELCOME_DESCRIPTION": "The complete point of sale solution for your business. Manage sales, inventory, and reports all in one place.",
     "FEATURE_FAST": "Fast & Easy Sales",
     "FEATURE_REPORTS": "Real-time Reports",
-    "FEATURE_INVENTORY": "Inventory Control"
+    "FEATURE_INVENTORY": "Inventory Control",
+    "MODE_SCANNER": "Badge Scanner",
+    "MODE_PASSWORD": "Password",
+    "SCANNER_INSTRUCTIONS": "Scan your employee badge to login",
+    "SCANNER_PLACEHOLDER": "Scan badge or enter code...",
+    "SCANNER_HINT": "Position your badge under the scanner",
+    "USE_CAMERA_INSTEAD": "Use camera instead",
+    "CAMERA_SCAN_TITLE": "Camera Scanner",
+    "QR_CAMERA_INSTRUCTIONS": "Point your camera at your employee QR badge",
+    "QR_AUTHENTICATING": "Authenticating..."
   }
 }

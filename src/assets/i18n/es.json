@@ -81,7 +81,11 @@
     "STATUS_CLOSED": "Caja Cerrada - Abrir para hacer ventas",
     "MODAL_TITLE_OPEN": "Abrir Caja",
     "MODAL_TITLE_CLOSE": "Cerrar Caja",
+    "SELECT_REGISTER": "Seleccionar una Caja",
     "REGISTER_NUMBER": "Número de Caja",
+    "REGISTER_NUMBER_PLACEHOLDER": "Ingrese nombre de la caja",
+    "CREATE_NEW": "Crear Nueva Caja",
+    "LAST_CLOSED": "Último cierre",
     "OPENING_CASH": "Efectivo Inicial",
     "CLOSING_CASH": "Efectivo Final",
     "OPENED_AT": "Abierta",
@@ -119,7 +123,7 @@
     "TOTAL_SALES": "Ventas Totales",
     "TOTAL_TRANSACTIONS": "Transacciones",
     "ACTIONS": "Acciones",
-    "NO_REGISTERS": "No se encontraron cajas",
+    "NO_REGISTERS": "No se encontraron cajas. Cree una nueva para comenzar.",
     "PAGE": "Página",
     "OF": "de",
     "TOTAL": "total",
@@ -134,8 +138,13 @@
       "ALREADY_CLOSED": "La caja ya está cerrada",
       "PERMISSION_DENIED": "Solo gerentes y administradores pueden cerrar la caja",
       "INVALID_AMOUNT": "Por favor ingrese un monto de efectivo válido",
-      "NO_REGISTER": "Por favor abra la caja antes de hacer ventas"
+      "NO_REGISTER": "Por favor abra la caja antes de hacer ventas",
+      "DEVICE_BOUND": "Esta caja está vinculada a otro dispositivo",
+      "DEVICE_ALREADY_BOUND": "Este dispositivo ya está vinculado a una caja"
     },
+    "DEVICE_BOUND_TO": "Su dispositivo está vinculado a",
+    "YOUR_DEVICE": "Su dispositivo",
+    "OTHER_DEVICE": "Otro dispositivo",
     "SUCCESS": {
       "OPENED": "Caja abierta exitosamente",
       "CLOSED": "Caja cerrada",
@@ -201,6 +210,14 @@
       "PRINTER_MODE": "Modo de Impresora Predeterminado",
       "PRINTER_INHERIT": "Usar configuración global",
       "SAVE": "Guardar Preferencias"
+    },
+    "QR_BADGE": {
+      "TITLE": "Credencial de Acceso",
+      "DESCRIPTION": "Imprime tu código QR personal para iniciar sesión rápidamente con un escáner de código de barras",
+      "PRINT": "Imprimir Credencial",
+      "PRINTED": "Credencial enviada a la impresora",
+      "SCAN_TO_LOGIN": "Escanea este código para iniciar sesión",
+      "ERROR": "No se pudo generar la credencial"
     },
     "SAVED": "Ajustes guardados",
     "SAVE_FAILED": "Error al guardar ajustes"
@@ -616,7 +633,8 @@
       "CALCULATOR": "Calculadora",
       "LOOSE": "Granel",
       "WITHDRAW": "Retiro",
-      "RETURNS": "Devoluciones"
+      "RETURNS": "Devoluciones",
+      "PRINT": "Imprimir"
     },
     "WITHDRAW": {
       "TITLE": "Retiro de Efectivo",
@@ -883,6 +901,15 @@
     "WELCOME_DESCRIPTION": "La solución completa de punto de venta para tu negocio. Gestiona ventas, inventario y reportes en un solo lugar.",
     "FEATURE_FAST": "Ventas Rápidas y Fáciles",
     "FEATURE_REPORTS": "Reportes en Tiempo Real",
-    "FEATURE_INVENTORY": "Control de Inventario"
+    "FEATURE_INVENTORY": "Control de Inventario",
+    "MODE_SCANNER": "Lector de Credencial",
+    "MODE_PASSWORD": "Contraseña",
+    "SCANNER_INSTRUCTIONS": "Escanea tu credencial de empleado para iniciar sesión",
+    "SCANNER_PLACEHOLDER": "Escanea credencial o ingresa código...",
+    "SCANNER_HINT": "Coloca tu credencial bajo el lector",
+    "USE_CAMERA_INSTEAD": "Usar cámara en su lugar",
+    "CAMERA_SCAN_TITLE": "Escáner de Cámara",
+    "QR_CAMERA_INSTRUCTIONS": "Apunta tu cámara al código QR de tu credencial",
+    "QR_AUTHENTICATING": "Autenticando..."
   }
 }

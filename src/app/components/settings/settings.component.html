@@ -1,10 +1,18 @@
 <div class="page-container">
-  <app-page-title [title]="'SETTINGS.TITLE' | translate" [description]="'SETTINGS.DESCRIPTION' | translate">
+  <app-page-title
+    [title]="'SETTINGS.TITLE' | translate"
+    [description]="'SETTINGS.DESCRIPTION' | translate"
+  >
     <div class="header-actions">
       <button class="btn btn-primary" (click)="previewReceipt()">
         {{ "SETTINGS.PRINTING.PREVIEW" | translate }}
       </button>
-      <button *ngIf="isAdmin" class="btn btn-secondary" routerLink="/templates" title="Manage receipt templates">
+      <button
+        *ngIf="isAdmin"
+        class="btn btn-secondary"
+        routerLink="/templates"
+        title="Manage receipt templates"
+      >
         {{ "TEMPLATES.TITLE" | translate }}
       </button>
     </div>
@@ -16,9 +24,15 @@
     </div>
 
     <div class="options" role="radiogroup" aria-label="Printer Mode">
-      <div class="option-card" role="radio" tabindex="0" [attr.aria-checked]="printerMode === 'plain'"
-        [class.active]="printerMode === 'plain'" (click)="setPrinterMode('plain')"
-        (keydown.enter)="setPrinterMode('plain')">
+      <div
+        class="option-card"
+        role="radio"
+        tabindex="0"
+        [attr.aria-checked]="printerMode === 'plain'"
+        [class.active]="printerMode === 'plain'"
+        (click)="setPrinterMode('plain')"
+        (keydown.enter)="setPrinterMode('plain')"
+      >
         <div class="option-left">
           <div class="icon">T</div>
         </div>
@@ -31,9 +45,15 @@
         <div class="option-right"><span class="check">✓</span></div>
       </div>
 
-      <div class="option-card" role="radio" tabindex="0" [attr.aria-checked]="printerMode === 'styled'"
-        [class.active]="printerMode === 'styled'" (click)="setPrinterMode('styled')"
-        (keydown.enter)="setPrinterMode('styled')">
+      <div
+        class="option-card"
+        role="radio"
+        tabindex="0"
+        [attr.aria-checked]="printerMode === 'styled'"
+        [class.active]="printerMode === 'styled'"
+        (click)="setPrinterMode('styled')"
+        (keydown.enter)="setPrinterMode('styled')"
+      >
         <div class="option-left">
           <div class="icon">S</div>
         </div>
@@ -54,16 +74,20 @@
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.DISPLAY_NAME" | translate
-        }}</label>
-      <input type="text" [(ngModel)]="displayName" placeholder="{{
+      }}</label>
+      <input
+        type="text"
+        [(ngModel)]="displayName"
+        placeholder="{{
           'SETTINGS.USER_PREFERENCES.DISPLAY_NAME_PLACEHOLDER' | translate
-        }}" />
+        }}"
+      />
     </div>
 
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.LANGUAGE" | translate
-        }}</label>
+      }}</label>
       <select [(ngModel)]="preferredLang">
         <option value="en">{{ "GLOBAL.ENGLISH" | translate }}</option>
         <option value="es">{{ "GLOBAL.SPANISH" | translate }}</option>
@@ -73,7 +97,7 @@
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.PRINTER_MODE" | translate
-        }}</label>
+      }}</label>
       <select [(ngModel)]="userPrinterMode">
         <option value="inherit">
           {{ "SETTINGS.USER_PREFERENCES.PRINTER_INHERIT" | translate }}
@@ -90,9 +114,12 @@
     <div class="form-row">
       <label class="label">{{
         "SETTINGS.USER_PREFERENCES.CURRENCY" | translate
-        }}</label>
+      }}</label>
       <select [(ngModel)]="selectedCurrency">
-        <option *ngFor="let currency of currencyService.currencies" [value]="currency.code">
+        <option
+          *ngFor="let currency of currencyService.currencies"
+          [value]="currency.code"
+        >
           {{ currency.symbol }} - {{ currency.name }} ({{ currency.code }})
         </option>
       </select>
@@ -101,6 +128,36 @@
     <div class="form-actions">
       <button class="btn btn-primary" (click)="saveUserSettings()">
         {{ "SETTINGS.USER_PREFERENCES.SAVE" | translate }}
+      </button>
+    </div>
+  </section>
+
+  <!-- Login QR Badge Section -->
+  <section class="card qr-badge-section">
+    <h3>{{ "SETTINGS.QR_BADGE.TITLE" | translate }}</h3>
+    <p class="section-description">
+      {{ "SETTINGS.QR_BADGE.DESCRIPTION" | translate }}
+    </p>
+
+    <div class="qr-preview">
+      <div class="qr-code-container">
+        <img [src]="qrCodeUrl" alt="Login QR Code" class="qr-code-image" />
+      </div>
+      <div class="qr-info">
+        <p class="user-name">{{ currentUserName }}</p>
+        <p class="user-role">{{ currentUserRole }}</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        class="btn btn-primary"
+        (click)="printQrBadge()"
+        [disabled]="printingBadge"
+      >
+        <i class="fas fa-spinner fa-spin" *ngIf="printingBadge"></i>
+        <i class="fas fa-print" *ngIf="!printingBadge"></i>
+        {{ "SETTINGS.QR_BADGE.PRINT" | translate }}
       </button>
     </div>
   </section>

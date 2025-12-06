@@ -29,14 +29,14 @@
   .panel-image {
     position: relative;
     z-index: 1;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     display: flex;
     justify-content: center;
     animation: float 4s ease-in-out infinite;
 
     img {
       max-width: 100%;
-      max-height: 320px;
+      max-height: 220px;
       object-fit: contain;
       filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.3));
     }
@@ -61,7 +61,9 @@
     .welcome-title {
       font-size: 4rem;
 
-      font-weight: bolder;
+      font-family: "Titan One", sans-serif;
+      font-weight: 400;
+      font-style: normal;
       margin: 0 0 1.5rem 0;
       line-height: 1.1;
       letter-spacing: -0.5px;
@@ -208,7 +210,7 @@
 // Logo section
 .logo-section {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 
   .logo-icon {
     width: 72px;
@@ -241,6 +243,186 @@
   }
 }
 
+// Login Mode Toggle
+.login-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.25rem;
+  background: var(--bg-primary, var(--bg-primary));
+  border-radius: $radius-lg;
+  box-shadow: var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset));
+
+  .mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: $radius-md;
+    background: transparent;
+    color: var(--text-muted, var(--text-muted));
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover:not(.active) {
+      color: var(--text-primary, var(--text-primary));
+    }
+
+    &.active {
+      background: var(--bg-secondary, var(--bg-secondary));
+      color: $primary;
+      box-shadow: var(--shadow-neumorphic, var(--shadow-neumorphic));
+    }
+  }
+}
+
+// Error message (shared)
+.error-message {
+  background: rgba($danger, 0.15);
+  border: 2px solid rgba($danger, 0.4);
+  color: $danger-dark;
+  padding: 0.875rem 1rem;
+  border-radius: $radius-lg;
+  margin-bottom: 1.5rem;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideDownShake 0.5s ease;
+  box-shadow: 0 4px 12px rgba($danger, 0.15);
+
+  i {
+    font-size: 1.1rem;
+    color: $danger;
+  }
+}
+
+// Scanner Login Section
+.scanner-login-section {
+  text-align: center;
+
+  .scanner-instructions {
+    color: var(--text-secondary, var(--text-secondary));
+    font-size: $font-size-base;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .scanner-input-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+
+    .scanner-icon {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $primary;
+      font-size: 1.5rem;
+    }
+
+    .scanner-input {
+      width: 100%;
+      padding: 1.25rem 1.25rem 1.25rem 4rem;
+      border: 2px solid var(--border-color, var(--border-color));
+      border-radius: $radius-xl;
+      font-size: $font-size-lg;
+      background: var(--bg-primary, var(--bg-primary));
+      color: var(--text-primary, var(--text-primary));
+      text-align: center;
+      transition: all 0.2s ease;
+      box-shadow: var(
+        --shadow-neumorphic-inset,
+        var(--shadow-neumorphic-inset)
+      );
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        box-shadow: 0 0 0 4px rgba($primary, 0.15);
+      }
+
+      &::placeholder {
+        color: var(--text-light, var(--text-light));
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .scanner-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--text-muted, var(--text-muted));
+    font-size: $font-size-sm;
+    margin: 0 0 1.5rem 0;
+
+    i {
+      color: $info;
+    }
+  }
+
+  .scanner-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba($primary, 0.1);
+    border-radius: $radius-lg;
+    color: $primary;
+    font-weight: $font-weight-medium;
+
+    i {
+      font-size: 1.25rem;
+    }
+  }
+
+  .btn-use-camera {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--border-color, var(--border-color));
+    border-radius: $radius-lg;
+    color: var(--text-secondary, var(--text-secondary));
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
 // Form styles
 .login-form {
   &.has-error {
@@ -257,64 +439,6 @@
     }
     75% {
       transform: translateX(5px);
-    }
-  }
-
-  .error-message {
-    background: rgba($danger, 0.15);
-    border: 2px solid rgba($danger, 0.4);
-    color: $danger-dark;
-    padding: 0.875rem 1rem;
-    border-radius: $radius-lg;
-    margin-bottom: 1.5rem;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    animation: slideDownShake 0.5s ease;
-    box-shadow: 0 4px 12px rgba($danger, 0.15);
-
-    i {
-      font-size: 1.1rem;
-      color: $danger;
-    }
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideDownShake {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    50% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    60% {
-      transform: translateX(-5px);
-    }
-    70% {
-      transform: translateX(5px);
-    }
-    80% {
-      transform: translateX(-3px);
-    }
-    90% {
-      transform: translateX(3px);
-    }
-    100% {
-      transform: translateX(0);
     }
   }
 
@@ -351,11 +475,17 @@
         transition: all 0.3s ease;
         background: var(--bg-primary, var(--bg-primary));
         color: var(--text-primary, var(--text-primary));
-        box-shadow: var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset));
+        box-shadow: var(
+          --shadow-neumorphic-inset,
+          var(--shadow-neumorphic-inset)
+        );
 
         &:focus {
           outline: none;
-          box-shadow: var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset)),
+          box-shadow: var(
+              --shadow-neumorphic-inset,
+              var(--shadow-neumorphic-inset)
+            ),
             0 0 0 2px rgba($primary, 0.3);
 
           & + i,
@@ -443,6 +573,133 @@
   }
 }
 
+// QR Scanner Modal (Camera)
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: fadeIn 0.2s ease;
+}
+
+.qr-modal-content {
+  background: var(--bg-secondary, var(--bg-secondary));
+  border-radius: $radius-2xl;
+  width: 90%;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.qr-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, var(--border-color));
+  background: var(--bg-primary, var(--bg-primary));
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: var(--text-primary, var(--text-primary));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &::before {
+      content: "\f030"; // fa-camera
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      color: $primary;
+    }
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted, var(--text-muted));
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--bg-secondary, var(--bg-secondary));
+      color: var(--text-primary, var(--text-primary));
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+.qr-modal-body {
+  padding: 1.5rem;
+}
+
+.qr-instructions {
+  text-align: center;
+  color: var(--text-secondary, var(--text-secondary));
+  font-size: $font-size-sm;
+  margin: 0 0 1rem 0;
+}
+
+.qr-scanner-container {
+  width: 100%;
+  min-height: 280px;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+
+  video {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.qr-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: rgba($primary, 0.1);
+  border-radius: $radius-lg;
+  color: $primary;
+  font-weight: $font-weight-medium;
+
+  i {
+    font-size: 1.25rem;
+  }
+}
+
 // Responsive design
 @media (max-width: 968px) {
   .login-container {
@@ -510,13 +767,25 @@
     }
   }
 
-  .login-form {
-    .error-message {
-      padding: 0.75rem 0.875rem;
+  .login-mode-toggle {
+    .mode-btn {
+      padding: 0.625rem 0.75rem;
       font-size: $font-size-xs;
-      margin-bottom: 1rem;
+    }
+  }
+
+  .scanner-login-section {
+    .scanner-input-wrapper .scanner-input {
+      font-size: 16px; // Prevent iOS zoom
+      padding: 1rem 1rem 1rem 3.5rem;
     }
 
+    .btn-use-camera {
+      width: 100%;
+    }
+  }
+
+  .login-form {
     .form-group {
       margin-bottom: 1.25rem;
 
@@ -533,9 +802,37 @@
     }
   }
 
+  .error-message {
+    padding: 0.75rem 0.875rem;
+    font-size: $font-size-xs;
+    margin-bottom: 1rem;
+  }
+
   .footer-text {
     margin-top: 1.5rem;
     padding-top: 1.25rem;
     font-size: $font-size-xs;
+  }
+
+  .qr-modal-content {
+    width: 95%;
+    max-width: none;
+    margin: 1rem;
+  }
+
+  .qr-modal-header {
+    padding: 1rem;
+
+    h3 {
+      font-size: $font-size-base;
+    }
+  }
+
+  .qr-modal-body {
+    padding: 1rem;
+  }
+
+  .qr-scanner-container {
+    min-height: 240px;
   }
 }

@@ -550,6 +550,232 @@
     font-size: 1.1rem;
   }
 
+  // Device info badge
+  .device-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background: var(--bg-secondary);
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    color: var(--text-secondary);
+    width: fit-content;
+
+    i {
+      color: $primary;
+    }
+  }
+
+  // Device bound alert
+  .device-bound-alert {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background: rgba($success, 0.1);
+    border: 1px solid rgba($success, 0.3);
+    border-radius: $radius-md;
+    color: darken($success, 10%);
+    font-size: $font-size-sm;
+
+    i {
+      color: $success;
+    }
+
+    strong {
+      color: $success;
+    }
+  }
+
+  // Loading state
+  .loading-registers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    padding: $spacing-lg;
+    color: var(--text-secondary);
+
+    i {
+      color: $primary;
+    }
+  }
+
+  // Register list styles
+  .register-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
+    max-height: 250px;
+    overflow-y: auto;
+
+    .register-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      border: 2px solid var(--border-color);
+      border-radius: $radius-md;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba($primary, 0.3);
+        background: rgba($primary, 0.05);
+      }
+
+      &.selected {
+        border-color: $primary;
+        background: rgba($primary, 0.1);
+
+        .register-item-icon {
+          background: $primary;
+          color: white;
+        }
+      }
+
+      &.new-register {
+        border-style: dashed;
+
+        .register-item-icon {
+          background: var(--bg-secondary);
+          color: $primary;
+        }
+
+        &.selected {
+          .register-item-icon {
+            background: $primary;
+            color: white;
+          }
+        }
+
+        &.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+      }
+
+      // Device bound register styles
+      &.device-bound {
+        border-color: $success;
+        background: rgba($success, 0.08);
+
+        .register-item-icon {
+          background: $success;
+          color: white;
+        }
+      }
+
+      &.other-device {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+          border-color: var(--border-color);
+          background: transparent;
+        }
+      }
+
+      .register-item-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $radius-md;
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        position: relative;
+
+        .device-link-icon {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          font-size: 0.65rem;
+          background: $success;
+          color: white;
+          border-radius: 50%;
+          padding: 3px;
+        }
+
+        .device-lock-icon {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          font-size: 0.65rem;
+          background: $danger;
+          color: white;
+          border-radius: 50%;
+          padding: 3px;
+        }
+      }
+
+      .register-item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .register-name {
+          font-weight: $font-weight-semibold;
+          color: var(--text-primary);
+        }
+
+        .register-last-used {
+          font-size: $font-size-sm;
+          color: var(--text-muted);
+        }
+
+        .device-name-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: $font-size-xs;
+          color: $success;
+          font-weight: $font-weight-medium;
+
+          &.other {
+            color: var(--text-muted);
+          }
+
+          i {
+            font-size: 0.65rem;
+          }
+        }
+      }
+
+      .register-item-check {
+        color: $primary;
+        font-size: 1.25rem;
+      }
+    }
+
+    .no-registers {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-lg;
+      color: var(--text-muted);
+      font-size: $font-size-sm;
+
+      i {
+        color: $info;
+      }
+    }
+  }
+
+  .new-register-input {
+    margin-top: $spacing-sm;
+    padding-top: $spacing-md;
+    border-top: 1px solid var(--border-color);
+  }
+
   .form-group {
     display: flex;
     flex-direction: column;
@@ -887,7 +1113,8 @@
       &:focus {
         outline: none;
         border-color: $warning;
-        box-shadow: 0 0 0 3px rgba($warning, 0.15), var(--shadow-neumorphic-inset);
+        box-shadow: 0 0 0 3px rgba($warning, 0.15),
+          var(--shadow-neumorphic-inset);
       }
 
       &::placeholder {
@@ -927,5 +1154,269 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+// ===== SWITCH USER SCANNER STYLES =====
+.switch-user-form {
+  .login-mode-toggle {
+    display: flex;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-lg;
+    padding: 4px;
+    background: var(--bg-secondary);
+    border-radius: $radius-lg;
+
+    .mode-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      padding: $spacing-sm $spacing-md;
+      border: none;
+      border-radius: $radius-md;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: var(--text-primary);
+      }
+
+      &.active {
+        background: var(--bg-primary);
+        color: $primary;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+    background: rgba($danger, 0.1);
+    border: 1px solid rgba($danger, 0.2);
+    border-radius: $radius-md;
+    color: $danger;
+    font-size: $font-size-sm;
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+
+  .scanner-login-section {
+    text-align: center;
+
+    .scanner-instructions {
+      color: var(--text-secondary);
+      font-size: $font-size-base;
+      margin: 0 0 $spacing-lg 0;
+    }
+
+    .scanner-input-wrapper {
+      position: relative;
+      margin-bottom: $spacing-md;
+
+      .scanner-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $primary;
+        font-size: 1.5rem;
+      }
+
+      .scanner-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: $radius-lg;
+        font-size: $font-size-lg;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        text-align: center;
+        transition: all 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 4px rgba($primary, 0.15);
+        }
+
+        &::placeholder {
+          color: var(--text-light);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .scanner-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      color: var(--text-muted);
+      font-size: $font-size-sm;
+      margin: 0 0 $spacing-lg 0;
+
+      i {
+        color: $info;
+      }
+    }
+
+    .scanner-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-md;
+      margin-bottom: $spacing-md;
+      background: rgba($primary, 0.1);
+      border-radius: $radius-md;
+      color: $primary;
+      font-weight: $font-weight-medium;
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+
+    .btn-use-camera {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      padding: $spacing-sm $spacing-lg;
+      border: 2px dashed var(--border-color);
+      border-radius: $radius-md;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        border-color: $primary;
+        color: $primary;
+        background: rgba($primary, 0.05);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .password-login-section {
+    .modal-description {
+      margin-bottom: $spacing-md;
+    }
+  }
+}
+
+// QR Camera Scanner Modal
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal + 10;
+  backdrop-filter: blur(4px);
+}
+
+.qr-modal-content {
+  background: var(--bg-primary);
+  border-radius: $radius-xl;
+  width: 90%;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  .qr-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .btn-close {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .qr-modal-body {
+    padding: $spacing-lg;
+
+    .qr-instructions {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      margin: 0 0 $spacing-md 0;
+    }
+
+    .qr-scanner-container {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #000;
+      border-radius: $radius-lg;
+      overflow: hidden;
+    }
+
+    .qr-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-md;
+      margin-top: $spacing-md;
+      background: rgba($primary, 0.1);
+      border-radius: $radius-md;
+      color: $primary;
+      font-weight: $font-weight-medium;
+    }
   }
 }

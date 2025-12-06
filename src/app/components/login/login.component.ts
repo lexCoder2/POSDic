@@ -1,10 +1,18 @@
-import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  ViewChild,
+  ElementRef,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { finalize, catchError, of } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
+import { Html5Qrcode } from "html5-qrcode";
 
 @Component({
   selector: "app-login",
@@ -13,11 +21,18 @@ import { TranslatePipe } from "../../pipes/translate.pipe";
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.scss"],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild("mainQrInput") mainQrInputRef!: ElementRef<HTMLInputElement>;
+
   username = "";
   password = "";
   error = "";
   loading = false;
+  qrLoading = false;
+  qrInputValue = "";
+  loginMode: "scanner" | "password" = "scanner"; // Default to scanner mode
+  showCameraScanner = false;
+  private qrScanner: Html5Qrcode | null = null;
 
   constructor(
     private authService: AuthService,
@@ -28,7 +43,48 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(["/pos"]);
+      return;
     }
+    // Focus scanner input on init
+    setTimeout(() => this.focusMainQrInput(), 100);
+  }
+
+  setLoginMode(mode: "scanner" | "password"): void {
+    this.loginMode = mode;
+    this.error = "";
+    this.cdr.detectChanges();
+
+    if (mode === "scanner") {
+      setTimeout(() => this.focusMainQrInput(), 100);
+    }
+  }
+
+  private focusMainQrInput(): void {
+    this.mainQrInputRef?.nativeElement?.focus();
+  }
+
+  onMainQrInputEnter(): void {
+    if (this.qrInputValue.trim()) {
+      this.handleQrCodeScanned(this.qrInputValue.trim());
+    }
+  }
+
+  async openCameraScanner(): Promise<void> {
+    this.showCameraScanner = true;
+    this.error = "";
+    this.cdr.detectChanges();
+
+    // Wait for DOM to render
+    await new Promise((res) => setTimeout(res, 100));
+    await this.startCameraScanner();
+  }
+
+  async closeCameraScanner(): Promise<void> {
+    await this.stopQrScanner();
+    this.showCameraScanner = false;
+    this.cdr.detectChanges();
+    // Refocus main input
+    setTimeout(() => this.focusMainQrInput(), 100);
   }
 
   onSubmit(): void {
@@ -118,5 +174,93 @@ export class LoginComponent implements OnInit {
       this.error = "";
       this.cdr.detectChanges();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stopQrScanner();
+  }
+
+  private async startCameraScanner(): Promise<void> {
+    try {
+      if (typeof Html5Qrcode !== "undefined") {
+        this.qrScanner = new Html5Qrcode("qr-login-scanner");
+        await this.qrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText: string) => {
+            this.handleQrCodeScanned(decodedText);
+          },
+          () => {
+            // Ignore decode errors
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Failed to start QR scanner:", err);
+      this.error = "Failed to start camera. Please check permissions.";
+      this.showCameraScanner = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private async stopQrScanner(): Promise<void> {
+    if (this.qrScanner) {
+      try {
+        await this.qrScanner.stop();
+        await this.qrScanner.clear();
+      } catch (err) {
+        // Ignore errors - scanner may not be running
+        console.log("QR scanner cleanup:", err);
+      }
+      this.qrScanner = null;
+    }
+  }
+
+  private handleQrCodeScanned(qrData: string): void {
+    if (this.qrLoading) return;
+
+    this.qrLoading = true;
+    this.qrInputValue = "";
+    this.cdr.detectChanges();
+
+    // Stop the camera scanner while authenticating
+    this.stopQrScanner();
+
+    this.authService
+      .loginWithQr(qrData)
+      .pipe(
+        catchError((err) => {
+          console.error("QR Login error:", err);
+          this.qrLoading = false;
+          this.showCameraScanner = false;
+
+          if (err.status === 401) {
+            this.error = "Invalid QR code. Please try again.";
+          } else if (err.status === 0) {
+            this.error = "Unable to connect to server.";
+          } else if (err.error?.message) {
+            this.error = err.error.message;
+          } else {
+            this.error = "QR login failed. Please try again.";
+          }
+
+          this.cdr.detectChanges();
+          // Refocus input for retry
+          setTimeout(() => this.focusMainQrInput(), 100);
+          return of(null);
+        }),
+        finalize(() => {
+          this.qrLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            console.log("QR Login success");
+            this.router.navigate(["/pos"]);
+          }
+        },
+      });
   }
 }

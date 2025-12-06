@@ -154,3 +154,73 @@
     }
   }
 }
+
+// QR Badge Section
+.qr-badge-section {
+  margin-top: 1rem;
+
+  h3 {
+    margin-bottom: 0.5rem;
+    color: $primary;
+  }
+
+  .section-description {
+    color: var(--text-muted);
+    font-size: $font-size-sm;
+    margin-bottom: 1.25rem;
+  }
+
+  .qr-preview {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--bg-primary);
+    border-radius: $radius-lg;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+
+    .qr-code-container {
+      flex-shrink: 0;
+
+      .qr-code-image {
+        width: 120px;
+        height: 120px;
+        border-radius: $radius-md;
+        border: 2px solid var(--border-color);
+      }
+    }
+
+    .qr-info {
+      .user-name {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+      }
+
+      .user-role {
+        font-size: $font-size-sm;
+        color: var(--text-muted);
+        text-transform: capitalize;
+        margin: 0;
+      }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-start;
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.25rem;
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+}

@@ -4,6 +4,135 @@ const Register = require("../models/Register");
 const Sale = require("../models/Sale");
 const { protect } = require("../middleware/auth");
 
+// Get register bound to a device (or create/suggest one)
+router.get("/device/:deviceId", protect, async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+    const isAdmin = req.user.role === "admin" || req.user.role === "manager";
+
+    // First, check if there's an active register for this device
+    let deviceRegister = await Register.findOne({
+      deviceId,
+      status: "open",
+    })
+      .populate("openedBy", "firstName lastName username")
+      .populate("closedBy", "firstName lastName username");
+
+    if (deviceRegister) {
+      return res.json({
+        register: deviceRegister,
+        isDeviceBound: true,
+        canManageOthers: isAdmin,
+      });
+    }
+
+    // Check if there's a closed register that was previously bound to this device
+    const lastDeviceRegister = await Register.findOne({ deviceId })
+      .sort({ closedAt: -1 })
+      .select("registerNumber deviceName");
+
+    // Return device info for auto-selection
+    res.json({
+      register: null,
+      isDeviceBound: false,
+      suggestedRegister: lastDeviceRegister?.registerNumber || null,
+      deviceName: lastDeviceRegister?.deviceName || null,
+      canManageOthers: isAdmin,
+    });
+  } catch (error) {
+    console.error("Error fetching device register:", error);
+    res.status(500).json({ message: "Error fetching device register" });
+  }
+});
+
+// Bind a device to a register
+router.post("/device/bind", protect, async (req, res) => {
+  try {
+    const { deviceId, deviceName, registerNumber } = req.body;
+
+    if (!deviceId || !registerNumber) {
+      return res
+        .status(400)
+        .json({ message: "Device ID and register number are required" });
+    }
+
+    // Update all registers with this registerNumber to have this deviceId
+    await Register.updateMany(
+      { registerNumber },
+      { $set: { deviceId, deviceName: deviceName || registerNumber } }
+    );
+
+    res.json({ message: "Device bound to register successfully" });
+  } catch (error) {
+    console.error("Error binding device:", error);
+    res.status(500).json({ message: "Error binding device to register" });
+  }
+});
+
+// Get list of available registers (unique register numbers that are not currently open)
+router.get("/available", protect, async (req, res) => {
+  try {
+    const { deviceId } = req.query;
+    const isAdmin = req.user.role === "admin" || req.user.role === "manager";
+
+    // Get all unique register numbers from history
+    const allRegisterNumbers = await Register.distinct("registerNumber");
+
+    // Get currently open registers
+    const openRegisters = await Register.find({ status: "open" }).select(
+      "registerNumber deviceId"
+    );
+    const openRegisterNumbers = openRegisters.map((r) => r.registerNumber);
+
+    // Filter out registers that are currently open
+    const availableRegisters = allRegisterNumbers.filter(
+      (rn) => !openRegisterNumbers.includes(rn)
+    );
+
+    // Return available register numbers with their last usage info
+    const registersWithInfo = await Promise.all(
+      availableRegisters.map(async (registerNumber) => {
+        const lastUsage = await Register.findOne({ registerNumber })
+          .sort({ closedAt: -1 })
+          .select("closedAt closedBy deviceId deviceName")
+          .populate("closedBy", "firstName lastName");
+
+        const isBoundToThisDevice =
+          deviceId && lastUsage?.deviceId === deviceId;
+        const isBoundToOtherDevice =
+          lastUsage?.deviceId && lastUsage?.deviceId !== deviceId;
+
+        return {
+          registerNumber,
+          lastClosedAt: lastUsage?.closedAt,
+          lastClosedBy: lastUsage?.closedBy
+            ? `${lastUsage.closedBy.firstName} ${lastUsage.closedBy.lastName}`
+            : null,
+          deviceId: lastUsage?.deviceId,
+          deviceName: lastUsage?.deviceName,
+          isBoundToThisDevice,
+          isBoundToOtherDevice,
+        };
+      })
+    );
+
+    // Sort: device-bound registers first, then by last closed date
+    registersWithInfo.sort((a, b) => {
+      if (a.isBoundToThisDevice && !b.isBoundToThisDevice) return -1;
+      if (!a.isBoundToThisDevice && b.isBoundToThisDevice) return 1;
+      return 0;
+    });
+
+    res.json({
+      registers: registersWithInfo,
+      canManageOthers: isAdmin,
+    });
+  } catch (error) {
+    console.error("Error fetching available registers:", error);
+    res.status(500).json({ message: "Error fetching available registers" });
+  }
+});
+
 // Get active register for current user
 router.get("/active", protect, async (req, res) => {
   try {
@@ -70,7 +199,7 @@ router.get("/active/expected-cash", protect, async (req, res) => {
 // Open a new register
 router.post("/open", protect, async (req, res) => {
   try {
-    const { openingCash, registerNumber } = req.body;
+    const { openingCash, registerNumber, deviceId, deviceName } = req.body;
 
     // Check if user already has an open register
     const existingRegister = await Register.findOne({
@@ -84,8 +213,23 @@ router.post("/open", protect, async (req, res) => {
       });
     }
 
+    // Check if this device already has a register bound and another is trying to open
+    if (deviceId) {
+      const deviceBoundRegister = await Register.findOne({
+        deviceId,
+        status: "open",
+      });
+      if (deviceBoundRegister) {
+        return res.status(400).json({
+          message: "This device already has an open register.",
+        });
+      }
+    }
+
     const register = new Register({
       registerNumber: registerNumber || `REG-${Date.now()}`,
+      deviceId: deviceId || null,
+      deviceName: deviceName || null,
       openedBy: req.user.id,
       openingCash: openingCash || 0,
       status: "open",

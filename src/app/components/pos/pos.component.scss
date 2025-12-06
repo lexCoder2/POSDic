@@ -85,12 +85,90 @@
       }
     }
 
+    // Print Receipt Toggle
+    .print-toggle {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      padding: $spacing-sm $spacing-md;
+      background: $white;
+      border: 1px solid var(--border-color);
+      border-radius: $radius-md;
+      color: $gray-600;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      margin-left: auto;
+
+      i {
+        font-size: $font-size-base;
+      }
+
+      .toggle-label {
+        white-space: nowrap;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 36px;
+        height: 20px;
+        margin-left: $spacing-xs;
+
+        input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+
+          &:checked + .toggle-slider {
+            background-color: $success;
+          }
+
+          &:checked + .toggle-slider::before {
+            transform: translateX(16px);
+          }
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: $gray-300;
+          transition: 0.3s;
+          border-radius: 20px;
+
+          &::before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+    }
+
     @media (max-width: $breakpoint-lg) {
       .action-btn span {
         display: none;
       }
 
       .action-btn {
+        padding: $spacing-sm;
+      }
+
+      .print-toggle {
+        .toggle-label {
+          display: none;
+        }
+
         padding: $spacing-sm;
       }
     }

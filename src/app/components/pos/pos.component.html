@@ -45,6 +45,16 @@
         <i class="fas fa-undo-alt"></i>
         <span>{{ "POS.ACTIONS.RETURNS" | translate }}</span>
       </button>
+
+      <!-- Print Receipt Toggle -->
+      <div class="print-toggle">
+        <i class="fas fa-receipt"></i>
+        <span class="toggle-label">{{ "POS.ACTIONS.PRINT" | translate }}</span>
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="printReceiptsEnabled" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
     </div>
 
     <!-- Search Results Component -->

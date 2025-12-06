@@ -6,6 +6,13 @@ const registerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    deviceId: {
+      type: String,
+      index: true,
+    },
+    deviceName: {
+      type: String,
+    },
     openedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

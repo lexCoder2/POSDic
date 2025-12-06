@@ -49,6 +49,21 @@ export class AuthService {
       );
   }
 
+  loginWithQr(qrData: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/qr-login`, {
+        qrData,
+      })
+      .pipe(
+        tap((response) => {
+          localStorage.setItem(this.tokenKey, response.token);
+          localStorage.setItem(this.userKey, JSON.stringify(response.user));
+          this.currentUserSubject.next(response.user);
+          this.loadUserSettings();
+        })
+      );
+  }
+
   private loadUserSettings(): void {
     // This will be called by services that need user settings
     // The settings will be loaded from the database by individual services
