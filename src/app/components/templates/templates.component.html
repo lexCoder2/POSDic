@@ -1,13 +1,7 @@
-<app-page-title
-  [title]="'TEMPLATES.TITLE' | translate"
-  [description]="'TEMPLATES.DESCRIPTION' | translate"
-  icon="fa-receipt"
->
+<div class="templates-container">
   <button class="btn-primary" (click)="createNew()">
     + {{ "TEMPLATES.CREATE_NEW" | translate }}
   </button>
-</app-page-title>
-<div class="templates-container">
   <div class="content">
     <!-- Templates List -->
     <div class="templates-list" *ngIf="!showForm()">
