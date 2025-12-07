@@ -58,16 +58,26 @@ export class QzTrayService {
     this.qz.security.setSignaturePromise((toSign: string) => {
       return (resolve: any, reject: any) => {
         this.http
-          .post<{ signature: string }>(this.apiUrl + "/sign", { toSign })
+          .post<{ signature: string; error?: string; message?: string }>(
+            this.apiUrl + "/sign",
+            { toSign }
+          )
           .subscribe({
             next: (res) => {
+              if (res?.error) {
+                console.error("Signing error from server:", res.message);
+                reject(new Error(res.message || "Server signing error"));
+                return;
+              }
               const signature = res?.signature || "";
               console.log("Signature received from backend");
               resolve(signature);
             },
             error: (err) => {
-              console.error("Signing failed:", err);
-              reject(err);
+              const errorMsg =
+                err?.error?.message || err?.message || "Failed to sign request";
+              console.error("Signing failed:", errorMsg);
+              reject(new Error(errorMsg));
             },
           });
       };

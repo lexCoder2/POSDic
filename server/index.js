@@ -43,25 +43,44 @@ app.use(
 // QZ Tray signing endpoint
 const crypto = require("crypto");
 const privateKeyPath = path.join(__dirname, "private-key.pem");
-let privateKey;
+let privateKey = null;
 try {
   privateKey = fs.readFileSync(privateKeyPath, "utf8");
+  console.log("QZ Tray private key loaded successfully");
 } catch (err) {
-  console.error("Could not read private key for signing:", err);
+  console.error("Could not read private key for signing:", err.message);
+  console.error(
+    "QZ Tray signing will not work. Make sure private-key.pem exists in server directory."
+  );
 }
 
 app.post("/api/sign", (req, res) => {
   const { toSign } = req.body;
-  if (!toSign) return res.status(400).send("Missing toSign");
+
+  if (!privateKey) {
+    console.error("Signing failed: Private key not loaded");
+    return res.status(500).json({
+      error: "Signing not available",
+      message: "Private key not configured on server",
+    });
+  }
+
+  if (!toSign) {
+    return res.status(400).json({ error: "Missing toSign parameter" });
+  }
+
   try {
-    const sign = crypto.createSign("SHA1");
+    const sign = crypto.createSign("SHA512");
     sign.update(toSign);
     sign.end();
     const signature = sign.sign(privateKey, "base64");
     res.json({ signature });
   } catch (err) {
-    console.error("Signing error:", err);
-    res.status(500).send("Signing error");
+    console.error("Signing error:", err.message);
+    res.status(500).json({
+      error: "Signing failed",
+      message: err.message,
+    });
   }
 });
 const authRoutes = require("./routes/auth");
