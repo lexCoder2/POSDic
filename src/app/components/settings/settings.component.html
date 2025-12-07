@@ -3,24 +3,23 @@
     [title]="'SETTINGS.TITLE' | translate"
     [description]="'SETTINGS.DESCRIPTION' | translate"
   >
-    <div class="header-actions">
-      <button class="btn btn-primary" (click)="previewReceipt()">
-        {{ "SETTINGS.PRINTING.PREVIEW" | translate }}
-      </button>
-      <button
-        *ngIf="isAdmin"
-        class="btn btn-secondary"
-        routerLink="/templates"
-        title="Manage receipt templates"
-      >
-        {{ "TEMPLATES.TITLE" | translate }}
-      </button>
-    </div>
   </app-page-title>
 
   <section class="card setting-section">
     <div class="setting-header">
-      <h3>{{ "SETTINGS.PRINTING.TITLE" | translate }}</h3>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="previewReceipt()">
+          {{ "SETTINGS.PRINTING.PREVIEW" | translate }}
+        </button>
+        <button
+          *ngIf="isAdmin"
+          class="btn btn-secondary"
+          routerLink="/templates"
+          title="Manage receipt templates"
+        >
+          {{ "TEMPLATES.TITLE" | translate }}
+        </button>
+      </div>
     </div>
 
     <div class="options" role="radiogroup" aria-label="Printer Mode">
