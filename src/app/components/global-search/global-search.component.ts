@@ -28,6 +28,8 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   searchQuery = "";
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
+  private lastEnterSearchTime = 0;
+  private lastEnterSearchQuery = "";
 
   @ViewChild("globalSearchInput")
   globalSearchInput!: ElementRef<HTMLInputElement>;
@@ -101,7 +103,23 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
 
   onSearchKeyPress(event: KeyboardEvent): void {
     if (event.key === "Enter") {
+      const now = Date.now();
+      const query = this.searchQuery.trim();
+
+      // Prevent double search if same query within 500ms (barcode scanner sends Enter at end)
+      if (
+        query === this.lastEnterSearchQuery &&
+        now - this.lastEnterSearchTime < 500
+      ) {
+        console.log("Duplicate Enter search prevented");
+        event.preventDefault();
+        return;
+      }
+
       console.log("Enter key pressed in global search");
+      this.lastEnterSearchTime = now;
+      this.lastEnterSearchQuery = query;
+
       // Bypass debounce on Enter key
       event.preventDefault();
       this.handleEnterSearch(this.searchQuery);
@@ -184,6 +202,16 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   }
 
   performSearch(query: string): void {
+    // Prevent duplicate search if Enter key just triggered the same search
+    const now = Date.now();
+    if (
+      query.trim() === this.lastEnterSearchQuery &&
+      now - this.lastEnterSearchTime < 500
+    ) {
+      console.log("Debounced search skipped - already handled by Enter key");
+      return;
+    }
+
     // Update the search state service which will trigger search in consuming components
     this.searchStateService.setSearchQuery(query);
   }
