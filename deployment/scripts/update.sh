@@ -25,11 +25,18 @@ GIT_BRANCH="${GIT_BRANCH:-main}"
 cleanup() {
     if [ $? -ne 0 ]; then
         echo -e "${RED}Update failed! Check errors above.${NC}"
+        # Restore backups on failure
         if [ -f "/tmp/.env.backup" ]; then
             cp "/tmp/.env.backup" "$BACKEND_DIR/.env" 2>/dev/null || true
         fi
+        if [ -f "/tmp/private-key.pem.backup" ]; then
+            cp "/tmp/private-key.pem.backup" "$BACKEND_DIR/private-key.pem" 2>/dev/null || true
+        fi
+        if [ -f "/tmp/public-key.pem.backup" ]; then
+            cp "/tmp/public-key.pem.backup" "$BACKEND_DIR/public-key.pem" 2>/dev/null || true
+        fi
     fi
-    rm -f /tmp/.env.backup
+    rm -f /tmp/.env.backup /tmp/private-key.pem.backup /tmp/public-key.pem.backup
 }
 trap cleanup EXIT
 
@@ -107,15 +114,54 @@ echo -e "${GREEN} Frontend deployed${NC}"
 # Update backend
 echo -e "\n${YELLOW}[4/6] Deploying backend...${NC}"
 
+# Backup .env file
 if [ -f "$BACKEND_DIR/.env" ]; then
     cp "$BACKEND_DIR/.env" "/tmp/.env.backup"
 fi
 
-rsync -av --delete --exclude='node_modules' --exclude='.env' --exclude='product_images' "$REPO_DIR/server/" "$BACKEND_DIR/"
+# Backup QZ Tray signing keys
+if [ -f "$BACKEND_DIR/private-key.pem" ]; then
+    cp "$BACKEND_DIR/private-key.pem" "/tmp/private-key.pem.backup"
+    echo "Backed up QZ Tray private key"
+fi
+if [ -f "$BACKEND_DIR/public-key.pem" ]; then
+    cp "$BACKEND_DIR/public-key.pem" "/tmp/public-key.pem.backup"
+    echo "Backed up QZ Tray public key"
+fi
 
+rsync -av --delete --exclude='node_modules' --exclude='.env' --exclude='product_images' --exclude='private-key.pem' --exclude='public-key.pem' "$REPO_DIR/server/" "$BACKEND_DIR/"
+
+# Restore .env file
 if [ -f "/tmp/.env.backup" ]; then
     cp "/tmp/.env.backup" "$BACKEND_DIR/.env"
     rm -f "/tmp/.env.backup"
+fi
+
+# Restore QZ Tray signing keys
+if [ -f "/tmp/private-key.pem.backup" ]; then
+    cp "/tmp/private-key.pem.backup" "$BACKEND_DIR/private-key.pem"
+    chmod 600 "$BACKEND_DIR/private-key.pem"
+    rm -f "/tmp/private-key.pem.backup"
+    echo "Restored QZ Tray private key"
+fi
+if [ -f "/tmp/public-key.pem.backup" ]; then
+    cp "/tmp/public-key.pem.backup" "$BACKEND_DIR/public-key.pem"
+    rm -f "/tmp/public-key.pem.backup"
+    echo "Restored QZ Tray public key"
+fi
+
+# Generate QZ Tray keys if they don't exist
+if [ ! -f "$BACKEND_DIR/private-key.pem" ]; then
+    echo -e "${YELLOW}QZ Tray keys not found, generating new keys...${NC}"
+    openssl genrsa -out "$BACKEND_DIR/private-key.pem" 2048
+    openssl rsa -in "$BACKEND_DIR/private-key.pem" -outform PEM -pubout -out "$BACKEND_DIR/public-key.pem"
+    chmod 600 "$BACKEND_DIR/private-key.pem"
+    chown $DEPLOY_USER:$DEPLOY_USER "$BACKEND_DIR/private-key.pem" "$BACKEND_DIR/public-key.pem"
+    
+    # Update frontend certificate with new public key
+    cp "$BACKEND_DIR/public-key.pem" "$FRONTEND_DIR/assets/digital-certificate.txt"
+    chown $DEPLOY_USER:$DEPLOY_USER "$FRONTEND_DIR/assets/digital-certificate.txt"
+    echo -e "${GREEN}QZ Tray keys generated and frontend certificate updated${NC}"
 fi
 
 mkdir -p "$BACKEND_DIR/product_images"
