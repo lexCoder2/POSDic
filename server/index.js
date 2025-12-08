@@ -135,9 +135,17 @@ const startServer = async () => {
     // In development, run HTTPS with local certificates
     if (process.env.NODE_ENV === "production") {
       const http = require("http");
+      const networkInterfaces = require("os").networkInterfaces();
+      const localIP = Object.values(networkInterfaces)
+        .flat()
+        .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
+
       http.createServer(app).listen(PORT, HOST, () => {
         console.log(`HTTP Server is running on port ${PORT}`);
         console.log(`Local: http://localhost:${PORT}`);
+        if (localIP) {
+          console.log(`LAN: http://${localIP}:${PORT}`);
+        }
         console.log(`Environment: ${process.env.NODE_ENV}`);
         console.log("Ready to accept requests!");
       });
@@ -153,19 +161,44 @@ const startServer = async () => {
           cert: fs.readFileSync(certPath),
         };
 
+        const networkInterfaces = require("os").networkInterfaces();
+        const localIP = Object.values(networkInterfaces)
+          .flat()
+          .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
+
         https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
           console.log(`HTTPS Server is running on port ${PORT}`);
           console.log(`Local: https://localhost:${PORT}`);
+          if (localIP) {
+            console.log(`LAN: https://${localIP}:${PORT}`);
+            console.log(
+              `\nFor mobile apps, use: https://${localIP}:${PORT}/api`
+            );
+            console.log(
+              "Note: Mobile devices may need to trust the self-signed certificate"
+            );
+          }
           console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
           console.log("Ready to accept requests!");
         });
       } else {
         // Fallback to HTTP if no certs
         const http = require("http");
+        const networkInterfaces = require("os").networkInterfaces();
+        const localIP = Object.values(networkInterfaces)
+          .flat()
+          .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
+
         console.warn("SSL certificates not found, starting HTTP server...");
         http.createServer(app).listen(PORT, HOST, () => {
           console.log(`HTTP Server is running on port ${PORT}`);
           console.log(`Local: http://localhost:${PORT}`);
+          if (localIP) {
+            console.log(`LAN: http://${localIP}:${PORT}`);
+            console.log(
+              `\nFor mobile apps, use: http://${localIP}:${PORT}/api`
+            );
+          }
           console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
           console.log("Ready to accept requests!");
         });
