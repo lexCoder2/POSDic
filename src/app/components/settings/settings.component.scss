@@ -107,7 +107,9 @@
     background: transparent;
     cursor: pointer;
     min-width: 220px;
-    transition: box-shadow 0.12s, transform 0.08s;
+    transition:
+      box-shadow 0.12s,
+      transform 0.08s;
 
     .icon {
       width: 44px;

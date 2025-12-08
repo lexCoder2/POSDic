@@ -827,15 +827,18 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   getItemsBySupplier(): Array<{ supplier: string; items: CartItem[] }> {
-    const grouped = this.cartItems.reduce((acc, item) => {
-      const supplier =
-        item.product.brand || item.product.store || "GOOD FOODS INC.";
-      if (!acc[supplier]) {
-        acc[supplier] = [];
-      }
-      acc[supplier].push(item);
-      return acc;
-    }, {} as Record<string, CartItem[]>);
+    const grouped = this.cartItems.reduce(
+      (acc, item) => {
+        const supplier =
+          item.product.brand || item.product.store || "GOOD FOODS INC.";
+        if (!acc[supplier]) {
+          acc[supplier] = [];
+        }
+        acc[supplier].push(item);
+        return acc;
+      },
+      {} as Record<string, CartItem[]>
+    );
 
     return Object.entries(grouped).map(([supplier, items]) => ({
       supplier: supplier.toUpperCase(),

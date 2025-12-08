@@ -1,17 +1,18 @@
 @if (isActive) {
-<div class="camera-overlay" (click)="onOverlayClick()">
-  <div class="camera-content" (click)="$event.stopPropagation()">
-    <button class="close-camera" (click)="onCloseClick()">
-      <i class="fas fa-times"></i>
-    </button>
-    <div id="camera-scanner"></div>
+  <div class="camera-overlay" (click)="onOverlayClick()">
+    <div class="camera-content" (click)="$event.stopPropagation()">
+      <button class="close-camera" (click)="onCloseClick()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div id="camera-scanner"></div>
+    </div>
   </div>
-</div>
-} @if (showScanToast) {
-<div class="camera-toast">
-  <div class="toast-inner">
-    <i class="fas fa-check-circle"></i>
-    <span>{{ scanToastText }}</span>
+}
+@if (showScanToast) {
+  <div class="camera-toast">
+    <div class="toast-inner">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ scanToastText }}</span>
+    </div>
   </div>
-</div>
 }

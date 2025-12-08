@@ -394,8 +394,8 @@ export class TemplatesComponent implements OnInit {
       formValue.fontSize === "small"
         ? "14px"
         : formValue.fontSize === "medium"
-        ? "16px"
-        : "18px";
+          ? "16px"
+          : "18px";
     const align = formValue.textAlign;
 
     // Helper function to convert size name to px
@@ -416,8 +416,8 @@ export class TemplatesComponent implements OnInit {
       formValue.paperSize === "58mm"
         ? "200px"
         : formValue.paperSize === "80mm"
-        ? "280px"
-        : "800px"
+          ? "280px"
+          : "800px"
     }; margin: 0 auto; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.2;">`;
 
     // Header
@@ -556,16 +556,16 @@ export class TemplatesComponent implements OnInit {
       template.body?.fontSize === "small"
         ? "14px"
         : template.body?.fontSize === "medium"
-        ? "16px"
-        : "18px";
+          ? "16px"
+          : "18px";
     const align = template.styles?.textAlign || "center";
 
     let preview = `<div style="font-family: monospace; width: ${
       template.paperSize === "58mm"
         ? "150px"
         : template.paperSize === "80mm"
-        ? "210px"
-        : "600px"
+          ? "210px"
+          : "600px"
     }; margin: 0 auto; padding: 11px; border: 1px solid #ddd; font-size: ${fontSize}; text-align: ${align}; line-height: 1.3; background: white;">`;
 
     // Header

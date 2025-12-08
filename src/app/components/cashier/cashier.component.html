@@ -208,8 +208,8 @@
             selectedPaymentMethod() === "cash"
               ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
               : selectedPaymentMethod() === "card"
-              ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
-              : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
+                ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
+                : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
           }}
         </h2>
         <button class="close-btn" (click)="cancelPayment()">
@@ -272,7 +272,7 @@
           <p>
             {{
               "CASHIER.PAYMENT.CONFIRM_MESSAGE"
-                | translate : { method: selectedPaymentMethod() }
+                | translate: { method: selectedPaymentMethod() }
             }}
           </p>
         </div>

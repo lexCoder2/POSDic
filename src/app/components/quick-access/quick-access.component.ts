@@ -27,7 +27,7 @@ import { Product } from "../../models";
               {{ product.brand }}
             </p>
             <p class="product-price">
-              {{ product.price | currency : "PHP" : "symbol" : "1.2-2" }}
+              {{ product.price | currency: "PHP" : "symbol" : "1.2-2" }}
             </p>
           </div>
         </div>

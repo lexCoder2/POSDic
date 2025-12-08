@@ -307,7 +307,9 @@
       justify-content: center;
       font-size: 0.7rem;
       flex-shrink: 0;
-      transition: background 0.2s, color 0.4s;
+      transition:
+        background 0.2s,
+        color 0.4s;
 
       &:hover {
         background: #feb2b2;

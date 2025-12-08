@@ -42,7 +42,7 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   loadTopProducts(): void {
     this.isLoading = true;
     this.loadError = false;
-    
+
     this.productService
       .getFavoriteProducts(20)
       .pipe(

@@ -35,13 +35,16 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-neumorphic: 6px 6px 12px rgba(163, 177, 198, 0.6),
+  --shadow-neumorphic:
+    6px 6px 12px rgba(163, 177, 198, 0.6),
     -6px -6px 12px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-sm: 3px 3px 6px rgba(163, 177, 198, 0.4),
-    -3px -3px 6px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-lg: 9px 9px 16px rgba(163, 177, 198, 0.6),
+  --shadow-neumorphic-sm:
+    3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5);
+  --shadow-neumorphic-lg:
+    9px 9px 16px rgba(163, 177, 198, 0.6),
     -9px -9px 16px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-inset: inset 3px 3px 6px rgba(163, 177, 198, 0.4),
+  --shadow-neumorphic-inset:
+    inset 3px 3px 6px rgba(163, 177, 198, 0.4),
     inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 
   --radius-sm: 8px;

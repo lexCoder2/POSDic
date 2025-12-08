@@ -99,15 +99,20 @@ $shadow-primary: 0 4px 12px rgba(59, 130, 246, 0.25);
 $shadow-primary-lg: 0 6px 20px rgba(59, 130, 246, 0.3);
 
 // Neumorphic specific shadows
-$shadow-neumorphic: 6px 6px 12px rgba(163, 177, 198, 0.6),
+$shadow-neumorphic:
+  6px 6px 12px rgba(163, 177, 198, 0.6),
   -6px -6px 12px rgba(255, 255, 255, 0.5);
-$shadow-neumorphic-sm: 3px 3px 6px rgba(163, 177, 198, 0.4),
+$shadow-neumorphic-sm:
+  3px 3px 6px rgba(163, 177, 198, 0.4),
   -3px -3px 6px rgba(255, 255, 255, 0.5);
-$shadow-neumorphic-lg: 9px 9px 16px rgba(163, 177, 198, 0.6),
+$shadow-neumorphic-lg:
+  9px 9px 16px rgba(163, 177, 198, 0.6),
   -9px -9px 16px rgba(255, 255, 255, 0.5);
-$shadow-neumorphic-inset: inset 3px 3px 6px rgba(163, 177, 198, 0.4),
+$shadow-neumorphic-inset:
+  inset 3px 3px 6px rgba(163, 177, 198, 0.4),
   inset -3px -3px 6px rgba(255, 255, 255, 0.5);
-$shadow-neumorphic-pressed: inset 4px 4px 8px rgba(163, 177, 198, 0.5),
+$shadow-neumorphic-pressed:
+  inset 4px 4px 8px rgba(163, 177, 198, 0.5),
   inset -4px -4px 8px rgba(255, 255, 255, 0.3);
 
 // ===== BORDER RADIUS =====
@@ -132,10 +137,11 @@ $spacing-4xl: 4rem; // 64px
 
 // ===== TYPOGRAPHY =====
 // Font Families
-$font-family-base: "Average Sans", "League Spartan", BlinkMacSystemFont,
-  "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-$font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier,
-  monospace;
+$font-family-base:
+  "Average Sans", "League Spartan", BlinkMacSystemFont, "Segoe UI", Roboto,
+  "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+$font-family-mono:
+  "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
 // Font Sizes
 $font-size-xs: 0.75rem; // 12px
@@ -209,7 +215,8 @@ $input-text: $text-primary;
 $input-placeholder: $gray-400;
 $input-height: 34px;
 $input-shadow: $shadow-neumorphic-inset;
-$input-shadow-focus: $shadow-neumorphic-inset,
+$input-shadow-focus:
+  $shadow-neumorphic-inset,
   0 0 1px 1px rgba($blue-light, 0.7);
 
 // Buttons
@@ -265,13 +272,14 @@ $card-hover-shadow: $shadow-neumorphic-lg;
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-neumorphic: 6px 6px 12px rgba(0, 0, 0, 0.4),
-    -6px -6px 12px rgba(255, 255, 255, 0.02);
-  --shadow-neumorphic-sm: 3px 3px 6px rgba(0, 0, 0, 0.3),
-    -3px -3px 6px rgba(255, 255, 255, 0.02);
-  --shadow-neumorphic-lg: 9px 9px 16px rgba(0, 0, 0, 0.5),
-    -9px -9px 16px rgba(255, 255, 255, 0.03);
-  --shadow-neumorphic-inset: inset 3px 3px 6px rgba(0, 0, 0, 0.3),
+  --shadow-neumorphic:
+    6px 6px 12px rgba(0, 0, 0, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.02);
+  --shadow-neumorphic-sm:
+    3px 3px 6px rgba(0, 0, 0, 0.3), -3px -3px 6px rgba(255, 255, 255, 0.02);
+  --shadow-neumorphic-lg:
+    9px 9px 16px rgba(0, 0, 0, 0.5), -9px -9px 16px rgba(255, 255, 255, 0.03);
+  --shadow-neumorphic-inset:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.3),
     inset -3px -3px 6px rgba(255, 255, 255, 0.02);
 
   // Apply to html element
@@ -501,7 +509,9 @@ $card-hover-shadow: $shadow-neumorphic-lg;
 
   tbody {
     tr {
-      transition: background $transition-fast, transform $transition-fast,
+      transition:
+        background $transition-fast,
+        transform $transition-fast,
         box-shadow $transition-fast;
       border-bottom: 1px solid rgba($border-color, 0.6);
 

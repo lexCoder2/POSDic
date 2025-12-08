@@ -17,7 +17,7 @@ const routes: Routes = [
       import("./components/pos/pos.component").then((m) => m.PosComponent),
     canActivate: [authGuard],
   },
- 
+
   {
     path: "categories",
     loadComponent: () =>

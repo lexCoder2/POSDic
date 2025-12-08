@@ -4,20 +4,20 @@
       <div class="multiply-label">
         <span *ngIf="multiplyMode() === 'add'">{{
           "CASHIER.MULTIPLY.ADD_LABEL" | translate
-          }}</span>
+        }}</span>
         <span *ngIf="multiplyMode() === 'update'">{{
           "CASHIER.MULTIPLY.UPDATE_LABEL" | translate
-          }}</span>
+        }}</span>
       </div>
       <span class="quantity-display">{{ display() }}</span>
       <span class="display-separator">&nbsp;x&nbsp;</span>
       <span class="display-value">{{
         multiplyMode() === "add"
-        ? pendingMultiplyValue()
-        : multiplyMode() === "update"
-        ? lastItemPrice()
-        : ""
-        }}</span>
+          ? pendingMultiplyValue()
+          : multiplyMode() === "update"
+            ? lastItemPrice()
+            : ""
+      }}</span>
     </ng-container>
     <ng-container *ngIf="!isMultiplying()">
       <span class="display-value">{{ display() }}</span>
@@ -26,59 +26,107 @@
 
   <div class="calculator-grid">
     <!-- Number pad -->
-    <button class="calc-btn number" (click)="appendNumber('7'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('7'); blurButton($event)"
+    >
       7
     </button>
-    <button class="calc-btn number" (click)="appendNumber('8'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('8'); blurButton($event)"
+    >
       8
     </button>
-    <button class="calc-btn number" (click)="appendNumber('9'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('9'); blurButton($event)"
+    >
       9
     </button>
-    <button class="calc-btn operation backspace" (click)="backspace(); blurButton($event)">
+    <button
+      class="calc-btn operation backspace"
+      (click)="backspace(); blurButton($event)"
+    >
       <i class="fas fa-backspace"></i>
     </button>
 
-    <button class="calc-btn number" (click)="appendNumber('4'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('4'); blurButton($event)"
+    >
       4
     </button>
-    <button class="calc-btn number" (click)="appendNumber('5'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('5'); blurButton($event)"
+    >
       5
     </button>
-    <button class="calc-btn number" (click)="appendNumber('6'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('6'); blurButton($event)"
+    >
       6
     </button>
-    <button class="calc-btn operation clear" (click)="clear(); blurButton($event)">
+    <button
+      class="calc-btn operation clear"
+      (click)="clear(); blurButton($event)"
+    >
       C
     </button>
 
-    <button class="calc-btn number" (click)="appendNumber('1'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('1'); blurButton($event)"
+    >
       1
     </button>
-    <button class="calc-btn number" (click)="appendNumber('2'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('2'); blurButton($event)"
+    >
       2
     </button>
-    <button class="calc-btn number" (click)="appendNumber('3'); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendNumber('3'); blurButton($event)"
+    >
       3
     </button>
-    <button class="calc-btn operation clear-all" (click)="clearAll(); blurButton($event)">
+    <button
+      class="calc-btn operation clear-all"
+      (click)="clearAll(); blurButton($event)"
+    >
       AC
     </button>
 
-    <button class="calc-btn number zero" (click)="appendNumber('0'); blurButton($event)">
+    <button
+      class="calc-btn number zero"
+      (click)="appendNumber('0'); blurButton($event)"
+    >
       0
     </button>
-    <button class="calc-btn number" (click)="appendDecimal(); blurButton($event)">
+    <button
+      class="calc-btn number"
+      (click)="appendDecimal(); blurButton($event)"
+    >
       .
     </button>
-    <button class="calc-btn operation add" (click)="onAddItem(); blurButton($event)">
+    <button
+      class="calc-btn operation add"
+      (click)="onAddItem(); blurButton($event)"
+    >
       <i class="fas fa-plus"></i>
       {{ "CASHIER.ADD" | translate }}
     </button>
   </div>
 
   <!-- Loose Product Button -->
-  <button class="loose-product-btn" (click)="openLooseProductModal(); blurButton($event)">
+  <button
+    class="loose-product-btn"
+    (click)="openLooseProductModal(); blurButton($event)"
+  >
     <i class="fas fa-weight"></i>
     {{ "CASHIER.LOOSE_PRODUCT" | translate }}
   </button>

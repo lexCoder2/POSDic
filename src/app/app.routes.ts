@@ -56,9 +56,9 @@ export const routes: Routes = [
       {
         path: "inventory-session",
         loadComponent: () =>
-          import(
-            "./components/inventory-session/inventory-session.component"
-          ).then((m) => m.InventorySessionComponent),
+          import("./components/inventory-session/inventory-session.component").then(
+            (m) => m.InventorySessionComponent
+          ),
         canActivate: [roleGuard(["admin", "manager"])],
       },
       {

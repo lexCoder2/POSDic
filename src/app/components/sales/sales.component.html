@@ -74,7 +74,7 @@
       </div>
       <div class="row-count">
         <span>{{
-          "SALES.TOTAL" | translate : { count: filteredSales().length }
+          "SALES.TOTAL" | translate: { count: filteredSales().length }
         }}</span>
         <select
           [(ngModel)]="pageSize"
@@ -107,10 +107,10 @@
           <td>
             <strong>{{ sale.saleNumber }}</strong>
           </td>
-          <td>{{ sale.createdAt | date : "short" }}</td>
+          <td>{{ sale.createdAt | date: "short" }}</td>
           <td>
             {{
-              "SALES.ITEMS_COUNT" | translate : { count: getTotalItems(sale) }
+              "SALES.ITEMS_COUNT" | translate: { count: getTotalItems(sale) }
             }}
           </td>
           <td>
@@ -211,7 +211,7 @@
     [show]="showSaleModal && !!selectedSale"
     [title]="
       'SALES.DETAILS_TITLE'
-        | translate : { saleNumber: selectedSale?.saleNumber }
+        | translate: { saleNumber: selectedSale?.saleNumber }
     "
     size="lg"
     (close)="showSaleModal = false"
@@ -220,7 +220,7 @@
       <div class="sale-info">
         <div class="info-row">
           <span class="info-label">{{ "SALES.DETAILS.DATE" | translate }}</span>
-          <span>{{ selectedSale.createdAt | date : "medium" }}</span>
+          <span>{{ selectedSale.createdAt | date: "medium" }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">{{

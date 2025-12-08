@@ -15,7 +15,10 @@ export class AuthService {
   private tokenKey = "pos_token";
   private userKey = "pos_user";
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.loadStoredUser();
   }
 

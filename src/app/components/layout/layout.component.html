@@ -216,7 +216,7 @@
       <i class="fas fa-exclamation-triangle"></i>
       <span *ngIf="!isRegisterOverdue()">
         {{ "REGISTER.AUTO_CLOSE_WARNING" | translate }} ({{
-          getRegisterDurationHours() | number : "1.1-1"
+          getRegisterDurationHours() | number: "1.1-1"
         }}
         {{ "REGISTER.HOURS" | translate }})
       </span>
@@ -324,7 +324,7 @@
           </span>
           <span class="register-last-used" *ngIf="reg.lastClosedAt">
             {{ "REGISTER.LAST_CLOSED" | translate }}:
-            {{ reg.lastClosedAt | date : "short" }}
+            {{ reg.lastClosedAt | date: "short" }}
             <span *ngIf="reg.lastClosedBy"> - {{ reg.lastClosedBy }}</span>
           </span>
         </div>
@@ -406,7 +406,7 @@
     <div class="register-info">
       <p>
         <strong>{{ "REGISTER.OPENED_AT" | translate }}:</strong>
-        {{ currentRegister.openedAt | date : "short" }}
+        {{ currentRegister.openedAt | date: "short" }}
       </p>
       <p>
         <strong>{{ "REGISTER.OPENING_AMOUNT" | translate }}:</strong>

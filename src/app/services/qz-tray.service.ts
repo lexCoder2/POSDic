@@ -58,10 +58,11 @@ export class QzTrayService {
     this.qz.security.setSignaturePromise((toSign: string) => {
       return (resolve: any, reject: any) => {
         this.http
-          .post<{ signature: string; error?: string; message?: string }>(
-            this.apiUrl + "/sign",
-            { toSign }
-          )
+          .post<{
+            signature: string;
+            error?: string;
+            message?: string;
+          }>(this.apiUrl + "/sign", { toSign })
           .subscribe({
             next: (res) => {
               if (res?.error) {

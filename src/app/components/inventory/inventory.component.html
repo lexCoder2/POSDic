@@ -24,22 +24,22 @@
         class="page-size-select"
       >
         <option [value]="10">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 10 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 10 } }}
         </option>
         <option [value]="25">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 25 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 25 } }}
         </option>
         <option [value]="50">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 50 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 50 } }}
         </option>
         <option [value]="100">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 100 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 100 } }}
         </option>
         <option [value]="250">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 250 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 250 } }}
         </option>
         <option [value]="500">
-          {{ "GLOBAL.PER_PAGE" | translate : { count: 500 } }}
+          {{ "GLOBAL.PER_PAGE" | translate: { count: 500 } }}
         </option>
       </select>
     </div>
@@ -80,12 +80,12 @@
             <td>
               <div class="product-image-container">
                 @if (product.local_image) {
-                <img
-                  [src]="imgBaseUrl + '/' + product.local_image"
-                  [alt]="product.name"
-                  class="product-thumb"
-                  (error)="onImageError($event)"
-                />
+                  <img
+                    [src]="imgBaseUrl + '/' + product.local_image"
+                    [alt]="product.name"
+                    class="product-thumb"
+                    (error)="onImageError($event)"
+                  />
                 }
                 <div
                   class="product-thumb-placeholder"
@@ -99,7 +99,7 @@
             <td>{{ product.ean || product.ean13 || product.upc }}</td>
             <td>{{ product.brand || "-" }}</td>
             <td>{{ product.category }}</td>
-            <td>{{ product.price | currency : "MXN" : "symbol" : "1.2-2" }}</td>
+            <td>{{ product.price | currency: "MXN" : "symbol" : "1.2-2" }}</td>
             <td>
               <span
                 class="stock-badge"
@@ -536,7 +536,7 @@
       </div>
       <p>
         {{
-          "INVENTORY.IMPORT.PROGRESS" | translate : { percent: importProgress }
+          "INVENTORY.IMPORT.PROGRESS" | translate: { percent: importProgress }
         }}
       </p>
     </div>
@@ -548,14 +548,14 @@
           <i class="fas fa-check-circle"></i>
           {{
             "INVENTORY.IMPORT.SUCCESSFUL"
-              | translate : { count: importResults.successful }
+              | translate: { count: importResults.successful }
           }}
         </p>
         <p *ngIf="importResults.failed > 0" class="error">
           <i class="fas fa-times-circle"></i>
           {{
             "INVENTORY.IMPORT.FAILED_COUNT"
-              | translate : { count: importResults.failed }
+              | translate: { count: importResults.failed }
           }}
         </p>
       </div>

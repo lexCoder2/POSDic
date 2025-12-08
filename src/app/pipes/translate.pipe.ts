@@ -7,7 +7,10 @@ import { TranslationService } from "../services/translation.service";
   standalone: true,
 })
 export class TranslatePipe implements PipeTransform {
-  constructor(private t: TranslationService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private t: TranslationService,
+    private cdr: ChangeDetectorRef
+  ) {
     // When translations change (loaded or language switched), mark for check
     this.t.translationsChanged$.subscribe(() => {
       try {

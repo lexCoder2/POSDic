@@ -1229,8 +1229,8 @@ export class ReceiptGeneratorService {
     const displayValue = isText
       ? value
       : typeof value === "number"
-      ? `$${value.toFixed(2)}`
-      : value;
+        ? `$${value.toFixed(2)}`
+        : value;
     return `<div class="total-row ${className}"><span>${label}:</span><span>${displayValue}</span></div>`;
   }
 

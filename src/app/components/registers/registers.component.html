@@ -94,16 +94,16 @@
         <tr *ngFor="let register of paginatedRegisters">
           <td>{{ register.registerNumber }}</td>
           <td>{{ getOpenedByName(register) }}</td>
-          <td>{{ register.openedAt | date : "short" }}</td>
+          <td>{{ register.openedAt | date: "short" }}</td>
           <td>
-            {{ register.closedAt ? (register.closedAt | date : "short") : "-" }}
+            {{ register.closedAt ? (register.closedAt | date: "short") : "-" }}
           </td>
           <td>{{ calculateDuration(register) }}</td>
           <td class="currency">{{ register.openingCash | appCurrency }}</td>
           <td class="currency">
             {{
               register.closingCash
-                ? "$" + (register.closingCash | number : "1.2-2")
+                ? "$" + (register.closingCash | number: "1.2-2")
                 : "-"
             }}
           </td>
@@ -111,20 +111,20 @@
             class="currency"
             [ngClass]="{
               positive: register.cashDifference && register.cashDifference > 0,
-              negative: register.cashDifference && register.cashDifference < 0
+              negative: register.cashDifference && register.cashDifference < 0,
             }"
           >
             {{
               register.cashDifference !== null &&
               register.cashDifference !== undefined
-                ? "$" + (register.cashDifference | number : "1.2-2")
+                ? "$" + (register.cashDifference | number: "1.2-2")
                 : "-"
             }}
           </td>
           <td class="currency">
             {{
               register.totalSales
-                ? "$" + (register.totalSales | number : "1.2-2")
+                ? "$" + (register.totalSales | number: "1.2-2")
                 : "-"
             }}
           </td>
@@ -231,7 +231,7 @@
         </div>
         <div class="detail-item">
           <label>{{ "REGISTER.OPENED_AT" | translate }}</label>
-          <span>{{ selectedRegister.openedAt | date : "medium" }}</span>
+          <span>{{ selectedRegister.openedAt | date: "medium" }}</span>
         </div>
         <div class="detail-item" *ngIf="selectedRegister.closedBy">
           <label>{{ "REGISTER.CLOSED_BY" | translate }}</label>
@@ -239,7 +239,7 @@
         </div>
         <div class="detail-item" *ngIf="selectedRegister.closedAt">
           <label>{{ "REGISTER.CLOSED_AT" | translate }}</label>
-          <span>{{ selectedRegister.closedAt | date : "medium" }}</span>
+          <span>{{ selectedRegister.closedAt | date: "medium" }}</span>
         </div>
         <div class="detail-item">
           <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
@@ -283,7 +283,7 @@
             class="currency"
             [ngClass]="{
               positive: selectedRegister.cashDifference > 0,
-              negative: selectedRegister.cashDifference < 0
+              negative: selectedRegister.cashDifference < 0,
             }"
           >
             {{ selectedRegister.cashDifference | appCurrency }}

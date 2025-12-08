@@ -792,7 +792,9 @@
       border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: 6px;
       font-size: 1rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
       &:focus {
         outline: none;
@@ -1113,7 +1115,8 @@
       &:focus {
         outline: none;
         border-color: $warning;
-        box-shadow: 0 0 0 3px rgba($warning, 0.15),
+        box-shadow:
+          0 0 0 3px rgba($warning, 0.15),
           var(--shadow-neumorphic-inset);
       }
 

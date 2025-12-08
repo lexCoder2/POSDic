@@ -81,8 +81,8 @@
             selectedPeriod() === "week"
               ? ("STATISTICS.PERIOD.WEEK" | translate)
               : selectedPeriod() === "month"
-              ? ("STATISTICS.PERIOD.MONTH" | translate)
-              : ("STATISTICS.PERIOD.YEAR" | translate)
+                ? ("STATISTICS.PERIOD.MONTH" | translate)
+                : ("STATISTICS.PERIOD.YEAR" | translate)
           }}</span>
         </div>
       </div>
@@ -115,7 +115,7 @@
                 "
               >
                 <div class="bar-value">
-                  {{ value > 0 ? (value | appCurrency : 0) : "" }}
+                  {{ value > 0 ? (value | appCurrency: 0) : "" }}
                 </div>
                 <div
                   class="bar"

@@ -25,7 +25,7 @@
     </div>
     <div class="session-info-item">
       <i class="fas fa-clock"></i>
-      <span>{{ session().startedAt | date : "short" }}</span>
+      <span>{{ session().startedAt | date: "short" }}</span>
     </div>
     <div class="session-info-item">
       <label class="stock-registration-toggle">
@@ -197,7 +197,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let update of session().updates">
-            <td>{{ update.timestamp | date : "shortTime" }}</td>
+            <td>{{ update.timestamp | date: "shortTime" }}</td>
             <td>{{ update.productName }}</td>
             <td>
               <span class="ean-code">{{ update.ean || "-" }}</span>

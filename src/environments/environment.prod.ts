@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: "https://server.local/api",
-  imageUrl: "https://server.local",
+  apiUrl: "https://server.iarodriguez.com/api",
+  imageUrl: "https://server.iarodriguez.com",
 };

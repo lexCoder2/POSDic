@@ -20,7 +20,9 @@
 
     &:checked + .toggle-slider {
       background: $gradient-primary;
-      box-shadow: var(--shadow-neumorphic-inset), inset 0 0 0 2px $primary;
+      box-shadow:
+        var(--shadow-neumorphic-inset),
+        inset 0 0 0 2px $primary;
     }
 
     &:disabled + .toggle-slider {

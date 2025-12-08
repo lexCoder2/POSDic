@@ -1,7 +1,12 @@
 <div class="modal-overlay" *ngIf="show" (click)="onBackdropClick()">
-  <div class="modal-content" [class.modal-sm]="size === 'sm'" [class.modal-md]="size === 'md'"
-    [class.modal-lg]="size === 'lg'" [class.modal-xl]="size === 'xl'" (click)="$event.stopPropagation()">
-
+  <div
+    class="modal-content"
+    [class.modal-sm]="size === 'sm'"
+    [class.modal-md]="size === 'md'"
+    [class.modal-lg]="size === 'lg'"
+    [class.modal-xl]="size === 'xl'"
+    (click)="$event.stopPropagation()"
+  >
     <div class="modal-header" *ngIf="title || showCloseButton">
       <h3 *ngIf="title">
         <i *ngIf="icon" [class]="icon"></i>

@@ -13,11 +13,19 @@
   </div>
 
   <div class="tabs">
-    <button class="tab-button" [class.active]="activeTab === 'fast'" (click)="setTab('fast')">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'fast'"
+      (click)="setTab('fast')"
+    >
       {{ "FAST_CASHIER.TITLE" | translate }}
     </button>
 
-    <button class="tab-button" [class.active]="activeTab === 'pos'" (click)="setTab('pos')">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'pos'"
+      (click)="setTab('pos')"
+    >
       {{ "POS_SALES" | translate }}
     </button>
   </div>
@@ -46,8 +54,11 @@
           <div *ngFor="let it of currentCart()" class="item-row">
             <div class="col product">
               <div class="product-image">
-                <img src="/assets/placeholder-product.png" [alt]="it.description || it.product?.name || 'product'"
-                  loading="lazy" />
+                <img
+                  src="/assets/placeholder-product.png"
+                  [alt]="it.description || it.product?.name || 'product'"
+                  loading="lazy"
+                />
               </div>
 
               <div class="text">
@@ -60,10 +71,10 @@
 
             <div class="col qty">x{{ it.quantity }}</div>
             <div class="col price">
-              {{ it.unitPrice | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ it.unitPrice | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
             <div class="col subtotal">
-              {{ it.subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ it.subtotal | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
         </div>
@@ -80,9 +91,7 @@
                 {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
               </div>
               <div class="value">
-                {{
-                currentCartSubtotal | currency : "MXN" : "symbol" : "1.2-2"
-                }}
+                {{ currentCartSubtotal | currency: "MXN" : "symbol" : "1.2-2" }}
               </div>
             </div>
 
@@ -92,7 +101,7 @@
               </div>
               <div class="value">
                 -{{
-                currentCartDiscount | currency : "MXN" : "symbol" : "1.2-2"
+                  currentCartDiscount | currency: "MXN" : "symbol" : "1.2-2"
                 }}
               </div>
             </div>
@@ -102,14 +111,14 @@
                 {{ "SALES.DETAILS.TOTALS.TAX" | translate }}
               </div>
               <div class="value">
-                {{ currentCartTax | currency : "MXN" : "symbol" : "1.2-2" }}
+                {{ currentCartTax | currency: "MXN" : "symbol" : "1.2-2" }}
               </div>
             </div>
 
             <div class="summary-row total">
               <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
               <div class="value large">
-                {{ currentCartTotal | currency : "MXN" : "symbol" : "1.2-2" }}
+                {{ currentCartTotal | currency: "MXN" : "symbol" : "1.2-2" }}
               </div>
             </div>
           </div>
@@ -142,10 +151,14 @@
           <div *ngFor="let it of items" class="item-row">
             <div class="col product">
               <div class="product-image">
-                <img [src]="
-                   `${apiUrl}/${it.product.local_image}` ||
+                <img
+                  [src]="
+                    `${apiUrl}/${it.product.local_image}` ||
                     '/assets/placeholder-product.png'
-                  " [alt]="it.product.name" loading="lazy" />
+                  "
+                  [alt]="it.product.name"
+                  loading="lazy"
+                />
               </div>
 
               <div class="text">
@@ -156,10 +169,10 @@
 
             <div class="col qty">x{{ it.quantity }}</div>
             <div class="col price">
-              {{ it.product.price | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ it.product.price | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
             <div class="col subtotal">
-              {{ it.subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ it.subtotal | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
         </ng-container>
@@ -177,7 +190,7 @@
               {{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}
             </div>
             <div class="value">
-              {{ subtotal | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ subtotal | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
 
@@ -186,7 +199,7 @@
               {{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}
             </div>
             <div class="value">
-              -{{ discount | currency : "MXN" : "symbol" : "1.2-2" }}
+              -{{ discount | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
 
@@ -195,14 +208,14 @@
               {{ "SALES.DETAILS.TOTALS.TAX" | translate }}
             </div>
             <div class="value">
-              {{ tax | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ tax | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
 
           <div class="summary-row total">
             <div class="label">{{ "CART.SUMMARY.TOTAL" | translate }}</div>
             <div class="value large">
-              {{ total | currency : "MXN" : "symbol" : "1.2-2" }}
+              {{ total | currency: "MXN" : "symbol" : "1.2-2" }}
             </div>
           </div>
         </div>

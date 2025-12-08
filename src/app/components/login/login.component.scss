@@ -482,10 +482,8 @@
 
         &:focus {
           outline: none;
-          box-shadow: var(
-              --shadow-neumorphic-inset,
-              var(--shadow-neumorphic-inset)
-            ),
+          box-shadow:
+            var(--shadow-neumorphic-inset, var(--shadow-neumorphic-inset)),
             0 0 0 2px rgba($primary, 0.3);
 
           & + i,
