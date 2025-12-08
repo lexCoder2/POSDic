@@ -99,18 +99,18 @@ export interface ReceiptConfig {
 
 /** Predefined paper sizes */
 export const PAPER_SIZES: Record<string, PaperConfig> = {
-  "58mm": { widthMm: 58, widthPx: 384, dpi: 203, margin: 8 },
-  "80mm": { widthMm: 80, widthPx: 576, dpi: 203, margin: 12 },
-  A4: { widthMm: 210, widthPx: 1684, dpi: 203, margin: 40 },
+  "58mm": { widthMm: 58, widthPx: 420, dpi: 300, margin: 6 },
+  "80mm": { widthMm: 80, widthPx: 600, dpi: 300, margin: 8 },
+  A4: { widthMm: 210, widthPx: 2480, dpi: 300, margin: 40 },
 };
 
 /** Default font configuration */
 export const DEFAULT_FONT_CONFIG: FontConfig = {
   family: "'Courier New', Courier, monospace",
-  baseSize: 12,
-  headerSize: 16,
-  titleSize: 14,
-  smallSize: 10,
+  baseSize: 9,
+  headerSize: 11,
+  titleSize: 10,
+  smallSize: 8,
 };
 
 /** Default style configuration */
@@ -126,8 +126,8 @@ export const DEFAULT_STYLE_CONFIG: StyleConfig = {
 export const DEFAULT_BARCODE_CONFIG: BarcodeConfig = {
   enabled: true,
   type: "code128",
-  height: 50,
-  scale: 2,
+  height: 33,
+  scale: 1.2,
   includeText: true,
 };
 
@@ -138,17 +138,17 @@ export const DEFAULT_RECEIPT_CONFIG: ReceiptConfig = {
   style: DEFAULT_STYLE_CONFIG,
   barcode: DEFAULT_BARCODE_CONFIG,
   plainTextMode: false,
-  charsPerLine: 32,
+  charsPerLine: 28,
 };
 
 /** Default receipt configuration for 80mm thermal printer */
 export const DEFAULT_80MM_CONFIG: ReceiptConfig = {
   paper: PAPER_SIZES["80mm"],
-  font: { ...DEFAULT_FONT_CONFIG, baseSize: 14, headerSize: 18 },
+  font: { ...DEFAULT_FONT_CONFIG, baseSize: 10, headerSize: 12 },
   style: DEFAULT_STYLE_CONFIG,
   barcode: DEFAULT_BARCODE_CONFIG,
   plainTextMode: false,
-  charsPerLine: 48,
+  charsPerLine: 42,
 };
 
 // ============================================================================
@@ -223,6 +223,100 @@ export class ReceiptGeneratorService {
   }
 
   /**
+   * Check if print preview is enabled
+   */
+  shouldShowPreview(): boolean {
+    return localStorage.getItem("printer.showPreview") === "true";
+  }
+
+  /**
+   * Show preview window with receipt HTML
+   */
+  async showPreview(html: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const previewWindow = window.open("", "_blank", "width=480,height=640");
+      if (!previewWindow) {
+        resolve(false);
+        return;
+      }
+
+      const styledHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Receipt Preview</title>
+          <style>
+            body { 
+              margin: 0; 
+              padding: 20px;
+              background: #f5f5f5;
+              font-family: Arial, sans-serif;
+            }
+            .preview-actions {
+              position: fixed;
+              top: 10px;
+              right: 10px;
+              display: flex;
+              gap: 10px;
+              z-index: 1000;
+            }
+            .preview-actions button {
+              padding: 8px 16px;
+              font-size: 14px;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: 500;
+            }
+            .btn-print {
+              background: #4f46e5;
+              color: white;
+            }
+            .btn-cancel {
+              background: #6b7280;
+              color: white;
+            }
+            .btn-print:hover {
+              background: #4338ca;
+            }
+            .btn-cancel:hover {
+              background: #4b5563;
+            }
+            .receipt-container {
+              max-width: 480px;
+              margin: 50px auto 0;
+              background: white;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              padding: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="preview-actions">
+            <button class="btn-print" onclick="window.printConfirmed = true; window.close();">Print</button>
+            <button class="btn-cancel" onclick="window.printConfirmed = false; window.close();">Cancel</button>
+          </div>
+          <div class="receipt-container">
+            ${html}
+          </div>
+        </body>
+        </html>
+      `;
+
+      previewWindow.document.write(styledHtml);
+      previewWindow.document.close();
+
+      // Wait for window to close
+      const checkClosed = setInterval(() => {
+        if (previewWindow.closed) {
+          clearInterval(checkClosed);
+          resolve((previewWindow as any).printConfirmed === true);
+        }
+      }, 100);
+    });
+  }
+
+  /**
    * Simplified method to print a sale receipt using default template
    * This is the main method components should use
    */
@@ -237,6 +331,16 @@ export class ReceiptGeneratorService {
     const config: Partial<ReceiptConfig> = {
       plainTextMode: options.plainText ?? false,
     };
+
+    // Check if preview is enabled
+    if (this.shouldShowPreview()) {
+      const html = await this.generateReceipt(sale, template, config);
+      const confirmed = await this.showPreview(html);
+      if (!confirmed) {
+        return; // User cancelled
+      }
+    }
+
     await this.printReceipt(sale, template, config, options.printerName);
   }
 
@@ -398,40 +502,45 @@ export class ReceiptGeneratorService {
       
       .receipt {
         width: 100%;
-        padding: ${Math.floor(paper.margin / 2)}px ${Math.floor(
-      paper.margin / 2
-    )}px;
+        max-width: 100%;
+        padding: ${Math.max(2, Math.floor(paper.margin / 3))}px;
+        box-sizing: border-box;
       }
       
       /* Header Styles */
       .header {
         text-align: center;
-        margin-bottom: 8px;
-        padding: 0 4px;
+        margin-bottom: 6px;
+        padding: 0 2px;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
       }
       
       .store-name {
         font-size: ${font.headerSize}px;
         font-weight: bold;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
+        word-break: break-word;
       }
       
       .store-info {
         font-size: ${font.smallSize}px;
-        line-height: 1.4;
+        line-height: 1.3;
+        word-break: break-word;
       }
       
       .sale-number {
         font-size: ${font.titleSize}px;
         font-weight: bold;
-        margin-top: 8px;
+        margin-top: 6px;
+        word-break: break-word;
       }
       
       /* Separator */
       .separator {
         border: none;
         border-top: 1px ${style.lineStyle} ${style.lineColor};
-        margin: 8px 0;
+        margin: 4px 0;
       }
       
       /* Items Table */
@@ -443,9 +552,10 @@ export class ReceiptGeneratorService {
       
       .items-table th,
       .items-table td {
-        padding: 2px 4px;
+        padding: 1px 2px;
         vertical-align: top;
         text-align: left;
+        font-size: ${font.baseSize}px;
       }
       
       .items-table th {
@@ -455,48 +565,53 @@ export class ReceiptGeneratorService {
       }
       
       .col-qty {
-        width: 15%;
+        width: 18%;
         text-align: center;
       }
       
       .col-desc {
-        width: 55%;
+        width: 50%;
+        word-break: break-word;
+        overflow-wrap: break-word;
       }
       
       .col-price {
-        width: 30%;
+        width: 32%;
         text-align: right;
       }
       
       .item-name {
         font-size: ${font.baseSize}px;
         word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
       }
       
       .item-sku {
-        font-size: ${font.smallSize - 1}px;
+        font-size: ${Math.max(6, font.smallSize - 1)}px;
         color: #666;
       }
       
       /* Totals Section */
       .totals {
-        margin: 8px 0;
-        padding: 0 4px;
+        margin: 4px 0;
+        padding: 0 2px;
       }
       
       .total-row {
         display: flex;
         justify-content: space-between;
-        padding: 2px 0;
+        padding: 1px 0;
         font-size: ${font.baseSize}px;
+        word-break: break-word;
       }
       
       .total-row.grand-total {
         font-size: ${font.titleSize}px;
         font-weight: bold;
         border-top: 2px solid ${style.lineColor};
-        margin-top: 4px;
-        padding-top: 4px;
+        margin-top: 3px;
+        padding-top: 3px;
       }
       
       .total-row.change {
@@ -507,9 +622,10 @@ export class ReceiptGeneratorService {
       /* Footer Styles */
       .footer {
         text-align: center;
-        margin-top: 8px;
+        margin-top: 6px;
         font-size: ${font.smallSize}px;
-        padding: 0 4px;
+        padding: 0 2px;
+        word-break: break-word;
       }
       
       .footer-info {
@@ -517,28 +633,33 @@ export class ReceiptGeneratorService {
       }
       
       .barcode-container {
-        margin: 12px auto;
+        margin: 8px auto;
         text-align: center;
+        max-width: 100%;
+        overflow: hidden;
       }
       
       .barcode-container img {
-        max-width: 100%;
+        max-width: 90%;
         height: auto;
       }
       
       .custom-message {
-        margin-top: 8px;
+        margin-top: 6px;
         font-style: italic;
+        word-break: break-word;
       }
       
       /* Print Styles */
       @media print {
         body {
-          width: ${Math.floor(paper.widthPx * 0.9)}px !important;
-          max-width: ${Math.floor(paper.widthPx * 0.9)}px !important;
+          width: ${paper.widthPx}px !important;
+          max-width: ${paper.widthPx}px !important;
         }
         .receipt {
           page-break-inside: avoid;
+          width: 100%;
+          max-width: 100%;
         }
       }
     `;
@@ -999,20 +1120,25 @@ export class ReceiptGeneratorService {
   <style>
     body {
       margin: 0;
-      padding: ${config.paper.margin}px;
+      padding: ${Math.max(2, Math.floor(config.paper.margin / 2))}px;
       width: ${config.paper.widthPx}px;
+      max-width: ${config.paper.widthPx}px;
+      box-sizing: border-box;
       font-family: ${config.font.family};
       font-size: ${config.font.baseSize}px;
       line-height: 1.2;
       background: ${config.style.backgroundColor};
       color: ${config.style.textColor};
+      overflow-x: hidden;
     }
     pre {
       margin: 0;
       white-space: pre-wrap;
       word-wrap: break-word;
+      overflow-wrap: break-word;
       font-family: inherit;
       font-size: inherit;
+      overflow-x: hidden;
     }
   </style>
 </head>

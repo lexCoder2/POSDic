@@ -255,7 +255,9 @@
       "PLAIN_DESC": "Minimal, fixed-width text receipts (best for thermal/ESC-POS printers)",
       "PREVIEW": "Preview",
       "STYLED": "Print (Styled)",
-      "STYLED_DESC": "Styled HTML receipts with branding and layout (may vary by printer)"
+      "STYLED_DESC": "Styled HTML receipts with branding and layout (may vary by printer)",
+      "SHOW_PREVIEW": "Show preview before printing",
+      "SHOW_PREVIEW_DESC": "Display a preview window with Print/Cancel buttons before sending receipts to the printer"
     },
     "USER_PREFERENCES": {
       "TITLE": "User Preferences",

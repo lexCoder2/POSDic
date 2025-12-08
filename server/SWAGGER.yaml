@@ -1373,53 +1373,125 @@ components:
     # Product
     Product:
       type: object
+      required:
+        - product_id
+        - name
+        - price
       properties:
         _id:
           type: string
+          description: MongoDB ObjectId
         sku:
           type: string
+          description: Stock Keeping Unit identifier
         product_id:
           type: string
+          description: Unique product identifier (required)
         reference:
           type: string
+          description: Reference code
         ean:
           type: string
+          description: European Article Number barcode
         ean13:
           type: string
+          description: EAN-13 barcode
         upc:
           type: string
+          description: Universal Product Code barcode
+        multi_ean:
+          type: string
+          description: Multiple EAN codes
         name:
           type: string
+          description: Product name (required)
         description:
           type: string
+          description: Product description
         brand:
           type: string
+          description: Product brand
         category:
           type: string
+          description: Product category
         price:
           type: number
+          minimum: 0
+          description: Selling price (required)
         list_price:
           type: number
+          minimum: 0
+          description: List/suggested retail price
+        currency:
+          type: string
+          default: MXN
+          description: Currency code
         stock:
           type: number
+          minimum: 0
+          default: 0
+          description: Current stock quantity
         available:
           type: boolean
-        active:
-          type: boolean
-        requiresScale:
-          type: boolean
+          default: true
+          description: Product availability status
+        image_url:
+          type: string
+          description: URL to product image
+        local_image:
+          type: string
+          description: Local path to product image
+        product_url:
+          type: string
+          description: URL to product page
+        store:
+          type: string
+          description: Store identifier
+        scraped_at:
+          type: string
+          format: date-time
+          description: Timestamp when data was scraped
+        minStock:
+          type: number
+          default: 0
+          description: Minimum stock level alert threshold
         unit:
           type: string
           enum: [unit, kg, g, l, ml, box]
+          default: unit
+          description: Unit of measurement
+        requiresScale:
+          type: boolean
+          default: false
+          description: Whether product requires weighing
+        taxRate:
+          type: number
+          default: 0
+          description: Tax rate percentage
+        cost:
+          type: number
+          minimum: 0
+          default: 0
+          description: Cost price
         provider:
           type: string
-        minStock:
-          type: number
+          description: Provider/supplier ObjectId reference
+        active:
+          type: boolean
+          default: true
+          description: Whether product is active
         incompleteInfo:
           type: boolean
+          default: false
+          description: Flag for products with incomplete information
         createdAt:
           type: string
           format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
 
     ProductInput:
       type: object
@@ -1428,32 +1500,105 @@ components:
         - product_id
         - price
       properties:
-        name:
-          type: string
         product_id:
           type: string
+          description: Unique product identifier (required)
         sku:
           type: string
+          description: Stock Keeping Unit identifier
+        reference:
+          type: string
+          description: Reference code
         ean:
           type: string
+          description: European Article Number barcode
+        ean13:
+          type: string
+          description: EAN-13 barcode
         upc:
           type: string
-        price:
-          type: number
-        stock:
-          type: number
-        category:
+          description: Universal Product Code barcode
+        multi_ean:
           type: string
+          description: Multiple EAN codes
+        name:
+          type: string
+          description: Product name (required)
+        description:
+          type: string
+          description: Product description
         brand:
           type: string
-        provider:
+          description: Product brand
+        category:
           type: string
-        requiresScale:
-          type: boolean
-        active:
-          type: boolean
+          description: Product category
+        price:
+          type: number
+          minimum: 0
+          description: Selling price (required)
+        list_price:
+          type: number
+          minimum: 0
+          description: List/suggested retail price
+        currency:
+          type: string
+          default: MXN
+          description: Currency code
+        stock:
+          type: number
+          minimum: 0
+          default: 0
+          description: Current stock quantity
         available:
           type: boolean
+          default: true
+          description: Product availability status
+        image_url:
+          type: string
+          description: URL to product image
+        local_image:
+          type: string
+          description: Local path to product image
+        product_url:
+          type: string
+          description: URL to product page
+        store:
+          type: string
+          description: Store identifier
+        minStock:
+          type: number
+          default: 0
+          description: Minimum stock level alert threshold
+        unit:
+          type: string
+          enum: [unit, kg, g, l, ml, box]
+          default: unit
+          description: Unit of measurement
+        requiresScale:
+          type: boolean
+          default: false
+          description: Whether product requires weighing
+        taxRate:
+          type: number
+          default: 0
+          description: Tax rate percentage
+        cost:
+          type: number
+          minimum: 0
+          default: 0
+          description: Cost price
+        provider:
+          type: string
+          description: Provider/supplier ObjectId reference
+        active:
+          type: boolean
+          default: true
+          description: Whether product is active
+        incompleteInfo:
+          type: boolean
+          default: false
+          description: Flag for products with incomplete information
 
     # Sale
     Sale:

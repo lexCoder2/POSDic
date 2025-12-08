@@ -27,6 +27,7 @@ import { QzTrayService } from "../../services/qz-tray.service";
 })
 export class SettingsComponent implements OnInit {
   printerMode: "plain" | "styled" = "plain";
+  showPrintPreview: boolean = false;
 
   displayName: string = "";
   preferredLang: string = "";
@@ -64,6 +65,10 @@ export class SettingsComponent implements OnInit {
       localStorage.setItem("printer.mode", this.printerMode);
     }
 
+    // Load print preview setting
+    const previewSetting = localStorage.getItem("printer.showPreview");
+    this.showPrintPreview = previewSetting === "true";
+
     // Generate QR code for current user
     this.generateQrCode();
 
@@ -100,6 +105,14 @@ export class SettingsComponent implements OnInit {
   setPrinterMode(mode: "plain" | "styled") {
     this.printerMode = mode;
     localStorage.setItem("printer.mode", mode);
+  }
+
+  togglePrintPreview() {
+    this.showPrintPreview = !this.showPrintPreview;
+    localStorage.setItem(
+      "printer.showPreview",
+      this.showPrintPreview.toString()
+    );
   }
 
   saveUserSettings() {

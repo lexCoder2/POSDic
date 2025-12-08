@@ -200,7 +200,9 @@
       "PLAIN_DESC": "Recibos de texto mínimos y ancho fijo (mejor para impresoras térmicas/ESC-POS)",
       "PREVIEW": "Vista previa",
       "STYLED": "Imprimir (Con Estilos)",
-      "STYLED_DESC": "Recibos HTML con estilo y marca (puede variar según la impresora)"
+      "STYLED_DESC": "Recibos HTML con estilo y marca (puede variar según la impresora)",
+      "SHOW_PREVIEW": "Mostrar vista previa antes de imprimir",
+      "SHOW_PREVIEW_DESC": "Mostrar ventana de vista previa con botones Imprimir/Cancelar antes de enviar recibos a la impresora"
     },
     "USER_PREFERENCES": {
       "TITLE": "Preferencias de Usuario",

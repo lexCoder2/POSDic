@@ -22,6 +22,22 @@
       </div>
     </div>
 
+    <div class="preview-toggle">
+      <label class="toggle-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="showPrintPreview"
+          (change)="togglePrintPreview()"
+        />
+        <span class="toggle-text">
+          {{ "SETTINGS.PRINTING.SHOW_PREVIEW" | translate }}
+        </span>
+      </label>
+      <p class="toggle-description">
+        {{ "SETTINGS.PRINTING.SHOW_PREVIEW_DESC" | translate }}
+      </p>
+    </div>
+
     <div class="options" role="radiogroup" aria-label="Printer Mode">
       <div
         class="option-card"
