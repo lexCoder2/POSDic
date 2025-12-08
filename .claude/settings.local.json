@@ -3,7 +3,9 @@
     "allow": [
       "Bash(find:*)",
       "Bash(openssl version:*)",
-      "Bash(openssl genrsa:*)"
+      "Bash(openssl genrsa:*)",
+      "WebSearch",
+      "WebFetch(domain:www.manualslib.com)"
     ],
     "deny": [],
     "ask": []

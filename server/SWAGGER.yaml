@@ -1,0 +1,1790 @@
+openapi: 3.0.3
+info:
+  title: POSDic API
+  description: |
+    **POSDic Point of Sale System API**
+
+    A comprehensive REST API for managing retail Point of Sale operations including:
+    - User authentication (password and QR code)
+    - Product and inventory management
+    - Sales and refunds processing
+    - Receipt printing with QZ Tray integration
+    - Register management with device binding
+    - Cart management
+    - Multi-language support
+
+    ## Authentication
+    Most endpoints require authentication using Bearer tokens (JWT).
+    Include the token in the Authorization header: `Authorization: Bearer <token>`
+
+    ## Permissions
+    Different endpoints require different permission levels:
+    - `sales` - Complete sales transactions
+    - `refunds` - Process refunds and cancellations
+    - `discounts` - Apply discounts to sales
+    - `reports` - View sales reports and analytics
+    - `inventory` - Manage products, categories, and providers
+    - `users` - Manage user accounts
+    - `settings` - Configure system settings and templates
+
+    ## Roles
+    - `admin` - Full system access
+    - `manager` - Can manage sales, inventory, and close registers
+    - `cashier` - Can process sales and manage cart
+    - `employee` - Limited access
+
+  version: 1.0.0
+  contact:
+    name: POSDic Support
+    email: support@posdic.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://localhost:3000/api
+    description: Local development server (HTTPS)
+  - url: http://localhost:3000/api
+    description: Local development server (HTTP)
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: Products
+    description: Product catalog and inventory management
+  - name: Sales
+    description: Sales transaction processing and history
+  - name: Users
+    description: User account management
+  - name: Categories
+    description: Product category management
+  - name: Providers
+    description: Supplier/provider management
+  - name: Templates
+    description: Receipt print template management
+  - name: Carts
+    description: Shopping cart session management
+  - name: Registers
+    description: Cash register management with device binding
+  - name: QZ Tray
+    description: Receipt printing integration
+
+paths:
+  # ============================================================================
+  # AUTHENTICATION
+  # ============================================================================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login with username and password
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials or account deactivated
+        "500":
+          description: Server error
+
+  /auth/qr-login:
+    post:
+      tags:
+        - Authentication
+      summary: Login with QR code
+      description: Authenticate user via QR badge scan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - qrData
+              properties:
+                qrData:
+                  type: string
+                  description: QR code data (format POSDIC:userId or just userId)
+                  example: "POSDIC:507f1f77bcf86cd799439011"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid QR code or account deactivated
+        "400":
+          description: Invalid QR code format
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account (should be admin-protected in production)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: User already exists
+
+  # ============================================================================
+  # PRODUCTS
+  # ============================================================================
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Get all products with pagination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: search
+          in: query
+          description: Fuzzy search across name, barcode, SKU, EAN, etc.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      tags:
+        - Products
+      summary: Create new product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Validation error
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+
+    put:
+      tags:
+        - Products
+      summary: Update product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+    delete:
+      tags:
+        - Products
+      summary: Delete product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted successfully
+
+  /products/search/{query}:
+    get:
+      tags:
+        - Products
+      summary: Search products with fuzzy matching
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/favorites:
+    get:
+      tags:
+        - Products
+      summary: Get favorite products (best sellers)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Favorite products based on last 4 months sales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/bulk-upload:
+    post:
+      tags:
+        - Products
+      summary: Bulk import products from Excel/CSV
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Import completed with results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imported:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: object
+
+  # ============================================================================
+  # SALES
+  # ============================================================================
+  /sales:
+    get:
+      tags:
+        - Sales
+      summary: Get all sales with filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [in_progress, completed, cancelled, refunded]
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: cashier
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sales retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Sale"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      tags:
+        - Sales
+      summary: Create new sale
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaleInput"
+      responses:
+        "201":
+          description: Sale created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sale"
+
+  /sales/{id}:
+    get:
+      tags:
+        - Sales
+      summary: Get sale by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sale found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sale"
+
+    put:
+      tags:
+        - Sales
+      summary: Update sale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaleInput"
+      responses:
+        "200":
+          description: Sale updated successfully
+
+  /sales/{id}/cancel:
+    put:
+      tags:
+        - Sales
+      summary: Cancel a sale
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancellationReason:
+                  type: string
+      responses:
+        "200":
+          description: Sale cancelled successfully
+
+  /sales/{id}/refund:
+    post:
+      tags:
+        - Sales
+      summary: Process refund (full or partial)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product:
+                        type: string
+                      quantity:
+                        type: number
+                reason:
+                  type: string
+                refundType:
+                  type: string
+                  enum: [full, partial]
+      responses:
+        "200":
+          description: Refund processed successfully
+
+  /sales/reports/summary:
+    get:
+      tags:
+        - Sales
+      summary: Get sales summary report
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: cashier
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sales summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalSales:
+                    type: number
+                  totalRevenue:
+                    type: number
+                  averageTicket:
+                    type: number
+                  totalCash:
+                    type: number
+                  totalCard:
+                    type: number
+                  totalTransfer:
+                    type: number
+
+  # ============================================================================
+  # USERS
+  # ============================================================================
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    put:
+      tags:
+        - Users
+      summary: Update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: User updated successfully
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+
+  /users/me/profile:
+    get:
+      tags:
+        - Users
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/me/settings:
+    get:
+      tags:
+        - Users
+      summary: Get current user settings
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+
+    put:
+      tags:
+        - Users
+      summary: Update current user settings
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSettings"
+      responses:
+        "200":
+          description: Settings updated successfully
+
+  # ============================================================================
+  # CATEGORIES
+  # ============================================================================
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+    post:
+      tags:
+        - Categories
+      summary: Create new category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Category created successfully
+
+  /categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category found
+
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category updated successfully
+
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category deleted successfully
+
+  # ============================================================================
+  # PROVIDERS
+  # ============================================================================
+  /providers:
+    get:
+      tags:
+        - Providers
+      summary: Get all providers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Providers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Provider"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      tags:
+        - Providers
+      summary: Create new provider
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderInput"
+      responses:
+        "201":
+          description: Provider created successfully
+
+  # ============================================================================
+  # TEMPLATES
+  # ============================================================================
+  /templates:
+    get:
+      tags:
+        - Templates
+      summary: Get all print templates
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrintTemplate"
+
+    post:
+      tags:
+        - Templates
+      summary: Create new print template
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrintTemplateInput"
+      responses:
+        "201":
+          description: Template created successfully
+
+  /templates/default:
+    get:
+      tags:
+        - Templates
+      summary: Get default template
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Default template
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrintTemplate"
+
+  # ============================================================================
+  # CARTS
+  # ============================================================================
+  /carts:
+    get:
+      tags:
+        - Carts
+      summary: Get all carts with filters
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cashier
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, completed, abandoned]
+      responses:
+        "200":
+          description: Carts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cart"
+
+    post:
+      tags:
+        - Carts
+      summary: Create new cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartInput"
+      responses:
+        "201":
+          description: Cart created successfully
+
+  /carts/active/{cashierId}:
+    get:
+      tags:
+        - Carts
+      summary: Get active cart for cashier
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cashierId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Active cart found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+
+  /carts/{id}/abandon:
+    put:
+      tags:
+        - Carts
+      summary: Mark cart as abandoned (public endpoint)
+      description: Used by sendBeacon on page unload
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart marked as abandoned
+
+  # ============================================================================
+  # REGISTERS
+  # ============================================================================
+  /registers/device/{deviceId}:
+    get:
+      tags:
+        - Registers
+      summary: Get register bound to device
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device register info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  register:
+                    $ref: "#/components/schemas/Register"
+                  isDeviceBound:
+                    type: boolean
+                  suggestedRegister:
+                    type: string
+                  canManageOthers:
+                    type: boolean
+
+  /registers/device/bind:
+    post:
+      tags:
+        - Registers
+      summary: Bind device to register
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - deviceId
+                - registerNumber
+              properties:
+                deviceId:
+                  type: string
+                deviceName:
+                  type: string
+                registerNumber:
+                  type: string
+      responses:
+        "200":
+          description: Device bound successfully
+
+  /registers/available:
+    get:
+      tags:
+        - Registers
+      summary: Get available registers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available registers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  registers:
+                    type: array
+                    items:
+                      type: object
+                  canManageOthers:
+                    type: boolean
+
+  /registers/active:
+    get:
+      tags:
+        - Registers
+      summary: Get active register for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Active register
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Register"
+
+  /registers/open:
+    post:
+      tags:
+        - Registers
+      summary: Open a new register
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - registerNumber
+                - openingCash
+              properties:
+                registerNumber:
+                  type: string
+                openingCash:
+                  type: number
+                deviceId:
+                  type: string
+                deviceName:
+                  type: string
+                printReceiptsEnabled:
+                  type: boolean
+                  default: true
+      responses:
+        "201":
+          description: Register opened successfully
+
+  /registers/{id}/close:
+    post:
+      tags:
+        - Registers
+      summary: Close register (manager/admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - closingCash
+              properties:
+                closingCash:
+                  type: number
+                notes:
+                  type: string
+      responses:
+        "200":
+          description: Register closed successfully
+
+  /registers/{id}/print-setting:
+    patch:
+      tags:
+        - Registers
+      summary: Update print receipts setting
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                printReceiptsEnabled:
+                  type: boolean
+      responses:
+        "200":
+          description: Setting updated successfully
+
+  # ============================================================================
+  # QZ TRAY SIGNING
+  # ============================================================================
+  /sign:
+    post:
+      tags:
+        - QZ Tray
+      summary: Sign request for QZ Tray printing
+      description: Signs a request using RSA-SHA512 for QZ Tray secure printing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - toSign
+              properties:
+                toSign:
+                  type: string
+                  description: Data to be signed
+      responses:
+        "200":
+          description: Signature generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signature:
+                    type: string
+                    description: Base64 encoded signature
+        "400":
+          description: Missing toSign parameter
+        "500":
+          description: Signing failed (private key not configured)
+
+# ==============================================================================
+# COMPONENTS
+# ==============================================================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Auth
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT authentication token
+        user:
+          $ref: "#/components/schemas/User"
+
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, cashier, employee]
+          default: cashier
+        permissions:
+          type: array
+          items:
+            type: string
+
+    # User
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, cashier, employee]
+        phone:
+          type: string
+        active:
+          type: boolean
+        permissions:
+          type: array
+          items:
+            type: string
+        internalSalesLimit:
+          type: number
+        lastLogin:
+          type: string
+          format: date-time
+        settings:
+          $ref: "#/components/schemas/UserSettings"
+        createdAt:
+          type: string
+          format: date-time
+
+    UserUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        password:
+          type: string
+
+    UserSettings:
+      type: object
+      properties:
+        displayName:
+          type: string
+        language:
+          type: string
+          enum: [en, es]
+        printerMode:
+          type: string
+          enum: [inherit, plain, styled]
+        currency:
+          type: string
+
+    # Product
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+        sku:
+          type: string
+        product_id:
+          type: string
+        reference:
+          type: string
+        ean:
+          type: string
+        ean13:
+          type: string
+        upc:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        brand:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        list_price:
+          type: number
+        stock:
+          type: number
+        available:
+          type: boolean
+        active:
+          type: boolean
+        requiresScale:
+          type: boolean
+        unit:
+          type: string
+          enum: [unit, kg, g, l, ml, box]
+        provider:
+          type: string
+        minStock:
+          type: number
+        incompleteInfo:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    ProductInput:
+      type: object
+      required:
+        - name
+        - product_id
+        - price
+      properties:
+        name:
+          type: string
+        product_id:
+          type: string
+        sku:
+          type: string
+        ean:
+          type: string
+        upc:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+        category:
+          type: string
+        brand:
+          type: string
+        provider:
+          type: string
+        requiresScale:
+          type: boolean
+        active:
+          type: boolean
+        available:
+          type: boolean
+
+    # Sale
+    Sale:
+      type: object
+      properties:
+        _id:
+          type: string
+        saleNumber:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SaleItem"
+        subtotal:
+          type: number
+        discountTotal:
+          type: number
+        taxTotal:
+          type: number
+        total:
+          type: number
+        paymentMethod:
+          type: string
+          enum: [cash, card, transfer, mixed]
+        paymentDetails:
+          type: object
+          properties:
+            cash:
+              type: number
+            card:
+              type: number
+            transfer:
+              type: number
+            change:
+              type: number
+        cashier:
+          type: string
+        status:
+          type: string
+          enum: [in_progress, completed, cancelled, refunded]
+        isInternal:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    SaleItem:
+      type: object
+      properties:
+        product:
+          type: string
+        productName:
+          type: string
+        productCode:
+          type: string
+        quantity:
+          type: number
+        unitPrice:
+          type: number
+        discount:
+          type: number
+        discountAmount:
+          type: number
+        taxRate:
+          type: number
+        taxAmount:
+          type: number
+        subtotal:
+          type: number
+        total:
+          type: number
+
+    SaleInput:
+      type: object
+      required:
+        - items
+        - subtotal
+        - total
+        - paymentMethod
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SaleItem"
+        subtotal:
+          type: number
+        discountTotal:
+          type: number
+        taxTotal:
+          type: number
+        total:
+          type: number
+        paymentMethod:
+          type: string
+        paymentDetails:
+          type: object
+        status:
+          type: string
+        isInternal:
+          type: boolean
+
+    # Category
+    Category:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+        parentCategory:
+          type: string
+        active:
+          type: boolean
+        order:
+          type: integer
+
+    CategoryInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+        active:
+          type: boolean
+
+    # Provider
+    Provider:
+      type: object
+      properties:
+        _id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: object
+        taxId:
+          type: string
+        active:
+          type: boolean
+        paymentTerms:
+          type: string
+          enum: [immediate, 15days, 30days, 60days, 90days]
+
+    ProviderInput:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+
+    # Print Template
+    PrintTemplate:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        paperSize:
+          type: string
+          enum: [58mm, 80mm, A4, custom]
+        header:
+          type: object
+          properties:
+            storeName:
+              type: string
+            showStoreName:
+              type: boolean
+            storeAddress:
+              type: string
+            showStoreAddress:
+              type: boolean
+            storePhone:
+              type: string
+            showStorePhone:
+              type: boolean
+        body:
+          type: object
+        footer:
+          type: object
+        isDefault:
+          type: boolean
+        active:
+          type: boolean
+
+    PrintTemplateInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        paperSize:
+          type: string
+        header:
+          type: object
+        body:
+          type: object
+        footer:
+          type: object
+        isDefault:
+          type: boolean
+
+    # Cart
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+        cashier:
+          type: string
+        items:
+          type: array
+        subtotal:
+          type: number
+        tax:
+          type: number
+        discount:
+          type: number
+        total:
+          type: number
+        status:
+          type: string
+          enum: [active, completed, abandoned]
+        createdAt:
+          type: string
+          format: date-time
+
+    CartInput:
+      type: object
+      properties:
+        cashier:
+          type: string
+        items:
+          type: array
+        subtotal:
+          type: number
+        total:
+          type: number
+
+    # Register
+    Register:
+      type: object
+      properties:
+        _id:
+          type: string
+        registerNumber:
+          type: string
+        deviceId:
+          type: string
+        deviceName:
+          type: string
+        openedBy:
+          type: string
+        openedAt:
+          type: string
+          format: date-time
+        closedBy:
+          type: string
+        closedAt:
+          type: string
+          format: date-time
+        openingCash:
+          type: number
+        closingCash:
+          type: number
+        expectedCash:
+          type: number
+        cashDifference:
+          type: number
+        totalSales:
+          type: number
+        totalTransactions:
+          type: integer
+        status:
+          type: string
+          enum: [open, closed]
+        printReceiptsEnabled:
+          type: boolean
+        notes:
+          type: string
+
+    # Pagination
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+
+    # Error
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string

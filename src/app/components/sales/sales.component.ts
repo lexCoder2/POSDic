@@ -181,42 +181,18 @@ export class SalesComponent implements OnInit, OnDestroy {
   }
 
   printReceipt(sale: Sale): void {
-    const currentUser = this.currentUser || this.authService.getCurrentUser();
-    const paymentMethod = sale.paymentMethod || "cash";
-    const change = sale.paymentDetails?.change ?? 0;
-
     const mode = localStorage.getItem("printer.mode") || "plain";
-    if (mode === "styled") {
-      this.receiptGeneratorService
-        .generateReceipt(sale, paymentMethod, change, currentUser)
-        .subscribe({
-          next: (receiptContent) => {
-            this.receiptGeneratorService.printReceipt(receiptContent, "html");
-          },
-          error: (err) => {
-            console.error("Error generating styled receipt for sale:", err);
-            this.toastService.show(
-              "Failed to generate receipt. See console for details.",
-              "error"
-            );
-          },
-        });
-    } else {
-      this.receiptGeneratorService
-        .generatePlainTextReceipt(sale, paymentMethod, change, currentUser)
-        .subscribe({
-          next: (receiptContent) => {
-            this.receiptGeneratorService.printReceipt(receiptContent, "plain");
-          },
-          error: (err) => {
-            console.error("Error generating plain-text receipt for sale:", err);
-            this.toastService.show(
-              "Failed to generate receipt. See console for details.",
-              "error"
-            );
-          },
-        });
-    }
+    const isPlainText = mode !== "styled";
+
+    this.receiptGeneratorService
+      .printSaleReceipt(sale, { plainText: isPlainText })
+      .catch((err) => {
+        console.error("Error printing receipt:", err);
+        this.toastService.show(
+          "Failed to print receipt. See console for details.",
+          "error"
+        );
+      });
   }
 
   nextPage(): void {

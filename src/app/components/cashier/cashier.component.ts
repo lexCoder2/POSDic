@@ -745,48 +745,13 @@ export class CashierComponent implements OnInit, AfterViewInit {
         this.toastService.show(message, "success");
 
         // Generate and print receipt using the saved template
-        const currentUser = this.authService.getCurrentUser();
-        // Choose print mode from settings (localStorage)
         const mode = localStorage.getItem("printer.mode") || "plain";
-        if (mode === "styled") {
-          this.receiptGeneratorService
-            .generateReceipt(
-              createdSale,
-              paymentMethod,
-              changeAmount,
-              currentUser
-            )
-            .subscribe({
-              next: (receiptContent) => {
-                this.receiptGeneratorService.printReceipt(
-                  receiptContent,
-                  "html"
-                );
-              },
-              error: (err) => {
-                console.error("Error generating styled receipt:", err);
-              },
-            });
-        } else {
-          this.receiptGeneratorService
-            .generatePlainTextReceipt(
-              createdSale,
-              paymentMethod,
-              changeAmount,
-              currentUser
-            )
-            .subscribe({
-              next: (receiptContent) => {
-                this.receiptGeneratorService.printReceipt(
-                  receiptContent,
-                  "plain"
-                );
-              },
-              error: (err) => {
-                console.error("Error generating plain-text receipt:", err);
-              },
-            });
-        }
+        const isPlainText = mode !== "styled";
+        this.receiptGeneratorService
+          .printSaleReceipt(createdSale, { plainText: isPlainText })
+          .catch((err) => {
+            console.error("Error printing receipt:", err);
+          });
 
         // Mark cart as completed after successful sale
         if (this.activeCartId()) {

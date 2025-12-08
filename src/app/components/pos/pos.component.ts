@@ -644,57 +644,14 @@ export class PosComponent implements OnInit, OnDestroy {
           "success"
         );
         // Generate and print receipt using the saved/default template
-        try {
-          if (!this.printReceiptsEnabled) {
-            // Skip printing if disabled
-            this.cartService.clearCart();
-            this.closeCheckout();
-            return;
-          }
-          const currentUser = this.authService.getCurrentUser();
-          const change = result.paymentDetails.change || 0;
+        if (this.printReceiptsEnabled) {
           const mode = localStorage.getItem("printer.mode") || "plain";
-          if (mode === "styled") {
-            this.receiptGeneratorService
-              .generateReceipt(
-                completedSale,
-                result.paymentMethod,
-                change,
-                currentUser
-              )
-              .subscribe({
-                next: (receiptContent) => {
-                  this.receiptGeneratorService.printReceipt(
-                    receiptContent,
-                    "html"
-                  );
-                },
-                error: (err) => {
-                  console.error("Error generating styled receipt:", err);
-                },
-              });
-          } else {
-            this.receiptGeneratorService
-              .generatePlainTextReceipt(
-                completedSale,
-                result.paymentMethod,
-                change,
-                currentUser
-              )
-              .subscribe({
-                next: (receiptContent) => {
-                  this.receiptGeneratorService.printReceipt(
-                    receiptContent,
-                    "plain"
-                  );
-                },
-                error: (err) => {
-                  console.error("Error generating plain-text receipt:", err);
-                },
-              });
-          }
-        } catch (e) {
-          console.error("Receipt generation failed:", e);
+          const isPlainText = mode !== "styled";
+          this.receiptGeneratorService
+            .printSaleReceipt(completedSale, { plainText: isPlainText })
+            .catch((err) => {
+              console.error("Error printing receipt:", err);
+            });
         }
 
         this.cartService.clearCart();

@@ -136,42 +136,47 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  previewReceipt() {
+  async previewReceipt() {
     // Minimal sample sale for preview
     const sampleSale: any = {
       saleNumber: "PREVIEW-001",
       items: [
-        { productName: "Sample Product", qty: 1, unitPrice: 9.99, total: 9.99 },
-        { productName: "Another Item", qty: 2, unitPrice: 4.5, total: 9.0 },
+        {
+          productName: "Sample Product",
+          quantity: 1,
+          unitPrice: 9.99,
+          subtotal: 9.99,
+          total: 9.99,
+        },
+        {
+          productName: "Another Item",
+          quantity: 2,
+          unitPrice: 4.5,
+          subtotal: 9.0,
+          total: 9.0,
+        },
       ],
+      subtotal: 18.99,
       total: 18.99,
+      paymentMethod: "cash",
+      cashier: { firstName: "Preview", fullName: "Preview User" },
+      createdAt: new Date(),
     };
 
-    const paymentMethod = "cash";
-    const change = 0;
-    const currentUser = { firstName: "Preview" };
+    const isPlainText = this.printerMode === "plain";
 
-    const generator =
-      this.printerMode === "plain"
-        ? this.receiptGen.generatePlainTextReceipt(
-            sampleSale,
-            paymentMethod,
-            change,
-            currentUser
-          )
-        : this.receiptGen.generateReceipt(
-            sampleSale,
-            paymentMethod,
-            change,
-            currentUser
-          );
-
-    generator.subscribe((html) => {
+    try {
+      const html = await this.receiptGen.generateSaleReceipt(sampleSale, {
+        plainText: isPlainText,
+      });
       const w = window.open("", "_blank", "width=480,height=640");
       if (!w) return;
       w.document.write(html);
       w.document.close();
-    });
+    } catch (err) {
+      console.error("Error generating receipt preview:", err);
+      this.toastService.show("Failed to generate preview", "error");
+    }
   }
 
   private generateQrCode(): void {
