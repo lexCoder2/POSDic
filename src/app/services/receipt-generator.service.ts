@@ -351,7 +351,7 @@ export class ReceiptGeneratorService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=${
-    paper.widthPx
+    config.paper.widthPx
   }px, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>${styles}</style>
 </head>
