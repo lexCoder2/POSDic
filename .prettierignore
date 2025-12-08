@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-test
+*.log
+.angular
+.vscode
+coverage
+*.min.js
+*.min.css
+package-lock.json
+server/node_modules
+server/product_images
+certs
+deployment/scripts

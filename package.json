@@ -10,7 +10,11 @@
     "test": "ng test",
     "server": "cd server && nodemon index.js",
     "dev": "concurrently \"npm run server\" \"npm start\"",
-    "install-all": "npm install && cd server && npm install"
+    "install-all": "npm install && cd server && npm install",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss,css,json}\"",
+    "prebuild": "npm run format:check",
+    "prepare": "husky install"
   },
   "keywords": [
     "POS",
@@ -45,7 +49,23 @@
     "@angular/compiler-cli": "^21.0.0",
     "@types/node": "^24.10.1",
     "concurrently": "^9.2.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0",
     "nodemon": "^3.1.11",
+    "prettier": "^3.1.1",
     "typescript": "^5.9.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,json,scss,css,html}": [
+      "prettier --write"
+    ],
+    "*.ts": [
+      "ng lint --fix"
+    ]
   }
 }

@@ -20,8 +20,36 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Body parser with error handling
+app.use(
+  bodyParser.json({
+    limit: "10mb",
+    verify: (req, res, buf, encoding) => {
+      try {
+        JSON.parse(buf);
+      } catch (e) {
+        throw new Error("Invalid JSON");
+      }
+    },
+  })
+);
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
+
+// Body parser error handler
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    console.error("Bad JSON:", err.message);
+    return res.status(400).json({ error: "Invalid JSON format" });
+  }
+  next(err);
+});
+
+// Request timeout middleware (30 seconds)
+app.use((req, res, next) => {
+  req.setTimeout(30000);
+  res.setTimeout(30000);
+  next();
+});
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -108,17 +136,121 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "POS API is running" });
 });
 
-// Error handling middleware
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    error: "Not Found",
+    message: `Route ${req.method} ${req.path} not found`,
+  });
+});
+
+// Enhanced error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Error caught by middleware:");
-  console.error(err.stack);
-  res
-    .status(500)
-    .json({ message: "Something went wrong!", error: err.message });
+  // Log error details
+  console.error("\n=== ERROR CAUGHT ===");
+  console.error(`Time: ${new Date().toISOString()}`);
+  console.error(`Path: ${req.method} ${req.path}`);
+  console.error(`Message: ${err.message}`);
+  console.error(`Stack: ${err.stack}`);
+  console.error("==================\n");
+
+  // Determine error status code
+  const statusCode = err.statusCode || err.status || 500;
+
+  // Don't leak error details in production
+  const errorResponse = {
+    error: err.name || "ServerError",
+    message: err.message || "Something went wrong",
+  };
+
+  // Include stack trace in development
+  if (process.env.NODE_ENV !== "production") {
+    errorResponse.stack = err.stack;
+  }
+
+  // Send error response
+  res.status(statusCode).json(errorResponse);
 });
 
 // Auto-close utility
 const { scheduleAutoClose } = require("./utils/auto-close-registers");
+
+// Track server instance for graceful shutdown
+let serverInstance = null;
+
+// Graceful shutdown handler
+const gracefulShutdown = async (signal) => {
+  console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+  if (serverInstance) {
+    serverInstance.close(() => {
+      console.log("HTTP/HTTPS server closed");
+
+      // Close database connection
+      const mongoose = require("mongoose");
+      mongoose.connection.close(false, () => {
+        console.log("MongoDB connection closed");
+        console.log("Graceful shutdown complete");
+        process.exit(0);
+      });
+    });
+
+    // Force close after 10 seconds
+    setTimeout(() => {
+      console.error("Forcing shutdown after timeout");
+      process.exit(1);
+    }, 10000);
+  } else {
+    process.exit(0);
+  }
+};
+
+// Handle shutdown signals
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.error("\n=== UNCAUGHT EXCEPTION ===");
+  console.error(`Time: ${new Date().toISOString()}`);
+  console.error(`Error: ${err.message}`);
+  console.error(`Stack: ${err.stack}`);
+  console.error("========================\n");
+
+  // Log to file or external service in production
+  if (process.env.NODE_ENV === "production") {
+    // TODO: Send to logging service (Sentry, LogRocket, etc.)
+  }
+
+  // Keep server running for non-critical errors
+  console.log("Server continues running...\n");
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("\n=== UNHANDLED REJECTION ===");
+  console.error(`Time: ${new Date().toISOString()}`);
+  console.error(`Reason: ${reason}`);
+  console.error(`Promise:`, promise);
+  console.error("=========================\n");
+
+  // Log to file or external service in production
+  if (process.env.NODE_ENV === "production") {
+    // TODO: Send to logging service
+  }
+
+  // Keep server running
+  console.log("Server continues running...\n");
+});
+
+// Handle warnings
+process.on("warning", (warning) => {
+  console.warn("\n=== WARNING ===");
+  console.warn(warning.name);
+  console.warn(warning.message);
+  console.warn(warning.stack);
+  console.warn("==============\n");
+});
 
 // Connect to MongoDB and start server
 const startServer = async () => {
@@ -140,7 +272,7 @@ const startServer = async () => {
         .flat()
         .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
-      http.createServer(app).listen(PORT, HOST, () => {
+      serverInstance = http.createServer(app).listen(PORT, HOST, () => {
         console.log(`HTTP Server is running on port ${PORT}`);
         console.log(`Local: http://localhost:${PORT}`);
         if (localIP) {
@@ -166,7 +298,7 @@ const startServer = async () => {
           .flat()
           .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
-        https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
+        serverInstance = https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
           console.log(`HTTPS Server is running on port ${PORT}`);
           console.log(`Local: https://localhost:${PORT}`);
           if (localIP) {
@@ -190,7 +322,7 @@ const startServer = async () => {
           .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
         console.warn("SSL certificates not found, starting HTTP server...");
-        http.createServer(app).listen(PORT, HOST, () => {
+        serverInstance = http.createServer(app).listen(PORT, HOST, () => {
           console.log(`HTTP Server is running on port ${PORT}`);
           console.log(`Local: http://localhost:${PORT}`);
           if (localIP) {
@@ -204,10 +336,44 @@ const startServer = async () => {
         });
       }
     }
+    // Add error handlers to server instance
+    if (serverInstance) {
+      serverInstance.on("error", (err) => {
+        console.error("Server error:", err);
+        if (err.code === "EADDRINUSE") {
+          console.error(`Port ${PORT} is already in use`);
+          process.exit(1);
+        }
+      });
+
+      serverInstance.on("clientError", (err, socket) => {
+        console.error("Client error:", err.message);
+        socket.end("HTTP/1.1 400 Bad Request\r\n\r\n");
+      });
+    }
   } catch (error) {
-    console.error("Failed to start server:", error.message);
-    process.exit(1);
+    console.error("\n=== FAILED TO START SERVER ===");
+    console.error(`Error: ${error.message}`);
+    console.error(`Stack: ${error.stack}`);
+    console.error("=============================\n");
+
+    // Attempt to reconnect to database after delay
+    if (error.name === "MongoNetworkError" || error.name === "MongooseServerSelectionError") {
+      console.log("Will retry database connection in 5 seconds...");
+      setTimeout(() => {
+        console.log("Retrying server start...");
+        startServer();
+      }, 5000);
+    } else {
+      process.exit(1);
+    }
   }
 };
 
+// Start the server
 startServer();
+
+console.log("\n======================================");
+console.log("POSDic Server Starting...");
+console.log("Press Ctrl+C to shutdown gracefully");
+console.log("======================================\n");
