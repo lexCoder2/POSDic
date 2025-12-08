@@ -350,7 +350,9 @@ export class ReceiptGeneratorService {
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=${
+    paper.widthPx
+  }px, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>${styles}</style>
 </head>
 <body>
@@ -381,8 +383,9 @@ export class ReceiptGeneratorService {
       }
       
       body {
-        width: ${paper.widthPx}px;
-        margin: 0;
+        width: ${Math.floor(paper.widthPx * 0.9)}px;
+        max-width: ${Math.floor(paper.widthPx * 0.9)}px;
+        margin: 0 auto;
         padding: 0;
         background: ${style.backgroundColor};
         color: ${style.textColor};
@@ -395,7 +398,9 @@ export class ReceiptGeneratorService {
       
       .receipt {
         width: 100%;
-        padding: ${Math.floor(paper.margin / 2)}px 0;
+        padding: ${Math.floor(paper.margin / 2)}px ${Math.floor(
+      paper.margin / 2
+    )}px;
       }
       
       /* Header Styles */
@@ -529,7 +534,8 @@ export class ReceiptGeneratorService {
       /* Print Styles */
       @media print {
         body {
-          width: ${paper.widthPx}px !important;
+          width: ${Math.floor(paper.widthPx * 0.9)}px !important;
+          max-width: ${Math.floor(paper.widthPx * 0.9)}px !important;
         }
         .receipt {
           page-break-inside: avoid;
