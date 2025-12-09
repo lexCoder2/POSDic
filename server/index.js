@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const https = require("https");
 const fs = require("fs");
-const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 const connectDB = require("./config/database");
@@ -10,16 +9,6 @@ const connectDB = require("./config/database");
 // Initialize express
 const app = express();
 
-// Middleware - CORS configuration
-// For development, allow all origins. For production, restrict as needed.
-app.use(
-  cors({
-    origin: true, // Reflect request origin
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
 // Body parser with error handling
 app.use(
   bodyParser.json({
@@ -298,21 +287,25 @@ const startServer = async () => {
           .flat()
           .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
-        serverInstance = https.createServer(httpsOptions, app).listen(PORT, HOST, () => {
-          console.log(`HTTPS Server is running on port ${PORT}`);
-          console.log(`Local: https://localhost:${PORT}`);
-          if (localIP) {
-            console.log(`LAN: https://${localIP}:${PORT}`);
+        serverInstance = https
+          .createServer(httpsOptions, app)
+          .listen(PORT, HOST, () => {
+            console.log(`HTTPS Server is running on port ${PORT}`);
+            console.log(`Local: https://localhost:${PORT}`);
+            if (localIP) {
+              console.log(`LAN: https://${localIP}:${PORT}`);
+              console.log(
+                `\nFor mobile apps, use: https://${localIP}:${PORT}/api`
+              );
+              console.log(
+                "Note: Mobile devices may need to trust the self-signed certificate"
+              );
+            }
             console.log(
-              `\nFor mobile apps, use: https://${localIP}:${PORT}/api`
+              `Environment: ${process.env.NODE_ENV || "development"}`
             );
-            console.log(
-              "Note: Mobile devices may need to trust the self-signed certificate"
-            );
-          }
-          console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-          console.log("Ready to accept requests!");
-        });
+            console.log("Ready to accept requests!");
+          });
       } else {
         // Fallback to HTTP if no certs
         const http = require("http");
@@ -358,7 +351,10 @@ const startServer = async () => {
     console.error("=============================\n");
 
     // Attempt to reconnect to database after delay
-    if (error.name === "MongoNetworkError" || error.name === "MongooseServerSelectionError") {
+    if (
+      error.name === "MongoNetworkError" ||
+      error.name === "MongooseServerSelectionError"
+    ) {
       console.log("Will retry database connection in 5 seconds...");
       setTimeout(() => {
         console.log("Retrying server start...");

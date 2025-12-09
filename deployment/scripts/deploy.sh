@@ -246,12 +246,14 @@ fi
 echo -e "\n${YELLOW}[7/9] Configuring Nginx...${NC}"
 
 NGINX_SOURCE=""
-if [ -f "$REPO_DIR/deployment/nginx/posdic-local.conf" ]; then
-    NGINX_SOURCE="$REPO_DIR/deployment/nginx/posdic-local.conf"
-    echo "Using local nginx configuration"
-elif [ -f "$REPO_DIR/deployment/nginx/posdic.conf" ]; then
+# Prefer production nginx configuration with Let's Encrypt
+if [ -f "$REPO_DIR/deployment/nginx/posdic.conf" ]; then
     NGINX_SOURCE="$REPO_DIR/deployment/nginx/posdic.conf"
-    echo "Using production nginx configuration"
+    echo "Using production nginx configuration (posdic.conf)"
+elif [ -f "$REPO_DIR/deployment/nginx/posdic-local.conf" ]; then
+    # Fallback to local/self-signed config only if production config is missing
+    NGINX_SOURCE="$REPO_DIR/deployment/nginx/posdic-local.conf"
+    echo "Using local nginx configuration (posdic-local.conf)"
 fi
 
 if [ -n "$NGINX_SOURCE" ]; then
@@ -277,23 +279,10 @@ else
 fi
 
 # Setup SSL certificates
-echo -e "\n${YELLOW}[8/9] Setting up SSL certificates...${NC}"
-CERTS_DIR="$APP_DIR/certs"
-mkdir -p "$CERTS_DIR"
-
-if [ ! -f "$CERTS_DIR/server.crt" ] || [ ! -f "$CERTS_DIR/server.key" ]; then
-    echo "Generating self-signed SSL certificate..."
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout "$CERTS_DIR/server.key" \
-        -out "$CERTS_DIR/server.crt" \
-        -subj "/C=US/ST=State/L=City/O=Organization/CN=server.local" \
-        2>/dev/null
-    chown -R $DEPLOY_USER:$DEPLOY_USER "$CERTS_DIR"
-    chmod 600 "$CERTS_DIR/server.key"
-    echo -e "${GREEN} Self-signed SSL certificate generated${NC}"
-else
-    echo -e "${GREEN} SSL certificates already exist${NC}"
-fi
+# NOTE: Real usage now relies on Let's Encrypt certificates at
+# /etc/letsencrypt/live/server.iarodriguez.com. Self-signed cert
+# generation is skipped here to avoid conflicting with LE config.
+echo -e "\n${YELLOW}[8/9] Skipping self-signed SSL setup (using Let's Encrypt)...${NC}"
 
 # Start services
 echo -e "\n${YELLOW}[9/9] Starting services...${NC}"
@@ -338,6 +327,6 @@ echo "  Nginx:    tail -f /var/log/nginx/posdic-error.log"
 echo ""
 echo "Next steps:"
 echo "  1. Verify .env file in $BACKEND_DIR"
-echo "  2. Update server_name in $NGINX_AVAILABLE if needed"
-echo "  3. For production SSL: certbot --nginx -d yourdomain.com"
-echo "  4. Visit https://server.local or https://your-server-ip"
+echo "  2. Confirm server_name in $NGINX_AVAILABLE is server.iarodriguez.com"
+echo "  3. For SSL renewal: certbot renew (or certbot --nginx -d server.iarodriguez.com)"
+echo "  4. Visit https://server.iarodriguez.com"
