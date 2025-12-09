@@ -50,9 +50,11 @@ export class QzTrayService {
     }
 
     // Set certificate promise - return as a function that returns a promise
-    this.qz.security.setCertificatePromise(() => {
-      return Promise.resolve(this.certificateCache || "");
-    });
+    this.qz.security.setCertificatePromise(
+      (resolve: (arg0: string) => any, reject: any) => {
+        return resolve(this.certificateCache || "");
+      }
+    );
 
     // Override certificate check for self-signed certificates
     this.qz.security.setSignatureAlgorithm("SHA512");
@@ -65,8 +67,11 @@ export class QzTrayService {
 
     // Set signing function using backend - this signs ALL data sent to QZ Tray
     this.qz.security.setSignaturePromise((toSign: string) => {
-      console.log("QZ Tray requesting signature for data...");
-      return new Promise<string>((resolve, reject) => {
+      console.log("QZ Tray requesting signature for data...", toSign);
+      return (
+        resolve: (arg0: string) => void,
+        reject: (arg0: Error) => void
+      ) => {
         this.http
           .post<{
             signature: string;
@@ -91,7 +96,7 @@ export class QzTrayService {
               reject(new Error(errorMsg));
             },
           });
-      });
+      };
     });
 
     this.qzInitialized = true;
