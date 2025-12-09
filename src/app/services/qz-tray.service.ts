@@ -49,14 +49,19 @@ export class QzTrayService {
       return;
     }
 
-    // Set certificate promise
-    this.qz.security.setCertificatePromise((resolve: any, reject: any) => {
-      resolve(this.certificateCache);
+    // Set certificate promise - return as a function that returns a promise
+    this.qz.security.setCertificatePromise(() => {
+      return Promise.resolve(this.certificateCache || "");
     });
 
-    // Override certificate check for self-signed certificates (development/internal use)
-    // Remove this in production if using a proper code signing certificate
+    // Override certificate check for self-signed certificates
     this.qz.security.setSignatureAlgorithm("SHA512");
+
+    // Set trust built-in to allow localhost and local network
+    if (this.qz.security.setTrustBuiltIn) {
+      this.qz.security.setTrustBuiltIn(true);
+      console.log("QZ Tray: Trust built-in enabled");
+    }
 
     // Set signing function using backend
     this.qz.security.setSignaturePromise((toSign: string) => {
