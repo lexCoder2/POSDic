@@ -200,8 +200,8 @@ export class SettingsComponent implements OnInit {
 
       // Generate QR code with user ID in POSDIC format
       const qrData = `POSDIC:${user.id}`;
-      // Use QR Server API to generate QR code
-      this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+      // Use QR Server API to generate QR code (optimized for display)
+      this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
         qrData
       )}`;
     }
@@ -226,7 +226,8 @@ export class SettingsComponent implements OnInit {
         `USERS.ROLES.${user.role?.toUpperCase()}`
       ) || user.role;
     const qrData = `POSDIC:${user.id}`;
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+    // Optimized QR size for thermal printers (58mm/80mm)
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
       qrData
     )}`;
 
@@ -235,61 +236,65 @@ export class SettingsComponent implements OnInit {
       <html>
       <head>
         <title>Employee Badge - ${userName}</title>
+        <meta charset="UTF-8">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: #f5f5f5;
+            font-family: 'Courier New', Courier, monospace;
+            background: white;
+            margin: 0;
+            padding: 4px;
           }
           .badge {
-            width: 3.5in;
-            padding: 0.5in 0.4in;
+            max-width: 58mm;
+            margin: 0 auto;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
+            padding: 8px 4px;
           }
           .company-name {
-            font-size: 24px;
+            font-size: 14px;
             font-weight: bold;
-            color: #4f46e5;
-            margin-bottom: 16px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
           }
           .qr-code {
-            margin: 16px auto;
+            margin: 6px auto;
           }
           .qr-code img {
-            width: 200px;
-            height: 200px;
-            border: 3px solid #e5e7eb;
-            border-radius: 12px;
+            width: 120px;
+            height: 120px;
+            display: block;
+            margin: 0 auto;
           }
           .user-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-top: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 6px;
+            word-wrap: break-word;
           }
           .user-role {
-            font-size: 14px;
-            color: #6b7280;
-            margin-top: 4px;
-            text-transform: capitalize;
+            font-size: 10px;
+            margin-top: 2px;
+            text-transform: uppercase;
           }
           .instructions {
-            font-size: 11px;
-            color: #9ca3af;
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px dashed #e5e7eb;
+            font-size: 8px;
+            margin-top: 8px;
+            padding-top: 4px;
+            border-top: 1px dashed #000;
           }
           @media print {
-            body { background: white; }
-            .badge { box-shadow: none; border: 1px solid #e5e7eb; }
+            body { 
+              background: white;
+              margin: 0;
+              padding: 0;
+            }
+            .badge { 
+              box-shadow: none;
+              border: none;
+              padding: 4px 2px;
+            }
           }
         </style>
       </head>
