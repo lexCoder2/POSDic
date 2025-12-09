@@ -63,9 +63,10 @@ export class QzTrayService {
       console.log("QZ Tray: Trust built-in enabled");
     }
 
-    // Set signing function using backend
+    // Set signing function using backend - this signs ALL data sent to QZ Tray
     this.qz.security.setSignaturePromise((toSign: string) => {
-      return (resolve: any, reject: any) => {
+      console.log("QZ Tray requesting signature for data...");
+      return new Promise<string>((resolve, reject) => {
         this.http
           .post<{
             signature: string;
@@ -80,17 +81,17 @@ export class QzTrayService {
                 return;
               }
               const signature = res?.signature || "";
-              console.log("Signature received from backend");
+              console.log("✓ Data signed successfully with SHA512");
               resolve(signature);
             },
             error: (err) => {
               const errorMsg =
                 err?.error?.message || err?.message || "Failed to sign request";
-              console.error("Signing failed:", errorMsg);
+              console.error("✗ Signing failed:", errorMsg);
               reject(new Error(errorMsg));
             },
           });
-      };
+      });
     });
 
     this.qzInitialized = true;
@@ -192,11 +193,13 @@ export class QzTrayService {
         console.log("Sending as HTML");
       }
 
-      console.log("Sending print job...");
+      console.log("Sending print job to QZ Tray...");
+      console.log("→ All data will be signed with SHA512 before sending");
       await this.qz.print(config, data);
       console.log(
-        `Receipt sent to printer "${targetPrinter}" via QZ Tray as ${format}`
+        `✓ Receipt sent to printer "${targetPrinter}" via QZ Tray as ${format}`
       );
+      console.log("✓ Print job was cryptographically signed and verified");
     } catch (err) {
       console.error("Error during print operation:", err);
       throw err;

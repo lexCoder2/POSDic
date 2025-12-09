@@ -91,7 +91,7 @@ app.post("/api/sign", (req, res) => {
   const { toSign } = req.body;
 
   if (!privateKey) {
-    console.error("Signing failed: Private key not loaded");
+    console.error("❌ Signing failed: Private key not loaded");
     return res.status(500).json({
       error: "Signing not available",
       message: "Private key not configured on server",
@@ -99,17 +99,23 @@ app.post("/api/sign", (req, res) => {
   }
 
   if (!toSign) {
+    console.error("❌ Signing failed: Missing toSign parameter");
     return res.status(400).json({ error: "Missing toSign parameter" });
   }
 
   try {
+    // Sign the data with SHA512 algorithm
     const sign = crypto.createSign("SHA512");
     sign.update(toSign);
     sign.end();
     const signature = sign.sign(privateKey, "base64");
+
+    console.log(
+      `✓ QZ Tray data signed successfully (${toSign.length} bytes → ${signature.length} chars)`
+    );
     res.json({ signature });
   } catch (err) {
-    console.error("Signing error:", err.message);
+    console.error("❌ Signing error:", err.message);
     res.status(500).json({
       error: "Signing failed",
       message: err.message,
