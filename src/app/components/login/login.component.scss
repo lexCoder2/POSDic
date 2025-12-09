@@ -3,7 +3,7 @@
 .login-container {
   display: flex;
   align-items: stretch;
-  min-height: 100vh;
+  height: calc(100% - 65px);
   background: var(--bg-primary);
 
   // Mobile: constrain to 100vh max

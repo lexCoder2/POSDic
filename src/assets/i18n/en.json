@@ -181,6 +181,11 @@
     "CANCEL": "Cancel",
     "DELETE": "Delete",
     "CONFIRM_DIFFERENCE": "Cash difference detected: {difference}. Continue?",
+    "OPENING_CASH_HINT": "Enter the starting cash amount in the register drawer",
+    "CASHIER_NOTICE": "You can only open registers linked to your device. Contact a manager to create or manage other registers.",
+    "NO_AVAILABLE": "No registers available for this device",
+    "CONTACT_MANAGER": "Please contact a manager to set up a register for your device",
+    "NUMBER_REQUIRED": "Please select or enter a register number",
     "ERRORS": {
       "ALREADY_OPEN": "You already have an open register. Please close it first.",
       "NOT_FOUND": "Register not found",
@@ -189,7 +194,10 @@
       "INVALID_AMOUNT": "Please enter a valid closing cash amount",
       "NO_REGISTER": "Please open the register before making sales",
       "DEVICE_BOUND": "This register is bound to another device",
-      "DEVICE_ALREADY_BOUND": "This device is already bound to a register"
+      "DEVICE_ALREADY_BOUND": "This device is already bound to a register",
+      "LOAD_FAILED": "Failed to load available registers",
+      "OPEN_FAILED": "Failed to open register",
+      "NUMBER_REQUIRED": "Please select or enter a register number"
     },
     "DEVICE_BOUND_TO": "Your device is linked to",
     "YOUR_DEVICE": "Your device",

@@ -265,6 +265,8 @@ export interface CartItem {
 export interface Register {
   _id?: string;
   registerNumber: string;
+  deviceId?: string;
+  deviceName?: string;
   openedBy: string | User;
   openedAt: Date;
   closedBy?: string | User;

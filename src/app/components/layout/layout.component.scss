@@ -2,7 +2,7 @@
 
 .app-layout {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 70px);
   overflow: hidden;
   background: var(--bg-primary);
 }

@@ -29,8 +29,8 @@ import {
 } from "../calculator/calculator.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
-import { RouterLink } from "@angular/router";
 import { environment } from "@environments/environment";
+import { OpenRegisterComponent } from "../open-register/open-register.component";
 
 @Component({
   selector: "app-cashier",
@@ -38,10 +38,10 @@ import { environment } from "@environments/environment";
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     CalculatorComponent,
     TranslatePipe,
     CurrencyPipe,
+    OpenRegisterComponent,
   ],
   templateUrl: "./cashier.component.html",
   styleUrls: ["./cashier.component.scss"],
@@ -86,6 +86,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
   // Register status
   currentRegister = signal<Register | null>(null);
+  showOpenRegisterModal = signal<boolean>(false);
 
   private itemIdCounter = 0;
   private deleteKeyPressCount = 0;
@@ -104,6 +105,20 @@ export class CashierComponent implements OnInit, AfterViewInit {
   blurButton(event: Event): void {
     const target = event.target as HTMLElement;
     target?.blur();
+  }
+
+  openRegisterModal(): void {
+    this.showOpenRegisterModal.set(true);
+  }
+
+  closeRegisterModal(): void {
+    this.showOpenRegisterModal.set(false);
+  }
+
+  onRegisterOpened(): void {
+    this.closeRegisterModal();
+    // Focus calculator after register is opened
+    setTimeout(() => this.calculator?.focusCalculator(), 300);
   }
 
   constructor(

@@ -60,6 +60,7 @@ import {
   ReturnsModalComponent,
   RefundResult,
 } from "./returns-modal/returns-modal.component";
+import { OpenRegisterComponent } from "../open-register/open-register.component";
 
 @Component({
   selector: "app-pos",
@@ -82,6 +83,7 @@ import {
     CameraScannerComponent,
     LooseProductModalComponent,
     ReturnsModalComponent,
+    OpenRegisterComponent,
   ],
   templateUrl: "./pos.component.html",
   styleUrls: ["./pos.component.scss"],
@@ -146,8 +148,6 @@ export class PosComponent implements OnInit, OnDestroy {
   // Register Modals
   showOpenRegisterModal = false;
   showCloseRegisterModal = false;
-  registerNumber = "";
-  openingCash: number | null = null;
   closingCash: number | null = null;
   closeRegisterNotes = "";
   expectedCash = 0;
@@ -1051,8 +1051,6 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   openOpenRegisterModal(): void {
-    this.registerNumber = "";
-    this.openingCash = null;
     this.showOpenRegisterModal = true;
   }
 
@@ -1060,27 +1058,10 @@ export class PosComponent implements OnInit, OnDestroy {
     this.showOpenRegisterModal = false;
   }
 
-  confirmOpenRegister(): void {
-    if (!this.registerNumber) return;
-
-    this.registerService
-      .openRegister(this.openingCash || 0, this.registerNumber)
-      .subscribe({
-        next: (register) => {
-          this.toastService.show(
-            `Register ${register.registerNumber} opened successfully`,
-            "success"
-          );
-          this.closeOpenRegisterModal();
-        },
-        error: (err) => {
-          console.error("Error opening register:", err);
-          this.toastService.show(
-            err.error?.message || "Failed to open register",
-            "error"
-          );
-        },
-      });
+  onRegisterOpened(): void {
+    this.closeOpenRegisterModal();
+    // Focus back to search input after opening register
+    setTimeout(() => this.focusSearchInput(), 300);
   }
 
   openCloseRegisterModal(): void {

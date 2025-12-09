@@ -3,9 +3,10 @@
   <div class="register-warning" *ngIf="!currentRegister()">
     <i class="fas fa-exclamation-triangle"></i>
     <span>{{ "CASHIER.REGISTER_WARNING" | translate }}</span>
-    <a routerLink="/registers" class="open-register-link">
+    <button class="open-register-btn" (click)="openRegisterModal()">
+      <i class="fas fa-door-open"></i>
       {{ "CASHIER.OPEN_REGISTER" | translate }}
-    </a>
+    </button>
   </div>
 
   <div class="cashier-content">
@@ -469,5 +470,19 @@
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Open Register Modal -->
+<div
+  class="modal-overlay"
+  *ngIf="showOpenRegisterModal()"
+  (click)="closeRegisterModal()"
+>
+  <div (click)="$event.stopPropagation()">
+    <app-open-register
+      (registerOpened)="onRegisterOpened()"
+      (cancelled)="closeRegisterModal()"
+    ></app-open-register>
   </div>
 </div>

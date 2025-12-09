@@ -6,7 +6,7 @@
 .cashier-container {
   padding: 0.75rem;
   background-color: var(--bg-secondary);
-  height: 100%;
+  height: calc(100% - 25px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -36,18 +36,33 @@
       flex: 1;
     }
 
-    .open-register-link {
-      color: $primary;
-      text-decoration: none;
-      font-weight: $font-weight-semibold;
+    .open-register-btn {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
       padding: $spacing-xs $spacing-md;
       background: $white;
+      color: $primary;
+      border: 1px solid $primary;
       border-radius: $radius-md;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-sm;
+      cursor: pointer;
       transition: all 0.2s ease;
+
+      i {
+        font-size: $font-size-base;
+      }
 
       &:hover {
         background: $primary;
         color: $white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba($primary, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
       }
     }
   }

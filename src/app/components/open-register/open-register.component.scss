@@ -1,0 +1,299 @@
+@use "../../../styles/theme" as *;
+
+.open-register-modal {
+  background: var(--bg-primary);
+  border-radius: $radius-xl;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-xl;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      i {
+        color: $primary;
+      }
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: $font-size-xl;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: $radius-md;
+      transition: all 0.2s;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover:not(:disabled) {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg-info);
+      border: 1px solid var(--border-info);
+      border-radius: $radius-md;
+      margin-bottom: 1.25rem;
+      font-size: $font-size-sm;
+      color: var(--text-info);
+
+      i {
+        font-size: $font-size-base;
+      }
+
+      strong {
+        color: var(--text-primary);
+        font-weight: $font-weight-semibold;
+      }
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+
+      i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: $primary;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: $font-weight-medium;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: $font-size-sm;
+
+        i {
+          color: var(--text-muted);
+          font-size: 0.875rem;
+        }
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: $radius-md;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: $font-size-base;
+        transition: all 0.2s;
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba($primary, 0.1);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          background: var(--bg-disabled);
+        }
+
+        option:disabled {
+          color: var(--text-muted);
+          font-style: italic;
+        }
+      }
+
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .currency {
+          position: absolute;
+          left: 1rem;
+          color: var(--text-muted);
+          font-weight: $font-weight-medium;
+          pointer-events: none;
+        }
+
+        .amount-input {
+          padding-left: 2rem;
+          font-family: $font-family-mono;
+        }
+      }
+
+      .form-hint {
+        display: block;
+        margin-top: 0.375rem;
+        font-size: $font-size-xs;
+        color: var(--text-muted);
+      }
+
+      .info-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.625rem;
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        background: var(--bg-warning);
+        border: 1px solid var(--border-warning);
+        border-radius: $radius-md;
+        font-size: $font-size-xs;
+        color: var(--text-warning);
+
+        i {
+          flex-shrink: 0;
+          margin-top: 0.125rem;
+        }
+
+        span {
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .no-registers {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+
+      i {
+        font-size: 2.5rem;
+        color: var(--text-warning);
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin: 0.5rem 0;
+
+        &.hint {
+          font-size: $font-size-sm;
+          color: var(--text-muted);
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+
+    button {
+      flex: 1;
+      padding: 0.875rem 1.5rem;
+      border: none;
+      border-radius: $radius-md;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: $touch-target-md;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn-cancel {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+
+      &:hover:not(:disabled) {
+        background: var(--bg-hover);
+      }
+    }
+
+    .btn-confirm {
+      background: $success;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: darken($success, 8%);
+      }
+    }
+  }
+}
+
+// Responsive
+@include respond-to(sm) {
+  .open-register-modal {
+    width: 95%;
+    max-width: none;
+
+    .modal-header {
+      padding: 1rem;
+
+      h3 {
+        font-size: $font-size-lg;
+      }
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-footer {
+      padding: 1rem;
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

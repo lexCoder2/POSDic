@@ -142,9 +142,14 @@
       "DEVICE_BOUND": "Esta caja está vinculada a otro dispositivo",
       "DEVICE_ALREADY_BOUND": "Este dispositivo ya está vinculado a una caja"
     },
-    "DEVICE_BOUND_TO": "Su dispositivo está vinculado a",
-    "YOUR_DEVICE": "Su dispositivo",
+    "DEVICE_BOUND_TO": "Tu dispositivo está vinculado a",
+    "YOUR_DEVICE": "Tu dispositivo",
     "OTHER_DEVICE": "Otro dispositivo",
+    "OPENING_CASH_HINT": "Ingrese el monto inicial de efectivo en el cajón de la caja",
+    "CASHIER_NOTICE": "Solo puedes abrir cajas vinculadas a tu dispositivo. Contacta a un gerente para crear o gestionar otras cajas.",
+    "NO_AVAILABLE": "No hay cajas disponibles para este dispositivo",
+    "CONTACT_MANAGER": "Por favor contacta a un gerente para configurar una caja para tu dispositivo",
+    "NUMBER_REQUIRED": "Por favor selecciona o ingresa un número de caja",
     "SUCCESS": {
       "OPENED": "Caja abierta exitosamente",
       "CLOSED": "Caja cerrada",

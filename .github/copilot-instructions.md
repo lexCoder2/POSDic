@@ -76,7 +76,8 @@ export class ExampleComponent implements OnInit, OnDestroy {
 - **Cart State**: Managed by `CartStateService` with signals (e.g., `cartCount()`, `cartTotal()`)
 - **Search State**: `SearchStateService` shares search query across components
 - **User State**: `AuthService.getCurrentUser()` returns current user or null
-- **Register State**: `RegisterService` manages active register (cashiers must open register)
+- **Register State**: `RegisterService` manages active register with device binding (cashiers must open register)
+- **Device Identification**: `DeviceService` generates unique device fingerprints for register binding
 
 ## Common Workflows
 
@@ -88,6 +89,49 @@ export class ExampleComponent implements OnInit, OnDestroy {
 4. **Add translations** in `src/assets/i18n/en.json` and `es.json`
 5. **Add route** in `src/app/app.routes.ts` if needed
 6. **Apply theme styles** using mixins from `_theme.scss`
+
+### Creating Reusable Modal Components
+
+**Pattern Example: OpenRegisterComponent**
+
+1. **Create component** with `@Output()` events for parent communication:
+
+```typescript
+@Output() registerOpened = new EventEmitter<void>();
+@Output() cancelled = new EventEmitter<void>();
+```
+
+2. **Add to parent component imports**:
+
+```typescript
+imports: [OpenRegisterComponent, ...]
+```
+
+3. **Use signals for modal state**:
+
+```typescript
+showOpenRegisterModal = signal<boolean>(false);
+```
+
+4. **Template usage**:
+
+```html
+<app-open-register
+  *ngIf="showOpenRegisterModal()"
+  (registerOpened)="onRegisterOpened()"
+  (cancelled)="closeRegisterModal()"
+>
+</app-open-register>
+```
+
+5. **Handle events in parent**:
+
+```typescript
+onRegisterOpened(): void {
+  this.showOpenRegisterModal.set(false);
+  // Additional logic after register opens
+}
+```
 
 ### Adding Backend API Endpoint
 
@@ -111,12 +155,55 @@ export class ExampleComponent implements OnInit, OnDestroy {
 - Dashboard shows incomplete products card for follow-up editing
 - Always set `active: true` and `available: true` for newly created products
 
+### QR Code Generation & Thermal Printing
+
+- **QR Badge Generation**: `settings.component.ts` handles employee QR badge creation
+- **Display Size**: 150x150 pixels for on-screen preview (`generateQrCode()`)
+- **Print Size**: 120x120 pixels optimized for 58mm/80mm thermal printers (`printQrBadge()`)
+- **Badge Layout**: Simplified HTML/CSS with monospace fonts, minimal padding, no shadows for thermal printing
+- **QZ Tray Integration**: Uses QZ Tray service for direct thermal printer communication
+
 ### Scale Integration
 
 - `ScaleService.connectScale()` uses Web Serial API (Chrome/Edge only)
 - Products with `requiresScale: true` prompt for weight entry
 - Weight modal displays current scale reading in real-time
 - Manual weight entry fallback if scale not connected
+
+### Register Management & Device Binding
+
+**OpenRegisterComponent** (`open-register/`) - Dedicated component for opening registers with smart device binding:
+
+- **Device Auto-Selection**: Automatically selects register bound to current device using `DeviceService`
+- **Role-Based Access**:
+  - Admins/Managers: Can select any register, create new registers, manage all devices
+  - Cashiers/Employees: Can only open registers bound to their device or unbound registers
+- **Device Binding**: Registers are automatically bound to devices when opened (stored in `deviceId` and `deviceName`)
+- **Visual Indicators**: Shows which registers are linked to current device (⭐) or other devices (🔒)
+- **Used in**: POS component and Cashier component
+- **Backend API**: `/api/registers/available`, `/api/registers/device/:deviceId`
+
+**Implementation Pattern:**
+
+```typescript
+// In parent component
+showOpenRegisterModal = signal<boolean>(false);
+
+openRegisterModal(): void {
+  this.showOpenRegisterModal.set(true);
+}
+
+onRegisterOpened(): void {
+  this.showOpenRegisterModal.set(false);
+  // Register opened successfully, component auto-focuses input
+}
+
+// In template
+<app-open-register
+  (registerOpened)="onRegisterOpened()"
+  (cancelled)="closeRegisterModal()"
+></app-open-register>
+```
 
 ## Important Patterns
 
@@ -146,7 +233,7 @@ confirmAdd(): void {
 
 ### Calculator Component (Keyboard Support)
 
-The calculator component supports full keyboard input for faster data entry:
+The calculator component (`calculator/`) supports full keyboard input for faster data entry with signals:
 
 **Keyboard Shortcuts:**
 
@@ -165,28 +252,13 @@ The calculator component supports full keyboard input for faster data entry:
 - Multiply button spans 2 columns, styled with `$warning` color
 - Add button spans 2 columns, styled with `$success` color
 
-**Implementation Pattern:**
+**Signals Usage:**
 
 ```typescript
-// Add keyboard handler to container
-<div #calculatorContainer class="calculator" tabindex="-1" (keydown)="onKeydown($event)">
-
-// Handle keyboard events
-onKeydown(event: KeyboardEvent): void {
-  if (event.key >= '0' && event.key <= '9') {
-    event.preventDefault();
-    this.appendNumber(event.key);
-  }
-  else if (event.key === 'Enter' || event.key === '+') {
-    event.preventDefault();
-    this.handleEnter(); // Adds item or confirms multiply
-  }
-  else if (event.key === '*') {
-    event.preventDefault();
-    this.multiplyItem();
-  }
-  // ... other key handlers
-}
+display = signal<string>("0");
+isMultiplying = signal<boolean>(false);
+multiplyMode = signal<"add" | "update" | null>(null);
+pendingMultiplyValue = signal<number | null>(null);
 ```
 
 ### RxJS Cleanup
@@ -220,7 +292,7 @@ this.toastService.show("Warning", "warning");
 - **Sale**: `saleNumber`, `items[]`, `subtotal`, `discount`, `tax`, `total`, `paymentMethod`, `cashier`, `register`, `status`, `isInternal`
 - **Cart**: `user`, `items[]`, `register` (carts are session-specific)
 - **User**: `username`, `fullName`, `role`, `permissions[]`, `active`
-- **Register**: `name`, `location`, `status` ('open', 'closed'), `openedBy`, `openingBalance`, `currentBalance`
+- **Register**: `name`, `location`, `status` ('open', 'closed'), `openedBy`, `openingBalance`, `currentBalance`, `deviceId`, `deviceName` (device binding)
 
 ## Security & Permissions
 
