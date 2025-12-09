@@ -3,11 +3,27 @@ const express = require("express");
 const https = require("https");
 const fs = require("fs");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/database");
 
 // Initialize express
 const app = express();
+
+// CORS Configuration
+// In development: Allow all origins for local testing
+// In production: nginx handles CORS (no CORS middleware needed here)
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    cors({
+      origin: true, // Allow all origins in development
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    })
+  );
+  console.log("CORS enabled for development mode");
+}
 
 // Body parser with error handling
 app.use(

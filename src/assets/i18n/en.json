@@ -581,6 +581,7 @@
     "OPEN_REGISTER": "Open Register",
     "ADD": "Add",
     "MULTIPLY": {
+      "LABEL": "x",
       "ADD_LABEL": "Enter quantity to add:",
       "UPDATE_LABEL": "Enter new quantity for last item:"
     },

@@ -54,6 +54,10 @@ export class QzTrayService {
       resolve(this.certificateCache);
     });
 
+    // Override certificate check for self-signed certificates (development/internal use)
+    // Remove this in production if using a proper code signing certificate
+    this.qz.security.setSignatureAlgorithm("SHA512");
+
     // Set signing function using backend
     this.qz.security.setSignaturePromise((toSign: string) => {
       return (resolve: any, reject: any) => {

@@ -144,6 +144,51 @@ confirmAdd(): void {
 <app-calculator (addItem)="onCalculatorAdd($event)"></app-calculator>
 ```
 
+### Calculator Component (Keyboard Support)
+
+The calculator component supports full keyboard input for faster data entry:
+
+**Keyboard Shortcuts:**
+
+- **Numbers (0-9)**: Direct entry to display
+- **Decimal point (. or ,)**: Add decimal separator
+- **Backspace**: Remove last digit
+- **Escape/C**: Clear display
+- **Enter or +**: Add item to cart or confirm multiply operation
+- **\* (asterisk)**: Trigger multiply mode for quantity entry
+
+**Multiply Functionality:**
+
+- With empty display + `*`: Multiplies the last item (prompts for new quantity)
+- With value in display + `*`: Adds multiple items of that value (prompts for quantity)
+- The multiply button replaces the "AC" (clear all) button in the grid layout
+- Multiply button spans 2 columns, styled with `$warning` color
+- Add button spans 2 columns, styled with `$success` color
+
+**Implementation Pattern:**
+
+```typescript
+// Add keyboard handler to container
+<div #calculatorContainer class="calculator" tabindex="-1" (keydown)="onKeydown($event)">
+
+// Handle keyboard events
+onKeydown(event: KeyboardEvent): void {
+  if (event.key >= '0' && event.key <= '9') {
+    event.preventDefault();
+    this.appendNumber(event.key);
+  }
+  else if (event.key === 'Enter' || event.key === '+') {
+    event.preventDefault();
+    this.handleEnter(); // Adds item or confirms multiply
+  }
+  else if (event.key === '*') {
+    event.preventDefault();
+    this.multiplyItem();
+  }
+  // ... other key handlers
+}
+```
+
 ### RxJS Cleanup
 
 ```typescript

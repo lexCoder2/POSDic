@@ -551,8 +551,9 @@
     "OPEN_REGISTER": "Abrir Caja",
     "ADD": "Agregar",
     "MULTIPLY": {
-      "ADD_LABEL": "Ingrese la cantidad para agregar:",
-      "UPDATE_LABEL": "Ingrese la nueva cantidad para el último artículo:"
+      "LABEL": "x",
+      "ADD_LABEL": "Ingresa la cantidad a agregar:",
+      "UPDATE_LABEL": "Ingresa la nueva cantidad para el último artículo:"
     },
     "LOOSE_PRODUCT": "Producto a Granel",
     "ITEMS": {

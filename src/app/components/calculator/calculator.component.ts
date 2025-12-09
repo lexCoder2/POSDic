@@ -176,4 +176,38 @@ export class CalculatorComponent implements AfterViewInit {
   handleMultiply(): void {
     this.multiplyItem();
   }
+
+  // Keyboard event handler
+  onKeydown(event: KeyboardEvent): void {
+    // Numbers 0-9
+    if (event.key >= "0" && event.key <= "9") {
+      event.preventDefault();
+      this.appendNumber(event.key);
+    }
+    // Decimal point
+    else if (event.key === "." || event.key === ",") {
+      event.preventDefault();
+      this.appendDecimal();
+    }
+    // Backspace
+    else if (event.key === "Backspace") {
+      event.preventDefault();
+      this.backspace();
+    }
+    // Clear
+    else if (event.key === "Escape" || event.key === "c" || event.key === "C") {
+      event.preventDefault();
+      this.clear();
+    }
+    // Enter or + (add item or confirm multiply)
+    else if (event.key === "Enter" || event.key === "+") {
+      event.preventDefault();
+      this.handleEnter();
+    }
+    // * (multiply)
+    else if (event.key === "*") {
+      event.preventDefault();
+      this.confirmMultiply();
+    }
+  }
 }
