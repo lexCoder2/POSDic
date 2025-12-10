@@ -4,7 +4,7 @@
       <i class="fas fa-cash-register"></i>
       {{ "REGISTER.MODAL_TITLE_OPEN" | translate }}
     </h3>
-    <button class="btn-close" (click)="cancel()" [disabled]="loading">
+    <button class="btn-close" (click)="cancel()" [disabled]="loading()">
       <i class="fas fa-times"></i>
     </button>
   </div>
@@ -22,14 +22,17 @@
     <!-- Loading State -->
     <div
       class="loading-state"
-      *ngIf="loading && availableRegisters.length === 0"
+      *ngIf="loading() && availableRegisters().length === 0"
     >
       <i class="fas fa-spinner fa-spin"></i>
       <p>{{ "REGISTER.LOADING" | translate }}</p>
     </div>
 
     <!-- Register Selection -->
-    <div class="form-group" *ngIf="!loading || availableRegisters.length > 0">
+    <div
+      class="form-group"
+      *ngIf="!loading() || availableRegisters().length > 0"
+    >
       <label>
         <i class="fas fa-cash-register"></i>
         {{ "REGISTER.SELECT_REGISTER" | translate }}
@@ -39,14 +42,14 @@
         [(ngModel)]="selectedRegister"
         (change)="onRegisterChange()"
         class="form-control"
-        [disabled]="loading"
+        [disabled]="loading()"
       >
         <option value="" disabled>
           {{ "REGISTER.SELECT_REGISTER" | translate }}
         </option>
 
         <option
-          *ngFor="let register of availableRegisters"
+          *ngFor="let register of availableRegisters()"
           [value]="register.registerNumber"
           [disabled]="isRegisterDisabled(register)"
           [title]="getRegisterTooltip(register)"
@@ -88,7 +91,7 @@
         [(ngModel)]="newRegisterNumber"
         class="form-control"
         [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
-        [disabled]="loading"
+        [disabled]="loading()"
         maxlength="50"
       />
     </div>
@@ -108,7 +111,7 @@
           step="0.01"
           class="form-control amount-input"
           placeholder="0.00"
-          [disabled]="loading"
+          [disabled]="loading()"
         />
       </div>
       <small class="form-hint">
@@ -119,7 +122,9 @@
     <!-- No Registers Available -->
     <div
       class="no-registers"
-      *ngIf="!loading && availableRegisters.length === 0 && !isAdminOrManager"
+      *ngIf="
+        !loading() && availableRegisters().length === 0 && !isAdminOrManager
+      "
     >
       <i class="fas fa-exclamation-triangle"></i>
       <p>{{ "REGISTER.NO_AVAILABLE" | translate }}</p>
@@ -128,20 +133,20 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn-cancel" (click)="cancel()" [disabled]="loading">
+    <button class="btn-cancel" (click)="cancel()" [disabled]="loading()">
       {{ "GLOBAL.CANCEL" | translate }}
     </button>
     <button
       class="btn-confirm"
       (click)="openRegister()"
       [disabled]="
-        loading ||
-        (!selectedRegister && !newRegisterNumber) ||
+        loading() ||
+        (!selectedRegister() && !newRegisterNumber) ||
         (showNewRegisterInput && !newRegisterNumber)
       "
     >
-      <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
-      <i class="fas fa-door-open" *ngIf="!loading"></i>
+      <i class="fas fa-spinner fa-spin" *ngIf="loading()"></i>
+      <i class="fas fa-door-open" *ngIf="!loading()"></i>
       {{ "REGISTER.OPEN" | translate }}
     </button>
   </div>

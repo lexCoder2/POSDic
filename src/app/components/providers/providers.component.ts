@@ -7,7 +7,6 @@ import { AuthService } from "../../services/auth.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { ToastService } from "../../services/toast.service";
 import { Provider, User } from "../../models";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
@@ -15,13 +14,7 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
 @Component({
   selector: "app-providers",
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    PageTitleComponent,
-    TranslatePipe,
-    ToggleSwitchComponent,
-  ],
+  imports: [CommonModule, FormsModule, TranslatePipe, ToggleSwitchComponent],
   templateUrl: "./providers.component.html",
   styleUrls: ["./providers.component.scss"],
 })

@@ -10,12 +10,13 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border-radius: $radius-2xl;
 
   .register-warning {
     display: flex;
     align-items: center;
     gap: $spacing-md;
-    padding: $spacing-md $spacing-lg;
+    padding: $spacing-xs $spacing-lg;
     background: linear-gradient(
       135deg,
       rgba($warning, 0.15),

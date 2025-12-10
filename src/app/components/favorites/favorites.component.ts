@@ -4,6 +4,7 @@ import {
   OnDestroy,
   Output,
   EventEmitter,
+  signal,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subject, takeUntil, timeout, catchError, of } from "rxjs";
@@ -24,8 +25,8 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   @Output() productSelected = new EventEmitter<Product>();
 
   products: Product[] = [];
-  isLoading = false;
-  loadError = false;
+  isLoading = signal(false);
+  loadError = signal(false);
   private destroy$ = new Subject<void>();
 
   constructor(private productService: ProductService) {}
@@ -40,8 +41,8 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   }
 
   loadTopProducts(): void {
-    this.isLoading = true;
-    this.loadError = false;
+    this.isLoading.set(true);
+    this.loadError.set(false);
 
     this.productService
       .getFavoriteProducts(20)
@@ -49,7 +50,7 @@ export class FavoritesComponent implements OnInit, OnDestroy {
         timeout(10000), // 10 second timeout
         catchError((err) => {
           console.error("Error or timeout loading favorite products:", err);
-          this.loadError = true;
+          this.loadError.set(true);
           return of([]);
         }),
         takeUntil(this.destroy$)
@@ -57,12 +58,12 @@ export class FavoritesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (products) => {
           this.products = products;
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         error: (err) => {
           console.error("Error loading favorite products:", err);
-          this.isLoading = false;
-          this.loadError = true;
+          this.isLoading.set(false);
+          this.loadError.set(true);
         },
       });
   }

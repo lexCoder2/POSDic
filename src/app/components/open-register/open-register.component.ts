@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, output, inject } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  output,
+  inject,
+  signal,
+  effect,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Subject } from "rxjs";
@@ -34,9 +42,10 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
   cancelled = output<void>();
 
   // State
-  loading = false;
-  availableRegisters: AvailableRegister[] = [];
-  selectedRegister: string = "";
+  loading = signal<boolean>(false);
+
+  availableRegisters = signal<AvailableRegister[]>([]);
+  selectedRegister = signal<string>("");
   newRegisterNumber: string = "";
   openingCash: number | null = null;
   showNewRegisterInput = false;
@@ -93,52 +102,51 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
   }
 
   private loadAvailableRegisters(): void {
-    this.loading = true;
-    this.registerService
-      .getAvailableRegisters()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.availableRegisters = response.registers;
-          this.canManageOthers = response.canManageOthers;
+    this.loading.set(true);
+    this.registerService.getAvailableRegisters().subscribe({
+      next: (response) => {
+        this.availableRegisters.set([]);
+        this.availableRegisters.set([...response.registers]);
+        this.canManageOthers = response.canManageOthers;
+        // Auto-select the device-bound register or suggested register
+        if (this.availableRegisters().length > 0) {
+          // First priority: device-bound register
+          const boundRegister = this.availableRegisters().find(
+            (r) => r.isBoundToThisDevice
+          );
 
-          // Auto-select the device-bound register or suggested register
-          if (this.availableRegisters.length > 0) {
-            // First priority: device-bound register
-            const boundRegister = this.availableRegisters.find(
-              (r) => r.isBoundToThisDevice
+          if (boundRegister) {
+            this.selectedRegister.set(boundRegister.registerNumber);
+          }
+          // Second priority: suggested register for this device
+          else if (this.suggestedRegister) {
+            const suggested = this.availableRegisters().find(
+              (r) => r.registerNumber === this.suggestedRegister
             );
-
-            if (boundRegister) {
-              this.selectedRegister = boundRegister.registerNumber;
-            }
-            // Second priority: suggested register for this device
-            else if (this.suggestedRegister) {
-              const suggested = this.availableRegisters.find(
-                (r) => r.registerNumber === this.suggestedRegister
-              );
-              if (suggested) {
-                this.selectedRegister = this.suggestedRegister;
-              }
-            }
-            // Third priority: first available register
-            else if (this.availableRegisters.length === 1) {
-              this.selectedRegister = this.availableRegisters[0].registerNumber;
+            if (suggested) {
+              this.selectedRegister.set(this.suggestedRegister);
             }
           }
+          // Third priority: first available register
+          else if (this.availableRegisters().length === 1) {
+            this.selectedRegister.set(
+              this.availableRegisters()[0].registerNumber
+            );
+          }
+        }
 
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error("Error loading available registers:", err);
-          this.toastService.show(
-            this.translationService.translate("REGISTER.ERRORS.LOAD_FAILED") ||
-              "Failed to load registers",
-            "error"
-          );
-          this.loading = false;
-        },
-      });
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error("Error loading available registers:", err);
+        this.toastService.show(
+          this.translationService.translate("REGISTER.ERRORS.LOAD_FAILED") ||
+            "Failed to load registers",
+          "error"
+        );
+        this.loading.set(false);
+      },
+    });
   }
 
   isRegisterDisabled(register: AvailableRegister): boolean {
@@ -179,7 +187,7 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
   }
 
   onRegisterChange(): void {
-    if (this.selectedRegister === "new") {
+    if (this.selectedRegister() === "new") {
       this.showNewRegisterInput = true;
       this.newRegisterNumber = "";
     } else {
@@ -201,10 +209,10 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
 
     this.registerService
-      .openRegister(this.openingCash || 0, registerNumber, true)
+      .openRegister(this.openingCash || 0, registerNumber.toString(), true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (register) => {
@@ -225,7 +233,7 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
               "Failed to open register",
             "error"
           );
-          this.loading = false;
+          this.loading.set(false);
         },
       });
   }

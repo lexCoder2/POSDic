@@ -1,7 +1,7 @@
 @use "../../../styles/theme" as *;
 
 .favorites {
-  background: $white;
+  background: $neumorphic-surface;
   border-radius: $radius-lg;
   height: 100%;
   overflow: hidden;

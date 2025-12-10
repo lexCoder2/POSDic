@@ -7,25 +7,33 @@
 @use "sass:color";
 @import url("https://fonts.googleapis.com/css2?family=Average+Sans&family=League+Spartan&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
-$neumorphic-bg: #e5e7eb;
-$neumorphic-surface: #eceff4;
+$neumorphic-bg: hsla(60, 0%, 100%, 1);
+$image-bg:
+  radial-gradient(at 40% 20%, hsla(28, 100%, 74%, 0.68) 0px, transparent 50%),
+  radial-gradient(at 80% 0%, hsla(221, 100%, 50%, 0.54) 0px, transparent 50%),
+  radial-gradient(at 2% 51%, hsla(355, 100%, 93%, 0.69) 0px, transparent 50%),
+  radial-gradient(at 80% 50%, hsla(340, 100%, 76%, 1) 0px, transparent 50%),
+  radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 0.65) 0px, transparent 50%),
+  radial-gradient(at 82% 79%, hsla(240, 100%, 70%, 0.73) 0px, transparent 50%),
+  radial-gradient(at 2% 4%, hsla(341, 100%, 76%, 0.69) 0px, transparent 50%);
+$neumorphic-surface: #f7f8fd84;
 $blue-primary: #654483;
 $blue-dark: #2563eb;
 $blue-light: #60a5fa;
 
 // SCSS HSL
-$neumorphic-bg-hsl: hsla(220, 13%, 91%, 1);
-$neumorphic-surface-hsl: hsla(220, 16%, 94%, 1);
+$neumorphic-bg-hsl: hsla(220, 13%, 91%, 0.97);
+$neumorphic-surface-hsl: hsla(220, 16%, 94%, 0.97);
 $blue-primary-hsl: hsla(221, 91%, 60%, 1);
 $blue-dark-hsl: hsla(221, 83%, 53%, 1);
 $blue-light-hsl: hsla(221, 93%, 68%, 1);
 
 // SCSS RGB
-$neumorphic-bg-rgb: rgba(229, 231, 235, 1);
-$neumorphic-surface-rgb: rgba(236, 239, 244, 1);
-$blue-primary-rgb: rgba(59, 130, 246, 1);
-$blue-dark-rgb: rgba(37, 99, 235, 1);
-$blue-light-rgb: rgba(96, 165, 250, 1);
+$neumorphic-bg-rgb: rgba(229, 231, 235, 0.97);
+$neumorphic-surface-rgb: rgba(236, 239, 244, 0.97);
+$blue-primary-rgb: rgba(59, 130, 246, 0.97);
+$blue-dark-rgb: rgba(37, 99, 235, 0.97);
+$blue-light-rgb: rgba(96, 165, 250, 0.97);
 
 // Map existing theme tokens to the new palette (preserve variable names used across the app)
 $primary: $blue-primary;
@@ -259,7 +267,7 @@ $card-hover-shadow: $shadow-neumorphic-lg;
   --bg-hover: #3a3f4b;
   --bg-active: #4a5161;
 
-  --border-color: #3a3f4b;
+  --border-color: #f1f6ff;
   --border-light: #4a5161;
 
   --card-bg: #222831;

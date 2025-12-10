@@ -5,7 +5,8 @@
   max-width: 1500px;
   margin: 0 auto;
   height: calc(100% - 65px);
-  border-radius: 0;
+  background: $neumorphic-surface;
+  border-radius: $radius-2xl;
 }
 
 .inventory-header {

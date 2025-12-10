@@ -5,7 +5,7 @@
   background-color: var(--bg-secondary);
   min-height: calc(100vh - 65px);
   overflow-y: auto;
-
+  border-radius: $radius-2xl;
   .dashboard-header {
     display: flex;
     justify-content: space-between;

@@ -11,7 +11,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router, NavigationEnd } from "@angular/router";
-import { filter } from "rxjs";
+import { filter, Observable, Subscription } from "rxjs";
 import { SaleService } from "../../services/sale.service";
 import { CartService } from "../../services/cart.service";
 import { AuthService } from "../../services/auth.service";
@@ -117,8 +117,18 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
   onRegisterOpened(): void {
     this.closeRegisterModal();
-    // Focus calculator after register is opened
-    setTimeout(() => this.calculator?.focusCalculator(), 300);
+    // Reload the active register to update the state
+    this.registerService.getActiveRegister().subscribe({
+      next: () => {
+        // Focus calculator after register is opened
+        setTimeout(() => this.calculator?.focusCalculator(), 300);
+      },
+      error: (err) => {
+        console.error("Error reloading register:", err);
+        // Still focus calculator even if there's an error
+        setTimeout(() => this.calculator?.focusCalculator(), 300);
+      },
+    });
   }
 
   constructor(
@@ -146,7 +156,6 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.scaleConnected.set(this.scaleService.isConnected());
 
     // Load active cart from database
-    this.loadActiveCart();
 
     // Handle session cleanup when user leaves or closes window
     this.setupSessionCleanup();
@@ -154,10 +163,11 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     // Subscribe to register state
-    this.registerService.currentRegister$.subscribe((register) => {
-      this.currentRegister.set(register);
+    this.loadActiveCart()?.add(() => {
+      this.registerService.currentRegister$.subscribe((register) => {
+        this.currentRegister.set(register);
+      });
     });
-
     // Load active register
     this.registerService.getActiveRegister().subscribe();
 
@@ -214,11 +224,11 @@ export class CashierComponent implements OnInit, AfterViewInit {
     navigator.sendBeacon(apiUrl, formData);
   }
 
-  loadActiveCart(): void {
+  loadActiveCart(): Subscription | null {
     const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.id) return;
+    if (!currentUser || !currentUser.id) return null;
 
-    this.cartService.getActiveCart(currentUser.id).subscribe({
+    return this.cartService.getActiveCart(currentUser.id).subscribe({
       next: (cart) => {
         if (cart && cart.items) {
           // Convert cart items to cashier items format

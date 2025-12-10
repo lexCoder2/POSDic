@@ -10,7 +10,6 @@
   width: $cart-width;
   display: flex;
   flex-direction: column;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
   position: relative;
   height: 100%;
   border-bottom: 1px solid var(--border-color);
@@ -195,8 +194,8 @@
     flex: 1;
     overflow-y: auto;
     padding: 0.5rem;
-    background-color: var(--bg-tertiary);
-
+    background-color: $neumorphic-surface;
+    box-shadow: -4px 0 6px rgba(0, 0, 0, 0.08);
     &::-webkit-scrollbar {
       width: 6px;
     }

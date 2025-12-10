@@ -53,10 +53,10 @@ export class CartComponent {
     }));
   }
   getProductImageUrl(product: Product): string {
-    if (product.local_image) {
-      return `${environment.imageUrl}/${product.local_image}`;
-    }
-    return "";
+    return `${environment.imageUrl}/${product.local_image}`;
+  }
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = "assets/placeholder.png";
   }
 
   getTotalItems(): number {

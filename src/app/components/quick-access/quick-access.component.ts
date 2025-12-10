@@ -40,8 +40,9 @@ import { Product } from "../../models";
   `,
   styles: [
     `
+      @use "src/styles/theme" as *;
       .quick-access {
-        background: white;
+        background: $neumorphic-surface;
         border-radius: 12px;
         padding: 0.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

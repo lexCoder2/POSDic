@@ -4,7 +4,7 @@
   display: flex;
   height: calc(100vh - 70px);
   overflow: hidden;
-  background: var(--bg-primary);
+  background: $neumorphic-surface;
 }
 .sidebar-header {
   padding: $spacing-sm;
@@ -45,12 +45,10 @@
 // ===== SIDEBAR =====
 .sidebar {
   width: $sidebar-width;
-  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   box-shadow: none;
   z-index: $z-sidebar;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
 
   .sidebar-nav {
     flex: 1;
@@ -58,8 +56,10 @@
     display: flex;
     flex-direction: column;
     align-items: end;
-    padding: $spacing-xs;
+    padding: 0 $spacing-xs;
+    margin-top: $spacing-lg;
     gap: $spacing-sm;
+    border-right: 1px solid rgba(255, 255, 255, 0.671);
   }
 
   .sidebar-btn {
@@ -79,6 +79,8 @@
     transition: all 0.3s ease;
     position: relative;
     border-radius: $radius-lg;
+    min-height: 75px;
+    min-width: 70px;
 
     i {
       font-size: 1.2rem;
@@ -174,10 +176,10 @@
 
 // ===== TOP HEADER =====
 .top-header {
-  background: var(--bg-secondary);
   border-bottom: none;
   box-shadow: none;
   z-index: $z-fixed;
+  background: $neumorphic-surface;
 
   .header-content {
     padding: $spacing-sm $spacing-2xl $spacing-sm $spacing-lg;
@@ -189,7 +191,6 @@
 
   .mobile-sidebar-toggle {
     display: none;
-    background: transparent;
     border: none;
     color: var(--text-primary);
     font-size: 1.25rem;
@@ -452,7 +453,6 @@
   flex: 1;
   overflow-y: auto;
   padding: 0;
-  background: var(--bg-secondary);
   height: calc(100vh - 60px);
 }
 

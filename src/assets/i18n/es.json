@@ -184,8 +184,8 @@
 
     "SIDEBAR": {
       "DASHBOARD": "Panel",
-      "POS": " Diconsa",
-      "QUICK_CASHIER": "Cajero Rápido",
+      "POS": "Venta",
+      "QUICK_CASHIER": "Venta Rápida",
       "STATISTICS": "Estadísticas",
       "INVENTORY": "Inventario",
       "CATEGORIES": "Categorías",
@@ -638,11 +638,11 @@
     "ACTIONS": {
       "OPEN_REGISTER": "Abrir Caja",
       "CLOSE_REGISTER": "Cerrar Caja",
-      "CALCULATOR": "Calculadora",
+      "CALCULATOR": "Manual",
       "LOOSE": "Granel",
       "WITHDRAW": "Retiro",
-      "RETURNS": "Devoluciones",
-      "PRINT": "Imprimir"
+      "RETURNS": "Devolucion",
+      "PRINT": "Ticket"
     },
     "WITHDRAW": {
       "TITLE": "Retiro de Efectivo",

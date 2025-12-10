@@ -1,33 +1,27 @@
-<app-page-title
-  title="{{ 'PROVIDERS.TITLE' | translate }}"
-  description="{{ 'PROVIDERS.DESCRIPTION' | translate }}"
-  icon="fa-truck"
->
-  <div class="header-actions">
-    <div class="row-count">
-      <span>{{
-        "PROVIDERS.TOTAL" | translate: { count: filteredProviders().length }
-      }}</span>
-      <select
-        [(ngModel)]="pageSize"
-        (change)="changePageSize(+$any($event.target).value)"
-        class="page-size-select"
-      >
-        <option [value]="5">5 per page</option>
-        <option [value]="10">10 per page</option>
-        <option [value]="25">25 per page</option>
-        <option [value]="50">50 per page</option>
-        <option [value]="100">100 per page</option>
-      </select>
-    </div>
-    <button class="btn-add" (click)="openProviderModal()">
-      <i class="fas fa-plus"></i>
-      {{ "PROVIDERS.ACTIONS.ADD" | translate }}
-    </button>
-  </div>
-</app-page-title>
 <div class="providers-container">
   <div class="providers-table-wrapper neumorphic-table table-responsive">
+    <div class="header-actions">
+      <div class="row-count">
+        <span>{{
+          "PROVIDERS.TOTAL" | translate: { count: filteredProviders().length }
+        }}</span>
+        <select
+          [(ngModel)]="pageSize"
+          (change)="changePageSize(+$any($event.target).value)"
+          class="page-size-select"
+        >
+          <option [value]="5">5 per page</option>
+          <option [value]="10">10 per page</option>
+          <option [value]="25">25 per page</option>
+          <option [value]="50">50 per page</option>
+          <option [value]="100">100 per page</option>
+        </select>
+      </div>
+      <button class="btn-add" (click)="openProviderModal()">
+        <i class="fas fa-plus"></i>
+        {{ "PROVIDERS.ACTIONS.ADD" | translate }}
+      </button>
+    </div>
     <table class="providers-table">
       <thead>
         <tr>
