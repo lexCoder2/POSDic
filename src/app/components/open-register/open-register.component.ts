@@ -46,7 +46,7 @@ export class OpenRegisterComponent implements OnInit, OnDestroy {
 
   availableRegisters = signal<AvailableRegister[]>([]);
   selectedRegister = signal<string>("");
-  newRegisterNumber: string = "";
+  newRegisterNumber = "";
   openingCash: number | null = null;
   showNewRegisterInput = false;
 

@@ -99,23 +99,23 @@ export class PosComponent implements OnInit, OnDestroy {
   searchResults: Product[] = [];
   quickAccessProducts: Product[] = [];
   cartItems: CartItem[] = [];
-  selectedCategory: string = "";
-  searchQuery: string = "";
-  barcodeValue: string = "";
-  isSearching: boolean = false;
+  selectedCategory = "";
+  searchQuery = "";
+  barcodeValue = "";
+  isSearching = false;
 
   // Multiple sales tabs
   salesTabs: { items: CartItem[] }[] = [{ items: [] }];
-  activeSaleTabIndex: number = 0;
+  activeSaleTabIndex = 0;
 
   // Camera scanner
   isCameraActive = false;
 
   // Scale
   scaleConnected = false;
-  currentWeight: number = 0;
-  currentWeightUnit: string = "kg";
-  currentWeightStable: boolean = false;
+  currentWeight = 0;
+  currentWeightUnit = "kg";
+  currentWeightStable = false;
 
   // Weight Modal
   showWeightModal = false;
@@ -826,7 +826,7 @@ export class PosComponent implements OnInit, OnDestroy {
     }
   }
 
-  getItemsBySupplier(): Array<{ supplier: string; items: CartItem[] }> {
+  getItemsBySupplier(): { supplier: string; items: CartItem[] }[] {
     const grouped = this.cartItems.reduce(
       (acc, item) => {
         const supplier =

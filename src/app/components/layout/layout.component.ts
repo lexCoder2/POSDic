@@ -97,7 +97,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   pageActions: TemplateRef<any> | null = null;
 
   // Route to title/icon mapping
-  private routeTitleMap: { [key: string]: { title: string; icon: string } } = {
+  private routeTitleMap: Record<string, { title: string; icon: string }> = {
     "/pos": { title: "GLOBAL.SIDEBAR.POS", icon: "fa-cash-register" },
     "/dashboard": {
       title: "GLOBAL.SIDEBAR.DASHBOARD",

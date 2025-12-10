@@ -9,8 +9,8 @@ import { CommonModule } from "@angular/common";
   styleUrls: ["./toggle-switch.component.scss"],
 })
 export class ToggleSwitchComponent {
-  @Input() checked: boolean = false;
-  @Input() disabled: boolean = false;
+  @Input() checked = false;
+  @Input() disabled = false;
   @Input() size: "small" | "medium" | "large" = "medium";
   @Output() change = new EventEmitter<boolean>();
 

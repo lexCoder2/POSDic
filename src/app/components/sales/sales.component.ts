@@ -60,8 +60,7 @@ export class SalesComponent implements OnInit, OnDestroy {
   selectedSaleForRefund: Sale | null = null;
   refundType: "full" | "partial" = "full";
   refundReason = "";
-  refundItems: Array<{ itemId: string; quantity: number; selected: boolean }> =
-    [];
+  refundItems: { itemId: string; quantity: number; selected: boolean }[] = [];
   refundTotal = 0;
 
   // Pagination

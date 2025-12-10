@@ -57,7 +57,7 @@ export class SaleService {
     id: string,
     refundType: "full" | "partial",
     reason: string,
-    items?: Array<{ itemId: string; quantity: number }>
+    items?: { itemId: string; quantity: number }[]
   ): Observable<Sale> {
     return this.http.post<Sale>(`${this.apiUrl}/${id}/refund`, {
       refundType,
@@ -79,7 +79,7 @@ export class SaleService {
   }
 
   createInternalSale(internalSale: {
-    items: Array<{ product: string; quantity: number; weight?: number }>;
+    items: { product: string; quantity: number; weight?: number }[];
     notes?: string;
   }): Observable<Sale> {
     return this.http.post<Sale>(`${this.apiUrl}/internal`, internalSale);
@@ -91,7 +91,7 @@ export class SaleService {
   }): Observable<{
     totalAmount: number;
     totalCount: number;
-    byUser: Array<{ name: string; count: number; total: number }>;
+    byUser: { name: string; count: number; total: number }[];
     recentSales: Sale[];
   }> {
     let params = new HttpParams();
@@ -102,7 +102,7 @@ export class SaleService {
     return this.http.get<{
       totalAmount: number;
       totalCount: number;
-      byUser: Array<{ name: string; count: number; total: number }>;
+      byUser: { name: string; count: number; total: number }[];
       recentSales: Sale[];
     }>(`${this.apiUrl}/internal/stats`, { params });
   }

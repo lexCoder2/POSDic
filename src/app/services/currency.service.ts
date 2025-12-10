@@ -79,7 +79,7 @@ export class CurrencyService {
   /**
    * Format a number with the current currency symbol
    */
-  format(amount: number, decimals: number = 2): string {
+  format(amount: number, decimals = 2): string {
     const symbol = this.currencySymbol();
     const formatted = amount.toFixed(decimals);
     return `${symbol}${formatted}`;

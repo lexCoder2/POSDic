@@ -72,7 +72,7 @@ export class RegisterService {
   openRegister(
     openingCash: number,
     registerNumber: string,
-    bindToDevice: boolean = true
+    bindToDevice = true
   ): Observable<Register> {
     const deviceId = bindToDevice ? this.deviceService.getDeviceId() : null;
     const deviceName = bindToDevice ? this.deviceService.getDeviceName() : null;

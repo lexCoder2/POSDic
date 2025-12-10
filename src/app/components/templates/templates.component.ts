@@ -480,7 +480,7 @@ export class TemplatesComponent implements OnInit {
     ];
 
     items.forEach((item) => {
-      let itemLine = `${item.name}`;
+      const itemLine = `${item.name}`;
       if (formValue.showQuantity || formValue.showUnitPrice) {
         const qtyPrice = `${item.qty} $${item.price.toFixed(2)} $${(
           item.qty * item.price
@@ -492,7 +492,7 @@ export class TemplatesComponent implements OnInit {
     });
 
     // Divider
-    preview += `<div style="border-bottom: 1px dashed #999; margin: 8px 0;"></div>`;
+    preview += `<div style="border-bottom: 2px dashed #999; margin: 8px 0;"></div>`;
 
     // Totals
     const totalStyle = getFontStyle(

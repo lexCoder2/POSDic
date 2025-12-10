@@ -53,7 +53,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
   cashReceivedInput!: ElementRef<HTMLInputElement>;
 
   items = signal<
-    Array<{
+    {
       price: number;
       id: number;
       description?: string;
@@ -61,7 +61,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
       pricePerKg?: number;
       quantity: number;
       unitPrice: number;
-    }>
+    }[]
   >([]);
   total = signal<number>(0);
   isProcessing = signal<boolean>(false);

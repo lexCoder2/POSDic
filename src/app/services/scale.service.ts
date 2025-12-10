@@ -108,7 +108,7 @@ export class ScaleService {
   }
 
   // Mock method for testing without physical scale
-  mockWeightReading(weight: number, unit: string = "kg"): void {
+  mockWeightReading(weight: number, unit = "kg"): void {
     this.currentWeight.next({
       weight,
       unit,

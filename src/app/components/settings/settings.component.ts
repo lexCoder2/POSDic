@@ -27,18 +27,18 @@ import { QzTrayService } from "../../services/qz-tray.service";
 })
 export class SettingsComponent implements OnInit {
   printerMode: "plain" | "styled" = "plain";
-  showPrintPreview: boolean = false;
+  showPrintPreview = false;
 
-  displayName: string = "";
-  preferredLang: string = "";
+  displayName = "";
+  preferredLang = "";
   userPrinterMode: "inherit" | "plain" | "styled" = "inherit";
-  selectedCurrency: string = "USD";
+  selectedCurrency = "USD";
 
   // QR Badge properties
-  qrCodeUrl: string = "";
-  currentUserName: string = "";
-  currentUserRole: string = "";
-  printingBadge: boolean = false;
+  qrCodeUrl = "";
+  currentUserName = "";
+  currentUserRole = "";
+  printingBadge = false;
 
   constructor(
     private receiptGen: ReceiptGeneratorService,

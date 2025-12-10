@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+} from "@angular/core";
 import { CommonModule, DecimalPipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
@@ -16,7 +22,7 @@ export interface WeightConfirmEvent {
   templateUrl: "./weight-modal.component.html",
   styleUrls: ["./weight-modal.component.scss"],
 })
-export class WeightModalComponent {
+export class WeightModalComponent implements OnChanges {
   @Input() show = false;
   @Input() product: Product | null = null;
   @Input() scaleConnected = false;

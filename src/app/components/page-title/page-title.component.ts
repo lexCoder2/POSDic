@@ -9,7 +9,7 @@ import { CommonModule } from "@angular/common";
   styleUrls: ["./page-title.component.scss"],
 })
 export class PageTitleComponent {
-  @Input() title: string = "";
+  @Input() title = "";
   @Input() description?: string;
   @Input() icon?: string;
 }

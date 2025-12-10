@@ -81,7 +81,7 @@ export class CartStateService {
     startDate?: string;
     endDate?: string;
   }): Observable<Cart[]> {
-    let params: any = {};
+    const params: any = {};
     if (filters?.cashier) params.cashier = filters.cashier;
     if (filters?.status) params.status = filters.status;
     if (filters?.startDate) params.startDate = filters.startDate;
@@ -93,8 +93,8 @@ export class CartStateService {
   // Calculate cart totals
   calculateTotals(
     items: CartItem[],
-    discount: number = 0,
-    taxRate: number = 0
+    discount = 0,
+    taxRate = 0
   ): {
     subtotal: number;
     tax: number;

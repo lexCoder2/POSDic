@@ -539,7 +539,7 @@ export class ReceiptGeneratorService {
       /* Separator */
       .separator {
         border: none;
-        border-top: 1px ${style.lineStyle} ${style.lineColor};
+        border-top: 2px ${style.lineStyle} ${style.lineColor};
         margin: 4px 0;
       }
       
@@ -560,8 +560,8 @@ export class ReceiptGeneratorService {
       
       .items-table th {
         font-weight: bold;
-        border-bottom: 1px solid ${style.lineColor};
-        font-size: ${font.smallSize}px;
+        border-bottom: 2px solid ${style.lineColor};
+        font-size: ${font.baseSize}px;
       }
       
       .col-qty {
@@ -1213,7 +1213,7 @@ export class ReceiptGeneratorService {
   /**
    * Generate text separator line
    */
-  private textSeparator(width: number, char: string = "-"): string {
+  private textSeparator(width: number, char = "-"): string {
     return char.repeat(width);
   }
 
@@ -1223,8 +1223,8 @@ export class ReceiptGeneratorService {
   private totalRow(
     label: string,
     value: number | string,
-    className: string = "",
-    isText: boolean = false
+    className = "",
+    isText = false
   ): string {
     const displayValue = isText
       ? value

@@ -66,9 +66,9 @@ export class InventorySessionComponent implements OnInit, OnDestroy {
   isStockRegistration = false; // Checkbox for registering new stock
 
   // Form fields
-  newPrice: number = 0;
-  newStock: number = 0;
-  newEan: string = "";
+  newPrice = 0;
+  newStock = 0;
+  newEan = "";
 
   get apiUrl(): string {
     return environment.apiUrl;

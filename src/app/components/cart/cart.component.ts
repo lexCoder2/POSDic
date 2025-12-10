@@ -16,10 +16,10 @@ import { environment } from "@environments/environment";
 export class CartComponent {
   @Input() cartItems: CartItem[] = [];
   @Input() salesTabs: { items: CartItem[] }[] = [];
-  @Input() activeSaleTabIndex: number = 0;
-  @Input() isMobileCartOpen: boolean = false;
-  @Input() registerOpen: boolean = false;
-  @Input() canMakeInternalSale: boolean = false;
+  @Input() activeSaleTabIndex = 0;
+  @Input() isMobileCartOpen = false;
+  @Input() registerOpen = false;
+  @Input() canMakeInternalSale = false;
 
   showCloseConfirmation = signal<boolean>(false);
   tabToClose = signal<number | null>(null);
@@ -37,7 +37,7 @@ export class CartComponent {
   constructor(public cartService: CartService) {}
 
   getItemsBySupplier(): { supplier: string; items: CartItem[] }[] {
-    const groups: { [key: string]: CartItem[] } = {};
+    const groups: Record<string, CartItem[]> = {};
 
     this.cartItems.forEach((item) => {
       const supplier = (item.product as any).supplier || "Unknown Supplier";

@@ -9,7 +9,7 @@ import { CurrencyService } from "../services/currency.service";
 export class CurrencyPipe implements PipeTransform {
   constructor(private currencyService: CurrencyService) {}
 
-  transform(value: number | null | undefined, decimals: number = 2): string {
+  transform(value: number | null | undefined, decimals = 2): string {
     if (value === null || value === undefined || isNaN(value)) {
       return `${this.currencyService.getSymbol()}0.00`;
     }

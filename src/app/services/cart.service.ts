@@ -32,7 +32,7 @@ export class CartService {
     localStorage.setItem("pos_cart", JSON.stringify(this.cartItems.value));
   }
 
-  addItem(product: Product, quantity: number = 1, weight?: number): void {
+  addItem(product: Product, quantity = 1, weight?: number): void {
     const items = this.cartItems.value;
     const existingItem = items.find((item) => item.product._id === product._id);
 

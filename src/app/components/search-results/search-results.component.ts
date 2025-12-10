@@ -32,7 +32,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   products = input<Product[]>([]);
 
   // Accept loading state from parent
-  @Input() isLoading: boolean = false;
+  @Input() isLoading = false;
 
   // Internal signals for search state
   searchQuery = signal<string>("");

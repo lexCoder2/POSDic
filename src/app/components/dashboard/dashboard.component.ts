@@ -16,23 +16,23 @@ interface DashboardStats {
   totalUsers: number;
   todaySales: number;
   todayRevenue: number;
-  topProducts: Array<{ name: string; quantity: number; revenue: number }>;
-  salesByPaymentMethod: Array<{ method: string; count: number; total: number }>;
-  restockAlerts: Array<{
+  topProducts: { name: string; quantity: number; revenue: number }[];
+  salesByPaymentMethod: { method: string; count: number; total: number }[];
+  restockAlerts: {
     productId: string;
     name: string;
     stock: number;
     avgDailySales: number;
     daysUntilStockout: number;
     urgency: "critical" | "warning" | "info";
-  }>;
-  incompleteProducts?: Array<{
+  }[];
+  incompleteProducts?: {
     _id: string;
     name: string;
     price: number;
     sku: string;
     createdAt: Date;
-  }>;
+  }[];
   internalSales?: {
     totalAmount: number;
     totalCount: number;
@@ -115,9 +115,10 @@ export class DashboardComponent implements OnInit {
         );
 
         // Calculate top products
-        const productSales: {
-          [key: string]: { name: string; quantity: number; revenue: number };
-        } = {};
+        const productSales: Record<
+          string,
+          { name: string; quantity: number; revenue: number }
+        > = {};
         completedSales.forEach((sale) => {
           sale.items.forEach((item) => {
             const key = item.productName || "Unknown";
@@ -134,9 +135,8 @@ export class DashboardComponent implements OnInit {
           .slice(0, 10);
 
         // Calculate sales by payment method
-        const paymentMethods: {
-          [key: string]: { count: number; total: number };
-        } = {};
+        const paymentMethods: Record<string, { count: number; total: number }> =
+          {};
         completedSales.forEach((sale) => {
           const method = sale.paymentMethod;
           if (!paymentMethods[method]) {
@@ -163,9 +163,10 @@ export class DashboardComponent implements OnInit {
         );
 
         // Calculate average daily sales per product
-        const productDailySales: {
-          [key: string]: { productId: string; name: string; totalSold: number };
-        } = {};
+        const productDailySales: Record<
+          string,
+          { productId: string; name: string; totalSold: number }
+        > = {};
 
         recentSales.forEach((sale) => {
           sale.items.forEach((item) => {
@@ -187,14 +188,14 @@ export class DashboardComponent implements OnInit {
         this.productService.getProducts({ pageSize: 10000 }).subscribe({
           next: (prodResponse) => {
             const allProducts = prodResponse.data;
-            const restockAlerts: Array<{
+            const restockAlerts: {
               productId: string;
               name: string;
               stock: number;
               avgDailySales: number;
               daysUntilStockout: number;
               urgency: "critical" | "warning" | "info";
-            }> = [];
+            }[] = [];
 
             allProducts.forEach((product) => {
               const productId = product._id || "";

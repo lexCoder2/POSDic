@@ -63,8 +63,8 @@ export class StatisticsComponent implements OnInit {
     );
 
     // Daily sales for the period
-    const dailySalesMap: { [key: string]: number } = {};
-    const dailyRevenueMap: { [key: string]: number } = {};
+    const dailySalesMap: Record<string, number> = {};
+    const dailyRevenueMap: Record<string, number> = {};
 
     filteredSales.forEach((sale) => {
       const date = new Date(sale.createdAt!).toLocaleDateString();
@@ -80,8 +80,8 @@ export class StatisticsComponent implements OnInit {
     };
 
     // Monthly sales for the year
-    const monthlySalesMap: { [key: string]: number } = {};
-    const monthlyRevenueMap: { [key: string]: number } = {};
+    const monthlySalesMap: Record<string, number> = {};
+    const monthlyRevenueMap: Record<string, number> = {};
 
     completedSales.forEach((sale) => {
       const date = new Date(sale.createdAt!);
@@ -114,7 +114,7 @@ export class StatisticsComponent implements OnInit {
     };
 
     // Top categories
-    const categoryMap: { [key: string]: number } = {};
+    const categoryMap: Record<string, number> = {};
 
     completedSales.forEach((sale) => {
       sale.items.forEach((item) => {
@@ -139,7 +139,7 @@ export class StatisticsComponent implements OnInit {
       return d.toLocaleDateString();
     });
 
-    const trendMap: { [key: string]: number } = {};
+    const trendMap: Record<string, number> = {};
     completedSales.forEach((sale) => {
       const date = new Date(sale.createdAt!).toLocaleDateString();
       trendMap[date] = (trendMap[date] || 0) + sale.total;
@@ -151,7 +151,7 @@ export class StatisticsComponent implements OnInit {
     };
 
     // Payment methods
-    const paymentMap: { [key: string]: number } = {};
+    const paymentMap: Record<string, number> = {};
     completedSales.forEach((sale) => {
       paymentMap[sale.paymentMethod] =
         (paymentMap[sale.paymentMethod] || 0) + 1;

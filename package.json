@@ -14,7 +14,8 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,css,json}\"",
     "prebuild": "npm run format:check",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "ng lint"
   },
   "keywords": [
     "POS",
@@ -48,12 +49,15 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@types/node": "^24.10.1",
+    "angular-eslint": "21.1.0",
     "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.0",
     "nodemon": "^3.1.11",
     "prettier": "^3.7.4",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "8.47.0"
   },
   "husky": {
     "hooks": {
@@ -63,9 +67,6 @@
   "lint-staged": {
     "*.{ts,js,json,scss,css,html}": [
       "prettier --write"
-    ],
-    "*.ts": [
-      "ng lint --fix"
     ]
   }
 }

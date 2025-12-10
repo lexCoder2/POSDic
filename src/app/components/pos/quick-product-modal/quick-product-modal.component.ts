@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnChanges,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
@@ -17,7 +23,7 @@ export interface QuickProductData {
   templateUrl: "./quick-product-modal.component.html",
   styleUrls: ["./quick-product-modal.component.scss"],
 })
-export class QuickProductModalComponent {
+export class QuickProductModalComponent implements OnChanges {
   @Input() show = false;
   @Input() barcode = "";
 
