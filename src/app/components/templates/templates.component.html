@@ -359,81 +359,107 @@
               <h3>Item Details</h3>
 
               <div class="checkbox-group">
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showProductCode"
-                    id="showProductCode"
-                  />
-                  <label for="showProductCode">{{
-                    "TEMPLATES.FORM.SHOW_PRODUCT_CODE" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_PRODUCT_CODE" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showProductCode')"
+                      (change)="
+                        templateForm.patchValue({ showProductCode: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showBarcode"
-                    id="showBarcode"
-                  />
-                  <label for="showBarcode">{{
-                    "TEMPLATES.FORM.SHOW_BARCODE" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_BARCODE" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showBarcode')"
+                      (change)="
+                        templateForm.patchValue({ showBarcode: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showQuantity"
-                    id="showQuantity"
-                  />
-                  <label for="showQuantity">{{
-                    "TEMPLATES.FORM.SHOW_QUANTITY" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_QUANTITY" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showQuantity')"
+                      (change)="
+                        templateForm.patchValue({ showQuantity: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showUnitPrice"
-                    id="showUnitPrice"
-                  />
-                  <label for="showUnitPrice">{{
-                    "TEMPLATES.FORM.SHOW_UNIT_PRICE" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_UNIT_PRICE" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showUnitPrice')"
+                      (change)="
+                        templateForm.patchValue({ showUnitPrice: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showDiscount"
-                    id="showDiscount"
-                  />
-                  <label for="showDiscount">{{
-                    "TEMPLATES.FORM.SHOW_DISCOUNT" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_DISCOUNT" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showDiscount')"
+                      (change)="
+                        templateForm.patchValue({ showDiscount: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showTax"
-                    id="showTax"
-                  />
-                  <label for="showTax">{{
-                    "TEMPLATES.FORM.SHOW_TAX" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_TAX" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showTax')"
+                      (change)="templateForm.patchValue({ showTax: $event })"
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showSubtotal"
-                    id="showSubtotal"
-                  />
-                  <label for="showSubtotal">{{
-                    "TEMPLATES.FORM.SHOW_SUBTOTAL" | translate
-                  }}</label>
+                <div class="form-group">
+                  <div style="display: flex; gap: 10px; align-items: center">
+                    <label style="flex: 1">{{
+                      "TEMPLATES.FORM.SHOW_SUBTOTAL" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="isFieldVisible('showSubtotal')"
+                      (change)="
+                        templateForm.patchValue({ showSubtotal: $event })
+                      "
+                      size="small"
+                    ></app-toggle-switch>
+                  </div>
                 </div>
               </div>
 
@@ -477,59 +503,52 @@
               <h3>Footer</h3>
 
               <div class="checkbox-group">
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showTotals"
-                    id="showTotals"
-                  />
-                  <label for="showTotals">{{
-                    "TEMPLATES.FORM.SHOW_TOTALS" | translate
-                  }}</label>
+                <div class="form-group toggle-group">
+                  <label>{{ "TEMPLATES.FORM.SHOW_TOTALS" | translate }}</label>
+                  <app-toggle-switch
+                    [checked]="templateForm.get('showTotals')?.value"
+                    (change)="templateForm.patchValue({ showTotals: $event })"
+                  ></app-toggle-switch>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showPaymentMethod"
-                    id="showPaymentMethod"
-                  />
-                  <label for="showPaymentMethod">{{
+                <div class="form-group toggle-group">
+                  <label>{{
                     "TEMPLATES.FORM.SHOW_PAYMENT_METHOD" | translate
                   }}</label>
+                  <app-toggle-switch
+                    [checked]="templateForm.get('showPaymentMethod')?.value"
+                    (change)="
+                      templateForm.patchValue({ showPaymentMethod: $event })
+                    "
+                  ></app-toggle-switch>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showCashier"
-                    id="showCashier"
-                  />
-                  <label for="showCashier">{{
-                    "TEMPLATES.FORM.SHOW_CASHIER" | translate
-                  }}</label>
+                <div class="form-group toggle-group">
+                  <label>{{ "TEMPLATES.FORM.SHOW_CASHIER" | translate }}</label>
+                  <app-toggle-switch
+                    [checked]="templateForm.get('showCashier')?.value"
+                    (change)="templateForm.patchValue({ showCashier: $event })"
+                  ></app-toggle-switch>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showDateTime"
-                    id="showDateTime"
-                  />
-                  <label for="showDateTime">{{
+                <div class="form-group toggle-group">
+                  <label>{{
                     "TEMPLATES.FORM.SHOW_DATETIME" | translate
                   }}</label>
+                  <app-toggle-switch
+                    [checked]="templateForm.get('showDateTime')?.value"
+                    (change)="templateForm.patchValue({ showDateTime: $event })"
+                  ></app-toggle-switch>
                 </div>
 
-                <div class="form-group checkbox">
-                  <input
-                    type="checkbox"
-                    formControlName="showThankYou"
-                    id="showThankYou"
-                  />
-                  <label for="showThankYou">{{
+                <div class="form-group toggle-group">
+                  <label>{{
                     "TEMPLATES.FORM.SHOW_THANKYOU" | translate
                   }}</label>
+                  <app-toggle-switch
+                    [checked]="templateForm.get('showThankYou')?.value"
+                    (change)="templateForm.patchValue({ showThankYou: $event })"
+                  ></app-toggle-switch>
                 </div>
               </div>
 
@@ -650,7 +669,19 @@
 
         <!-- Preview Section -->
         <div class="preview-section">
-          <h3>{{ "TEMPLATES.PREVIEW_TITLE" | translate }}</h3>
+          <div class="preview-header">
+            <h3>{{ "TEMPLATES.PREVIEW_TITLE" | translate }}</h3>
+            <div class="preview-mode-toggle">
+              <label>{{ "TEMPLATES.PREVIEW_MODE" | translate }}</label>
+              <app-toggle-switch
+                [checked]="previewMode() === 'styled'"
+                (change)="previewMode.set($event ? 'styled' : 'text')"
+              ></app-toggle-switch>
+              <span class="mode-label">{{
+                previewMode() === "styled" ? "Styled" : "Text Only"
+              }}</span>
+            </div>
+          </div>
           <div class="preview-container">
             <div [innerHTML]="getSafePreview()"></div>
           </div>

@@ -23,16 +23,16 @@
     </div>
 
     <div class="preview-toggle">
-      <label class="toggle-label">
-        <input
-          type="checkbox"
-          [(ngModel)]="showPrintPreview"
-          (change)="togglePrintPreview()"
-        />
+      <div class="toggle-container">
+        <app-toggle-switch
+          [checked]="showPrintPreview"
+          (change)="togglePrintPreview($event)"
+          size="medium"
+        ></app-toggle-switch>
         <span class="toggle-text">
           {{ "SETTINGS.PRINTING.SHOW_PREVIEW" | translate }}
         </span>
-      </label>
+      </div>
       <p class="toggle-description">
         {{ "SETTINGS.PRINTING.SHOW_PREVIEW_DESC" | translate }}
       </p>
@@ -124,6 +124,20 @@
           {{ "SETTINGS.PRINTING.STYLED" | translate }}
         </option>
       </select>
+    </div>
+
+    <div class="form-row">
+      <label class="label">{{
+        "SETTINGS.USER_PREFERENCES.DEFAULT_PRINTER" | translate
+      }}</label>
+      <select [(ngModel)]="defaultPrinter" (change)="onDefaultPrinterChange()">
+        <option *ngFor="let printer of availablePrinters" [value]="printer">
+          {{ printer }}
+        </option>
+      </select>
+      <p class="form-hint">
+        {{ "SETTINGS.USER_PREFERENCES.DEFAULT_PRINTER_DESC" | translate }}
+      </p>
     </div>
 
     <div class="form-row">

@@ -4,6 +4,7 @@ import { UserService } from "./user.service";
 import { TranslationService } from "./translation.service";
 import { CurrencyService } from "./currency.service";
 import { ThemeService } from "./theme.service";
+import { QzTrayService } from "./qz-tray.service";
 import { firstValueFrom } from "rxjs";
 
 @Injectable({
@@ -15,7 +16,8 @@ export class AppInitService {
     private userService: UserService,
     private translationService: TranslationService,
     private currencyService: CurrencyService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private qzTrayService: QzTrayService
   ) {}
 
   async initializeApp(): Promise<void> {
@@ -42,6 +44,21 @@ export class AppInitService {
         console.error("Failed to load user settings on init:", error);
         // Continue with defaults if settings load fails
       }
+    }
+
+    // Initialize QZ Tray and log printer info (non-blocking)
+    // This runs in the background and won't block app startup
+    this.initializeQzTray();
+  }
+
+  private async initializeQzTray(): Promise<void> {
+    try {
+      console.log("Initializing QZ Tray for printer detection...");
+      // QzTrayService auto-initializes on construction
+      // The connect() call will trigger printer info logging
+    } catch (error) {
+      console.error("QZ Tray initialization failed:", error);
+      console.log("Printing features may not be available");
     }
   }
 }

@@ -5,9 +5,7 @@ import { Sale, SaleItem, PrintTemplate } from "../models";
 import { TranslationService } from "./translation.service";
 import { QzTrayService } from "./qz-tray.service";
 import { environment } from "@environments/environment";
-
-// @ts-ignore - bwip-js types may not be available
-declare const bwipjs: any;
+import bwipjs from "@bwip-js/browser";
 
 // ============================================================================
 // CONFIGURATION INTERFACES
@@ -107,10 +105,10 @@ export const PAPER_SIZES: Record<string, PaperConfig> = {
 /** Default font configuration */
 export const DEFAULT_FONT_CONFIG: FontConfig = {
   family: "'Courier New', Courier, monospace",
-  baseSize: 9,
-  headerSize: 11,
+  baseSize: 12,
+  headerSize: 14,
   titleSize: 10,
-  smallSize: 8,
+  smallSize: 9,
 };
 
 /** Default style configuration */
@@ -318,7 +316,7 @@ export class ReceiptGeneratorService {
 
   /**
    * Simplified method to print a sale receipt using default template
-   * This is the main method components should use
+   * Auto-detects printer capabilities and optimizes receipt format
    */
   async printSaleReceipt(
     sale: Sale,
@@ -328,9 +326,41 @@ export class ReceiptGeneratorService {
     } = {}
   ): Promise<void> {
     const template = await this.getDefaultTemplate();
-    const config: Partial<ReceiptConfig> = {
+
+    // Use default printer from settings if not specified
+    let printerName = options.printerName;
+    if (!printerName) {
+      const savedDefaultPrinter = localStorage.getItem("printer.default");
+      if (savedDefaultPrinter && savedDefaultPrinter !== "default") {
+        printerName = savedDefaultPrinter;
+        console.log(`Using default printer from settings: ${printerName}`);
+      }
+    }
+
+    // Auto-detect optimal receipt configuration based on printer
+    let config: Partial<ReceiptConfig> = {
       plainTextMode: options.plainText ?? false,
     };
+
+    // If printer name is provided, optimize config for that printer
+    if (printerName) {
+      try {
+        const paperWidth =
+          await this.qzTrayService.getOptimalPaperWidth(printerName);
+        const dpi = await this.qzTrayService.getOptimalDpi(printerName);
+
+        // Select paper size based on printer capabilities
+        config.paper =
+          paperWidth >= 80 ? PAPER_SIZES["80mm"] : PAPER_SIZES["58mm"];
+        config.charsPerLine = paperWidth >= 80 ? 42 : 28;
+
+        console.log(
+          `Optimized receipt for ${printerName}: ${paperWidth}mm @ ${dpi}DPI`
+        );
+      } catch (err) {
+        console.log("Could not optimize for printer, using defaults:", err);
+      }
+    }
 
     // Check if preview is enabled
     if (this.shouldShowPreview()) {
@@ -341,7 +371,7 @@ export class ReceiptGeneratorService {
       }
     }
 
-    await this.printReceipt(sale, template, config, options.printerName);
+    await this.printReceipt(sale, template, config, printerName);
   }
 
   /**
@@ -379,7 +409,7 @@ export class ReceiptGeneratorService {
   }
 
   /**
-   * Print a receipt using QZ Tray
+   * Print a receipt using QZ Tray with optional printer optimization
    */
   async printReceipt(
     sale: Sale,
@@ -388,32 +418,91 @@ export class ReceiptGeneratorService {
     printerName?: string
   ): Promise<void> {
     const html = await this.generateReceipt(sale, template, config);
-    // If no printer name provided, use 'default' which will use the system default printer
-    await this.qzTrayService.print(printerName || "default", html, "html");
+
+    // Determine target printer
+    const targetPrinter = printerName || "default";
+
+    // Get printer-specific options if printer is specified
+    let printOptions: { dpi?: number; paperWidthMm?: number } | undefined;
+    if (printerName && printerName !== "default") {
+      try {
+        const dpi = await this.qzTrayService.getOptimalDpi(printerName);
+        const paperWidth =
+          await this.qzTrayService.getOptimalPaperWidth(printerName);
+        printOptions = { dpi, paperWidthMm: paperWidth };
+      } catch (err) {
+        console.log("Could not retrieve printer options:", err);
+      }
+    }
+
+    // Send print job with optimized options
+    await this.qzTrayService.print(targetPrinter, html, "html", printOptions);
   }
 
   /**
-   * Generate barcode as base64 image
+   * Generate barcode as base64 image with optional printer optimization
    */
   async generateBarcode(
     text: string,
-    config: BarcodeConfig = DEFAULT_BARCODE_CONFIG
+    config: BarcodeConfig = DEFAULT_BARCODE_CONFIG,
+    printerName?: string
   ): Promise<string> {
     try {
-      if (typeof bwipjs === "undefined") {
-        console.warn("bwip-js not available");
-        return "";
+      // Optimize barcode for printer if specified
+      let optimizedConfig = { ...config };
+      if (printerName) {
+        try {
+          const dpi = await this.qzTrayService.getOptimalDpi(printerName);
+          const paperWidth =
+            await this.qzTrayService.getOptimalPaperWidth(printerName);
+
+          // Adjust barcode height and scale based on DPI and paper width
+          // Higher DPI = can use smaller scale, wider paper = can use larger barcode
+          const dpiMultiplier = dpi / 203; // 203 is standard thermal printer DPI
+          const widthMultiplier = paperWidth / 58; // 58mm is standard thermal width
+
+          optimizedConfig.height = config.height * dpiMultiplier;
+          optimizedConfig.scale = config.scale * widthMultiplier * 0.8; // 0.8 = safety margin
+
+          console.log(
+            `Barcode optimized for ${printerName}: height=${optimizedConfig.height}, scale=${optimizedConfig.scale}`
+          );
+        } catch (err) {
+          console.log(
+            "Could not optimize barcode for printer, using defaults:",
+            err
+          );
+        }
       }
+
       const canvas = document.createElement("canvas");
-      bwipjs.toCanvas(canvas, {
-        bcid: config.type,
+      const barcodeConfig: any = {
+        bcid: optimizedConfig.type,
         text: text,
-        scale: config.scale,
-        height: config.height / 10,
-        includetext: config.includeText,
-        textxalign: "center",
-      });
-      return canvas.toDataURL("image/png");
+        scale: optimizedConfig.scale,
+        height: optimizedConfig.height / 5,
+        includetext: false, // Hide text by default
+      };
+
+      // QR code specific settings
+      if (optimizedConfig.type === "qrcode") {
+        barcodeConfig.eclevel = "M"; // Error correction level
+        // Don't include text for QR codes
+      } else {
+        // For other barcodes, show text if configured
+        if (optimizedConfig.includeText) {
+          barcodeConfig.textxalign = "center";
+        }
+      }
+
+      console.log(
+        `Generating ${optimizedConfig.type} barcode for: ${text.substring(0, 20)}...`,
+        barcodeConfig
+      );
+      bwipjs.toCanvas(canvas, barcodeConfig);
+      const result = canvas.toDataURL("image/png");
+      console.log(`Successfully generated ${optimizedConfig.type} barcode`);
+      return result;
     } catch (error) {
       console.error("Error generating barcode:", error);
       return "";
@@ -479,6 +568,12 @@ export class ReceiptGeneratorService {
   private generateStyles(config: ReceiptConfig): string {
     const { paper, font, style } = config;
 
+    // Scale down width for screen display - use realistic phone/tablet width
+    // 58mm paper ≈ 200px (realistic phone width for receipt)
+    // 80mm paper ≈ 280px (slightly wider for larger printer)
+    const displayWidth =
+      paper.widthMm === 58 ? 140 : paper.widthMm === 80 ? 170 : 160;
+
     return `
       * {
         margin: 0;
@@ -487,15 +582,15 @@ export class ReceiptGeneratorService {
       }
       
       body {
-        width: ${Math.floor(paper.widthPx * 0.9)}px;
-        max-width: ${Math.floor(paper.widthPx * 0.9)}px;
-        margin: 0 auto;
+        width: ${displayWidth}px;
+        max-width: ${displayWidth}px;
+        margin: 0;
         padding: 0;
         background: ${style.backgroundColor};
         color: ${style.textColor};
         font-family: ${font.family};
         font-size: ${font.baseSize}px;
-        line-height: 1.3;
+        line-height: 1.2;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -733,6 +828,22 @@ export class ReceiptGeneratorService {
     const body = template.body || {};
     const showQty = body.showQuantity !== false;
     const showPrice = body.showUnitPrice !== false;
+    const showProductCode = body.showProductCode ?? false;
+    const showBarcode = body.showBarcode ?? false;
+
+    // Build item styling from template options
+    const itemStyleObj: Record<string, string> = {};
+    if (body.fontSize) itemStyleObj["fontSize"] = body.fontSize;
+    if (body.productFont) itemStyleObj["fontFamily"] = body.productFont;
+    if (body.productBold) itemStyleObj["fontWeight"] = "bold";
+    const itemInlineStyle = this.buildInlineStyle(itemStyleObj);
+
+    // Build product size styling if different from font size
+    const productSizeStyleObj: Record<string, string> = {};
+    if (body.productSize) productSizeStyleObj["fontSize"] = body.productSize;
+    if (body.productFont) productSizeStyleObj["fontFamily"] = body.productFont;
+    if (body.productBold) productSizeStyleObj["fontWeight"] = "bold";
+    const productSizeInlineStyle = this.buildInlineStyle(productSizeStyleObj);
 
     const parts: string[] = [];
     parts.push('<table class="items-table">');
@@ -760,13 +871,33 @@ export class ReceiptGeneratorService {
 
       // Description cell
       const itemName = this.getItemName(item);
-      let descHtml = `<div class="item-name">${this.escapeHtml(
+      const itemNameStyle = itemInlineStyle
+        ? ` style="${itemInlineStyle}"`
+        : "";
+      let descHtml = `<div class="item-name"${itemNameStyle}>${this.escapeHtml(
         itemName
       )}</div>`;
+
+      // Show product code if enabled
+      if (
+        showProductCode &&
+        (item.productCode ||
+          (typeof item.product === "object" && item.product?.sku))
+      ) {
+        const code =
+          item.productCode ||
+          (typeof item.product === "object" ? item.product.sku : "");
+        const productCodeStyle = productSizeInlineStyle
+          ? ` style="${productSizeInlineStyle}"`
+          : "";
+        descHtml += `<div class="item-sku"${productCodeStyle}>SKU: ${code}</div>`;
+      }
+
       if (showPrice && item.unitPrice) {
-        descHtml += `<div class="item-sku">@$${item.unitPrice.toFixed(
-          2
-        )}</div>`;
+        const priceStyle = productSizeInlineStyle
+          ? ` style="${productSizeInlineStyle}"`
+          : "";
+        descHtml += `<div class="item-sku"${priceStyle}>@$${item.unitPrice.toFixed(2)}</div>`;
       }
       parts.push(`<td class="col-desc">${descHtml}</td>`);
 
@@ -792,36 +923,72 @@ export class ReceiptGeneratorService {
     config: ReceiptConfig
   ): string {
     const footer = template.footer || {};
+    const body = template.body || {};
     if (footer.showTotals === false) {
       return "";
     }
+
+    // Build totals styling from template options
+    const totalStyleObj: Record<string, string> = {};
+    if (footer.totalSize) totalStyleObj["fontSize"] = footer.totalSize;
+    if (footer.totalFont) totalStyleObj["fontFamily"] = footer.totalFont;
+    if (footer.totalBold) totalStyleObj["fontWeight"] = "bold";
+    const totalInlineStyle = this.buildInlineStyle(totalStyleObj);
 
     const parts: string[] = [];
     parts.push('<div class="totals">');
 
     // Subtotal
+    const subtotalStyle = totalInlineStyle
+      ? ` style="${totalInlineStyle}"`
+      : "";
     parts.push(
-      this.totalRow(this.labels["subtotal"] || "Subtotal", sale.subtotal)
+      this.totalRow(
+        this.labels["subtotal"] || "Subtotal",
+        sale.subtotal,
+        "",
+        false,
+        subtotalStyle
+      )
     );
 
-    // Discount
-    if (sale.discountTotal && sale.discountTotal > 0) {
+    // Discount - only show if enabled in body options
+    const showDiscount = body.showDiscount !== false;
+    if (showDiscount && sale.discountTotal && sale.discountTotal > 0) {
       parts.push(
         this.totalRow(
           this.labels["discount"] || "Discount",
-          -sale.discountTotal
+          -sale.discountTotal,
+          "",
+          false,
+          subtotalStyle
         )
       );
     }
 
-    // Tax
-    if (sale.taxTotal && sale.taxTotal > 0) {
-      parts.push(this.totalRow(this.labels["tax"] || "Tax", sale.taxTotal));
+    // Tax - only show if enabled in body options
+    const showTax = body.showTax !== false;
+    if (showTax && sale.taxTotal && sale.taxTotal > 0) {
+      parts.push(
+        this.totalRow(
+          this.labels["tax"] || "Tax",
+          sale.taxTotal,
+          "",
+          false,
+          subtotalStyle
+        )
+      );
     }
 
     // Grand total
     parts.push(
-      this.totalRow(this.labels["total"] || "TOTAL", sale.total, "grand-total")
+      this.totalRow(
+        this.labels["total"] || "TOTAL",
+        sale.total,
+        "grand-total",
+        false,
+        totalInlineStyle
+      )
     );
 
     // Payment info
@@ -833,7 +1000,8 @@ export class ReceiptGeneratorService {
           this.labels["payment"] || "Payment",
           paymentLabel,
           "",
-          true
+          true,
+          subtotalStyle
         )
       );
 
@@ -842,7 +1010,10 @@ export class ReceiptGeneratorService {
         parts.push(
           this.totalRow(
             this.labels["received"] || "Received",
-            sale.paymentDetails.cash
+            sale.paymentDetails.cash,
+            "",
+            false,
+            subtotalStyle
           )
         );
         if (sale.paymentDetails.change && sale.paymentDetails.change > 0) {
@@ -850,7 +1021,9 @@ export class ReceiptGeneratorService {
             this.totalRow(
               this.labels["change"] || "Change",
               sale.paymentDetails.change,
-              "change"
+              "change",
+              false,
+              subtotalStyle
             )
           );
         }
@@ -870,9 +1043,19 @@ export class ReceiptGeneratorService {
     config: ReceiptConfig
   ): Promise<string> {
     const footer = template.footer || {};
+
+    // Build footer styling from template options
+    const footerStyleObj: Record<string, string> = {};
+    if (footer.footerSize) footerStyleObj["fontSize"] = footer.footerSize;
+    if (footer.footerFont) footerStyleObj["fontFamily"] = footer.footerFont;
+    if (footer.footerBold) footerStyleObj["fontWeight"] = "bold";
+    const footerInlineStyle = this.buildInlineStyle(footerStyleObj);
+
     const parts: string[] = [];
 
-    parts.push('<div class="footer">');
+    parts.push(
+      `<div class="footer"${footerInlineStyle ? ` style="${footerInlineStyle}"` : ""}>`
+    );
 
     // Sale number
     if (sale.saleNumber) {
@@ -902,7 +1085,7 @@ export class ReceiptGeneratorService {
     }
 
     // Barcode
-    if ((footer.showBarcode ?? config.barcode.enabled) && sale.saleNumber) {
+    if (sale.saleNumber) {
       const barcodeImg = await this.generateBarcode(
         sale.saleNumber.toString(),
         config.barcode
@@ -920,15 +1103,6 @@ export class ReceiptGeneratorService {
         `<div class="custom-message">${this.escapeHtml(
           footer.customMessage
         )}</div>`
-      );
-    }
-
-    // Thank you message
-    if (footer.showThankYou) {
-      parts.push(
-        `<div class="custom-message">${
-          this.labels["thankYou"] || "Thank you for your purchase!"
-        }</div>`
       );
     }
 
@@ -1100,6 +1274,14 @@ export class ReceiptGeneratorService {
       );
     }
 
+    // Sale ID in text mode
+    if (sale._id) {
+      lines.push("");
+      lines.push(this.centerText("---", width));
+      lines.push(this.centerText(`ID: ${sale._id}`, width));
+      lines.push(this.centerText("---", width));
+    }
+
     lines.push("");
     lines.push("");
 
@@ -1223,15 +1405,17 @@ export class ReceiptGeneratorService {
   private totalRow(
     label: string,
     value: number | string,
-    className = "",
-    isText = false
+    className: string = "",
+    isText: boolean = false,
+    inlineStyle: string = ""
   ): string {
     const displayValue = isText
       ? value
       : typeof value === "number"
         ? `$${value.toFixed(2)}`
         : value;
-    return `<div class="total-row ${className}"><span>${label}:</span><span>${displayValue}</span></div>`;
+    const styleAttr = inlineStyle ? ` style="${inlineStyle}"` : "";
+    return `<div class="total-row ${className}"${styleAttr}><span>${label}:</span><span>${displayValue}</span></div>`;
   }
 
   /**

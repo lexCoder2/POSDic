@@ -216,6 +216,9 @@
       "LANGUAGE": "Idioma",
       "PRINTER_MODE": "Modo de Impresora Predeterminado",
       "PRINTER_INHERIT": "Usar configuración global",
+      "DEFAULT_PRINTER": "Impresora Predeterminada",
+      "CURRENCY": "Moneda",
+      "DEFAULT_PRINTER_DESC": "Selecciona la impresora a usar para recibos y credenciales",
       "SAVE": "Guardar Preferencias"
     },
     "QR_BADGE": {
@@ -845,6 +848,7 @@
     },
 
     "PREVIEW_TITLE": "Previsualización",
+    "PREVIEW_MODE": "Modo de Vista Previa",
 
     "OPTIONS": {
       "RECEIPT": "Recibo",

@@ -48,18 +48,28 @@
   justify-content: space-between;
   gap: 1rem;
 
+  .header-actions {
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+
+    .btn-primary {
+      @include button-primary;
+    }
+
+    .btn-secondary {
+      @include button-secondary;
+    }
+  }
+
   .preview-btn {
     @include button-primary;
-    padding: 0.35rem 0.75rem;
-    font-size: $font-size-base;
-    min-height: $touch-target-md;
   }
 }
 
 .preview-toggle {
   margin: 1rem 0;
   padding: $spacing-md;
-  background: var(--bg-primary);
   border-radius: $radius-md;
   border: 1px solid var(--border-color);
 
@@ -183,12 +193,17 @@
   }
 
   .form-actions {
-    margin-top: 0.75rem;
+    margin-top: $spacing-md;
     display: flex;
     justify-content: flex-end;
+    gap: $spacing-md;
 
-    .btn {
-      padding: 0.45rem 0.9rem;
+    .btn-primary {
+      @include button-primary;
+    }
+
+    .btn-secondary {
+      @include button-secondary;
     }
   }
 }
@@ -249,15 +264,21 @@
   .form-actions {
     display: flex;
     justify-content: flex-start;
+    gap: $spacing-md;
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
+    .btn-primary {
+      @include button-primary;
 
       i {
-        font-size: 1rem;
+        font-size: $font-size-base;
+      }
+    }
+
+    .btn-secondary {
+      @include button-secondary;
+
+      i {
+        font-size: $font-size-base;
       }
     }
   }

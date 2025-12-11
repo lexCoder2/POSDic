@@ -312,6 +312,24 @@
     .form-group {
       margin-bottom: 0;
     }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid $border-light;
+
+      label {
+        margin: 0;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      app-toggle-switch {
+        flex-shrink: 0;
+      }
+    }
   }
 
   .style-options {
@@ -463,11 +481,41 @@
       position: sticky;
       top: 100px;
 
-      h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0 0 1rem 0;
+      .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        gap: 1rem;
+
+        h3 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin: 0;
+          flex: 1;
+        }
+
+        .preview-mode-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          white-space: nowrap;
+
+          label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin: 0;
+          }
+
+          .mode-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            min-width: 60px;
+          }
+        }
       }
 
       .preview-container {

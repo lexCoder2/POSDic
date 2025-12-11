@@ -274,6 +274,8 @@
       "LANGUAGE": "Language",
       "PRINTER_MODE": "Default Printer Mode",
       "PRINTER_INHERIT": "Use Global Setting",
+      "DEFAULT_PRINTER": "Default Printer",
+      "DEFAULT_PRINTER_DESC": "Select the printer to use for receipts and badges",
       "CURRENCY": "Currency",
       "SAVE": "Save Preferences"
     },
@@ -878,6 +880,7 @@
     },
 
     "PREVIEW_TITLE": "Preview",
+    "PREVIEW_MODE": "Preview Mode",
 
     "OPTIONS": {
       "RECEIPT": "Receipt",

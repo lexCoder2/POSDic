@@ -647,10 +647,17 @@ export class PosComponent implements OnInit, OnDestroy {
         if (this.printReceiptsEnabled) {
           const mode = localStorage.getItem("printer.mode") || "plain";
           const isPlainText = mode !== "styled";
+
+          // Auto-detect printer for optimal printing
           this.receiptGeneratorService
-            .printSaleReceipt(completedSale, { plainText: isPlainText })
+            .printSaleReceipt(completedSale, {
+              plainText: isPlainText,
+              // Optional: can specify printer name here if needed
+              // printerName: "detected-printer-name"
+            })
             .catch((err) => {
               console.error("Error printing receipt:", err);
+              // Don't show error to user as printing failures shouldn't block checkout
             });
         }
 

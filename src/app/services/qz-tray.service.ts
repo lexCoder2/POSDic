@@ -33,7 +33,7 @@ export class QzTrayService {
   private qzInitialized = false;
   private qz: any = null;
   private initializationPromise: Promise<void> | null = null;
-  private printerDetailsCache = new Map<string, PrinterCapabilities>();
+  private printerDetailsCache: Map<string, PrinterCapabilities> = new Map();
 
   private apiUrl = `${environment.apiUrl}`;
   constructor(private http: HttpClient) {

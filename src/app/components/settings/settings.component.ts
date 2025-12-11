@@ -11,6 +11,7 @@ import { CurrencyService } from "../../services/currency.service";
 import { ToastService } from "../../services/toast.service";
 import { UserService } from "../../services/user.service";
 import { QzTrayService } from "../../services/qz-tray.service";
+import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 
 @Component({
   selector: "app-settings",
@@ -21,6 +22,7 @@ import { QzTrayService } from "../../services/qz-tray.service";
     PageTitleComponent,
     TranslatePipe,
     RouterLink,
+    ToggleSwitchComponent,
   ],
   templateUrl: "settings.component.html",
   styleUrls: ["./settings.component.scss"],
@@ -32,7 +34,9 @@ export class SettingsComponent implements OnInit {
   displayName = "";
   preferredLang = "";
   userPrinterMode: "inherit" | "plain" | "styled" = "inherit";
-  selectedCurrency = "USD";
+  selectedCurrency: string = "USD";
+  defaultPrinter: string = "default";
+  availablePrinters: string[] = [];
 
   // QR Badge properties
   qrCodeUrl = "";
@@ -69,6 +73,15 @@ export class SettingsComponent implements OnInit {
     const previewSetting = localStorage.getItem("printer.showPreview");
     this.showPrintPreview = previewSetting === "true";
 
+    // Load default printer setting
+    const savedDefaultPrinter = localStorage.getItem("printer.default");
+    if (savedDefaultPrinter) {
+      this.defaultPrinter = savedDefaultPrinter;
+    }
+
+    // Load available printers
+    this.loadAvailablePrinters();
+
     // Generate QR code for current user
     this.generateQrCode();
 
@@ -102,13 +115,38 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  private async loadAvailablePrinters(): Promise<void> {
+    try {
+      const printers = await this.qzTrayService.findPrinters();
+      this.availablePrinters = printers || [];
+
+      // If no printers found, add default option
+      if (this.availablePrinters.length === 0) {
+        this.availablePrinters = ["default"];
+      } else if (!this.availablePrinters.includes("default")) {
+        // Always include 'default' as an option
+        this.availablePrinters.unshift("default");
+      }
+
+      console.log("Available printers loaded:", this.availablePrinters);
+    } catch (err) {
+      console.error("Failed to load available printers:", err);
+      // Fallback to just 'default'
+      this.availablePrinters = ["default"];
+    }
+  }
+
+  onDefaultPrinterChange(): void {
+    localStorage.setItem("printer.default", this.defaultPrinter);
+    console.log(`Default printer changed to: ${this.defaultPrinter}`);
+  }
+
   setPrinterMode(mode: "plain" | "styled") {
     this.printerMode = mode;
     localStorage.setItem("printer.mode", mode);
   }
-
-  togglePrintPreview() {
-    this.showPrintPreview = !this.showPrintPreview;
+  togglePrintPreview(value: boolean) {
+    this.showPrintPreview = value;
     localStorage.setItem(
       "printer.showPreview",
       this.showPrintPreview.toString()
@@ -328,9 +366,56 @@ export class SettingsComponent implements OnInit {
       const printers = await this.qzTrayService.findPrinters();
 
       if (printers && printers.length > 0) {
-        // Use the first available printer or a default one
-        const printerName = printers[0];
-        await this.qzTrayService.print("POS-58", badgeHtml, "html");
+        // Detect printer capabilities and optimize badge size
+        let optimizedBadgeHtml = badgeHtml;
+
+        try {
+          // Use the first available printer
+          const printerName = printers[0];
+          const paperWidth =
+            await this.qzTrayService.getOptimalPaperWidth(printerName);
+          const dpi = await this.qzTrayService.getOptimalDpi(printerName);
+
+          // Optimize QR code size based on paper width
+          // 58mm paper: use 120x120px, 80mm+ paper: can use 150x150px
+          const qrSize = paperWidth >= 80 ? 150 : 120;
+          const optimizedQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(`POSDIC:${this.authService.getCurrentUser()?.id}`)}`;
+
+          // Adjust badge CSS for printer capabilities
+          optimizedBadgeHtml = badgeHtml.replace(
+            "size=120x120",
+            `size=${qrSize}x${qrSize}`
+          );
+
+          // Adjust font sizes based on DPI
+          const dpiMultiplier = dpi / 203;
+          optimizedBadgeHtml = optimizedBadgeHtml.replace(
+            /font-size:\s*(\d+)px/g,
+            (match: string, size: string) => {
+              const newSize = Math.round(parseInt(size) * dpiMultiplier);
+              return `font-size: ${newSize}px`;
+            }
+          );
+
+          console.log(
+            `Optimized QR badge for ${printerName}: ${qrSize}px QR, ${dpi}DPI font scaling`
+          );
+
+          // Print with printer-specific options
+          await this.qzTrayService.print(
+            printerName,
+            optimizedBadgeHtml,
+            "html",
+            {
+              dpi,
+              paperWidthMm: paperWidth,
+            }
+          );
+        } catch (err) {
+          // Fallback: try to print with default settings
+          console.log("Could not optimize badge, using default printer:", err);
+          await this.qzTrayService.print(printers[0], badgeHtml, "html");
+        }
 
         this.toastService.show(
           this.translationService.translate("SETTINGS.QR_BADGE.PRINTED") ||

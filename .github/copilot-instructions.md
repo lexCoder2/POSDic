@@ -2,43 +2,106 @@
 
 ## Project Overview
 
-A modern Point of Sale (POS) system built with **Angular 21** (standalone components) and **Node.js/Express** with **MongoDB**. Designed for retail stores with barcode scanning, digital scale integration, receipt printing, and multi-user support.
+A production-ready Point of Sale (POS) system built with **Angular 21** (standalone components) and **Node.js/Express/MongoDB**. Supports barcode scanning, digital scale integration, thermal receipt printing (QZ Tray), multi-user roles, register management, and device binding for retail environments.
 
-## Architecture
+**Key Tech Stack:**
 
-### Frontend (Angular 21)
+- Frontend: Angular 21 standalone components, RxJS, Signals
+- Backend: Node.js/Express, MongoDB/Mongoose, JWT auth
+- Hardware: Web Serial API (scales), QZ Tray (printers), Html5Qrcode (camera scanning)
+- Deployment: HTTPS (self-signed certs), Windows PowerShell scripts, Git-based deploy workflow
 
-- **Standalone Components**: No `NgModule`, use `imports: [...]` in `@Component` decorator
-- **Signals & RxJS**: Prefer signals for local state, RxJS for async streams
-- **Service Injection**: Use `providedIn: 'root'` for singleton services
-- **Routing**: Configured in `app.routes.ts` with lazy-loaded components
-- **HTTP Interceptor**: `authInterceptor` automatically adds JWT tokens to requests
+## Quick Start (Windows Development)
+
+```powershell
+# Start both servers with status display
+.\start-pos.ps1
+
+# Check system status (MongoDB, backend, frontend)
+.\check-status.ps1
+
+# Or manually:
+npm run dev  # Starts both backend + frontend concurrently
+# Backend: https://localhost:3001 | Frontend: http://localhost:4200
+
+# Seed database with test users (admin/admin123, cashier/cashier123)
+cd server && node seed.js
+```
+
+**MongoDB:** Runs in Docker container `product-db` on port 27017 (credentials in `server/.env`)
+
+## Architecture Deep Dive
+
+### Frontend (Angular 21 Standalone)
+
+**No `NgModule` - Pure Standalone Architecture:**
+
+- All components declare `standalone: true` with explicit `imports: [...]`
+- Routes use `loadComponent()` in `app.routes.ts` for lazy loading
+- Guards are functional: `authGuard` (no return type), `roleGuard(['admin', 'manager'])` (factory)
+- HTTP interceptor `authInterceptor` auto-injects JWT from localStorage
+
+**State Management Pattern:**
+
+- **BehaviorSubject for cross-component state**: `CartStateService.cart$` (cart items), `SearchStateService.searchQuery$`
+- **No Signals in services**: State exposed via RxJS observables, not signals (see `cart-state.service.ts`)
+- **Local component state**: Use signals (`signal()`, `computed()`) for UI state like `showModal = signal(false)`
+- **Memory cleanup**: Always use `takeUntil(destroy$)` pattern in components subscribing to observables
+
+**Critical Services:**
+
+- `AuthService`: JWT management, `isAuthenticated()`, `getCurrentUser()` from localStorage
+- `RegisterService`: Active register tracking, device binding (cashiers must open register before POS)
+- `DeviceService`: Generates unique device fingerprint for register binding (browser-based ID)
+- `CartStateService`: Manages cart via backend API (`/api/carts`), not in-memory
+- `QzTrayService`: Thermal printer integration, requires certificate override (`override.crt`)
 
 ### Backend (Node.js/Express)
 
-- **RESTful API**: All routes prefixed with `/api/{resource}`
-- **Mongoose Models**: Located in `server/models/`, use schema-based validation
-- **Middleware**: `protect` for authentication, `checkPermission` for role-based access
-- **HTTPS**: Server runs with SSL certs from `server/certs/`
-- **CORS**: Configured to allow all origins in development
+**Port 3001** (not 3000) - Runs on HTTPS with self-signed certs in `server/certs/`
 
-## Key Conventions
+**Middleware Stack (order matters):**
 
-### Component Structure
+1. CORS (development: allow all origins)
+2. `body-parser` JSON/urlencoded (10mb limit)
+3. Request logging (logs method, path, body for POST/PUT)
+4. Static file serving (`/product_images`, `/assets`)
+5. Route handlers with `protect` + `checkPermission(['permission'])`
+
+**Authentication Flow:**
+
+- POST `/api/auth/login` → Returns JWT + user object
+- JWT stored in localStorage (`token` key)
+- `authInterceptor` reads token and adds `Authorization: Bearer <token>` header
+- `protect` middleware verifies JWT, attaches `req.user` (username, role, permissions)
+
+**Database Models (Key Fields):**
+
+- **Register**: `deviceId`, `deviceName` (auto-set when cashier opens register)
+- **Product**: `incompleteInfo: true` for quick-add (used when barcode not found in POS)
+- **Sale**: `isInternal: true` for internal transactions (not counted in revenue reports)
+- **Cart**: `register` field links cart to specific register (session-based)
+
+## Key Conventions & Patterns
+
+### Component Structure (Mandatory Pattern)
 
 ```typescript
 @Component({
   selector: 'app-example',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, ...],
+  standalone: true, // REQUIRED - no NgModule
+  imports: [CommonModule, FormsModule, TranslatePipe, ...], // Explicit imports
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.scss']
 })
 export class ExampleComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+  private destroy$ = new Subject<void>(); // REQUIRED for cleanup
 
   ngOnInit(): void {
-    // Subscribe with takeUntil(destroy$) for cleanup
+    // ALWAYS use takeUntil for RxJS cleanup
+    this.service.getData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => { ... });
   }
 
   ngOnDestroy(): void {
@@ -48,28 +111,160 @@ export class ExampleComponent implements OnInit, OnDestroy {
 }
 ```
 
-### Styling (SCSS)
+### Modal Component Pattern (OpenRegisterComponent Example)
 
-- **Theme System**: Import `@use "../../../styles/theme" as *;` for variables
-- **Neumorphic Design**: Use mixins like `@include card`, `@include button-primary`
-- **Color Palette**: Use `$blue-primary`, `$neumorphic-bg`, `$text-primary` (defined in `_theme.scss`)
-- **Shadows**: `$shadow-neumorphic`, `$shadow-neumorphic-inset` for depth
-- **Responsive**: Use `@include respond-to(md)` for breakpoints
-- **Touch Targets**: Min height `$touch-target-md` (34px) for mobile
+**File structure:** `src/app/components/open-register/` (self-contained modal)
 
-### Translation System (i18n)
+**Child component (modal):**
 
-- **Files**: `src/assets/i18n/en.json` and `es.json`
-- **Structure**: Hierarchical JSON keys (`"POS.QUICK_PRODUCT.TITLE": "Quick Product"`)
-- **Usage**: `{{ 'POS.SEARCH_PLACEHOLDER' | translate }}`
-- **Always add both English and Spanish** when creating new UI text
+```typescript
+@Output() registerOpened = new EventEmitter<void>();
+@Output() cancelled = new EventEmitter<void>();
 
-### API Communication
+closeModal(): void {
+  this.cancelled.emit(); // Parent controls visibility
+}
+```
 
-- **Services**: Use typed interfaces from `src/app/models/index.ts`
-- **Environment**: `environment.apiUrl` points to backend (http://localhost:3000/api in dev)
-- **Error Handling**: Services return `Observable<T>`, components subscribe and handle errors
-- **Pagination**: Use `PaginatedResponse<T>` for list endpoints
+**Parent component:**
+
+```typescript
+showOpenRegisterModal = signal<boolean>(false); // Signal for visibility
+
+onRegisterOpened(): void {
+  this.showOpenRegisterModal.set(false);
+  this.focusBarcodeInput(); // Auto-focus after modal closes
+}
+```
+
+**Template usage:**
+
+```html
+<app-open-register
+  *ngIf="showOpenRegisterModal()"
+  (registerOpened)="onRegisterOpened()"
+  (cancelled)="showOpenRegisterModal.set(false)"
+>
+</app-open-register>
+```
+
+**Critical:** Modal components use overlay pattern with `(click)="closeModal()"` on overlay and `(click)="$event.stopPropagation()"` on modal content.
+
+### ViewChild Focus Pattern (Barcode Input)
+
+```typescript
+@ViewChild('barcodeInput') barcodeInput!: ElementRef;
+
+focusBarcode(): void {
+  setTimeout(() => this.barcodeInput?.nativeElement.focus(), 100);
+  // 100ms delay ensures DOM is ready after modal close
+}
+```
+
+### Calculator Component (Keyboard Shortcuts)
+
+Located in `src/app/components/calculator/` - Used for quick product entry in POS.
+
+**Keyboard bindings:**
+
+- `0-9`: Append digit
+- `.` or `,`: Decimal point
+- `Backspace`: Delete last digit
+- `Escape` or `C`: Clear display
+- `Enter` or `+`: Add to cart (or confirm multiply)
+- `*`: Multiply mode (adds N items or updates last item quantity)
+
+**Multiply button logic:**
+
+- Empty display + `*` → Updates last cart item with new quantity
+- Value in display + `*` → Adds N items of that value
+- Button spans 2 columns, styled with `$warning` color
+
+**Signals:**
+
+```typescript
+display = signal<string>("0");
+isMultiplying = signal<boolean>(false);
+multiplyMode = signal<"add" | "update" | null>(null);
+pendingMultiplyValue = signal<number | null>(null);
+```
+
+### Styling System (SCSS Theme)
+
+**Import pattern:** `@use "../../../styles/theme" as *;` (relative path from component)
+
+**Neumorphic design system:**
+
+- Theme file: `src/styles/_theme.scss` (549 lines of variables and mixins)
+- Base color: `$neumorphic-bg: #ffffff`, `$blue-primary: #654483` (primary brand)
+- Shadows: `$shadow-neumorphic` (raised), `$shadow-neumorphic-inset` (pressed)
+- Mixins: `@include card`, `@include button-primary`, `@include respond-to(md)`
+
+**Color usage rules:**
+
+- Use `$blue-primary`, `$success`, `$danger`, `$warning`, `$info` for semantic colors
+- Text: `$text-primary` (gray-700), `$text-secondary` (gray-500)
+- Backgrounds: `$neumorphic-bg`, `$neumorphic-surface`
+
+**Responsive breakpoints:**
+
+```scss
+@include respond-to(md) {
+  /* 768px+ */
+}
+@include respond-to(lg) {
+  /* 1024px+ */
+}
+```
+
+**Touch targets:** Use `$touch-target-md` (34px min height) for mobile buttons
+
+### Translation System (Mandatory for UI Text)
+
+**Files:** `src/assets/i18n/en.json` (965 lines) and `es.json` (Spanish)
+
+**Structure:** Hierarchical JSON keys using dot notation
+
+```json
+{
+  "POS": {
+    "SEARCH_PLACEHOLDER": "Search product...",
+    "QUICK_PRODUCT": {
+      "TITLE": "Quick Product",
+      "BARCODE": "Barcode"
+    }
+  }
+}
+```
+
+**Usage in templates:** `{{ 'POS.SEARCH_PLACEHOLDER' | translate }}`
+
+**CRITICAL RULE:** When adding new UI text, ALWAYS add both English and Spanish translations. No hardcoded strings in templates.
+
+### API Communication Pattern
+
+**Environment config:** `src/environments/environment.ts`
+
+```typescript
+apiUrl: "https://localhost:3001/api"; // Note: 3001, not 3000
+```
+
+**Service pattern:**
+
+```typescript
+@Injectable({ providedIn: "root" })
+export class ProductService {
+  private apiUrl = `${environment.apiUrl}/products`;
+
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.apiUrl);
+  }
+}
+```
+
+**Error handling:** Services return `Observable<T>`, components handle errors in subscribe block.
+
+**Pagination:** Use `PaginatedResponse<T>` interface for list endpoints (includes `data`, `total`, `page`, `pageSize`).
 
 ### State Management
 
@@ -87,7 +282,7 @@ export class ExampleComponent implements OnInit, OnDestroy {
 2. **Define model** in `src/app/models/index.ts` (TypeScript interface)
 3. **Create service** in `src/app/services/{feature}.service.ts` with API calls
 4. **Add translations** in `src/assets/i18n/en.json` and `es.json`
-5. **Add route** in `src/app/app.routes.ts` if needed
+5. **Add route** in `src/app/app.routes.ts` if needed (use `loadComponent()`)
 6. **Apply theme styles** using mixins from `_theme.scss`
 
 ### Creating Reusable Modal Components
@@ -140,13 +335,6 @@ onRegisterOpened(): void {
 3. **Register route** in `server/index.js`: `app.use('/api/{resource}', {resource}Routes)`
 4. **Use middleware**: `protect` for auth, `checkPermission(['permission'])` for roles
 5. **Return consistent JSON**: `res.json({ data })` or `res.status(400).json({ message })`
-
-### Creating Modals
-
-- **Overlay pattern**: Use `<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">`
-- **Modal content**: `<div class="modal-content" (click)="$event.stopPropagation()">`
-- **Close behavior**: Click overlay or ESC key to close
-- **Styling**: Use `$z-modal` (1050) for z-index, `$radius-2xl` for border-radius
 
 ### Product Quick Creation (Special Pattern)
 
@@ -303,21 +491,36 @@ this.toastService.show("Warning", "warning");
 
 ## Development Commands
 
-```bash
-# Start backend only
-cd server && npm run dev
+```powershell
+# Start both servers (Windows)
+.\start-pos.ps1
 
-# Start frontend only
-npm start
+# Check system status
+.\check-status.ps1
 
-# Start both concurrently
-npm run dev
+# Manual start
+npm run dev          # Start both backend + frontend concurrently
+cd server && npm run dev  # Backend only (nodemon on port 3001)
+npm start            # Frontend only (ng serve on port 4200)
 
-# Build production
-ng build --configuration production
+# Database operations
+cd server && node seed.js  # Seed test users and products
 
-# Database seed (creates test users/data)
-cd server && node seed.js
+# Build & Deploy
+ng build --configuration production  # Output: dist/retail-pos/
+npm run format       # Format code with Prettier
+npm run format:check # Check formatting (runs before build)
+
+# LAN Access (0.0.0.0 binding configured by default)
+# Frontend: http://<local-ip>:4200
+# Backend: http://<local-ip>:3001/api
+```
+
+**MongoDB Container:**
+
+```powershell
+docker ps --filter "name=product-db"  # Check if running
+docker start product-db               # Start container
 ```
 
 ## Testing & Debugging
@@ -326,13 +529,30 @@ cd server && node seed.js
 - **MongoDB Queries**: Use `console.log()` in route handlers to debug queries
 - **Angular DevTools**: Use browser extension for signals and component inspection
 - **Network Tab**: Check API responses, JWT tokens in Authorization header
+- **QZ Tray**: Check `server/private-key.pem` exists, override with `.qz/override.crt` if needed
 
-## Mobile & Hardware
+## Hardware Integration
 
-- **Camera Scanner**: `Html5Qrcode` library for barcode scanning via device camera
-- **Digital Scale**: Web Serial API (requires HTTPS, Chrome/Edge 89+)
-- **Touch Targets**: Minimum 34px height for buttons on mobile
-- **Responsive**: Sidebar collapses on mobile (`$breakpoint-md: 768px`)
+### QZ Tray (Thermal Printing)
+
+- **Certificate**: Self-signed RSA key pair (`server/private-key.pem`, `server/public-key.pem`)
+- **Override**: Copy public key to `~/.qz/override.crt` to suppress warnings
+- **Signing Endpoint**: POST `/api/sign` signs requests with SHA512
+- **Service**: `QzTrayService` loads certificate from `src/assets/digital-certificate.txt`
+- **Setup Scripts**: `setup-qz-override.ps1`, `verify-qz-signing.ps1`
+
+### Digital Scale (Web Serial API)
+
+- **Browser Support**: Chrome/Edge 89+ only (requires HTTPS)
+- **Connection**: `ScaleService.connectScale()` prompts for serial port selection
+- **Weight Reading**: Real-time weight in modal, manual fallback if not connected
+- **Product Flag**: `requiresScale: true` triggers weight prompt
+
+### Barcode Scanner
+
+- **Camera Scanning**: `Html5Qrcode` library (`html5-qrcode` npm package)
+- **Manual Input**: Barcode input field with auto-submit on Enter
+- **Hardware Scanners**: Act as keyboard input, work with barcode input field
 
 ## Common Pitfalls
 
@@ -344,6 +564,8 @@ cd server && node seed.js
 - ❌ Don't mutate state directly - use signals or create new objects
 - ❌ Don't use `var` - use `const` or `let` in TypeScript
 - ❌ Don't skip error handling in API calls
+- ❌ Backend runs on port **3001**, not 3000
+- ❌ State services use **BehaviorSubject**, not signals
 
 ## Integration Points
 
@@ -351,6 +573,7 @@ cd server && node seed.js
 - **MongoDB**: Connection string in `server/.env` (`MONGODB_URI`)
 - **JWT**: Secret in `server/.env` (`JWT_SECRET`), 7-day expiration
 - **SSL Certs**: Located in `server/certs/` and root `certs/`
+- **Product Images**: Served from `server/product_images/` via static middleware
 
 ---
 

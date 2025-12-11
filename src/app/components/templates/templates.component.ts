@@ -11,7 +11,6 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { PrintTemplateService } from "../../services/print-template.service";
 import { ToastService } from "../../services/toast.service";
 import { PrintTemplate } from "../../models";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
@@ -23,7 +22,6 @@ import { TranslationService } from "../../services/translation.service";
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    PageTitleComponent,
     ToggleSwitchComponent,
     TranslatePipe,
   ],
@@ -36,6 +34,7 @@ export class TemplatesComponent implements OnInit {
   isLoading = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   showForm = signal<boolean>(false);
+  previewMode = signal<"text" | "styled">("styled");
   templateForm: FormGroup;
 
   constructor(
@@ -390,18 +389,93 @@ export class TemplatesComponent implements OnInit {
 
   generatePreview(): string {
     const formValue = this.templateForm.value;
+    const mode = this.previewMode();
+
+    // If text mode, generate text-only preview
+    if (mode === "text") {
+      return this.generatePlainTextPreview(formValue);
+    }
+
+    // Otherwise generate styled HTML preview
+    return this.generateStyledPreview(formValue);
+  }
+
+  private generatePlainTextPreview(formValue: any): string {
+    const width = formValue.paperSize === "58mm" ? 28 : 40;
+    let lines: string[] = [];
+
+    // Header
+    if (formValue.showLogo) {
+      lines.push(this.centerText("STORE", width));
+    }
+    if (formValue.showStoreName && formValue.storeName) {
+      lines.push(this.centerText(formValue.storeName.toUpperCase(), width));
+    }
+    if (formValue.showStoreAddress && formValue.storeAddress) {
+      lines.push(this.centerText(formValue.storeAddress, width));
+    }
+    if (formValue.showStorePhone && formValue.storePhone) {
+      lines.push(this.centerText(`Tel: ${formValue.storePhone}`, width));
+    }
+    if (formValue.showStoreEmail && formValue.storeEmail) {
+      lines.push(this.centerText(formValue.storeEmail, width));
+    }
+
+    lines.push(this.repeatChar("-", width));
+
+    // Items
+    lines.push("Product A                    Qty Price");
+    if (formValue.showQuantity || formValue.showUnitPrice) {
+      lines.push("                             2  $10.00");
+    }
+
+    lines.push(this.repeatChar("-", width));
+
+    // Totals
+    if (formValue.showSubtotal) {
+      lines.push(this.padRight("Subtotal:", width - 10) + "$46.50");
+    }
+    if (formValue.showTax) {
+      lines.push(this.padRight("Tax:", width - 10) + "$3.50");
+    }
+    if (formValue.showTotals) {
+      lines.push(this.repeatChar("=", width));
+      lines.push(this.padRight("TOTAL:", width - 10) + "$50.00");
+    }
+
+    if (formValue.showPaymentMethod) {
+      lines.push(this.centerText("Payment: Cash", width));
+    }
+    if (formValue.showCashier) {
+      lines.push(this.centerText("Cashier: John Doe", width));
+    }
+    if (formValue.showDateTime) {
+      const now = new Date().toLocaleString();
+      lines.push(this.centerText(now, width));
+    }
+
+    if (formValue.showThankYou && formValue.customMessage) {
+      lines.push("");
+      lines.push(this.centerText(formValue.customMessage, width));
+    }
+
+    const textContent = lines.join("\n");
+    return `<div style="font-family: 'Courier New', monospace; width: 280px; margin: 0 auto; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; font-size: 12px; line-height: 1.4; background: white; white-space: pre-wrap; word-wrap: break-word;"><code>${this.escapeHtml(textContent)}</code></div>`;
+  }
+
+  private generateStyledPreview(formValue: any): string {
     const fontSize =
       formValue.fontSize === "small"
-        ? "14px"
+        ? "10px"
         : formValue.fontSize === "medium"
-          ? "16px"
-          : "18px";
+          ? "12px"
+          : "14px";
     const align = formValue.textAlign;
 
     // Helper function to convert size name to px
     const getSizeInPx = (size: string) => {
-      if (size === "small") return "12px";
-      if (size === "large") return "16px";
+      if (size === "small") return "10px";
+      if (size === "large") return "12px";
       return "14px"; // medium
     };
 
@@ -536,8 +610,44 @@ export class TemplatesComponent implements OnInit {
       preview += `<div style="${footerStyle} margin-top: 8px; font-weight: bold;">${formValue.customMessage}</div>`;
     }
 
+    // Sale ID QR Code (placeholder for preview)
+    preview += `<div style="margin-top: 12px; text-align: center;">`;
+    preview += `<div style="font-size: 10px; color: #666; margin-bottom: 6px;">Sale ID</div>`;
+    preview += `<div style="width: 100px; height: 100px; margin: 0 auto; background: #f0f0f0; border: 2px solid #999; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999;">QR Code</div>`;
+    preview += `</div>`;
+
     preview += `</div>`;
     return preview;
+  }
+
+  private centerText(text: string, width: number): string {
+    if (text.length >= width) {
+      return text.substring(0, width);
+    }
+    const padding = Math.floor((width - text.length) / 2);
+    return " ".repeat(padding) + text;
+  }
+
+  private padRight(text: string, width: number): string {
+    if (text.length >= width) {
+      return text.substring(0, width);
+    }
+    return text + " ".repeat(width - text.length);
+  }
+
+  private repeatChar(char: string, count: number): string {
+    return char.repeat(count);
+  }
+
+  private escapeHtml(text: string): string {
+    const map: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+    return text.replace(/[&<>"']/g, (char) => map[char]);
   }
 
   toggleFieldVisibility(fieldName: string): void {
