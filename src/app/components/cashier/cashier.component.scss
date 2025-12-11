@@ -302,22 +302,72 @@
       gap: 0;
       flex: 1;
       min-height: 0;
+      max-height: 60vh;
       border: 1px solid $border-light;
       border-radius: 8px;
-      overflow: hidden;
+      position: relative;
+
+      // Custom scrollbar styling
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: $primary;
+        border-radius: 4px;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: darken($primary, 10%);
+        }
+      }
+
+      // Scroll indicator gradient at bottom
+      &::after {
+        content: "";
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(
+          to top,
+          rgba(255, 255, 255, 0.95) 0%,
+          rgba(255, 255, 255, 0.7) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
 
       .item-row {
         display: flex;
         align-items: center;
-        padding: 0.75rem 0.5rem;
+        padding: 0.5rem 0.5rem;
         background: white;
         border-bottom: 1px solid $border-light;
         transition: all 0.2s;
         cursor: pointer;
         gap: 0.5rem;
+        min-height: 60px;
 
         &:hover {
           background: var(--bg-tertiary);
+        }
+
+        &.selected {
+          background: rgba($primary, 0.1);
+          border-left: 3px solid $primary;
+          padding-left: calc(0.5rem - 3px);
+
+          .item-info {
+            font-weight: 500;
+          }
         }
 
         &:last-child {
@@ -327,7 +377,7 @@
         .item-info {
           display: flex;
           flex-direction: column;
-          gap: 0.25rem;
+          gap: 0.15rem;
           cursor: pointer;
           flex: 1;
           min-width: 0;
@@ -335,7 +385,6 @@
           border-radius: 0;
           transition: background 0.2s;
           position: relative;
-
           &:hover {
             background: none;
           }
@@ -361,21 +410,21 @@
             gap: 0.25rem;
             order: -1;
             flex-wrap: wrap;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.15rem;
 
             .item-quantity {
-              font-size: 0.8rem;
+              font-size: 0.75rem;
               font-weight: 600;
               color: var(--text-secondary);
             }
 
             .item-unit-price {
-              font-size: 0.7rem;
+              font-size: 0.65rem;
               color: var(--text-muted);
             }
 
             .item-price {
-              font-size: 1rem;
+              font-size: 0.95rem;
               font-weight: 700;
               color: var(--text-primary);
               margin-left: auto;
@@ -385,10 +434,10 @@
           .item-details {
             display: flex;
             flex-direction: column;
-            gap: 0.15rem;
-            font-size: 0.7rem;
+            gap: 0.1rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
-            margin-top: 0.05rem;
+            margin-top: 0;
 
             .item-description,
             .item-weight {
@@ -738,7 +787,7 @@
   justify-content: center;
   z-index: 2000;
   animation: fadeIn 0.2s ease-out;
-
+  backdrop-filter: blur(4px);
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -775,8 +824,8 @@
       align-items: center;
       background: linear-gradient(
         135deg,
-        $primary 0%,
-        color.adjust($primary, $lightness: -10%) 100%
+        $neumorphic-surface 0%,
+        color.adjust($neumorphic-surface, $lightness: -10%) 100%
       );
       border-radius: 16px 16px 0 0;
 
@@ -818,13 +867,14 @@
 
     .modal-body {
       padding: 2rem;
+      background: $neumorphic-surface;
 
       .sale-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1.5rem;
-        background: var(--bg-secondary);
+        background: $white;
         border-radius: 12px;
         margin-bottom: 2rem;
 

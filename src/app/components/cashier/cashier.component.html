@@ -63,7 +63,11 @@
         </div>
 
         <div class="items-list" *ngIf="items().length > 0; else noItems">
-          <div class="item-row" *ngFor="let item of items()">
+          <div
+            class="item-row"
+            *ngFor="let item of items()"
+            [class.selected]="selectedItemId() === item.id"
+          >
             <div class="item-actions">
               <button
                 class="qty-btn decrease"

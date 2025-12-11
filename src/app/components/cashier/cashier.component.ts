@@ -66,6 +66,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
   total = signal<number>(0);
   isProcessing = signal<boolean>(false);
   activeCartId = signal<string | null>(null);
+  selectedItemId = signal<number | null>(null);
 
   showPaymentModal = signal<boolean>(false);
   selectedPaymentMethod = signal<"cash" | "card" | "transfer" | null>(null);
@@ -451,6 +452,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
     };
     this.items.update((items) => [...items, newItem]);
     this.total.update((t) => t + event.value);
+    this.selectedItemId.set(null); // Clear selection
     this.debouncedSaveCart();
   }
 
@@ -466,6 +468,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
       };
       this.items.update((items) => [...items, newItem]);
       this.total.update((t) => t + newItem.price);
+      this.selectedItemId.set(null); // Clear selection
     } else if (event.mode === "update") {
       // Multiply last item by entered quantity
       const items = this.items();
@@ -641,6 +644,10 @@ export class CashierComponent implements OnInit, AfterViewInit {
     if (itemToRemove) {
       this.items.update((items) => items.filter((item) => item.id !== id));
       this.total.update((t) => t - itemToRemove.price);
+      // Clear selection if the removed item was selected
+      if (this.selectedItemId() === id) {
+        this.selectedItemId.set(null);
+      }
       this.debouncedSaveCart();
     }
   }
@@ -648,10 +655,15 @@ export class CashierComponent implements OnInit, AfterViewInit {
   editItem(id: number): void {
     const itemToEdit = this.items().find((item) => item.id === id);
     if (itemToEdit) {
-      // Put the price back in the display for editing
-      this.calculator?.setDisplay(itemToEdit.price.toFixed(2));
-      // Remove the item from the list
-      this.removeItem(id);
+      // Set the selected item
+      this.selectedItemId.set(id);
+      // If quantity > 1, show the unit price (individual price)
+      // Otherwise show the total price
+      const priceToEdit =
+        itemToEdit.quantity > 1 ? itemToEdit.unitPrice : itemToEdit.price;
+      this.calculator?.setDisplay(priceToEdit.toFixed(2));
+      // Don't remove the item, just select it for editing
+      // User can manually adjust and re-add or delete if needed
     }
   }
 

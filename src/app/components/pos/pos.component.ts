@@ -581,7 +581,7 @@ export class PosComponent implements OnInit, OnDestroy {
    * Handle quick-pay from cart (cash or card).
    * Opens the checkout modal.
    */
-  handleQuickPay(method: string): void {
+  handleQuickPay(): void {
     if (this.cartItems.length === 0) {
       this.toastService.show("Cart is empty", "error");
       return;

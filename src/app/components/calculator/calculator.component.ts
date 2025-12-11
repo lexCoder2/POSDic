@@ -45,6 +45,7 @@ export class CalculatorComponent implements AfterViewInit {
   isMultiplying = signal<boolean>(false);
   multiplyMode = signal<"add" | "update" | null>(null);
   pendingMultiplyValue = signal<number | null>(null);
+  isSelected = signal<boolean>(false);
 
   ngAfterViewInit(): void {
     setTimeout(() => this.focusCalculator(), 100);
@@ -63,8 +64,9 @@ export class CalculatorComponent implements AfterViewInit {
 
   appendNumber(num: string): void {
     const current = this.display();
-    if (current === "0") {
+    if (current === "0" || this.isSelected()) {
       this.display.set(num);
+      this.isSelected.set(false);
     } else {
       this.display.set(current + num);
     }
@@ -72,7 +74,10 @@ export class CalculatorComponent implements AfterViewInit {
 
   appendDecimal(): void {
     const current = this.display();
-    if (!current.includes(".")) {
+    if (this.isSelected()) {
+      this.display.set("0.");
+      this.isSelected.set(false);
+    } else if (!current.includes(".")) {
       this.display.set(current + ".");
     }
   }
@@ -179,5 +184,11 @@ export class CalculatorComponent implements AfterViewInit {
   // Public method to handle multiply key
   handleMultiply(): void {
     this.multiplyItem();
+  }
+
+  // Public method to select all display text
+  selectAll(): void {
+    // Mark text as selected - next input will replace
+    this.isSelected.set(true);
   }
 }
