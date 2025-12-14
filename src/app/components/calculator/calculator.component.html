@@ -1,5 +1,10 @@
 <div #calculatorContainer class="calculator" tabindex="-1">
-  <div class="display" (dblclick)="selectAll()" [class.selected]="isSelected()">
+  <div
+    class="display"
+    (dblclick)="selectAll()"
+    [class.selected]="isSelected()"
+    [class.editing]="selectedItemId() !== null"
+  >
     <ng-container *ngIf="isMultiplying()">
       <div class="multiply-label">
         <span *ngIf="multiplyMode() === 'add'">{{

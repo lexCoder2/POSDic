@@ -38,6 +38,20 @@
     }
   }
 
+  &.editing {
+    background: rgba($success, 0.2);
+    box-shadow:
+      inset 0 2px 8px rgba(0, 0, 0, 0.2),
+      0 0 0 3px rgba($success, 0.6);
+    border: 2px solid $success;
+
+    .display-value,
+    .quantity-display {
+      color: $success;
+      font-weight: 800;
+    }
+  }
+
   .multiply-label {
     font-size: 0.875rem;
     font-weight: 600;

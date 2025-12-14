@@ -41,6 +41,7 @@
       <app-calculator
         [lastItemPrice]="getLastItemPrice()"
         [itemsCount]="items().length"
+        [selectedItemId]="selectedItemId()"
         (addItem)="onCalculatorAdd($event)"
         (multiplyConfirm)="onCalculatorMultiplyConfirm($event)"
         (looseProductRequest)="openLooseProductModal()"
@@ -409,6 +410,7 @@
         <div class="form-group">
           <label for="weight">Weight (kg):</label>
           <input
+            #weightInput
             id="weight"
             type="number"
             step="0.001"
@@ -420,6 +422,7 @@
               looseProductWeight() && parseFloat(looseProductWeight()) <= 0
             "
             [readonly]="useScaleWeight() && scaleConnected()"
+            (keydown.enter)="handleLooseProductEnter($event)"
           />
           <small *ngIf="useScaleWeight() && scaleConnected()" class="help-text">
             <i class="fas fa-info-circle"></i>
@@ -430,6 +433,7 @@
         <div class="form-group">
           <label for="pricePerKg">Price per kg ($):</label>
           <input
+            #pricePerKgInput
             id="pricePerKg"
             type="number"
             step="0.01"
@@ -441,6 +445,7 @@
               looseProductPricePerKg() &&
               parseFloat(looseProductPricePerKg()) <= 0
             "
+            (keydown.enter)="handleLooseProductEnter($event)"
           />
         </div>
 

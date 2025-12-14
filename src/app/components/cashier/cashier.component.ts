@@ -51,6 +51,10 @@ export class CashierComponent implements OnInit, AfterViewInit {
   calculator!: CalculatorComponent;
   @ViewChild("cashReceivedInput")
   cashReceivedInput!: ElementRef<HTMLInputElement>;
+  @ViewChild("pricePerKgInput")
+  pricePerKgInput!: ElementRef<HTMLInputElement>;
+  @ViewChild("weightInput")
+  weightInput!: ElementRef<HTMLInputElement>;
 
   items = signal<
     {
@@ -92,6 +96,10 @@ export class CashierComponent implements OnInit, AfterViewInit {
   private itemIdCounter = 0;
   private deleteKeyPressCount = 0;
   private deleteKeyTimer: any = null;
+  private enterKeyPressCount = 0;
+  private enterKeyTimer: any = null;
+  private backspaceKeyPressCount = 0;
+  private backspaceKeyTimer: any = null;
   private saveCartTimer: any = null;
   private debounceDelay = 1000; // 1 second debounce for cart saves
 
@@ -368,17 +376,22 @@ export class CashierComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // Enter - Add item or confirm multiplication
-    if (key === "Enter") {
+    // Enter - Handle double press for cash payment or single press for add item
+    if (
+      key === "Enter" ||
+      event.code === "NumpadEnter" ||
+      key === "=" ||
+      key === "+"
+    ) {
       event.preventDefault();
-      this.calculator?.handleEnter();
+      this.handleEnterKey();
       return;
     }
 
-    // Backspace - Remove last digit
+    // Backspace - Remove last digit or delete last item on double press
     if (key === "Backspace") {
       event.preventDefault();
-      this.calculator?.backspace();
+      this.handleBackspaceKey();
       return;
     }
 
@@ -405,6 +418,20 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
     // Open Loose Product modal when pressing 'g' (quick access)
     if (key === "g" || key === "G") {
+      event.preventDefault();
+      this.openLooseProductModal();
+      return;
+    }
+
+    // Open Loose Product modal when pressing up arrow
+    if (key === "ArrowUp") {
+      event.preventDefault();
+      this.openLooseProductModal();
+      return;
+    }
+
+    // Open Loose Product modal when pressing Home
+    if (key === "Home") {
       event.preventDefault();
       this.openLooseProductModal();
       return;
@@ -443,20 +470,104 @@ export class CashierComponent implements OnInit, AfterViewInit {
     }
   }
 
+  handleEnterKey(): void {
+    this.enterKeyPressCount++;
+
+    if (this.enterKeyTimer) {
+      clearTimeout(this.enterKeyTimer);
+    }
+
+    if (this.enterKeyPressCount === 1) {
+      // First press - Add item or confirm multiplication
+      this.calculator?.handleEnter();
+
+      // Reset counter after 1 second
+      this.enterKeyTimer = setTimeout(() => {
+        this.enterKeyPressCount = 0;
+      }, 1000);
+    } else if (this.enterKeyPressCount === 2) {
+      // Second press within 1 second - Check if display is 0, then open cash modal
+      const displayValue = parseFloat(this.calculator?.display() || "0");
+      if (displayValue === 0 && this.items().length > 0) {
+        this.completeSale("cash");
+      }
+      this.enterKeyPressCount = 0;
+      clearTimeout(this.enterKeyTimer);
+    }
+  }
+
+  handleBackspaceKey(): void {
+    const displayValue = parseFloat(this.calculator?.display() || "0");
+    this.backspaceKeyPressCount++;
+
+    if (this.backspaceKeyTimer) {
+      clearTimeout(this.backspaceKeyTimer);
+    }
+
+    if (this.backspaceKeyPressCount === 1) {
+      // First press - Remove last digit
+      this.calculator?.backspace();
+
+      // Reset counter after 1 second
+      this.backspaceKeyTimer = setTimeout(() => {
+        this.backspaceKeyPressCount = 0;
+      }, 1000);
+    } else if (this.backspaceKeyPressCount === 2) {
+      // Second press within 1 second - Check if display is 0, then delete last item
+      const currentDisplayValue = parseFloat(this.calculator?.display() || "0");
+      if (currentDisplayValue === 0 && this.items().length > 0) {
+        const lastItem = this.items()[this.items().length - 1];
+        this.removeItem(lastItem.id);
+        this.toastService.show("Last item removed", "info");
+      }
+      this.backspaceKeyPressCount = 0;
+      clearTimeout(this.backspaceKeyTimer);
+    }
+  }
+
   onCalculatorAdd(event: CalculatorAddEvent): void {
-    const newItem = {
-      price: event.value,
-      unitPrice: event.value,
-      quantity: 1,
-      id: this.itemIdCounter++,
-    };
-    this.items.update((items) => [...items, newItem]);
-    this.total.update((t) => t + event.value);
-    this.selectedItemId.set(null); // Clear selection
+    const selectedId = this.selectedItemId();
+
+    if (selectedId !== null) {
+      // Update the selected item
+      const items = this.items();
+      const selectedItem = items.find((item) => item.id === selectedId);
+
+      if (selectedItem) {
+        // Calculate the difference for the total
+        const oldPrice = selectedItem.price;
+        const newPrice = event.value;
+        const priceDifference = newPrice - oldPrice;
+
+        // Update the item
+        this.items.update((currentItems) =>
+          currentItems.map((item) =>
+            item.id === selectedId
+              ? { ...item, price: newPrice, unitPrice: newPrice, quantity: 1 }
+              : item
+          )
+        );
+        this.total.update((t) => t + priceDifference);
+        this.selectedItemId.set(null); // Clear selection
+      }
+    } else {
+      // Add new item
+      const newItem = {
+        price: event.value,
+        unitPrice: event.value,
+        quantity: 1,
+        id: this.itemIdCounter++,
+      };
+      this.items.update((items) => [...items, newItem]);
+      this.total.update((t) => t + event.value);
+    }
+
     this.debouncedSaveCart();
   }
 
   onCalculatorMultiplyConfirm(event: CalculatorMultiplyConfirmEvent): void {
+    const selectedId = this.selectedItemId();
+
     if (event.mode === "add") {
       // Add multiple items with pendingValue
       const itemPrice = event.pendingValue ?? 0;
@@ -470,21 +581,43 @@ export class CashierComponent implements OnInit, AfterViewInit {
       this.total.update((t) => t + newItem.price);
       this.selectedItemId.set(null); // Clear selection
     } else if (event.mode === "update") {
-      // Multiply last item by entered quantity
-      const items = this.items();
-      if (items.length === 0) return;
-      const lastItem = items[items.length - 1];
-      const newQuantity = event.quantity;
-      const newPrice = lastItem.unitPrice * newQuantity;
-      this.items.update((currentItems) =>
-        currentItems.map((item, index) =>
-          index === currentItems.length - 1
-            ? { ...item, quantity: newQuantity, price: newPrice }
-            : item
-        )
-      );
-      const priceDifference = newPrice - lastItem.price;
-      this.total.update((t) => t + priceDifference);
+      if (selectedId !== null) {
+        // Update selected item with new quantity
+        const items = this.items();
+        const selectedItem = items.find((item) => item.id === selectedId);
+
+        if (selectedItem) {
+          const newQuantity = event.quantity;
+          const newPrice = selectedItem.unitPrice * newQuantity;
+          const priceDifference = newPrice - selectedItem.price;
+
+          this.items.update((currentItems) =>
+            currentItems.map((item) =>
+              item.id === selectedId
+                ? { ...item, quantity: newQuantity, price: newPrice }
+                : item
+            )
+          );
+          this.total.update((t) => t + priceDifference);
+          this.selectedItemId.set(null); // Clear selection
+        }
+      } else {
+        // Multiply last item by entered quantity (fallback for backward compatibility)
+        const items = this.items();
+        if (items.length === 0) return;
+        const lastItem = items[items.length - 1];
+        const newQuantity = event.quantity;
+        const newPrice = lastItem.unitPrice * newQuantity;
+        this.items.update((currentItems) =>
+          currentItems.map((item, index) =>
+            index === currentItems.length - 1
+              ? { ...item, quantity: newQuantity, price: newPrice }
+              : item
+          )
+        );
+        const priceDifference = newPrice - lastItem.price;
+        this.total.update((t) => t + priceDifference);
+      }
     }
     this.debouncedSaveCart();
   }
@@ -561,6 +694,13 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.looseProductPricePerKg.set("");
     this.looseProductDescription.set("");
     this.useScaleWeight.set(false);
+    // Focus on price input after modal renders
+    setTimeout(() => {
+      if (this.pricePerKgInput?.nativeElement) {
+        this.pricePerKgInput.nativeElement.focus();
+        this.pricePerKgInput.nativeElement.select();
+      }
+    }, 100);
   }
 
   cancelLooseProduct(): void {
@@ -622,7 +762,10 @@ export class CashierComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const totalPrice = weight * pricePerKg;
+    const calculatedPrice = weight * pricePerKg;
+    // Round up to increments of 0.5
+    const totalPrice = Math.ceil(calculatedPrice * 2) / 2;
+
     const newItem = {
       price: totalPrice,
       unitPrice: totalPrice,
@@ -637,6 +780,37 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.total.update((t) => t + totalPrice);
     this.cancelLooseProduct();
     this.debouncedSaveCart();
+    // Return focus to calculator
+    setTimeout(() => this.calculator?.focusCalculator(), 100);
+  }
+
+  handleLooseProductEnter(event: Event): void {
+    event.preventDefault();
+    const weight = parseFloat(this.looseProductWeight());
+    const pricePerKg = parseFloat(this.looseProductPricePerKg());
+
+    // If weight is 0 or not set, move focus to weight input
+    if (isNaN(weight) || weight <= 0) {
+      setTimeout(() => {
+        if (this.weightInput?.nativeElement) {
+          this.weightInput.nativeElement.focus();
+          this.weightInput.nativeElement.select();
+        }
+      }, 0);
+      return;
+    }
+
+    // If both have value, add the item and return focus to calculator
+    if (!isNaN(pricePerKg) && pricePerKg > 0) {
+      this.confirmLooseProduct();
+      return;
+    }
+
+    // If price is not set, keep focus on price input
+    if (this.pricePerKgInput?.nativeElement) {
+      this.pricePerKgInput.nativeElement.focus();
+      this.pricePerKgInput.nativeElement.select();
+    }
   }
 
   removeItem(id: number): void {

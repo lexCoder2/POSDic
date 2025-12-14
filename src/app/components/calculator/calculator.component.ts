@@ -34,6 +34,7 @@ export class CalculatorComponent implements AfterViewInit {
   // Inputs
   lastItemPrice = input<number | null>(null);
   itemsCount = input<number>(0);
+  selectedItemId = input<number | null>(null);
 
   // Outputs
   addItem = output<CalculatorAddEvent>();
