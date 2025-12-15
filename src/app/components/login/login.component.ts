@@ -5,6 +5,7 @@ import {
   ChangeDetectorRef,
   ViewChild,
   ElementRef,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -22,6 +23,10 @@ import { Html5Qrcode } from "html5-qrcode";
   styleUrls: ["./login.component.scss"],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild("mainQrInput") mainQrInputRef!: ElementRef<HTMLInputElement>;
 
   username = "";
@@ -32,13 +37,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   qrInputValue = "";
   loginMode: "scanner" | "password" = "scanner"; // Default to scanner mode
   showCameraScanner = false;
+  showPassword = false;
   private qrScanner: Html5Qrcode | null = null;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
@@ -57,6 +62,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (mode === "scanner") {
       setTimeout(() => this.focusMainQrInput(), 100);
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   private focusMainQrInput(): void {

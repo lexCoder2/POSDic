@@ -8,6 +8,7 @@ import {
   signal,
   TemplateRef,
   ChangeDetectorRef,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -58,6 +59,15 @@ import { catchError, finalize, of } from "rxjs";
   styleUrls: ["./layout.component.scss"],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private translation = inject(TranslationService);
+  private toastService = inject(ToastService);
+  private registerService = inject(RegisterService);
+  private userService = inject(UserService);
+  private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild("switchQrInput") switchQrInputRef!: ElementRef<HTMLInputElement>;
 
   currentUser: User | null = null;
@@ -78,6 +88,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   switchQrLoading = false;
   showSwitchCameraScanner = false;
   switchError = "";
+  showSwitchPassword = false;
   private switchQrScanner: Html5Qrcode | null = null;
 
   // Register selection properties
@@ -149,16 +160,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
     return this.currentUser?.role === "admin";
   }
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private translation: TranslationService,
-    private toastService: ToastService,
-    private registerService: RegisterService,
-    private userService: UserService,
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -320,6 +325,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
     if (mode === "scanner") {
       setTimeout(() => this.focusSwitchQrInput(), 100);
     }
+  }
+
+  toggleSwitchPasswordVisibility(): void {
+    this.showSwitchPassword = !this.showSwitchPassword;
   }
 
   private focusSwitchQrInput(): void {

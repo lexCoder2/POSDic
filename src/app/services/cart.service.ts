@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
@@ -8,11 +8,16 @@ import { CartItem, Product } from "../models";
   providedIn: "root",
 })
 export class CartService {
+  private http = inject(HttpClient);
+
   private cartItems = new BehaviorSubject<CartItem[]>([]);
   public cartItems$ = this.cartItems.asObservable();
   private apiUrl = `${environment.apiUrl}/carts`;
 
-  constructor(private http: HttpClient) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     this.loadCart();
   }
 

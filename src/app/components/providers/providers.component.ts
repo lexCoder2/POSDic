@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, signal, computed } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+  inject,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Subject, takeUntil, skip } from "rxjs";
@@ -19,6 +26,12 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
   styleUrls: ["./providers.component.scss"],
 })
 export class ProvidersComponent implements OnInit, OnDestroy {
+  private providerService = inject(ProviderService);
+  private authService = inject(AuthService);
+  private searchStateService = inject(SearchStateService);
+  private translation = inject(TranslationService);
+  private toastService = inject(ToastService);
+
   currentUser: User | null = null;
   providers = signal<Provider[]>([]);
   searchQuery = signal<string>("");
@@ -63,13 +76,10 @@ export class ProvidersComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private providerService: ProviderService,
-    private authService: AuthService,
-    private searchStateService: SearchStateService,
-    private translation: TranslationService,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

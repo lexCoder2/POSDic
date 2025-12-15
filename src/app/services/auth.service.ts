@@ -9,16 +9,19 @@ import { AuthResponse, User } from "../models";
   providedIn: "root",
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   private tokenKey = "pos_token";
   private userKey = "pos_user";
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     this.loadStoredUser();
   }
 

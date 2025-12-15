@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError, map } from "rxjs/operators";
@@ -7,6 +7,8 @@ import { catchError, map } from "rxjs/operators";
   providedIn: "root",
 })
 export class TranslationService {
+  private http = inject(HttpClient);
+
   private langKey = "app_language";
   private _current = new BehaviorSubject<string>(this.getStoredLang() || "en");
   currentLanguage$ = this._current.asObservable();
@@ -14,7 +16,10 @@ export class TranslationService {
   translationsChanged$ = this._translationsChanged.asObservable();
   private translations: Record<string, any> = {};
 
-  constructor(private http: HttpClient) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     this.loadTranslations(this._current.value);
   }
 

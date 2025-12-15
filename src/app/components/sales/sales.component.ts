@@ -7,6 +7,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -37,6 +38,12 @@ import { ModalComponent } from "../modal/modal.component";
   styleUrls: ["./sales.component.scss"],
 })
 export class SalesComponent implements OnInit, OnDestroy {
+  private saleService = inject(SaleService);
+  private authService = inject(AuthService);
+  private searchStateService = inject(SearchStateService);
+  private receiptGeneratorService = inject(ReceiptGeneratorService);
+  private toastService = inject(ToastService);
+
   currentUser: User | null = null;
   sales = signal<Sale[]>([]);
   searchQuery = signal<string>("");
@@ -91,13 +98,10 @@ export class SalesComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private saleService: SaleService,
-    private authService: AuthService,
-    private searchStateService: SearchStateService,
-    private receiptGeneratorService: ReceiptGeneratorService,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

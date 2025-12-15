@@ -7,6 +7,7 @@ import {
   SimpleChanges,
   signal,
   computed,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -39,6 +40,9 @@ export interface RefundResult {
   styleUrls: ["./returns-modal.component.scss"],
 })
 export class ReturnsModalComponent implements OnChanges {
+  private saleService = inject(SaleService);
+  private toastService = inject(ToastService);
+
   @Input() show = false;
   @Output() close = new EventEmitter<void>();
   @Output() refundComplete = new EventEmitter<RefundResult>();
@@ -69,10 +73,10 @@ export class ReturnsModalComponent implements OnChanges {
       .reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   });
 
-  constructor(
-    private saleService: SaleService,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["show"] && this.show) {

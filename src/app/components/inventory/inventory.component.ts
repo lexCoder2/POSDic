@@ -7,6 +7,7 @@ import {
   ElementRef,
   signal,
   computed,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -40,6 +41,14 @@ import { ModalComponent } from "../modal/modal.component";
   styleUrls: ["./inventory.component.scss"],
 })
 export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private authService = inject(AuthService);
+  private searchStateService = inject(SearchStateService);
+  private translation = inject(TranslationService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
+
   @ViewChild("barcodeInput") barcodeInput!: ElementRef<HTMLInputElement>;
 
   currentUser: User | null = null;
@@ -98,15 +107,10 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     active: true,
   };
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private authService: AuthService,
-    private searchStateService: SearchStateService,
-    private translation: TranslationService,
-    private toastService: ToastService,
-    private router: Router
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from "@angular/core";
+import { Component, OnInit, signal, computed, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
@@ -35,6 +35,9 @@ interface SalesAnalytics {
   styleUrls: ["./statistics.component.scss"],
 })
 export class StatisticsComponent implements OnInit {
+  private saleService = inject(SaleService);
+  private productService = inject(ProductService);
+
   sales = signal<Sale[]>([]);
   products = signal<Product[]>([]);
   isLoading = signal<boolean>(true);
@@ -208,10 +211,10 @@ export class StatisticsComponent implements OnInit {
       .reduce((sum, sale) => sum + sale.total, 0);
   });
 
-  constructor(
-    private saleService: SaleService,
-    private productService: ProductService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadData();

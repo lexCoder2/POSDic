@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { PageTitleComponent } from "../page-title/page-title.component";
@@ -28,6 +28,14 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
   styleUrls: ["./settings.component.scss"],
 })
 export class SettingsComponent implements OnInit {
+  private receiptGen = inject(ReceiptGeneratorService);
+  private translationService = inject(TranslationService);
+  private authService = inject(AuthService);
+  currencyService = inject(CurrencyService);
+  private toastService = inject(ToastService);
+  private userService = inject(UserService);
+  private qzTrayService = inject(QzTrayService);
+
   printerMode: "plain" | "styled" = "plain";
   showPrintPreview = false;
 
@@ -44,15 +52,10 @@ export class SettingsComponent implements OnInit {
   currentUserRole = "";
   printingBadge = false;
 
-  constructor(
-    private receiptGen: ReceiptGeneratorService,
-    private translationService: TranslationService,
-    private authService: AuthService,
-    public currencyService: CurrencyService,
-    private toastService: ToastService,
-    private userService: UserService,
-    private qzTrayService: QzTrayService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   get isAdmin(): boolean {
     const u = this.authService.getCurrentUser();

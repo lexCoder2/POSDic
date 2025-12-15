@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs/operators";
@@ -33,14 +33,17 @@ export interface DeviceRegisterResponse {
   providedIn: "root",
 })
 export class RegisterService {
+  private http = inject(HttpClient);
+  private deviceService = inject(DeviceService);
+
   private apiUrl = `${environment.apiUrl}/registers`;
   private currentRegisterSubject = new BehaviorSubject<Register | null>(null);
   public currentRegister$ = this.currentRegisterSubject.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private deviceService: DeviceService
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     this.loadCurrentRegister();
   }
 

@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnChanges,
   SimpleChanges,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ToastService } from "../../../services/toast.service";
@@ -19,6 +20,8 @@ import { Html5Qrcode } from "html5-qrcode";
   styleUrls: ["./camera-scanner.component.scss"],
 })
 export class CameraScannerComponent implements OnDestroy, OnChanges {
+  private toastService = inject(ToastService);
+
   @Input() isActive = false;
 
   @Output() barcodeDetected = new EventEmitter<string>();
@@ -34,7 +37,10 @@ export class CameraScannerComponent implements OnDestroy, OnChanges {
   private _lastScannedValue: string | null = null;
   private _lastScannedAt = 0;
 
-  constructor(private toastService: ToastService) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["isActive"]) {

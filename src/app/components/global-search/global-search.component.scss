@@ -57,11 +57,16 @@
 // Responsive
 @media (max-width: $breakpoint-md) {
   .global-search {
-    max-width: 100%;
+    width: 100%;
 
     .search-wrapper {
       .search-input {
         font-size: $font-size-sm;
+
+        padding-right: $spacing-sm;
+      }
+      .clear-icon {
+        right: $spacing-sm;
       }
     }
   }

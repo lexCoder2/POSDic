@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter, signal } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  inject,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
@@ -14,6 +21,8 @@ import { environment } from "@environments/environment";
   styleUrls: ["./cart.component.scss"],
 })
 export class CartComponent {
+  cartService = inject(CartService);
+
   @Input() cartItems: CartItem[] = [];
   @Input() salesTabs: { items: CartItem[] }[] = [];
   @Input() activeSaleTabIndex = 0;
@@ -34,7 +43,10 @@ export class CartComponent {
   @Output() internalSale = new EventEmitter<void>();
   @Output() closeMobileCart = new EventEmitter<void>();
 
-  constructor(public cartService: CartService) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   getItemsBySupplier(): { supplier: string; items: CartItem[] }[] {
     const groups: Record<string, CartItem[]> = {};

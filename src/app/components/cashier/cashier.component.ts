@@ -7,6 +7,7 @@ import {
   ElementRef,
   AfterViewInit,
   OnInit,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -47,6 +48,16 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
   styleUrls: ["./cashier.component.scss"],
 })
 export class CashierComponent implements OnInit, AfterViewInit {
+  private saleService = inject(SaleService);
+  private cartService = inject(CartService);
+  private authService = inject(AuthService);
+  currencyService = inject(CurrencyService);
+  private scaleService = inject(ScaleService);
+  private receiptGeneratorService = inject(ReceiptGeneratorService);
+  private registerService = inject(RegisterService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
+
   @ViewChild(CalculatorComponent)
   calculator!: CalculatorComponent;
   @ViewChild("cashReceivedInput")
@@ -140,17 +151,10 @@ export class CashierComponent implements OnInit, AfterViewInit {
     });
   }
 
-  constructor(
-    private saleService: SaleService,
-    private cartService: CartService,
-    private authService: AuthService,
-    public currencyService: CurrencyService,
-    private scaleService: ScaleService,
-    private receiptGeneratorService: ReceiptGeneratorService,
-    private registerService: RegisterService,
-    private toastService: ToastService,
-    private router: Router
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     // Subscribe to scale readings
     effect(() => {
       this.scaleService.currentWeight$.subscribe((reading) => {

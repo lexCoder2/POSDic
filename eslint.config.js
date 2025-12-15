@@ -31,6 +31,8 @@ module.exports = defineConfig([
           style: "kebab-case",
         },
       ],
+      // eslint-disable-next-line
+      "@angular-eslint/template/click-events-have-key-events": "off",
     },
   },
   {

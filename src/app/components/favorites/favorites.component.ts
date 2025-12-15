@@ -5,6 +5,7 @@ import {
   Output,
   EventEmitter,
   signal,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Subject, takeUntil, timeout, catchError, of } from "rxjs";
@@ -22,6 +23,8 @@ import { environment } from "@environments/environment";
   styleUrls: ["./favorites.component.scss"],
 })
 export class FavoritesComponent implements OnInit, OnDestroy {
+  private productService = inject(ProductService);
+
   @Output() productSelected = new EventEmitter<Product>();
 
   products: Product[] = [];
@@ -29,7 +32,10 @@ export class FavoritesComponent implements OnInit, OnDestroy {
   loadError = signal(false);
   private destroy$ = new Subject<void>();
 
-  constructor(private productService: ProductService) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadTopProducts();

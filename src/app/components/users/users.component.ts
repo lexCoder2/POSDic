@@ -5,6 +5,7 @@ import {
   signal,
   computed,
   effect,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -35,6 +36,13 @@ import { TranslationService } from "../../services/translation.service";
   styleUrls: ["./users.component.scss"],
 })
 export class UsersComponent implements OnInit, OnDestroy {
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private searchStateService = inject(SearchStateService);
+  private http = inject(HttpClient);
+  private translation = inject(TranslationService);
+  private toastService = inject(ToastService);
+
   currentUser: User | null = null;
   users = signal<User[]>([]);
   searchQuery = signal<string>("");
@@ -80,14 +88,10 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private userService: UserService,
-    private authService: AuthService,
-    private searchStateService: SearchStateService,
-    private http: HttpClient,
-    private translation: TranslationService,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

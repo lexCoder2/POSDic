@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   signal,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -52,6 +53,14 @@ interface InventorySession {
   styleUrls: ["./inventory-session.component.scss"],
 })
 export class InventorySessionComponent implements OnInit, OnDestroy {
+  private productService = inject(ProductService);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  private translation = inject(TranslationService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private searchStateService = inject(SearchStateService);
+
   private destroy$ = new Subject<void>();
   currentUser: User | null = null;
 
@@ -74,15 +83,10 @@ export class InventorySessionComponent implements OnInit, OnDestroy {
     return environment.apiUrl;
   }
 
-  constructor(
-    private productService: ProductService,
-    private authService: AuthService,
-    private toastService: ToastService,
-    private translation: TranslationService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private searchStateService: SearchStateService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

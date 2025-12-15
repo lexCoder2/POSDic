@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from "@angular/core";
+import { Component, OnInit, OnDestroy, signal, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CartService } from "../../services/cart.service";
@@ -15,6 +15,11 @@ import { environment } from "@environments/environment";
   styleUrls: ["./client-screen.component.scss"],
 })
 export class ClientScreenComponent implements OnInit, OnDestroy {
+  private cartService = inject(CartService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   cartItems$ = this.cartService.cartItems$;
   // activeTab controls which panel is visible: 'fast' = Fast Cashier, 'pos' = POS Sales
   activeTab: "fast" | "pos" = "pos";
@@ -28,12 +33,10 @@ export class ClientScreenComponent implements OnInit, OnDestroy {
   private cartPollTimer: any;
 
   apiUrl = environment.apiUrl;
-  constructor(
-    private cartService: CartService,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+  constructor() {}
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();

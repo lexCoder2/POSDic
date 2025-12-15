@@ -8,6 +8,7 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TranslatePipe } from "../../pipes/translate.pipe";
@@ -28,6 +29,12 @@ import { Subject, takeUntil } from "rxjs";
   styleUrls: ["./search-results.component.scss"],
 })
 export class SearchResultsComponent implements OnInit, OnDestroy {
+  private searchStateService = inject(SearchStateService);
+  private cdr = inject(ChangeDetectorRef);
+  private authService = inject(AuthService);
+  private productService = inject(ProductService);
+  private toastService = inject(ToastService);
+
   // Accept products from parent
   products = input<Product[]>([]);
 
@@ -45,13 +52,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private searchStateService: SearchStateService,
-    private cdr: ChangeDetectorRef,
-    private authService: AuthService,
-    private productService: ProductService,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     // Subscribe to search query from search state service

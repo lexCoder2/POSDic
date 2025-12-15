@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -25,6 +26,12 @@ import { TranslatePipe } from "@app/pipes/translate.pipe";
   styleUrls: ["./global-search.component.scss"],
 })
 export class GlobalSearchComponent implements OnInit, OnDestroy {
+  private productService = inject(ProductService);
+  private cartService = inject(CartService);
+  private searchStateService = inject(SearchStateService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+
   searchQuery = "";
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
@@ -34,13 +41,10 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   @ViewChild("globalSearchInput")
   globalSearchInput!: ElementRef<HTMLInputElement>;
 
-  constructor(
-    private productService: ProductService,
-    private cartService: CartService,
-    private searchStateService: SearchStateService,
-    private router: Router,
-    private toastService: ToastService
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     // Setup search debouncing

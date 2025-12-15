@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "@environments/environment";
@@ -8,9 +8,14 @@ import { PrintTemplate } from "../models";
   providedIn: "root",
 })
 export class PrintTemplateService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/templates`;
 
-  constructor(private http: HttpClient) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   getTemplates(): Observable<PrintTemplate[]> {
     return this.http.get<PrintTemplate[]>(this.apiUrl);

@@ -4,6 +4,7 @@ import {
   OnDestroy,
   signal,
   ChangeDetectorRef,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -30,6 +31,11 @@ import { Register, User } from "../../models";
   styleUrls: ["./registers.component.scss"],
 })
 export class RegistersComponent implements OnInit, OnDestroy {
+  private registerService = inject(RegisterService);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
+
   registers: Register[] = [];
   filteredRegisters: Register[] = [];
   currentUser: User | null = null;
@@ -53,12 +59,10 @@ export class RegistersComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private registerService: RegisterService,
-    private authService: AuthService,
-    private toastService: ToastService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

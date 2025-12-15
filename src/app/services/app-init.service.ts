@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { UserService } from "./user.service";
 import { TranslationService } from "./translation.service";
@@ -11,14 +11,17 @@ import { firstValueFrom } from "rxjs";
   providedIn: "root",
 })
 export class AppInitService {
-  constructor(
-    private authService: AuthService,
-    private userService: UserService,
-    private translationService: TranslationService,
-    private currencyService: CurrencyService,
-    public themeService: ThemeService,
-    private qzTrayService: QzTrayService
-  ) {}
+  private authService = inject(AuthService);
+  private userService = inject(UserService);
+  private translationService = inject(TranslationService);
+  private currencyService = inject(CurrencyService);
+  themeService = inject(ThemeService);
+  private qzTrayService = inject(QzTrayService);
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   async initializeApp(): Promise<void> {
     // Load theme preference (works for both authenticated and guest users)

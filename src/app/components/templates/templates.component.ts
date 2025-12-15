@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, OnInit, signal, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import {
   FormsModule,
@@ -29,6 +29,12 @@ import { TranslationService } from "../../services/translation.service";
   styleUrls: ["./templates.component.scss"],
 })
 export class TemplatesComponent implements OnInit {
+  private printTemplateService = inject(PrintTemplateService);
+  private fb = inject(FormBuilder);
+  sanitizer = inject(DomSanitizer);
+  private translationService = inject(TranslationService);
+  private toastService = inject(ToastService);
+
   templates = signal<PrintTemplate[]>([]);
   selectedTemplate = signal<PrintTemplate | null>(null);
   isLoading = signal<boolean>(false);
@@ -37,13 +43,10 @@ export class TemplatesComponent implements OnInit {
   previewMode = signal<"text" | "styled">("styled");
   templateForm: FormGroup;
 
-  constructor(
-    private printTemplateService: PrintTemplateService,
-    private fb: FormBuilder,
-    public sanitizer: DomSanitizer,
-    private translationService: TranslationService,
-    private toastService: ToastService
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     this.templateForm = this.fb.group({
       name: ["", [Validators.required, Validators.minLength(3)]],
       description: [""],

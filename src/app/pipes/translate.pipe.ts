@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform, ChangeDetectorRef } from "@angular/core";
+import { Pipe, PipeTransform, ChangeDetectorRef, inject } from "@angular/core";
 import { TranslationService } from "../services/translation.service";
 
 @Pipe({
@@ -7,10 +7,13 @@ import { TranslationService } from "../services/translation.service";
   standalone: true,
 })
 export class TranslatePipe implements PipeTransform {
-  constructor(
-    private t: TranslationService,
-    private cdr: ChangeDetectorRef
-  ) {
+  private t = inject(TranslationService);
+  private cdr = inject(ChangeDetectorRef);
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
     // When translations change (loaded or language switched), mark for check
     this.t.translationsChanged$.subscribe(() => {
       try {

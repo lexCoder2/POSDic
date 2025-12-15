@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "@environments/environment";
 
@@ -29,6 +29,8 @@ export interface PrinterCapabilities {
   providedIn: "root",
 })
 export class QzTrayService {
+  private http = inject(HttpClient);
+
   private certificateCache: string | null = null;
   private qzInitialized = false;
   private qz: any = null;
@@ -36,7 +38,10 @@ export class QzTrayService {
   private printerDetailsCache: Map<string, PrinterCapabilities> = new Map();
 
   private apiUrl = `${environment.apiUrl}`;
-  constructor(private http: HttpClient) {
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+  constructor() {
     this.initializationPromise = this.initialize();
   }
 

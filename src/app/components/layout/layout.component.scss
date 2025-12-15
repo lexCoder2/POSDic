@@ -528,20 +528,23 @@
 
   .top-header {
     .header-content {
-      padding: $spacing-md $spacing-lg;
-      gap: $spacing-md;
+      padding: $spacing-md;
+      gap: $spacing-xs;
+    }
+    .sidebar-header {
+      display: none;
     }
 
     .mobile-sidebar-toggle {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-right: $spacing-sm;
+      margin-right: 0;
       font-size: 1.1rem;
       color: var(--text-primary);
       background: transparent;
       border: none;
-      padding: $spacing-xs $spacing-sm;
+      padding: $spacing-xs 0;
       border-radius: $radius-md;
       cursor: pointer;
     }
@@ -849,6 +852,44 @@
     textarea.form-control {
       resize: vertical;
       min-height: 80px;
+    }
+
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .form-control {
+        padding-right: 2.5rem;
+      }
+
+      .password-toggle-btn {
+        position: absolute;
+        right: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border-radius: $radius-md;
+
+        i {
+          font-size: 1rem;
+        }
+
+        &:hover {
+          color: $primary;
+          background: rgba($primary, 0.1);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
     }
   }
 

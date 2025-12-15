@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ToastService, ToastMessage } from "../../services/toast.service";
 
@@ -10,9 +10,14 @@ import { ToastService, ToastMessage } from "../../services/toast.service";
   styleUrls: ["./toast.component.scss"],
 })
 export class ToastComponent implements OnInit {
+  private toastService = inject(ToastService);
+
   toasts: ToastMessage[] = [];
 
-  constructor(private toastService: ToastService) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.toastService.onToast().subscribe((t) => {

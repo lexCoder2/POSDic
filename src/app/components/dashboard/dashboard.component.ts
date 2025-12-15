@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from "@angular/core";
+import { Component, OnInit, signal, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
 import { TranslatePipe } from "../../pipes/translate.pipe";
@@ -49,6 +49,12 @@ interface DashboardStats {
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit {
+  private saleService = inject(SaleService);
+  private productService = inject(ProductService);
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   stats = signal<DashboardStats>({
     totalSales: 0,
     totalRevenue: 0,
@@ -64,13 +70,10 @@ export class DashboardComponent implements OnInit {
   isLoading = signal<boolean>(true);
   currentUser = this.authService.getCurrentUser();
 
-  constructor(
-    private saleService: SaleService,
-    private productService: ProductService,
-    private userService: UserService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadDashboardData();

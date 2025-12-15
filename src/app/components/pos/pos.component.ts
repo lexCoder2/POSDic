@@ -6,6 +6,7 @@ import {
   ElementRef,
   HostListener,
   ChangeDetectorRef,
+  inject,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -89,6 +90,19 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
   styleUrls: ["./pos.component.scss"],
 })
 export class PosComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  cartService = inject(CartService);
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private saleService = inject(SaleService);
+  private scaleService = inject(ScaleService);
+  private receiptGeneratorService = inject(ReceiptGeneratorService);
+  private searchStateService = inject(SearchStateService);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  private registerService = inject(RegisterService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild("barcodeInput") barcodeInput!: ElementRef;
   @ViewChild("searchInput") searchInput!: ElementRef;
 
@@ -165,20 +179,10 @@ export class PosComponent implements OnInit, OnDestroy {
   // timestamp of last Enter key press for double-Enter detection
   private _lastEnterTime = 0;
 
-  constructor(
-    private authService: AuthService,
-    public cartService: CartService,
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private saleService: SaleService,
-    private scaleService: ScaleService,
-    private receiptGeneratorService: ReceiptGeneratorService,
-    private searchStateService: SearchStateService,
-    private router: Router,
-    private toastService: ToastService,
-    private registerService: RegisterService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

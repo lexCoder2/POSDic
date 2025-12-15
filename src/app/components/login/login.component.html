@@ -139,7 +139,7 @@
           <div class="input-wrapper">
             <i class="fas fa-lock"></i>
             <input
-              type="password"
+              [type]="showPassword ? 'text' : 'password'"
               id="password"
               [(ngModel)]="password"
               name="password"
@@ -149,6 +149,14 @@
               autocomplete="current-password"
               (input)="onInputChange()"
             />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [title]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
           </div>
         </div>
 

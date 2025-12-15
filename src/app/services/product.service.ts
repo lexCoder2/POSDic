@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "@environments/environment";
@@ -8,9 +8,14 @@ import { Product, PaginatedResponse } from "../models";
   providedIn: "root",
 })
 export class ProductService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/products`;
 
-  constructor(private http: HttpClient) {}
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {}
 
   getProducts(filters?: {
     category?: string;

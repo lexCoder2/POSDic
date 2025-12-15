@@ -10,10 +10,8 @@
       (keypress)="onSearchKeyPress($event)"
       [placeholder]="'GLOBAL.SEARCH_PLACEHOLDER' | translate"
     />
-    <i
-      *ngIf="searchQuery"
-      class="fas fa-times clear-icon"
-      (click)="searchQuery = ''"
-    ></i>
+    @if (searchQuery) {
+      <i class="fas fa-times clear-icon" (click)="searchQuery = ''"></i>
+    }
   </div>
 </div>

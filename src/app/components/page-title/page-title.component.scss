@@ -90,28 +90,10 @@
   }
 
   @media (max-width: 768px) {
-    padding: 0.6rem 1rem;
-    flex-direction: column;
-    align-items: flex-start;
+    display: none;
 
     .title-content {
-      gap: 0.5rem;
-      width: 100%;
-      margin-bottom: 0.5rem;
-
-      i {
-        font-size: 1rem;
-      }
-
-      .text {
-        h1 {
-          font-size: 0.95rem;
-        }
-
-        p {
-          font-size: 0.7rem;
-        }
-      }
+      display: none;
     }
 
     .actions-space {

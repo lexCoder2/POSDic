@@ -468,7 +468,7 @@
 
       input {
         width: 100%;
-        padding: 1rem 1rem 1rem 3rem;
+        padding: 1rem 3rem 1rem 3rem;
         border: none;
         border-radius: $radius-lg;
         font-size: $font-size-base;
@@ -509,6 +509,35 @@
       // Move icon color change to work with sibling selector
       &:focus-within i {
         color: $primary;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border-radius: $radius-md;
+
+        i {
+          position: static;
+          font-size: 1rem;
+        }
+
+        &:hover {
+          color: $primary;
+          background: rgba($primary, 0.1);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
       }
     }
   }
