@@ -500,7 +500,7 @@
 }
 
 // ===== MOBILE RESPONSIVE =====
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .app-layout {
     &.pos-page {
       .sidebar {
@@ -511,14 +511,43 @@
 
   .sidebar {
     position: fixed;
-    left: -$sidebar-width;
+    left: -100vw;
     top: 0;
+    color: $white;
     bottom: 0;
+    width: 87vw;
     transition: left 0.3s ease;
-    z-index: $z-sidebar;
+    z-index: $z-tooltip + 10;
+    background: $gradient-primary;
 
     &.mobile-open {
       left: 0;
+    }
+    .sidebar-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 150px);
+      align-items: center;
+      justify-content: center;
+      margin: 100px auto;
+      padding: 0 2rem;
+      gap: $spacing-lg;
+      .sidebar-btn {
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        padding: $spacing-xl $spacing-md;
+        max-width: auto;
+        border: 1px solid $gray-400;
+        border-right: 1px solid $gray-200;
+        border-bottom: 1px solid $gray-200;
+        max-height: max-content;
+        color: $gray-700;
+        &.active {
+          box-shadow: none;
+          color: $blue-primary;
+        }
+      }
     }
   }
 

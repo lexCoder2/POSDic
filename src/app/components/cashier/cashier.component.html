@@ -196,302 +196,299 @@
   </div>
 
   <!-- Payment Confirmation Modal -->
-  <div
-    class="modal-overlay"
-    *ngIf="showPaymentModal()"
-    (click)="cancelPayment()"
-  >
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>
-          <i
-            class="fas"
-            [class.fa-money-bill-wave]="selectedPaymentMethod() === 'cash'"
-            [class.fa-credit-card]="selectedPaymentMethod() === 'card'"
-            [class.fa-exchange-alt]="selectedPaymentMethod() === 'transfer'"
-          ></i>
-          {{
-            selectedPaymentMethod() === "cash"
-              ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
-              : selectedPaymentMethod() === "card"
-                ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
-                : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
-          }}
-        </h2>
-        <button class="close-btn" (click)="cancelPayment()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <div class="sale-total">
-          <span class="label">{{
-            "CASHIER.PAYMENT.TOTAL_AMOUNT" | translate
-          }}</span>
-          <span class="value">{{ total() | appCurrency }}</span>
+  @if (showPaymentModal()) {
+    <div
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      tabindex="0"
+      (click)="cancelPayment()"
+    >
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>
+            <i
+              class="fas"
+              [class.fa-money-bill-wave]="selectedPaymentMethod() === 'cash'"
+              [class.fa-credit-card]="selectedPaymentMethod() === 'card'"
+              [class.fa-exchange-alt]="selectedPaymentMethod() === 'transfer'"
+            ></i>
+            {{
+              selectedPaymentMethod() === "cash"
+                ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
+                : selectedPaymentMethod() === "card"
+                  ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
+                  : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
+            }}
+          </h2>
+          <button class="close-btn" (click)="cancelPayment()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
-        <!-- Cash Payment Form -->
-        <div class="cash-payment" *ngIf="selectedPaymentMethod() === 'cash'">
+        <div class="modal-body">
+          <div class="sale-total">
+            <span class="label">{{
+              "CASHIER.PAYMENT.TOTAL_AMOUNT" | translate
+            }}</span>
+            <span class="value">{{ total() | appCurrency }}</span>
+          </div>
+
+          <!-- Cash Payment Form -->
+          @if (selectedPaymentMethod() === "cash") {
+            <div class="cash-payment">
+              <div class="form-group">
+                <label for="cashReceived">{{
+                  "CASHIER.PAYMENT.CASH_RECEIVED" | translate
+                }}</label>
+                <input
+                  #cashReceivedInput
+                  id="cashReceived"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  [(ngModel)]="cashReceived"
+                  (ngModelChange)="onCashReceivedChange()"
+                  placeholder="{{
+                    'CASHIER.PAYMENT.CASH_RECEIVED' | translate
+                  }}"
+                  class="cash-input"
+                  [class.invalid]="
+                    cashReceived() && parseFloat(cashReceived()) < total()
+                  "
+                />
+              </div>
+
+              @if (change() > 0) {
+                <div class="change-display">
+                  <span class="change-label">{{
+                    "CASHIER.PAYMENT.CHANGE" | translate
+                  }}</span>
+                  <span class="change-value">{{ change() | appCurrency }}</span>
+                </div>
+              }
+
+              @if (cashReceived() && parseFloat(cashReceived()) < total()) {
+                <div class="error-message">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  {{ "CASHIER.PAYMENT.AMOUNT_TOO_LOW" | translate }}
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Card/Transfer Confirmation -->
+          @if (selectedPaymentMethod() !== "cash") {
+            <div class="confirmation-message">
+              <i class="fas fa-check-circle"></i>
+              <p>
+                {{
+                  "CASHIER.PAYMENT.CONFIRM_MESSAGE"
+                    | translate: { method: selectedPaymentMethod() }
+                }}
+              </p>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button
+            class="modal-btn cancel"
+            (click)="cancelPayment()"
+            [disabled]="isProcessing()"
+          >
+            {{ "GLOBAL.CANCEL" | translate }}
+          </button>
+          <button
+            class="modal-btn confirm"
+            (click)="confirmPayment()"
+            [disabled]="isProcessing()"
+          >
+            @if (!isProcessing()) {
+              <span>{{ "CASHIER.PAYMENT.CONFIRM_PAYMENT" | translate }}</span>
+            }
+            @if (isProcessing()) {
+              <span>{{ "CASHIER.PAYMENT.PROCESSING" | translate }}</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loose Product Modal -->
+  @if (showLooseProductModal()) {
+    <div
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      (click)="cancelLooseProduct()"
+    >
+      <div
+        class="modal-content loose-product-modal"
+        role="document"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="modal-body">
+          <button class="close-btn" (click)="cancelLooseProduct()">
+            <i class="fas fa-times"></i>
+          </button>
+          <!-- Scale Connection Section -->
+          <div class="scale-connection">
+            <div class="scale-status">
+              <i
+                class="fas fa-scale-balanced"
+                [class.connected]="scaleConnected()"
+              ></i>
+              <span>
+                {{ "CASHIER.SCALE.LABEL" | translate }}:
+                {{
+                  scaleConnected()
+                    ? ("CASHIER.SCALE.CONNECTED" | translate)
+                    : ("CASHIER.SCALE.NOT_CONNECTED" | translate)
+                }}
+              </span>
+            </div>
+            @if (!scaleConnected()) {
+              <button class="scale-btn" (click)="connectToScale()">
+                <i class="fas fa-plug"></i>
+                {{ "CASHIER.SCALE.CONNECT" | translate }}
+              </button>
+            }
+          </div>
+
+          <!-- Current Scale Reading -->
+          @if (currentScaleReading() && scaleConnected()) {
+            <div class="scale-reading">
+              <div
+                class="reading-display"
+                [class.stable]="currentScaleReading()!.stable"
+              >
+                <i class="fas fa-weight-hanging"></i>
+                <span class="weight">{{
+                  currentScaleReading()!.weight.toFixed(3)
+                }}</span>
+                <span class="unit">{{ currentScaleReading()!.unit }}</span>
+                @if (currentScaleReading()!.stable) {
+                  <span class="status-badge">
+                    <i class="fas fa-check"></i> Stable
+                  </span>
+                }
+              </div>
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="useScaleWeight()"
+                  (change)="toggleUseScaleWeight()"
+                />
+                <span>{{ "CASHIER.SCALE.USE_SCALE_LABEL" | translate }}</span>
+              </label>
+            </div>
+          }
+
+          <!-- Product Information Form -->
           <div class="form-group">
-            <label for="cashReceived">{{
-              "CASHIER.PAYMENT.CASH_RECEIVED" | translate
-            }}</label>
             <input
-              #cashReceivedInput
-              id="cashReceived"
+              id="productDescription"
+              type="text"
+              [(ngModel)]="looseProductDescription"
+              placeholder="{{
+                'CASHIER.LOOSE_PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER'
+                  | translate
+              }}"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              #weightInput
+              id="weight"
+              type="number"
+              step="0.001"
+              min="0"
+              [(ngModel)]="looseProductWeight"
+              placeholder="Enter weight in kg"
+              class="form-input"
+              [class.invalid]="
+                looseProductWeight() && parseFloat(looseProductWeight()) <= 0
+              "
+              [readonly]="useScaleWeight() && scaleConnected()"
+              (keydown.enter)="handleLooseProductEnter($event)"
+            />
+            @if (useScaleWeight() && scaleConnected()) {
+              <small class="help-text">
+                <i class="fas fa-info-circle"></i>
+                {{ "CASHIER.SCALE.WEIGHT_AUTOMATIC" | translate }}
+              </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <input
+              #pricePerKgInput
+              id="pricePerKg"
               type="number"
               step="0.01"
               min="0"
-              [(ngModel)]="cashReceived"
-              (ngModelChange)="onCashReceivedChange()"
-              placeholder="{{ 'CASHIER.PAYMENT.CASH_RECEIVED' | translate }}"
-              class="cash-input"
+              [(ngModel)]="looseProductPricePerKg"
+              placeholder="Enter price per kg"
+              class="form-input"
               [class.invalid]="
-                cashReceived() && parseFloat(cashReceived()) < total()
+                looseProductPricePerKg() &&
+                parseFloat(looseProductPricePerKg()) <= 0
               "
+              (keydown.enter)="handleLooseProductEnter($event)"
             />
           </div>
 
-          <div class="change-display" *ngIf="change() > 0">
-            <span class="change-label">{{
-              "CASHIER.PAYMENT.CHANGE" | translate
-            }}</span>
-            <span class="change-value">{{ change() | appCurrency }}</span>
-          </div>
-
-          <div
-            class="error-message"
-            *ngIf="cashReceived() && parseFloat(cashReceived()) < total()"
-          >
-            <i class="fas fa-exclamation-triangle"></i>
-            {{ "CASHIER.PAYMENT.AMOUNT_TOO_LOW" | translate }}
-          </div>
-        </div>
-
-        <!-- Card/Transfer Confirmation -->
-        <div
-          class="confirmation-message"
-          *ngIf="selectedPaymentMethod() !== 'cash'"
-        >
-          <i class="fas fa-check-circle"></i>
-          <p>
-            {{
-              "CASHIER.PAYMENT.CONFIRM_MESSAGE"
-                | translate: { method: selectedPaymentMethod() }
-            }}
-          </p>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button
-          class="modal-btn cancel"
-          (click)="cancelPayment()"
-          [disabled]="isProcessing()"
-        >
-          {{ "GLOBAL.CANCEL" | translate }}
-        </button>
-        <button
-          class="modal-btn confirm"
-          (click)="confirmPayment()"
-          [disabled]="isProcessing()"
-        >
-          <span *ngIf="!isProcessing()">{{
-            "CASHIER.PAYMENT.CONFIRM_PAYMENT" | translate
-          }}</span>
-          <span *ngIf="isProcessing()">{{
-            "CASHIER.PAYMENT.PROCESSING" | translate
-          }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loose Product Modal -->
-  <div
-    class="modal-overlay"
-    *ngIf="showLooseProductModal()"
-    (click)="cancelLooseProduct()"
-  >
-    <div
-      class="modal-content loose-product-modal"
-      (click)="$event.stopPropagation()"
-    >
-      <div class="modal-header">
-        <h2>
-          <i class="fas fa-weight"></i>
-          {{ "CASHIER.LOOSE_PRODUCT" | translate }}
-        </h2>
-        <button class="close-btn" (click)="cancelLooseProduct()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Scale Connection Section -->
-        <div class="scale-connection">
-          <div class="scale-status">
-            <i
-              class="fas fa-scale-balanced"
-              [class.connected]="scaleConnected()"
-            ></i>
-            <span>
-              {{ "CASHIER.SCALE.LABEL" | translate }}:
-              {{
-                scaleConnected()
-                  ? ("CASHIER.SCALE.CONNECTED" | translate)
-                  : ("CASHIER.SCALE.NOT_CONNECTED" | translate)
-              }}
-            </span>
-          </div>
-          <button
-            class="scale-btn"
-            *ngIf="!scaleConnected()"
-            (click)="connectToScale()"
-          >
-            <i class="fas fa-plug"></i>
-            {{ "CASHIER.SCALE.CONNECT" | translate }}
-          </button>
-          <button
-            class="scale-btn disconnect"
-            *ngIf="scaleConnected()"
-            (click)="disconnectScale()"
-          >
-            <i class="fas fa-unlink"></i>
-            {{ "CASHIER.SCALE.DISCONNECT" | translate }}
-          </button>
-        </div>
-
-        <!-- Current Scale Reading -->
-        <div
-          class="scale-reading"
-          *ngIf="currentScaleReading() && scaleConnected()"
-        >
-          <div
-            class="reading-display"
-            [class.stable]="currentScaleReading()!.stable"
-          >
-            <i class="fas fa-weight-hanging"></i>
-            <span class="weight">{{
-              currentScaleReading()!.weight.toFixed(3)
-            }}</span>
-            <span class="unit">{{ currentScaleReading()!.unit }}</span>
-            <span class="status-badge" *ngIf="currentScaleReading()!.stable">
-              <i class="fas fa-check"></i> Stable
-            </span>
-          </div>
-          <label class="checkbox-label">
-            <input
-              type="checkbox"
-              [checked]="useScaleWeight()"
-              (change)="toggleUseScaleWeight()"
-            />
-            <span>{{ "CASHIER.SCALE.USE_SCALE_LABEL" | translate }}</span>
-          </label>
-        </div>
-
-        <!-- Product Information Form -->
-        <div class="form-group">
-          <label for="productDescription">{{
-            "CASHIER.LOOSE_PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER" | translate
-          }}</label>
-          <input
-            id="productDescription"
-            type="text"
-            [(ngModel)]="looseProductDescription"
-            placeholder="{{
-              'CASHIER.LOOSE_PRODUCT_MODAL.DESCRIPTION_PLACEHOLDER' | translate
-            }}"
-            class="form-input"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="weight">Weight (kg):</label>
-          <input
-            #weightInput
-            id="weight"
-            type="number"
-            step="0.001"
-            min="0"
-            [(ngModel)]="looseProductWeight"
-            placeholder="Enter weight in kg"
-            class="form-input"
-            [class.invalid]="
-              looseProductWeight() && parseFloat(looseProductWeight()) <= 0
-            "
-            [readonly]="useScaleWeight() && scaleConnected()"
-            (keydown.enter)="handleLooseProductEnter($event)"
-          />
-          <small *ngIf="useScaleWeight() && scaleConnected()" class="help-text">
-            <i class="fas fa-info-circle"></i>
-            {{ "CASHIER.SCALE.WEIGHT_AUTOMATIC" | translate }}
-          </small>
-        </div>
-
-        <div class="form-group">
-          <label for="pricePerKg">Price per kg ($):</label>
-          <input
-            #pricePerKgInput
-            id="pricePerKg"
-            type="number"
-            step="0.01"
-            min="0"
-            [(ngModel)]="looseProductPricePerKg"
-            placeholder="Enter price per kg"
-            class="form-input"
-            [class.invalid]="
-              looseProductPricePerKg() &&
-              parseFloat(looseProductPricePerKg()) <= 0
-            "
-            (keydown.enter)="handleLooseProductEnter($event)"
-          />
-        </div>
-
-        <!-- Total Preview -->
-        <div
-          class="total-preview"
-          *ngIf="
+          <!-- Total Preview -->
+          @if (
             looseProductWeight() &&
             looseProductPricePerKg() &&
             parseFloat(looseProductWeight()) > 0 &&
             parseFloat(looseProductPricePerKg()) > 0
-          "
-        >
-          <span class="preview-label">Total Price:</span>
-          <span class="preview-value">
-            {{
-              parseFloat(looseProductWeight()) *
-                parseFloat(looseProductPricePerKg()) | appCurrency
-            }}
-          </span>
+          ) {
+            <div class="total-preview">
+              <span class="preview-label">Total Price:</span>
+              <span class="preview-value">
+                {{
+                  parseFloat(looseProductWeight()) *
+                    parseFloat(looseProductPricePerKg()) | appCurrency
+                }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="modal-btn cancel" (click)="cancelLooseProduct()">
+            Cancel
+          </button>
+          <button class="modal-btn confirm" (click)="confirmLooseProduct()">
+            <i class="fas fa-check"></i>
+            Add Item
+          </button>
         </div>
       </div>
-
-      <div class="modal-footer">
-        <button class="modal-btn cancel" (click)="cancelLooseProduct()">
-          Cancel
-        </button>
-        <button class="modal-btn confirm" (click)="confirmLooseProduct()">
-          <i class="fas fa-check"></i>
-          Add Item
-        </button>
-      </div>
     </div>
-  </div>
+  }
 </div>
 
 <!-- Open Register Modal -->
-<div
-  class="modal-overlay"
-  *ngIf="showOpenRegisterModal()"
-  (click)="closeRegisterModal()"
->
-  <div (click)="$event.stopPropagation()">
-    <app-open-register
-      (registerOpened)="onRegisterOpened()"
-      (cancelled)="closeRegisterModal()"
-    ></app-open-register>
+@if (showOpenRegisterModal()) {
+  <div
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    tabindex="0"
+    (click)="closeRegisterModal()"
+  >
+    <div (click)="$event.stopPropagation()">
+      <app-open-register
+        (registerOpened)="onRegisterOpened()"
+        (cancelled)="closeRegisterModal()"
+      ></app-open-register>
+    </div>
   </div>
-</div>
+}

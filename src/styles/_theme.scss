@@ -17,25 +17,25 @@ $image-bg:
   radial-gradient(at 82% 79%, hsla(240, 100%, 70%, 0.73) 0px, transparent 50%),
   radial-gradient(at 2% 4%, hsla(341, 100%, 76%, 0.69) 0px, transparent 50%);
 $neumorphic-surface: #f7f8fd84;
-$blue-primary: #654483;
-$blue-dark: #2563eb;
-$blue-light: #60a5fa;
+$blue-primary: #aa55fa;
+$blue-dark: #5985e4;
+$blue-light: #deb5ff;
 
 // SCSS HSL
 $neumorphic-bg-hsl: hsla(220, 13%, 91%, 0.97);
 $neumorphic-surface-hsl: hsla(220, 16%, 94%, 0.97);
 $blue-primary-hsl: hsla(221, 91%, 60%, 1);
 $blue-dark-hsl: hsla(221, 83%, 53%, 1);
-$blue-light-hsl: hsla(221, 93%, 68%, 1);
+$blue-light-hsl: hsla(221, 96%, 73%, 1);
 
 // SCSS RGB
 $neumorphic-bg-rgb: rgba(229, 231, 235, 0.97);
 $neumorphic-surface-rgb: rgba(236, 239, 244, 0.97);
 $blue-primary-rgb: rgba(59, 130, 246, 0.97);
 $blue-dark-rgb: rgba(37, 99, 235, 0.97);
-$blue-light-rgb: rgba(96, 165, 250, 0.97);
+$blue-light-rgb: rgba(128, 185, 255, 0.97);
 
-// Map existing theme tokens to the new palette (preserve variable names used across the app)
+// Map existing theme tokens to the new paleztte (preserve variable names used across the app)
 $primary: $blue-primary;
 $primary-dark: $blue-dark;
 $primary-light: $blue-light;
@@ -44,7 +44,11 @@ $secondary-dark: #4f46e5;
 $secondary-light: #818cf8;
 
 // Gradients using the provided palette
-$gradient-primary: linear-gradient(135deg, $blue-primary, $blue-dark);
+$gradient-primary: linear-gradient(
+  135deg,
+  $blue-light,
+  transparentize($blue-dark, 0.1)
+);
 $gradient-primary-vertical: linear-gradient(180deg, $blue-primary, $blue-dark);
 $gradient-primary-dark: linear-gradient(135deg, $blue-dark, $primary-dark);
 

@@ -21,6 +21,7 @@
 
     <!-- Global Search Component -->
     <app-global-search></app-global-search>
+
     <button class="user-swap" (click)="switchUser()">
       <i class="fa-solid fa-people-arrows"></i>
     </button>
@@ -88,20 +89,18 @@
 
         <div class="dropdown-divider"></div>
 
-        <button
-          class="dropdown-item"
-          (click)="manageRegister()"
-          *ngIf="
-            currentUser?.role === 'cashier' ||
-            currentUser?.role === 'manager' ||
-            currentUser?.role === 'admin'
-          "
-        >
-          <i class="fas fa-cash-register"></i>
-          <span>{{
-            (currentRegister ? "REGISTER.CLOSE" : "REGISTER.OPEN") | translate
-          }}</span>
-        </button>
+        @if (
+          currentUser?.role === "cashier" ||
+          currentUser?.role === "manager" ||
+          currentUser?.role === "admin"
+        ) {
+          <button class="dropdown-item" (click)="manageRegister()">
+            <i class="fas fa-cash-register"></i>
+            <span>{{
+              (currentRegister ? "REGISTER.CLOSE" : "REGISTER.OPEN") | translate
+            }}</span>
+          </button>
+        }
         <button
           class="dropdown-item"
           (click)="openWithdrawModal()"
@@ -126,15 +125,16 @@
   <!-- Left Sidebar Navigation -->
   <aside class="sidebar" [class.mobile-open]="mobileSidebarOpen">
     <nav class="sidebar-nav">
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/dashboard"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-chart-line"></i>
-        <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
-      </button>
+      @if (isAdminOrManager) {
+        <button
+          class="sidebar-btn"
+          routerLink="/dashboard"
+          routerLinkActive="active"
+        >
+          <i class="fas fa-chart-line"></i>
+          <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
+        </button>
+      }
       <button class="sidebar-btn" routerLink="/pos" routerLinkActive="active">
         <i class="fas fa-cash-register"></i>
         <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>

@@ -12,7 +12,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router, NavigationEnd } from "@angular/router";
-import { filter, Observable, Subscription } from "rxjs";
+import { filter, Subscription } from "rxjs";
 import { SaleService } from "../../services/sale.service";
 import { CartService } from "../../services/cart.service";
 import { AuthService } from "../../services/auth.service";
@@ -22,7 +22,6 @@ import { ScaleService, ScaleReading } from "../../services/scale.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { RegisterService } from "../../services/register.service";
 import { Register } from "../../models";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import {
   CalculatorComponent,
   CalculatorAddEvent,

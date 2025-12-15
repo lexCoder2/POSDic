@@ -785,7 +785,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: $z-modal;
   animation: fadeIn 0.2s ease-out;
   backdrop-filter: blur(4px);
   @keyframes fadeIn {
@@ -842,29 +842,28 @@
           font-size: 1.75rem;
         }
       }
-
-      .close-btn {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        border: none;
-        background: #fed7d7;
-        color: #c53030;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        transition: all 0.12s;
-        flex-shrink: 0;
-
-        &:hover {
-          background: #feb2b2;
-          transform: scale(1.05);
-        }
-      }
     }
 
+    .close-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: #fed7d7;
+      color: #c53030;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.12s;
+      flex-shrink: 0;
+
+      &:hover {
+        background: #feb2b2;
+        transform: scale(1.05);
+      }
+    }
     .modal-body {
       padding: 2rem;
       background: $neumorphic-surface;
@@ -1082,12 +1081,18 @@
 .loose-product-modal {
   max-width: 600px !important;
   width: 95% !important;
-
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: -0.5rem;
+    right: $spacing-sm;
+    font-size: 0.85rem;
+  }
   .scale-connection {
     background: $gradient-primary;
     border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: $spacing-sm;
+    margin-bottom: $spacing-md;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1375,14 +1380,14 @@
 @media (max-width: 576px) {
   .cashier-container {
     /* leave space for the fixed bars */
-    padding-bottom: 140px;
+    padding-bottom: 90px;
 
     .total-section {
       position: fixed;
       left: 8px;
       right: 8px;
       bottom: 68px; /* above the payment bar */
-      z-index: 2500;
+      z-index: $z-modal;
       border-radius: 12px;
       padding: 0.5rem 0.75rem;
       box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
@@ -1412,7 +1417,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 2600;
+      z-index: $z-popover;
       margin: 0;
       border-radius: 0;
       padding: 0.5rem;

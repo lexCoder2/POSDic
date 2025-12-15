@@ -11,7 +11,13 @@
       [placeholder]="'GLOBAL.SEARCH_PLACEHOLDER' | translate"
     />
     @if (searchQuery) {
-      <i class="fas fa-times clear-icon" (click)="searchQuery = ''"></i>
+      <i
+        class="fas fa-times clear-icon"
+        (click)="searchQuery = ''"
+        tabindex="0"
+        role="button"
+        (keydown.enter)="searchQuery = ''"
+      ></i>
     }
   </div>
 </div>
