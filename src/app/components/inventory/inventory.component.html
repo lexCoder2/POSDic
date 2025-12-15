@@ -250,42 +250,63 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="product-brand">{{
-            "INVENTORY.FORM.BRAND_LABEL" | translate
-          }}</label>
-          <input
-            type="text"
-            id="product-brand"
-            [(ngModel)]="productForm.brand"
-            name="brand"
-            placeholder="{{ 'INVENTORY.FORM.BRAND_PLACEHOLDER' | translate }}"
-          />
+          <mat-form-field appearance="outline" class="mat-autocomplete-field">
+            <mat-label>{{
+              "INVENTORY.FORM.BRAND_LABEL" | translate
+            }}</mat-label>
+            <input
+              type="text"
+              matInput
+              [(ngModel)]="productForm.brand"
+              name="brand"
+              [placeholder]="'INVENTORY.FORM.BRAND_PLACEHOLDER' | translate"
+              [matAutocomplete]="brandAuto"
+              (input)="filterBrands(productForm.brand || '')"
+            />
+            <mat-autocomplete #brandAuto="matAutocomplete">
+              <mat-option
+                *ngFor="let brand of filteredBrands()"
+                [value]="brand"
+              >
+                {{ brand }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
         <div class="form-group">
-          <label for="product-category">{{
-            "INVENTORY.FORM.CATEGORY_LABEL" | translate
-          }}</label>
-          <select
-            id="product-category"
-            [(ngModel)]="productForm.category"
-            name="category"
-            required
-          >
-            <option value="">
-              {{ "INVENTORY.FORM.CATEGORY_PLACEHOLDER" | translate }}
-            </option>
-            <option *ngFor="let cat of categories" [value]="cat.name">
-              {{ cat.name }}
-            </option>
-          </select>
+          <mat-form-field appearance="outline" class="mat-autocomplete-field">
+            <mat-label>{{
+              "INVENTORY.FORM.CATEGORY_LABEL" | translate
+            }}</mat-label>
+            <input
+              type="text"
+              matInput
+              [(ngModel)]="productForm.category"
+              name="category"
+              required
+              [placeholder]="'INVENTORY.FORM.CATEGORY_PLACEHOLDER' | translate"
+              [matAutocomplete]="categoryAuto"
+              (input)="filterCategories(productForm.category || '')"
+            />
+            <mat-autocomplete #categoryAuto="matAutocomplete">
+              <mat-option
+                *ngFor="let cat of filteredCategories()"
+                [value]="cat.name"
+              >
+                {{ cat.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label for="product-price">{{
-            "INVENTORY.FORM.PRICE_LABEL" | translate
-          }}</label>
+          <label for="product-price">
+            {{ "INVENTORY.FORM.PRICE_LABEL" | translate }} ({{
+              currencySymbol()
+            }})
+          </label>
           <input
             type="number"
             id="product-price"
@@ -298,9 +319,11 @@
           />
         </div>
         <div class="form-group">
-          <label for="product-cost">{{
-            "INVENTORY.FORM.COST_LABEL" | translate
-          }}</label>
+          <label for="product-cost">
+            {{ "INVENTORY.FORM.COST_LABEL" | translate }} ({{
+              currencySymbol()
+            }})
+          </label>
           <input
             type="number"
             id="product-cost"
@@ -363,16 +386,51 @@
       </div>
 
       <div class="form-group">
-        <label for="product-image">{{
-          "INVENTORY.FORM.IMAGE_LABEL" | translate
-        }}</label>
-        <input
-          type="text"
-          id="product-image"
-          [(ngModel)]="productForm.image_url"
-          name="image"
-          placeholder="{{ 'INVENTORY.FORM.IMAGE_PLACEHOLDER' | translate }}"
-        />
+        <label>{{ "INVENTORY.FORM.IMAGE_LABEL" | translate }}</label>
+        <div
+          class="image-upload-area"
+          (drop)="onImageDrop($event)"
+          (dragover)="onDragOver($event)"
+          [class.has-image]="imagePreview || productForm.image_url"
+        >
+          <div
+            *ngIf="!imagePreview && !productForm.image_url"
+            class="upload-placeholder"
+          >
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Drag and drop an image here or</p>
+            <label for="image-file-input" class="upload-button">
+              <i class="fas fa-folder-open"></i> Browse Files
+            </label>
+            <input
+              type="file"
+              id="image-file-input"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              style="display: none"
+            />
+          </div>
+          <div
+            *ngIf="imagePreview || productForm.image_url"
+            class="image-preview"
+          >
+            <img
+              [src]="imagePreview || productForm.image_url"
+              alt="Product image"
+            />
+            <button
+              type="button"
+              class="remove-image-btn"
+              (click)="removeImage()"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div *ngIf="uploadingImage" class="uploading-overlay">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Uploading...</p>
+          </div>
+        </div>
       </div>
 
       <div class="form-actions">

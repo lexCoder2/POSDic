@@ -12,12 +12,16 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatInputModule } from "@angular/material/input";
 import { Subject, takeUntil, skip, debounceTime } from "rxjs";
 import { ProductService } from "../../services/product.service";
 import { CategoryService } from "../../services/category.service";
 import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
 import { SearchStateService } from "../../services/search-state.service";
+import { CurrencyService } from "../../services/currency.service";
 import { Product, Category, User } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
@@ -36,6 +40,9 @@ import { ModalComponent } from "../modal/modal.component";
     PageTitleComponent,
     TranslatePipe,
     ToggleSwitchComponent,
+    MatFormFieldModule,
+    MatAutocompleteModule,
+    MatInputModule,
   ],
   templateUrl: "./inventory.component.html",
   styleUrls: ["./inventory.component.scss"],
@@ -48,6 +55,10 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
   private translation = inject(TranslationService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+  private currencyService = inject(CurrencyService);
+
+  // Currency symbol from settings
+  currencySymbol = this.currencyService.getCurrencySymbol();
 
   @ViewChild("barcodeInput") barcodeInput!: ElementRef<HTMLInputElement>;
 
@@ -76,6 +87,13 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
   showCategoryModal = false;
   isEditingCategory = false;
 
+  // Brand list for autocomplete
+  allBrands = signal<string[]>([]);
+  filteredBrands = signal<string[]>([]);
+
+  // Category filtering
+  filteredCategories = signal<Category[]>([]);
+
   // Bulk import
   showImportModal = false;
   importProgress = 0;
@@ -92,12 +110,17 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     category: "",
     price: 0,
     cost: 0,
-    stock: 0,
+    stock: 999,
     minStock: 0,
     active: true,
     requiresScale: false,
     image_url: "",
   };
+
+  // Image upload
+  selectedImageFile: File | null = null;
+  uploadingImage = false;
+  imagePreview: string | null = null;
 
   // Category form
   categoryForm: Partial<Category> = {
@@ -116,6 +139,7 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.currentUser = this.authService.getCurrentUser();
     this.loadProducts();
     this.loadCategories();
+    this.loadBrands();
 
     // Subscribe to product edit requests from barcode scan
     this.searchStateService.productForEdit$
@@ -216,13 +240,21 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resetProductForm();
   }
 
-  saveProduct(): void {
+  async saveProduct(): Promise<void> {
     if (!this.productForm.name || !this.productForm.price) {
       this.toastService.show(
         this.translation.translate("INVENTORY.ALERTS.FILL_REQUIRED"),
         "info"
       );
       return;
+    }
+
+    // Upload image if one is selected
+    if (this.selectedImageFile) {
+      const imageUrl = await this.uploadImage();
+      if (imageUrl) {
+        this.productForm.image_url = imageUrl;
+      }
     }
 
     if (this.isEditingProduct && this.selectedProduct) {
@@ -334,12 +366,90 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
       category: "",
       price: 0,
       cost: 0,
-      stock: 0,
+      stock: 999,
       minStock: 0,
       active: true,
       requiresScale: false,
       image_url: "",
     };
+    this.selectedImageFile = null;
+    this.imagePreview = null;
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedImageFile = input.files[0];
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedImageFile);
+    }
+  }
+
+  onImageDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith("image/")) {
+        this.selectedImageFile = file;
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(this.selectedImageFile);
+      }
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  removeImage(): void {
+    this.selectedImageFile = null;
+    this.imagePreview = null;
+    this.productForm.image_url = "";
+  }
+
+  async uploadImage(): Promise<string | null> {
+    if (!this.selectedImageFile) return null;
+
+    const formData = new FormData();
+    formData.append("image", this.selectedImageFile);
+
+    try {
+      this.uploadingImage = true;
+      const response = await fetch(
+        `${environment.apiUrl}/products/upload-image`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const data = await response.json();
+      return data.imageUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      this.toastService.show("Failed to upload image", "error");
+      return null;
+    } finally {
+      this.uploadingImage = false;
+    }
   }
 
   // ===== CATEGORIES =====
@@ -347,9 +457,44 @@ export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
     this.categoryService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.filteredCategories.set(categories);
       },
       error: (err) => console.error("Error loading categories:", err),
     });
+  }
+
+  loadBrands(): void {
+    // Extract unique brands from products
+    this.productService.getProducts({ pageSize: 10000 }).subscribe({
+      next: (response) => {
+        const brands = new Set<string>();
+        response.data.forEach((product: Product) => {
+          if (product.brand && product.brand.trim()) {
+            brands.add(product.brand.trim());
+          }
+        });
+        const sortedBrands = Array.from(brands).sort();
+        this.allBrands.set(sortedBrands);
+        this.filteredBrands.set(sortedBrands);
+      },
+      error: (err) => console.error("Error loading brands:", err),
+    });
+  }
+
+  filterBrands(value: string): void {
+    const filterValue = value.toLowerCase();
+    const filtered = this.allBrands().filter((brand) =>
+      brand.toLowerCase().includes(filterValue)
+    );
+    this.filteredBrands.set(filtered);
+  }
+
+  filterCategories(value: string): void {
+    const filterValue = value.toLowerCase();
+    const filtered = this.categories.filter((cat) =>
+      cat.name.toLowerCase().includes(filterValue)
+    );
+    this.filteredCategories.set(filtered);
   }
 
   openCategoryModal(category?: Category): void {
