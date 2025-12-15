@@ -98,7 +98,7 @@ export interface ReceiptConfig {
 /** Predefined paper sizes */
 export const PAPER_SIZES: Record<string, PaperConfig> = {
   "58mm": { widthMm: 58, widthPx: 420, dpi: 300, margin: 6 },
-  "80mm": { widthMm: 80, widthPx: 600, dpi: 300, margin: 8 },
+  "80mm": { widthMm: 80, widthPx: 576, dpi: 300, margin: 10 },
   A4: { widthMm: 210, widthPx: 2480, dpi: 300, margin: 40 },
 };
 
@@ -142,11 +142,17 @@ export const DEFAULT_RECEIPT_CONFIG: ReceiptConfig = {
 /** Default receipt configuration for 80mm thermal printer */
 export const DEFAULT_80MM_CONFIG: ReceiptConfig = {
   paper: PAPER_SIZES["80mm"],
-  font: { ...DEFAULT_FONT_CONFIG, baseSize: 10, headerSize: 12 },
+  font: {
+    ...DEFAULT_FONT_CONFIG,
+    baseSize: 13,
+    headerSize: 16,
+    titleSize: 12,
+    smallSize: 10,
+  },
   style: DEFAULT_STYLE_CONFIG,
-  barcode: DEFAULT_BARCODE_CONFIG,
+  barcode: { ...DEFAULT_BARCODE_CONFIG, scale: 1.5, height: 40 },
   plainTextMode: false,
-  charsPerLine: 42,
+  charsPerLine: 48,
 };
 
 // ============================================================================
@@ -569,10 +575,10 @@ export class ReceiptGeneratorService {
     const { paper, font, style } = config;
 
     // Scale down width for screen display - use realistic phone/tablet width
-    // 58mm paper ≈ 200px (realistic phone width for receipt)
-    // 80mm paper ≈ 280px (slightly wider for larger printer)
+    // 58mm paper ≈ 140px (realistic phone width for receipt)
+    // 80mm paper ≈ 200px (wider for larger printer)
     const displayWidth =
-      paper.widthMm === 58 ? 140 : paper.widthMm === 80 ? 170 : 160;
+      paper.widthMm === 58 ? 140 : paper.widthMm === 80 ? 200 : 160;
 
     return `
       * {
@@ -660,18 +666,18 @@ export class ReceiptGeneratorService {
       }
       
       .col-qty {
-        width: 18%;
+        width: ${paper.widthMm === 80 ? "15%" : "18%"};
         text-align: center;
       }
       
       .col-desc {
-        width: 50%;
+        width: ${paper.widthMm === 80 ? "55%" : "50%"};
         word-break: break-word;
         overflow-wrap: break-word;
       }
       
       .col-price {
-        width: 32%;
+        width: ${paper.widthMm === 80 ? "30%" : "32%"};
         text-align: right;
       }
       

@@ -63,6 +63,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   @ViewChild("switchQrInput") switchQrInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild("withdrawAmount") withdrawAmountRef!: ElementRef<HTMLInputElement>;
 
   currentUser: User | null = null;
   currentRegister: Register | null = null;
@@ -721,6 +722,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
   openWithdrawModal(): void {
     this.showUserDropdown = false;
     this.showWithdrawModal = true;
+    setTimeout(() => {
+      this.withdrawAmountRef?.nativeElement.focus();
+    }, 100);
   }
 
   processWithdraw(amount: string, reason: string): void {

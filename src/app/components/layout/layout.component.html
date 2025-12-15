@@ -679,17 +679,17 @@
         #withdrawAmount
         step="0.01"
         min="0.01"
-        class="form-control"
+        class="form-control withdraw-amount-input"
         [placeholder]="'WITHDRAW.AMOUNT_PLACEHOLDER' | translate"
       />
     </div>
 
-    <div class="form-group">
+    <div class="form-group withdraw-reason-group">
       <label for="withdrawReason">{{ "WITHDRAW.REASON" | translate }} *</label>
       <textarea
         id="withdrawReason"
         #withdrawReason
-        rows="3"
+        rows="2"
         class="form-control"
         [placeholder]="'WITHDRAW.REASON_PLACEHOLDER' | translate"
         required
