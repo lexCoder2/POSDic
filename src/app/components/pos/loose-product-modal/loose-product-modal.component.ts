@@ -32,8 +32,7 @@ export class LooseProductModalComponent implements OnChanges {
 
   @Input() show = false;
   @Input() scaleConnected = false;
-  @Input() currentWeight = 0;
-  @Input() currentWeightStable = false;
+  @Input() savedWeight = 0;
 
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<LooseProductData>();
@@ -41,23 +40,19 @@ export class LooseProductModalComponent implements OnChanges {
   weight = "";
   pricePerKg = "";
   description = "";
-  useScaleWeight = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["show"] && this.show) {
-      this.resetForm();
+      // Auto-populate weight from scale if available
+      if (this.scaleConnected && this.savedWeight > 0) {
+        this.weight = this.savedWeight.toFixed(3);
+      }
       this.focusWeightInput();
     }
 
-    // Update weight from scale if using scale
-    if (
-      this.useScaleWeight &&
-      this.scaleConnected &&
-      changes["currentWeight"]
-    ) {
-      if (this.currentWeightStable && this.currentWeight > 0) {
-        this.weight = this.currentWeight.toFixed(3);
-      }
+    // Update weight from saved scale reading when it changes
+    if (changes["savedWeight"] && this.savedWeight > 0 && this.show) {
+      this.weight = this.savedWeight.toFixed(3);
     }
   }
 
@@ -74,23 +69,11 @@ export class LooseProductModalComponent implements OnChanges {
     this.weight = "";
     this.pricePerKg = "";
     this.description = "";
-    this.useScaleWeight = false;
   }
 
   onClose(): void {
     this.resetForm();
     this.close.emit();
-  }
-
-  toggleUseScaleWeight(): void {
-    this.useScaleWeight = !this.useScaleWeight;
-    if (
-      this.useScaleWeight &&
-      this.scaleConnected &&
-      this.currentWeightStable
-    ) {
-      this.weight = this.currentWeight.toFixed(3);
-    }
   }
 
   get calculatedTotal(): number {

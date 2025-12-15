@@ -11,6 +11,7 @@ import { CurrencyService } from "../../services/currency.service";
 import { ToastService } from "../../services/toast.service";
 import { UserService } from "../../services/user.service";
 import { QzTrayService } from "../../services/qz-tray.service";
+import { ScaleService } from "../../services/scale.service";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 
 @Component({
@@ -35,6 +36,7 @@ export class SettingsComponent implements OnInit {
   private toastService = inject(ToastService);
   private userService = inject(UserService);
   private qzTrayService = inject(QzTrayService);
+  private scaleService = inject(ScaleService);
 
   printerMode: "plain" | "styled" = "plain";
   showPrintPreview = false;
@@ -51,6 +53,13 @@ export class SettingsComponent implements OnInit {
   currentUserName = "";
   currentUserRole = "";
   printingBadge = false;
+
+  // Scale connection properties
+  scaleConnected = false;
+  connectingScale = false;
+  currentWeight = 0;
+  currentWeightUnit = "kg";
+  currentWeightStable = false;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -87,6 +96,9 @@ export class SettingsComponent implements OnInit {
 
     // Generate QR code for current user
     this.generateQrCode();
+
+    // Check if scale is already connected
+    this.scaleConnected = this.scaleService.isConnected();
 
     // Load user preferences from database
     this.userService.getUserSettings().subscribe({
@@ -458,6 +470,69 @@ export class SettingsComponent implements OnInit {
     if (printWindow) {
       printWindow.document.write(htmlWithPrint);
       printWindow.document.close();
+    }
+  }
+
+  // Scale connection methods
+  async connectScale(): Promise<void> {
+    this.connectingScale = true;
+    try {
+      const connected = await this.scaleService.connectScale();
+      this.scaleConnected = connected;
+
+      if (connected) {
+        this.toastService.show(
+          this.translationService.translate("SETTINGS.SCALE.CONNECTED") ||
+            "Scale connected successfully",
+          "success"
+        );
+
+        // Subscribe to scale readings
+        this.scaleService.currentWeight$.subscribe((reading) => {
+          if (reading) {
+            this.currentWeight = reading.weight;
+            this.currentWeightUnit = reading.unit;
+            this.currentWeightStable = reading.stable;
+          }
+        });
+      } else {
+        this.toastService.show(
+          this.translationService.translate(
+            "SETTINGS.SCALE.CONNECTION_FAILED"
+          ) || "Failed to connect to scale",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error connecting to scale:", error);
+      this.toastService.show(
+        this.translationService.translate("SETTINGS.SCALE.CONNECTION_ERROR") ||
+          "Error connecting to scale",
+        "error"
+      );
+    } finally {
+      this.connectingScale = false;
+    }
+  }
+
+  async disconnectScale(): Promise<void> {
+    try {
+      await this.scaleService.disconnectScale();
+      this.scaleConnected = false;
+      this.currentWeight = 0;
+      this.toastService.show(
+        this.translationService.translate("SETTINGS.SCALE.DISCONNECTED") ||
+          "Scale disconnected",
+        "info"
+      );
+    } catch (error) {
+      console.error("Error disconnecting scale:", error);
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.SCALE.DISCONNECTION_ERROR"
+        ) || "Error disconnecting scale",
+        "error"
+      );
     }
   }
 }

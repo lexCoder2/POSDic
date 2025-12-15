@@ -36,6 +36,9 @@ export class ScaleService {
   private currentWeight = new BehaviorSubject<ScaleReading | null>(null);
   public currentWeight$ = this.currentWeight.asObservable();
 
+  private savedWeight = new BehaviorSubject<ScaleReading | null>(null);
+  public savedWeight$ = this.savedWeight.asObservable();
+
   private port: SerialPort | null = null;
   private reader: ReadableStreamDefaultReader<string> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
@@ -193,11 +196,23 @@ export class ScaleService {
         return;
       }
 
-      this.currentWeight.next({
+      const reading: ScaleReading = {
         weight,
         unit,
         stable,
-      });
+      };
+
+      this.currentWeight.next(reading);
+
+      // Save weight state if weight > 0 and stable
+      if (weight > 0 && stable) {
+        this.savedWeight.next(reading);
+      }
+
+      // Clear saved weight if weight is 0
+      if (weight === 0) {
+        this.savedWeight.next(null);
+      }
     } catch (error) {
       console.error("Error parsing weight data:", error, "Data:", data);
     }
@@ -222,6 +237,7 @@ export class ScaleService {
     }
 
     this.currentWeight.next(null);
+    this.savedWeight.next(null);
   }
 
   isConnected(): boolean {
@@ -232,12 +248,26 @@ export class ScaleService {
     return this.currentWeight.value;
   }
 
+  getSavedWeight(): ScaleReading | null {
+    return this.savedWeight.value;
+  }
+
+  clearSavedWeight(): void {
+    this.savedWeight.next(null);
+  }
+
   // Mock method for testing without physical scale
   mockWeightReading(weight: number, unit = "kg"): void {
-    this.currentWeight.next({
+    const reading: ScaleReading = {
       weight,
       unit,
       stable: true,
-    });
+    };
+    this.currentWeight.next(reading);
+    if (weight > 0) {
+      this.savedWeight.next(reading);
+    } else {
+      this.savedWeight.next(null);
+    }
   }
 }

@@ -312,7 +312,7 @@
           <button class="close-btn" (click)="cancelLooseProduct()">
             <i class="fas fa-times"></i>
           </button>
-          <!-- Scale Connection Section -->
+          <!-- Scale Connection Indicator -->
           <div class="scale-connection">
             <div class="scale-status">
               <i
@@ -329,10 +329,10 @@
               </span>
             </div>
             @if (!scaleConnected()) {
-              <button class="scale-btn" (click)="connectToScale()">
-                <i class="fas fa-plug"></i>
-                {{ "CASHIER.SCALE.CONNECT" | translate }}
-              </button>
+              <p class="scale-hint">
+                <i class="fas fa-info-circle"></i>
+                {{ "CASHIER.SCALE.CONNECT_IN_SETTINGS" | translate }}
+              </p>
             }
           </div>
 

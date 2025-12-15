@@ -159,11 +159,12 @@ export class CashierComponent implements OnInit, AfterViewInit {
   constructor(...args: unknown[]);
 
   constructor() {
-    // Subscribe to scale readings
+    // Subscribe to saved scale weight
     effect(() => {
-      this.scaleService.currentWeight$.subscribe((reading) => {
+      this.scaleService.savedWeight$.subscribe((reading) => {
         this.currentScaleReading.set(reading);
-        if (this.useScaleWeight() && reading && reading.stable) {
+        // Auto-populate weight when saved weight is available
+        if (reading && reading.weight > 0) {
           this.looseProductWeight.set(reading.weight.toFixed(3));
         }
       });
@@ -719,30 +720,9 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.useScaleWeight.set(false);
   }
 
-  async connectToScale(): Promise<void> {
-    const connected = await this.scaleService.connectScale();
-    this.scaleConnected.set(connected);
-    if (connected) {
-      this.useScaleWeight.set(true);
-      this.toastService.show("Scale connected successfully!", "success");
-    } else {
-      this.toastService.show(
-        "Failed to connect to scale. Make sure the scale is connected via USB.",
-        "error"
-      );
-    }
-  }
-
-  async disconnectScale(): Promise<void> {
-    await this.scaleService.disconnectScale();
-    this.scaleConnected.set(false);
-    this.useScaleWeight.set(false);
-    this.currentScaleReading.set(null);
-  }
-
   toggleUseScaleWeight(): void {
     if (!this.scaleConnected()) {
-      this.toastService.show("Please connect to a scale first.", "info");
+      this.toastService.show("Connect scale from Settings first.", "info");
       return;
     }
     this.useScaleWeight.update((v) => !v);
@@ -969,14 +949,19 @@ export class CashierComponent implements OnInit, AfterViewInit {
 
         this.toastService.show(message, "success");
 
-        // Generate and print receipt using the saved template
-        const mode = localStorage.getItem("printer.mode") || "plain";
-        const isPlainText = mode !== "styled";
-        this.receiptGeneratorService
-          .printSaleReceipt(createdSale, { plainText: isPlainText })
-          .catch((err) => {
-            console.error("Error printing receipt:", err);
-          });
+        // Generate and print receipt using the saved template (if enabled)
+        const register = this.currentRegister();
+        const shouldPrint = register?.printReceiptsEnabled !== false;
+
+        if (shouldPrint) {
+          const mode = localStorage.getItem("printer.mode") || "plain";
+          const isPlainText = mode !== "styled";
+          this.receiptGeneratorService
+            .printSaleReceipt(createdSale, { plainText: isPlainText })
+            .catch((err) => {
+              console.error("Error printing receipt:", err);
+            });
+        }
 
         // Mark cart as completed after successful sale
         if (this.activeCartId()) {

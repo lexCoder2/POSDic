@@ -287,6 +287,21 @@
       "SCAN_TO_LOGIN": "Scan this code to login",
       "ERROR": "Unable to generate badge"
     },
+    "SCALE": {
+      "TITLE": "Digital Scale",
+      "DESCRIPTION": "Connect to a digital scale for weighing products. Connect the scale here once, and it will be available in POS and Cashier views.",
+      "CONNECT": "Connect Scale",
+      "DISCONNECT": "Disconnect Scale",
+      "STATUS_CONNECTED": "Scale Connected",
+      "STATUS_DISCONNECTED": "Scale Disconnected",
+      "CONNECTED": "Scale connected successfully",
+      "DISCONNECTED": "Scale disconnected",
+      "CONNECTION_FAILED": "Failed to connect to scale",
+      "CONNECTION_ERROR": "Error connecting to scale",
+      "DISCONNECTION_ERROR": "Error disconnecting scale",
+      "STABLE": "Stable",
+      "STABILIZING": "Stabilizing..."
+    },
     "SAVED": "Settings saved",
     "SAVE_FAILED": "Failed to save settings"
   },
@@ -627,6 +642,7 @@
       "NOT_CONNECTED": "Not Connected",
       "CONNECT": "Connect Scale",
       "DISCONNECT": "Disconnect",
+      "CONNECT_IN_SETTINGS": "Connect scale from Settings to use weight detection",
       "USE_SCALE_LABEL": "Use scale weight automatically",
       "WEIGHT_AUTOMATIC": "Weight is automatically updated from scale"
     },
@@ -737,12 +753,22 @@
       "COMPLETE_SALE": "Complete Sale"
     },
     "MOBILE_QUICK_ACCESS": "Quick Access",
+    "SCALE": {
+      "CONNECTED": "Scale Connected",
+      "DISCONNECTED": "Scale Disconnected",
+      "CONNECT_IN_SETTINGS": "Connect scale from Settings to use weight detection",
+      "STABLE": "Stable",
+      "STABILIZING": "Stabilizing...",
+      "USING_SCALE": "Using Scale",
+      "USE_SCALE": "Use Scale"
+    },
     "WEIGHT_MODAL": {
       "TITLE": "Capture Weight",
       "SCALE_CONNECTED": "Scale Connected",
       "SCALE_DISCONNECTED": "Scale Disconnected",
       "STABILIZING": "Stabilizing...",
       "MANUAL_WEIGHT": "Manual Weight",
+      "WEIGHT": "Weight",
       "INFO": "Enter weight manually or use the connected scale reading",
       "CONFIRM": "Add to Cart"
     },

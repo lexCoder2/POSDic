@@ -127,9 +127,8 @@ export class PosComponent implements OnInit, OnDestroy {
 
   // Scale
   scaleConnected = false;
-  currentWeight = 0;
-  currentWeightUnit = "kg";
-  currentWeightStable = false;
+  savedWeight = 0;
+  savedWeightUnit = "kg";
 
   // Weight Modal
   showWeightModal = false;
@@ -238,15 +237,20 @@ export class PosComponent implements OnInit, OnDestroy {
         this.salesTabs[this.activeSaleTabIndex].items = [...items];
       });
 
-    this.scaleService.currentWeight$
+    // Subscribe to saved weight from scale
+    this.scaleService.savedWeight$
       .pipe(takeUntil(this.destroy$))
       .subscribe((reading) => {
         if (reading) {
-          this.currentWeight = reading.weight;
-          this.currentWeightUnit = reading.unit;
-          this.currentWeightStable = reading.stable;
+          this.savedWeight = reading.weight;
+          this.savedWeightUnit = reading.unit;
+        } else {
+          this.savedWeight = 0;
         }
       });
+
+    // Check if scale is connected
+    this.scaleConnected = this.scaleService.isConnected();
 
     // Subscribe to register state
     this.registerService.currentRegister$
@@ -476,18 +480,6 @@ export class PosComponent implements OnInit, OnDestroy {
       }, 80);
     } catch (e) {
       // ignore audio errors
-    }
-  }
-
-  async connectScale(): Promise<void> {
-    const connected = await this.scaleService.connectScale();
-    this.scaleConnected = connected;
-
-    if (!connected) {
-      this.toastService.show(
-        "Failed to connect to scale. Make sure it is connected and try again.",
-        "error"
-      );
     }
   }
 

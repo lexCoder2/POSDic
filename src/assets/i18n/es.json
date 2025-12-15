@@ -231,6 +231,21 @@
       "SCAN_TO_LOGIN": "Escanea este código para iniciar sesión",
       "ERROR": "No se pudo generar la credencial"
     },
+    "SCALE": {
+      "TITLE": "Báscula Digital",
+      "DESCRIPTION": "Conecte una báscula digital para pesar productos. Conéctela aquí una vez y estará disponible en las vistas de POS y Caja.",
+      "CONNECT": "Conectar Báscula",
+      "DISCONNECT": "Desconectar Báscula",
+      "STATUS_CONNECTED": "Báscula Conectada",
+      "STATUS_DISCONNECTED": "Báscula Desconectada",
+      "CONNECTED": "Báscula conectada exitosamente",
+      "DISCONNECTED": "Báscula desconectada",
+      "CONNECTION_FAILED": "Error al conectar la báscula",
+      "CONNECTION_ERROR": "Error al conectar la báscula",
+      "DISCONNECTION_ERROR": "Error al desconectar la báscula",
+      "STABLE": "Estable",
+      "STABILIZING": "Estabilizando..."
+    },
     "SAVED": "Ajustes guardados",
     "SAVE_FAILED": "Error al guardar ajustes"
   },
@@ -597,6 +612,7 @@
       "NOT_CONNECTED": "No Conectado",
       "CONNECT": "Conectar Báscula",
       "DISCONNECT": "Desconectar",
+      "CONNECT_IN_SETTINGS": "Conecte la báscula desde Configuración para usar detección de peso",
       "USE_SCALE_LABEL": "Usar peso de báscula automáticamente",
       "WEIGHT_AUTOMATIC": "El peso se actualiza automáticamente desde la báscula"
     },
@@ -707,12 +723,22 @@
       "COMPLETE_SALE": "Completar Venta"
     },
     "MOBILE_QUICK_ACCESS": "Acceso Rápido",
+    "SCALE": {
+      "CONNECTED": "Báscula Conectada",
+      "DISCONNECTED": "Báscula Desconectada",
+      "CONNECT_IN_SETTINGS": "Conecte la báscula desde Configuración para usar detección de peso",
+      "STABLE": "Estable",
+      "STABILIZING": "Estabilizando...",
+      "USING_SCALE": "Usando Báscula",
+      "USE_SCALE": "Usar Báscula"
+    },
     "WEIGHT_MODAL": {
       "TITLE": "Capturar Peso",
       "SCALE_CONNECTED": "Báscula Conectada",
       "SCALE_DISCONNECTED": "Báscula Desconectada",
       "STABILIZING": "Estabilizando...",
       "MANUAL_WEIGHT": "Peso Manual",
+      "WEIGHT": "Peso",
       "INFO": "Ingrese el peso manualmente o use la lectura de la báscula conectada",
       "CONFIRM": "Agregar al Carrito"
     },

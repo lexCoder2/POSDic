@@ -6,7 +6,7 @@
     </div>
     <app-page-title [title]="pageTitle" [icon]="pageIcon">
       @if (pageActions) {
-        <ng-container *ngTemplateOutlet="pageActions"></ng-container>
+        <ng-container [ngTemplateOutlet]="pageActions"></ng-container>
       }
     </app-page-title>
     <!-- Mobile: sidebar toggle -->
@@ -47,200 +47,127 @@
       <i class="fas fa-user-circle user-avatar"></i>
 
       <!-- User Dropdown Menu -->
-      <div
-        class="user-dropdown"
-        *ngIf="showUserDropdown"
-        (click)="$event.stopPropagation()"
-      >
-        <div class="dropdown-header">
-          <div class="dropdown-user-name">
-            {{ currentUser?.firstName || ("GLOBAL.USER" | translate) }}
-            <span class="user-role">{{
-              currentUser?.role || ("GLOBAL.EMPLOYEE" | translate)
-            }}</span>
+      @if (showUserDropdown) {
+        <div class="user-dropdown" (click)="$event.stopPropagation()">
+          <div class="dropdown-header">
+            <div class="dropdown-user-name">
+              {{ currentUser?.firstName || ("GLOBAL.USER" | translate) }}
+              <span class="user-role">{{
+                currentUser?.role || ("GLOBAL.EMPLOYEE" | translate)
+              }}</span>
+            </div>
           </div>
-        </div>
-        <div class="dropdown-language">
-          <div class="language-label">
-            {{ "GLOBAL.LANGUAGE" | translate }}
+          <div class="dropdown-language">
+            <div class="language-label">
+              {{ "GLOBAL.LANGUAGE" | translate }}
+            </div>
+            <div class="language-options">
+              <button
+                class="dropdown-item lang-item"
+                [class.lang-active]="currentLang === 'en'"
+                (click)="setLanguage('en')"
+              >
+                <span class="lang-name">{{
+                  "GLOBAL.ENGLISH" | translate
+                }}</span>
+              </button>
+              <button
+                class="dropdown-item lang-item"
+                [class.lang-active]="currentLang === 'es'"
+                (click)="setLanguage('es')"
+              >
+                <span class="lang-name">{{
+                  "GLOBAL.SPANISH" | translate
+                }}</span>
+              </button>
+            </div>
           </div>
-          <div class="language-options">
-            <button
-              class="dropdown-item lang-item"
-              [class.lang-active]="currentLang === 'en'"
-              (click)="setLanguage('en')"
-            >
-              <span class="lang-name">{{ "GLOBAL.ENGLISH" | translate }}</span>
-            </button>
-            <button
-              class="dropdown-item lang-item"
-              [class.lang-active]="currentLang === 'es'"
-              (click)="setLanguage('es')"
-            >
-              <span class="lang-name">{{ "GLOBAL.SPANISH" | translate }}</span>
-            </button>
-          </div>
-        </div>
 
-        <!-- Theme Toggle -->
-        <div class="language-section">
-          <div class="language-label">
-            {{ "GLOBAL.THEME.LABEL" | translate }}
+          <!-- Theme Toggle -->
+          <div class="language-section">
+            <div class="language-label">
+              {{ "GLOBAL.THEME.LABEL" | translate }}
+            </div>
+            <button
+              class="dropdown-item theme-toggle-btn"
+              (click)="toggleTheme()"
+            >
+              <span class="theme-icon">{{ isDarkMode ? "🌙" : "☀️" }}</span>
+              <span class="theme-label">{{
+                (isDarkMode
+                  ? "GLOBAL.THEME.DARK_MODE"
+                  : "GLOBAL.THEME.LIGHT_MODE"
+                ) | translate
+              }}</span>
+            </button>
           </div>
-          <button
-            class="dropdown-item theme-toggle-btn"
-            (click)="toggleTheme()"
-          >
-            <span class="theme-icon">{{ isDarkMode ? "🌙" : "☀️" }}</span>
-            <span class="theme-label">{{
-              (isDarkMode
-                ? "GLOBAL.THEME.DARK_MODE"
-                : "GLOBAL.THEME.LIGHT_MODE"
-              ) | translate
-            }}</span>
+
+          <div class="dropdown-divider"></div>
+
+          @if (
+            currentUser?.role === "cashier" ||
+            currentUser?.role === "manager" ||
+            currentUser?.role === "admin"
+          ) {
+            <button class="dropdown-item" (click)="manageRegister()">
+              <i class="fas fa-cash-register"></i>
+              <span>{{
+                (currentRegister ? "REGISTER.CLOSE" : "REGISTER.OPEN")
+                  | translate
+              }}</span>
+            </button>
+          }
+          @if (currentUser?.role === "admin" && currentRegister) {
+            <button class="dropdown-item" (click)="openWithdrawModal()">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>{{ "GLOBAL.WITHDRAW_CASH" | translate }}</span>
+            </button>
+          }
+          <button class="dropdown-item" (click)="navigateToSettings()">
+            <i class="fas fa-cog"></i>
+            <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
+          </button>
+          <button class="dropdown-item logout-item" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>{{ "GLOBAL.LOGOUT" | translate }}</span>
           </button>
         </div>
-
-        <div class="dropdown-divider"></div>
-
-        @if (
-          currentUser?.role === "cashier" ||
-          currentUser?.role === "manager" ||
-          currentUser?.role === "admin"
-        ) {
-          <button class="dropdown-item" (click)="manageRegister()">
-            <i class="fas fa-cash-register"></i>
-            <span>{{
-              (currentRegister ? "REGISTER.CLOSE" : "REGISTER.OPEN") | translate
-            }}</span>
-          </button>
-        }
-        <button
-          class="dropdown-item"
-          (click)="openWithdrawModal()"
-          *ngIf="currentUser?.role === 'admin' && currentRegister"
-        >
-          <i class="fas fa-hand-holding-usd"></i>
-          <span>{{ "GLOBAL.WITHDRAW_CASH" | translate }}</span>
-        </button>
-        <button class="dropdown-item" (click)="navigateToSettings()">
-          <i class="fas fa-cog"></i>
-          <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
-        </button>
-        <button class="dropdown-item logout-item" (click)="logout()">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>{{ "GLOBAL.LOGOUT" | translate }}</span>
-        </button>
-      </div>
+      }
     </div>
   </div>
 </header>
 <div class="app-layout">
   <!-- Left Sidebar Navigation -->
-  <aside class="sidebar" [class.mobile-open]="mobileSidebarOpen">
-    <nav class="sidebar-nav">
-      @if (isAdminOrManager) {
-        <button
-          class="sidebar-btn"
-          routerLink="/dashboard"
-          routerLinkActive="active"
-        >
-          <i class="fas fa-chart-line"></i>
-          <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
-        </button>
-      }
-      <button class="sidebar-btn" routerLink="/pos" routerLinkActive="active">
-        <i class="fas fa-cash-register"></i>
-        <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>
-      </button>
-      <button
-        class="sidebar-btn"
-        routerLink="/cashier"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-calculator"></i>
-        <span>{{ "GLOBAL.SIDEBAR.QUICK_CASHIER" | translate }}</span>
-      </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/statistics"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-chart-bar"></i>
-        <span>{{ "GLOBAL.SIDEBAR.STATISTICS" | translate }}</span>
-      </button>
-      <button
-        class="sidebar-btn"
-        routerLink="/inventory"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-warehouse"></i>
-        <span>{{ "GLOBAL.SIDEBAR.INVENTORY" | translate }}</span>
-      </button>
-
-      <button
-        *ngIf="isAdmin"
-        class="sidebar-btn"
-        routerLink="/providers"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-truck"></i>
-        <span>{{ "GLOBAL.SIDEBAR.SUPPLIERS" | translate }}</span>
-      </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/sales"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-shopping-cart"></i>
-        <span>{{ "GLOBAL.SIDEBAR.SALES" | translate }}</span>
-      </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/registers"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-cash-register"></i>
-        <span>{{ "GLOBAL.SIDEBAR.REGISTERS" | translate }}</span>
-      </button>
-      <button
-        *ngIf="isAdminOrManager"
-        class="sidebar-btn"
-        routerLink="/users"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-users"></i>
-        <span>{{ "GLOBAL.SIDEBAR.USERS" | translate }}</span>
-      </button>
-      <!-- Templates moved into Settings -->
-    </nav>
-  </aside>
+  <app-sidebar
+    [mobileSidebarOpen]="mobileSidebarOpen"
+    [isAdminOrManager]="isAdminOrManager"
+    [isAdmin]="isAdmin"
+  ></app-sidebar>
 
   <!-- Main Content -->
   <div class="main-wrapper">
     <!-- Register Auto-Close Warning -->
-    <div
-      *ngIf="currentRegister && isRegisterApproachingAutoClose()"
-      class="auto-close-warning"
-      [class.critical]="isRegisterOverdue()"
-    >
-      <i class="fas fa-exclamation-triangle"></i>
-      <span *ngIf="!isRegisterOverdue()">
-        {{ "REGISTER.AUTO_CLOSE_WARNING" | translate }} ({{
-          getRegisterDurationHours() | number: "1.1-1"
-        }}
-        {{ "REGISTER.HOURS" | translate }})
-      </span>
-      <span *ngIf="isRegisterOverdue()">
-        {{ "REGISTER.AUTO_CLOSE_CRITICAL" | translate }}
-      </span>
-      <button class="btn-small" (click)="manageRegister()">
-        {{ "REGISTER.CLOSE_NOW" | translate }}
-      </button>
-    </div>
+    @if (currentRegister && isRegisterApproachingAutoClose()) {
+      <div class="auto-close-warning" [class.critical]="isRegisterOverdue()">
+        <i class="fas fa-exclamation-triangle"></i>
+        @if (!isRegisterOverdue()) {
+          <span>
+            {{ "REGISTER.AUTO_CLOSE_WARNING" | translate }} ({{
+              getRegisterDurationHours() | number: "1.1-1"
+            }}
+            {{ "REGISTER.HOURS" | translate }})
+          </span>
+        }
+        @if (isRegisterOverdue()) {
+          <span>
+            {{ "REGISTER.AUTO_CLOSE_CRITICAL" | translate }}
+          </span>
+        }
+        <button class="btn-small" (click)="manageRegister()">
+          {{ "REGISTER.CLOSE_NOW" | translate }}
+        </button>
+      </div>
+    }
 
     <!-- App-wide toast outlet -->
     <app-toast></app-toast>
@@ -265,266 +192,301 @@
   size="md"
   (close)="showRegisterModal = false"
 >
-  <div *ngIf="!currentRegister" class="register-form">
-    <h4>{{ "REGISTER.SELECT_REGISTER" | translate }}</h4>
+  @if (!currentRegister) {
+    <div class="register-form">
+      <h4>{{ "REGISTER.SELECT_REGISTER" | translate }}</h4>
 
-    <!-- Device Info Badge -->
-    <div class="device-info-badge" *ngIf="deviceName">
-      <i class="fas fa-desktop"></i>
-      <span>{{ deviceName }}</span>
-    </div>
-
-    <!-- Device Bound Register Alert -->
-    <div class="device-bound-alert" *ngIf="deviceBoundRegister">
-      <i class="fas fa-link"></i>
-      <span
-        >{{ "REGISTER.DEVICE_BOUND_TO" | translate }}:
-        <strong>{{ deviceBoundRegister }}</strong></span
-      >
-    </div>
-
-    <!-- Loading state -->
-    <div *ngIf="loadingRegisters" class="loading-registers">
-      <i class="fas fa-spinner fa-spin"></i>
-      {{ "GLOBAL.LOADING" | translate }}
-    </div>
-
-    <!-- Available Registers List -->
-    <div *ngIf="!loadingRegisters" class="register-list">
-      <div
-        *ngFor="let reg of availableRegisters"
-        class="register-item"
-        [class.selected]="selectedRegisterNumber === reg.registerNumber"
-        [class.device-bound]="reg.deviceId === deviceId"
-        [class.other-device]="
-          reg.deviceId && reg.deviceId !== deviceId && !canManageOtherRegisters
-        "
-        (click)="
-          selectRegister(
-            reg.registerNumber,
-            !!(reg.deviceId && reg.deviceId !== deviceId)
-          )
-        "
-      >
-        <div class="register-item-icon">
-          <i class="fas fa-cash-register"></i>
-          <i
-            class="fas fa-link device-link-icon"
-            *ngIf="reg.deviceId === deviceId"
-            title="{{ 'REGISTER.YOUR_DEVICE' | translate }}"
-          ></i>
-          <i
-            class="fas fa-lock device-lock-icon"
-            *ngIf="
-              reg.deviceId &&
-              reg.deviceId !== deviceId &&
-              !canManageOtherRegisters
-            "
-            title="{{ 'REGISTER.OTHER_DEVICE' | translate }}"
-          ></i>
+      <!-- Device Info Badge -->
+      @if (deviceName) {
+        <div class="device-info-badge">
+          <i class="fas fa-desktop"></i>
+          <span>{{ deviceName }}</span>
         </div>
-        <div class="register-item-info">
-          <span class="register-name">{{ reg.registerNumber }}</span>
-          <span class="device-name-tag" *ngIf="reg.deviceId === deviceId">
-            <i class="fas fa-desktop"></i>
-            {{ "REGISTER.YOUR_DEVICE" | translate }}
-          </span>
+      }
+
+      <!-- Device Bound Register Alert -->
+      @if (deviceBoundRegister) {
+        <div class="device-bound-alert">
+          <i class="fas fa-link"></i>
           <span
-            class="device-name-tag other"
-            *ngIf="reg.deviceId && reg.deviceId !== deviceId"
-          >
-            <i class="fas fa-desktop"></i>
-            {{ reg.deviceName || ("REGISTER.OTHER_DEVICE" | translate) }}
-          </span>
-          <span class="register-last-used" *ngIf="reg.lastClosedAt">
-            {{ "REGISTER.LAST_CLOSED" | translate }}:
-            {{ reg.lastClosedAt | date: "short" }}
-            <span *ngIf="reg.lastClosedBy"> - {{ reg.lastClosedBy }}</span>
-          </span>
-        </div>
-        <div
-          class="register-item-check"
-          *ngIf="selectedRegisterNumber === reg.registerNumber"
-        >
-          <i class="fas fa-check-circle"></i>
-        </div>
-      </div>
-
-      <!-- No registers message -->
-      <div
-        *ngIf="availableRegisters.length === 0 && !showNewRegisterInput"
-        class="no-registers"
-      >
-        <i class="fas fa-info-circle"></i>
-        {{ "REGISTER.NO_REGISTERS" | translate }}
-      </div>
-
-      <!-- Create new register option (only if no device-bound register or admin) -->
-      <div
-        class="register-item new-register"
-        [class.selected]="showNewRegisterInput"
-        [class.disabled]="deviceBoundRegister && !canManageOtherRegisters"
-        (click)="toggleNewRegister()"
-        *ngIf="canManageOtherRegisters || !deviceBoundRegister"
-      >
-        <div class="register-item-icon">
-          <i class="fas fa-plus"></i>
-        </div>
-        <div class="register-item-info">
-          <span class="register-name">{{
-            "REGISTER.CREATE_NEW" | translate
-          }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- New Register Input -->
-    <div *ngIf="showNewRegisterInput" class="form-group new-register-input">
-      <label>{{ "REGISTER.REGISTER_NUMBER" | translate }}</label>
-      <input
-        type="text"
-        [(ngModel)]="newRegisterNumber"
-        class="form-control"
-        [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
-      />
-    </div>
-
-    <!-- Opening Cash Input (always visible) -->
-    <div class="form-group">
-      <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
-      <input
-        type="number"
-        #openingCash
-        value="0"
-        step="0.01"
-        class="form-control"
-      />
-    </div>
-
-    <button
-      class="btn btn-primary"
-      (click)="
-        openRegister(
-          showNewRegisterInput ? newRegisterNumber : '',
-          openingCash.value
-        )
-      "
-      [disabled]="!selectedRegisterNumber && !showNewRegisterInput"
-    >
-      <i class="fas fa-check"></i> {{ "REGISTER.OPEN" | translate }}
-    </button>
-  </div>
-
-  <div *ngIf="currentRegister" class="register-form">
-    <h4>{{ "REGISTER.MODAL_TITLE_CLOSE" | translate }}</h4>
-    <div class="register-info">
-      <p>
-        <strong>{{ "REGISTER.OPENED_AT" | translate }}:</strong>
-        {{ currentRegister.openedAt | date: "short" }}
-      </p>
-      <p>
-        <strong>{{ "REGISTER.OPENING_AMOUNT" | translate }}:</strong>
-        {{ currentRegister.openingCash | appCurrency }}
-      </p>
-    </div>
-
-    <!-- Expected Cash Section -->
-    <div
-      class="expected-cash-section"
-      *ngIf="!loadingExpectedCash() && expectedCashData()"
-    >
-      <div class="expected-cash-header">
-        <i class="fas fa-calculator"></i>
-        <h5>{{ "REGISTER.EXPECTED_CLOSING" | translate }}</h5>
-      </div>
-      <div class="expected-cash-details">
-        <div class="cash-row">
-          <span class="label">{{ "REGISTER.OPENING_CASH" | translate }}:</span>
-          <span class="value">{{
-            expectedCashData()!.openingCash | appCurrency
-          }}</span>
-        </div>
-        <div class="cash-row">
-          <span class="label"
-            >{{ "REGISTER.CASH_SALES_TODAY" | translate }}:</span
-          >
-          <span class="value cash-sales"
-            >+{{ expectedCashData()!.totalCashSales | appCurrency }}</span
+            >{{ "REGISTER.DEVICE_BOUND_TO" | translate }}:
+            <strong>{{ deviceBoundRegister }}</strong></span
           >
         </div>
-        <div class="cash-row" *ngIf="expectedCashData()!.totalWithdrawals">
-          <span class="label">{{ "REGISTER.WITHDRAWALS" | translate }}:</span>
-          <span class="value withdrawals"
-            >-{{ expectedCashData()!.totalWithdrawals | appCurrency }}</span
-          >
-        </div>
-        <div class="cash-row total">
-          <span class="label"
-            ><strong>{{ "REGISTER.EXPECTED_CASH" | translate }}:</strong></span
-          >
-          <span class="value"
-            ><strong>{{
-              expectedCashData()!.expectedCash | appCurrency
-            }}</strong></span
-          >
-        </div>
-        <div class="sales-summary">
-          <span
-            ><i class="fas fa-receipt"></i>
-            {{ expectedCashData()!.totalTransactions }}
-            {{ "REGISTER.TRANSACTIONS" | translate }}</span
-          >
-          <span
-            ><i class="fas fa-dollar-sign"></i>
-            {{ expectedCashData()!.totalSales | appCurrency }}
-            {{ "REGISTER.TOTAL_SALES" | translate }}</span
-          >
-        </div>
-      </div>
-    </div>
+      }
 
-    <div *ngIf="loadingExpectedCash()" class="loading-expected-cash">
-      <i class="fas fa-spinner fa-spin"></i>
-      {{ "REGISTER.CALCULATING" | translate }}
-    </div>
+      <!-- Loading state -->
+      @if (loadingRegisters) {
+        <div class="loading-registers">
+          <i class="fas fa-spinner fa-spin"></i>
+          {{ "GLOBAL.LOADING" | translate }}
+        </div>
+      }
 
-    <div
-      *ngIf="currentUser?.role !== 'admin' && currentUser?.role !== 'manager'"
-      class="permission-notice"
-    >
-      <i class="fas fa-info-circle"></i>
-      <p>{{ "REGISTER.PERMISSION_NOTICE" | translate }}</p>
-    </div>
+      <!-- Available Registers List -->
+      @if (!loadingRegisters) {
+        <div class="register-list">
+          @for (reg of availableRegisters; track reg.registerNumber) {
+            <div
+              class="register-item"
+              [class.selected]="selectedRegisterNumber === reg.registerNumber"
+              [class.device-bound]="reg.deviceId === deviceId"
+              [class.other-device]="
+                reg.deviceId &&
+                reg.deviceId !== deviceId &&
+                !canManageOtherRegisters
+              "
+              (click)="
+                selectRegister(
+                  reg.registerNumber,
+                  !!(reg.deviceId && reg.deviceId !== deviceId)
+                )
+              "
+            >
+              <div class="register-item-icon">
+                <i class="fas fa-cash-register"></i>
+                @if (reg.deviceId === deviceId) {
+                  <i
+                    class="fas fa-link device-link-icon"
+                    title="{{ 'REGISTER.YOUR_DEVICE' | translate }}"
+                  ></i>
+                }
+                @if (
+                  reg.deviceId &&
+                  reg.deviceId !== deviceId &&
+                  !canManageOtherRegisters
+                ) {
+                  <i
+                    class="fas fa-lock device-lock-icon"
+                    title="{{ 'REGISTER.OTHER_DEVICE' | translate }}"
+                  ></i>
+                }
+              </div>
+              <div class="register-item-info">
+                <span class="register-name">{{ reg.registerNumber }}</span>
+                @if (reg.deviceId === deviceId) {
+                  <span class="device-name-tag">
+                    <i class="fas fa-desktop"></i>
+                    {{ "REGISTER.YOUR_DEVICE" | translate }}
+                  </span>
+                }
+                @if (reg.deviceId && reg.deviceId !== deviceId) {
+                  <span class="device-name-tag other">
+                    <i class="fas fa-desktop"></i>
+                    {{
+                      reg.deviceName || ("REGISTER.OTHER_DEVICE" | translate)
+                    }}
+                  </span>
+                }
+                @if (reg.lastClosedAt) {
+                  <span class="register-last-used">
+                    {{ "REGISTER.LAST_CLOSED" | translate }}:
+                    {{ reg.lastClosedAt | date: "short" }}
+                    @if (reg.lastClosedBy) {
+                      <span> - {{ reg.lastClosedBy }}</span>
+                    }
+                  </span>
+                }
+              </div>
+              @if (selectedRegisterNumber === reg.registerNumber) {
+                <div class="register-item-check">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+              }
+            </div>
+          }
 
-    <div
-      *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'manager'"
-    >
+          <!-- No registers message -->
+          @if (availableRegisters.length === 0 && !showNewRegisterInput) {
+            <div class="no-registers">
+              <i class="fas fa-info-circle"></i>
+              {{ "REGISTER.NO_REGISTERS" | translate }}
+            </div>
+          }
+
+          <!-- Create new register option (only if no device-bound register or admin) -->
+          @if (canManageOtherRegisters || !deviceBoundRegister) {
+            <div
+              class="register-item new-register"
+              [class.selected]="showNewRegisterInput"
+              [class.disabled]="deviceBoundRegister && !canManageOtherRegisters"
+              (click)="toggleNewRegister()"
+            >
+              <div class="register-item-icon">
+                <i class="fas fa-plus"></i>
+              </div>
+              <div class="register-item-info">
+                <span class="register-name">{{
+                  "REGISTER.CREATE_NEW" | translate
+                }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- New Register Input -->
+      @if (showNewRegisterInput) {
+        <div class="form-group new-register-input">
+          <label>{{ "REGISTER.REGISTER_NUMBER" | translate }}</label>
+          <input
+            type="text"
+            [(ngModel)]="newRegisterNumber"
+            class="form-control"
+            [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
+          />
+        </div>
+      }
+
+      <!-- Opening Cash Input (always visible) -->
       <div class="form-group">
-        <label>{{ "REGISTER.CLOSING_CASH" | translate }}</label>
+        <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
         <input
           type="number"
-          #closingCash
+          #openingCash
+          value="0"
           step="0.01"
           class="form-control"
-          [placeholder]="
-            expectedCashData()
-              ? (expectedCashData()!.expectedCash | appCurrency)
-              : '0.00'
-          "
         />
       </div>
-      <div class="form-group">
-        <label>{{ "REGISTER.NOTES" | translate }}</label>
-        <textarea #registerNotes rows="3" class="form-control"></textarea>
-      </div>
+
       <button
-        class="btn btn-danger"
-        (click)="closeRegister(closingCash.value, registerNotes.value)"
+        class="btn btn-primary"
+        (click)="
+          openRegister(
+            showNewRegisterInput ? newRegisterNumber : '',
+            openingCash.value
+          )
+        "
+        [disabled]="!selectedRegisterNumber && !showNewRegisterInput"
       >
-        <i class="fas fa-times"></i> {{ "REGISTER.CLOSE" | translate }}
+        <i class="fas fa-check"></i> {{ "REGISTER.OPEN" | translate }}
       </button>
     </div>
-  </div>
+  }
+
+  @if (currentRegister) {
+    <div class="register-form">
+      <h4>{{ "REGISTER.MODAL_TITLE_CLOSE" | translate }}</h4>
+      <div class="register-info">
+        <p>
+          <strong>{{ "REGISTER.OPENED_AT" | translate }}:</strong>
+          {{ currentRegister.openedAt | date: "short" }}
+        </p>
+        <p>
+          <strong>{{ "REGISTER.OPENING_AMOUNT" | translate }}:</strong>
+          {{ currentRegister.openingCash | appCurrency }}
+        </p>
+      </div>
+
+      <!-- Expected Cash Section -->
+      @if (!loadingExpectedCash() && expectedCashData()) {
+        <div class="expected-cash-section">
+          <div class="expected-cash-header">
+            <i class="fas fa-calculator"></i>
+            <h5>{{ "REGISTER.EXPECTED_CLOSING" | translate }}</h5>
+          </div>
+          <div class="expected-cash-details">
+            <div class="cash-row">
+              <span class="label"
+                >{{ "REGISTER.OPENING_CASH" | translate }}:</span
+              >
+              <span class="value">{{
+                expectedCashData()!.openingCash | appCurrency
+              }}</span>
+            </div>
+            <div class="cash-row">
+              <span class="label"
+                >{{ "REGISTER.CASH_SALES_TODAY" | translate }}:</span
+              >
+              <span class="value cash-sales"
+                >+{{ expectedCashData()!.totalCashSales | appCurrency }}</span
+              >
+            </div>
+            @if (expectedCashData()!.totalWithdrawals) {
+              <div class="cash-row">
+                <span class="label"
+                  >{{ "REGISTER.WITHDRAWALS" | translate }}:</span
+                >
+                <span class="value withdrawals"
+                  >-{{
+                    expectedCashData()!.totalWithdrawals | appCurrency
+                  }}</span
+                >
+              </div>
+            }
+            <div class="cash-row total">
+              <span class="label"
+                ><strong
+                  >{{ "REGISTER.EXPECTED_CASH" | translate }}:</strong
+                ></span
+              >
+              <span class="value"
+                ><strong>{{
+                  expectedCashData()!.expectedCash | appCurrency
+                }}</strong></span
+              >
+            </div>
+            <div class="sales-summary">
+              <span
+                ><i class="fas fa-receipt"></i>
+                {{ expectedCashData()!.totalTransactions }}
+                {{ "REGISTER.TRANSACTIONS" | translate }}</span
+              >
+              <span
+                ><i class="fas fa-dollar-sign"></i>
+                {{ expectedCashData()!.totalSales | appCurrency }}
+                {{ "REGISTER.TOTAL_SALES" | translate }}</span
+              >
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (loadingExpectedCash()) {
+        <div class="loading-expected-cash">
+          <i class="fas fa-spinner fa-spin"></i>
+          {{ "REGISTER.CALCULATING" | translate }}
+        </div>
+      }
+
+      @if (currentUser?.role !== "admin" && currentUser?.role !== "manager") {
+        <div class="permission-notice">
+          <i class="fas fa-info-circle"></i>
+          <p>{{ "REGISTER.PERMISSION_NOTICE" | translate }}</p>
+        </div>
+      }
+
+      @if (currentUser?.role === "admin" || currentUser?.role === "manager") {
+        <div>
+          <div class="form-group">
+            <label>{{ "REGISTER.CLOSING_CASH" | translate }}</label>
+            <input
+              type="number"
+              #closingCash
+              step="0.01"
+              class="form-control"
+              [placeholder]="
+                expectedCashData()
+                  ? (expectedCashData()!.expectedCash | appCurrency)
+                  : '0.00'
+              "
+            />
+          </div>
+          <div class="form-group">
+            <label>{{ "REGISTER.NOTES" | translate }}</label>
+            <textarea #registerNotes rows="3" class="form-control"></textarea>
+          </div>
+          <button
+            class="btn btn-danger"
+            (click)="closeRegister(closingCash.value, registerNotes.value)"
+          >
+            <i class="fas fa-times"></i> {{ "REGISTER.CLOSE" | translate }}
+          </button>
+        </div>
+      }
+    </div>
+  }
 </app-modal>
 
 <!-- Switch User Modal -->
@@ -558,123 +520,133 @@
       </button>
     </div>
 
-    <div *ngIf="switchError" class="error-message">
-      <i class="fas fa-exclamation-circle"></i>
-      {{ switchError }}
-    </div>
+    @if (switchError) {
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ switchError }}
+      </div>
+    }
 
     <!-- Scanner Login Mode (Default) -->
-    <div *ngIf="switchLoginMode === 'scanner'" class="scanner-login-section">
-      <p class="scanner-instructions">
-        {{ "LOGIN.SCANNER_INSTRUCTIONS" | translate }}
-      </p>
+    @if (switchLoginMode === "scanner") {
+      <div class="scanner-login-section">
+        <p class="scanner-instructions">
+          {{ "LOGIN.SCANNER_INSTRUCTIONS" | translate }}
+        </p>
 
-      <div class="scanner-input-wrapper">
-        <i class="fas fa-qrcode scanner-icon"></i>
-        <input
-          #switchQrInput
-          type="text"
-          class="scanner-input"
-          [(ngModel)]="switchQrInputValue"
-          (keydown.enter)="onSwitchQrInputEnter()"
-          [placeholder]="'LOGIN.SCANNER_PLACEHOLDER' | translate"
+        <div class="scanner-input-wrapper">
+          <i class="fas fa-qrcode scanner-icon"></i>
+          <input
+            #switchQrInput
+            type="text"
+            class="scanner-input"
+            [(ngModel)]="switchQrInputValue"
+            (keydown.enter)="onSwitchQrInputEnter()"
+            [placeholder]="'LOGIN.SCANNER_PLACEHOLDER' | translate"
+            [disabled]="switchQrLoading"
+          />
+        </div>
+
+        <p class="scanner-hint">
+          <i class="fas fa-info-circle"></i>
+          {{ "LOGIN.SCANNER_HINT" | translate }}
+        </p>
+
+        @if (switchQrLoading) {
+          <div class="scanner-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+          </div>
+        }
+
+        <!-- Camera option -->
+        <button
+          type="button"
+          class="btn-use-camera"
+          (click)="openSwitchCameraScanner()"
           [disabled]="switchQrLoading"
-        />
+        >
+          <i class="fas fa-camera"></i>
+          {{ "LOGIN.USE_CAMERA_INSTEAD" | translate }}
+        </button>
       </div>
-
-      <p class="scanner-hint">
-        <i class="fas fa-info-circle"></i>
-        {{ "LOGIN.SCANNER_HINT" | translate }}
-      </p>
-
-      <div *ngIf="switchQrLoading" class="scanner-loading">
-        <i class="fas fa-spinner fa-spin"></i>
-        {{ "LOGIN.QR_AUTHENTICATING" | translate }}
-      </div>
-
-      <!-- Camera option -->
-      <button
-        type="button"
-        class="btn-use-camera"
-        (click)="openSwitchCameraScanner()"
-        [disabled]="switchQrLoading"
-      >
-        <i class="fas fa-camera"></i>
-        {{ "LOGIN.USE_CAMERA_INSTEAD" | translate }}
-      </button>
-    </div>
+    }
 
     <!-- Password Login Mode -->
-    <div *ngIf="switchLoginMode === 'password'" class="password-login-section">
-      <p class="modal-description">
-        {{ "REGISTER.SWITCH_USER_DESC" | translate }}
-      </p>
-      <div class="form-group">
-        <label>{{ "REGISTER.USERNAME" | translate }}</label>
-        <input
-          type="text"
-          #switchUsername
-          class="form-control"
-          autocomplete="username"
-        />
-      </div>
-      <div class="form-group">
-        <label>{{ "REGISTER.PASSWORD" | translate }}</label>
-        <div class="password-input-wrapper">
+    @if (switchLoginMode === "password") {
+      <div class="password-login-section">
+        <p class="modal-description">
+          {{ "REGISTER.SWITCH_USER_DESC" | translate }}
+        </p>
+        <div class="form-group">
+          <label>{{ "REGISTER.USERNAME" | translate }}</label>
           <input
-            [type]="showSwitchPassword ? 'text' : 'password'"
-            #switchPassword
+            type="text"
+            #switchUsername
             class="form-control"
-            autocomplete="current-password"
+            autocomplete="username"
           />
-          <button
-            type="button"
-            class="password-toggle-btn"
-            (click)="toggleSwitchPasswordVisibility()"
-            [title]="showSwitchPassword ? 'Hide password' : 'Show password'"
-          >
-            <i
-              [class]="showSwitchPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
-            ></i>
-          </button>
         </div>
+        <div class="form-group">
+          <label>{{ "REGISTER.PASSWORD" | translate }}</label>
+          <div class="password-input-wrapper">
+            <input
+              [type]="showSwitchPassword ? 'text' : 'password'"
+              #switchPassword
+              class="form-control"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="toggleSwitchPasswordVisibility()"
+              [title]="showSwitchPassword ? 'Hide password' : 'Show password'"
+            >
+              <i
+                [class]="showSwitchPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+              ></i>
+            </button>
+          </div>
+        </div>
+        <button
+          class="btn btn-primary"
+          (click)="
+            performSwitchUser(switchUsername.value, switchPassword.value)
+          "
+        >
+          <i class="fas fa-exchange-alt"></i>
+          {{ "GLOBAL.SWITCH_USER" | translate }}
+        </button>
       </div>
-      <button
-        class="btn btn-primary"
-        (click)="performSwitchUser(switchUsername.value, switchPassword.value)"
-      >
-        <i class="fas fa-exchange-alt"></i>
-        {{ "GLOBAL.SWITCH_USER" | translate }}
-      </button>
-    </div>
+    }
   </div>
 </app-modal>
 
 <!-- Camera Scanner Modal for Switch User -->
-<div
-  class="qr-modal-overlay"
-  *ngIf="showSwitchCameraScanner"
-  (click)="closeSwitchCameraScanner()"
->
-  <div class="qr-modal-content" (click)="$event.stopPropagation()">
-    <div class="qr-modal-header">
-      <h3>{{ "LOGIN.CAMERA_SCAN_TITLE" | translate }}</h3>
-      <button class="btn-close" (click)="closeSwitchCameraScanner()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="qr-modal-body">
-      <p class="qr-instructions">
-        {{ "LOGIN.QR_CAMERA_INSTRUCTIONS" | translate }}
-      </p>
-      <div id="switch-qr-scanner" class="qr-scanner-container"></div>
-      <div *ngIf="switchQrLoading" class="qr-loading">
-        <i class="fas fa-spinner fa-spin"></i>
-        {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+@if (showSwitchCameraScanner) {
+  <div class="qr-modal-overlay" (click)="closeSwitchCameraScanner()">
+    <div class="qr-modal-content" (click)="$event.stopPropagation()">
+      <div class="qr-modal-header">
+        <h3>{{ "LOGIN.CAMERA_SCAN_TITLE" | translate }}</h3>
+        <button class="btn-close" (click)="closeSwitchCameraScanner()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="qr-modal-body">
+        <p class="qr-instructions">
+          {{ "LOGIN.QR_CAMERA_INSTRUCTIONS" | translate }}
+        </p>
+        <div id="switch-qr-scanner" class="qr-scanner-container"></div>
+        @if (switchQrLoading) {
+          <div class="qr-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+          </div>
+        }
       </div>
     </div>
   </div>
-</div>
+}
 
 <!-- Cash Withdraw Modal -->
 <app-modal
@@ -688,17 +660,18 @@
   <div class="withdraw-modal-content">
     <div class="withdraw-info">
       <p>{{ "WITHDRAW.DESCRIPTION" | translate }}</p>
-      <div class="current-cash-info" *ngIf="expectedCashData()">
-        <div class="info-row">
-          <span class="label">{{ "WITHDRAW.CURRENT_CASH" | translate }}:</span>
-          <span class="value">{{
-            expectedCashData()!.expectedCash | appCurrency
-          }}</span>
+      @if (expectedCashData()) {
+        <div class="current-cash-info">
+          <div class="info-row">
+            <span class="label"
+              >{{ "WITHDRAW.CURRENT_CASH" | translate }}:</span
+            >
+            <span class="value">{{
+              expectedCashData()!.expectedCash | appCurrency
+            }}</span>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="form-group">
+      }
       <label for="withdrawAmount">{{ "WITHDRAW.AMOUNT" | translate }} *</label>
       <input
         type="number"
@@ -733,8 +706,12 @@
       (click)="processWithdraw(withdrawAmount.value, withdrawReason.value)"
       [disabled]="withdrawProcessing"
     >
-      <i class="fas fa-spinner fa-spin" *ngIf="withdrawProcessing"></i>
-      <i class="fas fa-hand-holding-usd" *ngIf="!withdrawProcessing"></i>
+      @if (withdrawProcessing) {
+        <i class="fas fa-spinner fa-spin"></i>
+      }
+      @if (!withdrawProcessing) {
+        <i class="fas fa-hand-holding-usd"></i>
+      }
       {{ "WITHDRAW.CONFIRM" | translate }}
     </button>
   </div>

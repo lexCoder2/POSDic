@@ -12,15 +12,9 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-  Router,
-  NavigationEnd,
-} from "@angular/router";
+import { RouterOutlet, Router, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { TranslationService } from "../../services/translation.service";
 import { ToastService } from "../../services/toast.service";
@@ -37,6 +31,7 @@ import { ModalComponent } from "../modal/modal.component";
 import { GlobalSearchComponent } from "../global-search/global-search.component";
 import { User, Register } from "../../models";
 import { PageTitleComponent } from "../page-title/page-title.component";
+import { SidebarComponent } from "../sidebar/sidebar.component";
 import { Html5Qrcode } from "html5-qrcode";
 import { catchError, finalize, of } from "rxjs";
 @Component({
@@ -45,8 +40,6 @@ import { catchError, finalize, of } from "rxjs";
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
-    RouterLinkActive,
     RouterOutlet,
     TranslatePipe,
     ToastComponent,
@@ -54,6 +47,7 @@ import { catchError, finalize, of } from "rxjs";
     ModalComponent,
     GlobalSearchComponent,
     PageTitleComponent,
+    SidebarComponent,
   ],
   templateUrl: "./layout.component.html",
   styleUrls: ["./layout.component.scss"],

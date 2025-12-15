@@ -26,9 +26,8 @@ export class WeightModalComponent implements OnChanges {
   @Input() show = false;
   @Input() product: Product | null = null;
   @Input() scaleConnected = false;
-  @Input() currentWeight = 0;
-  @Input() currentWeightUnit = "kg";
-  @Input() currentWeightStable = false;
+  @Input() savedWeight = 0;
+  @Input() savedWeightUnit = "kg";
 
   @Output() close = new EventEmitter<void>();
   @Output() confirmWeight = new EventEmitter<WeightConfirmEvent>();
@@ -36,10 +35,13 @@ export class WeightModalComponent implements OnChanges {
   manualWeight = 0;
 
   ngOnChanges(): void {
-    if (this.show && this.scaleConnected) {
-      this.manualWeight = this.currentWeight;
-    } else if (this.show) {
-      this.manualWeight = 0;
+    if (this.show) {
+      // Auto-populate weight from saved scale reading if available
+      if (this.scaleConnected && this.savedWeight > 0) {
+        this.manualWeight = this.savedWeight;
+      } else {
+        this.manualWeight = 0;
+      }
     }
   }
 

@@ -11,35 +11,30 @@
     </div>
 
     <div class="modal-body">
-      <!-- Scale Status -->
-      <div class="scale-status" *ngIf="scaleConnected">
-        <div class="scale-connected">
-          <i class="fas fa-check-circle"></i>
-          {{ "POS.SCALE.CONNECTED" | translate }}
-        </div>
-        <button
-          class="btn-use-scale"
-          [class.active]="useScaleWeight"
-          (click)="toggleUseScaleWeight()"
+      <!-- Scale Connection Indicator -->
+      <div class="scale-connection-indicator">
+        <div
+          class="scale-status-badge"
+          [class.connected]="scaleConnected"
+          [class.disconnected]="!scaleConnected"
         >
-          <i class="fas fa-balance-scale"></i>
-          {{
-            useScaleWeight
-              ? ("POS.SCALE.USING_SCALE" | translate)
-              : ("POS.SCALE.USE_SCALE" | translate)
-          }}
-        </button>
-        <div class="current-weight" *ngIf="useScaleWeight">
-          <span class="weight-value">{{ currentWeight.toFixed(3) }}</span>
-          <span class="weight-unit">kg</span>
-          <span class="weight-status" [class.stable]="currentWeightStable">
+          <i
+            [class.fa-link]="scaleConnected"
+            [class.fa-unlink]="!scaleConnected"
+            class="fas"
+          ></i>
+          <span>
             {{
-              currentWeightStable
-                ? ("POS.SCALE.STABLE" | translate)
-                : ("POS.SCALE.UNSTABLE" | translate)
+              scaleConnected
+                ? ("POS.SCALE.CONNECTED" | translate)
+                : ("POS.SCALE.DISCONNECTED" | translate)
             }}
           </span>
         </div>
+        <p class="scale-hint" *ngIf="!scaleConnected">
+          <i class="fas fa-info-circle"></i>
+          {{ "POS.SCALE.CONNECT_IN_SETTINGS" | translate }}
+        </p>
       </div>
 
       <!-- Weight Input -->
@@ -55,7 +50,6 @@
           placeholder="0.000"
           min="0"
           step="0.001"
-          [readonly]="useScaleWeight"
         />
       </div>
 

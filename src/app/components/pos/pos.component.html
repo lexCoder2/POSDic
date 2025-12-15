@@ -150,9 +150,8 @@
   [show]="showWeightModal"
   [product]="weightModalProduct"
   [scaleConnected]="scaleConnected"
-  [currentWeight]="currentWeight"
-  [currentWeightUnit]="currentWeightUnit"
-  [currentWeightStable]="currentWeightStable"
+  [savedWeight]="savedWeight"
+  [savedWeightUnit]="savedWeightUnit"
   (close)="closeWeightModal()"
   (confirmWeight)="onWeightConfirm($event)"
 >
@@ -264,8 +263,7 @@
 <app-loose-product-modal
   [show]="showLooseProductModal"
   [scaleConnected]="scaleConnected"
-  [currentWeight]="currentWeight"
-  [currentWeightStable]="currentWeightStable"
+  [savedWeight]="savedWeight"
   (close)="closeLooseProductModal()"
   (confirm)="onLooseProductConfirm($event)"
 >

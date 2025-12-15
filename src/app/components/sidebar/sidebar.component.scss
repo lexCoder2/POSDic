@@ -1,0 +1,193 @@
+@use "../../../styles/theme" as *;
+
+.sidebar {
+  width: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  z-index: $z-sidebar;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+
+  height: 100%;
+  &.extended {
+    width: 250px;
+  }
+
+  @include respond-to(md) {
+    transform: translateX(0);
+  }
+
+  @media (max-width: $breakpoint-md - 1) {
+    transform: translateX(-100%);
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.sidebar-toggle {
+  @include button-base;
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  max-width: 35px;
+  height: 35px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  cursor: pointer;
+  box-shadow: none;
+  z-index: 10;
+
+  i {
+    font-size: 0.7rem;
+  }
+
+  &:hover {
+    background: var(--bg-primary);
+    color: $primary;
+    box-shadow: var(--shadow-neumorphic);
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 $spacing-xs;
+  gap: $spacing-sm;
+  border-right: 1px solid rgba(255, 255, 255, 0.671);
+}
+
+.sidebar-btn {
+  width: 98%;
+  padding: $spacing-md $spacing-lg $spacing-md;
+  border: none;
+  max-height: calc(#{$sidebar-width} - $spacing-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: $radius-lg;
+  min-width: 70px;
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  span {
+    @media (max-height: 840px) {
+      display: none;
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: $spacing-xs $spacing-md;
+      border-radius: $radius-md;
+      white-space: nowrap;
+      margin-left: $spacing-md;
+      font-size: 0.75rem;
+      font-weight: 500;
+      z-index: 1000;
+      box-shadow: var(--shadow-neumorphic);
+      pointer-events: none;
+      opacity: 0;
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+      &::before {
+        content: "";
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 5px solid transparent;
+        border-right-color: var(--bg-secondary);
+      }
+    }
+  }
+
+  &:hover span {
+    @media (max-height: 800px) {
+      display: block;
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+  }
+
+  &:hover {
+    background: var(--bg-primary);
+    color: $primary;
+  }
+
+  &.active {
+    background: var(--bg-secondary);
+    color: $primary;
+    font-weight: 600;
+    box-shadow: var(--shadow-neumorphic-sm);
+  }
+}
+
+// Extended mode styles
+.sidebar.extended {
+  .sidebar-nav {
+    align-items: flex-start;
+    padding: 0 $spacing-md;
+  }
+
+  .sidebar-btn {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: $spacing-md $spacing-lg;
+    max-height: none;
+    gap: $spacing-md;
+
+    i {
+      font-size: 1.125rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    span {
+      display: inline-block !important;
+      position: static !important;
+      transform: none !important;
+      background: transparent !important;
+      color: inherit !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+      font-size: 0.875rem;
+
+      &::before {
+        display: none !important;
+      }
+    }
+  }
+}
