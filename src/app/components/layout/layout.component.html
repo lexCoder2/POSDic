@@ -22,6 +22,20 @@
     <!-- Global Search Component -->
     <app-global-search></app-global-search>
 
+    <!-- Print Receipt Toggle -->
+    <div class="header-print-toggle">
+      <label class="print-toggle-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="printReceiptsEnabled"
+          (ngModelChange)="onPrintToggleChange()"
+          class="print-checkbox"
+        />
+        <span class="toggle-slider-header"></span>
+        <i class="fas fa-receipt toggle-icon"></i>
+      </label>
+    </div>
+
     <button class="user-swap" (click)="switchUser()">
       <i class="fa-solid fa-people-arrows"></i>
     </button>

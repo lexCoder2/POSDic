@@ -27,6 +27,10 @@ import {
   CalculatorAddEvent,
   CalculatorMultiplyConfirmEvent,
 } from "../calculator/calculator.component";
+import {
+  NumberKeyboardComponent,
+  NumberKeyboardInputEvent,
+} from "../number-keyboard/number-keyboard.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { environment } from "@environments/environment";
@@ -39,6 +43,7 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
     CommonModule,
     FormsModule,
     CalculatorComponent,
+    NumberKeyboardComponent,
     TranslatePipe,
     CurrencyPipe,
     OpenRegisterComponent,
@@ -83,7 +88,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
   selectedItemId = signal<number | null>(null);
 
   showPaymentModal = signal<boolean>(false);
-  selectedPaymentMethod = signal<"cash" | "card" | "transfer" | null>(null);
+  selectedPaymentMethod = signal<"cash" | "card" | "internal" | null>(null);
   cashReceived = signal<string>("");
   change = signal<number>(0);
 
@@ -844,7 +849,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
     }
   }
 
-  completeSale(paymentMethod: "cash" | "card" | "transfer"): void {
+  completeSale(paymentMethod: "cash" | "card" | "internal"): void {
     // Check if register is open
     if (!this.currentRegister()) {
       this.toastService.show(
@@ -887,6 +892,11 @@ export class CashierComponent implements OnInit, AfterViewInit {
     } else {
       this.change.set(0);
     }
+  }
+
+  onKeyboardInput(event: NumberKeyboardInputEvent): void {
+    this.cashReceived.set(event.value);
+    this.onCashReceivedChange();
   }
 
   cancelPayment(): void {
@@ -940,6 +950,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
           : {},
       status: "completed" as const,
       register: register?._id,
+      isInternal: paymentMethod === "internal",
     };
 
     this.saleService.createSale(sale).subscribe({

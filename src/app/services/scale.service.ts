@@ -7,6 +7,28 @@ export interface ScaleReading {
   stable: boolean;
 }
 
+interface SerialPort {
+  open(options: { baudRate: number }): Promise<void>;
+  close(): Promise<void>;
+  readonly readable: ReadableStream<Uint8Array>;
+  readonly writable: WritableStream<Uint8Array>;
+}
+
+interface SerialPortRequestOptions {
+  filters?: { usbVendorId?: number; usbProductId?: number }[];
+}
+
+interface NavigatorSerial {
+  requestPort(options?: SerialPortRequestOptions): Promise<SerialPort>;
+  getPorts(): Promise<SerialPort[]>;
+}
+
+declare global {
+  interface Navigator {
+    serial?: NavigatorSerial;
+  }
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -14,12 +36,10 @@ export class ScaleService {
   private currentWeight = new BehaviorSubject<ScaleReading | null>(null);
   public currentWeight$ = this.currentWeight.asObservable();
 
-  private port: any = null;
-  private reader: any = null;
-  private writer: any = null;
+  private port: SerialPort | null = null;
+  private reader: ReadableStreamDefaultReader<string> | null = null;
+  private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private isReading = false;
-
-  constructor() {}
 
   async connectScale(): Promise<boolean> {
     try {
@@ -31,9 +51,15 @@ export class ScaleService {
 
       // Request port from user
       this.port = await (navigator as any).serial.requestPort();
+      if (!this.port) {
+        console.error("No serial port selected");
+        return false;
+      }
       await this.port.open({ baudRate: 9600 });
 
       this.isReading = true;
+      console.log("reading from scale starting");
+
       this.startReading();
 
       return true;
@@ -44,8 +70,10 @@ export class ScaleService {
   }
 
   private async startReading(): Promise<void> {
-    if (!this.port) return;
-
+    if (!this.port) {
+      console.log("error reading port");
+      return;
+    }
     try {
       // Set up writer to send commands
       this.writer = this.port.writable.getWriter();
@@ -53,7 +81,7 @@ export class ScaleService {
       // Set up reader to receive responses
       const textDecoder = new TextDecoderStream();
       const readableStreamClosed = this.port.readable.pipeTo(
-        textDecoder.writable
+        textDecoder.writable as WritableStream<Uint8Array>
       );
       this.reader = textDecoder.readable.getReader();
 
@@ -72,6 +100,9 @@ export class ScaleService {
 
   private async readLoop(): Promise<void> {
     try {
+      if (!this.reader) {
+        throw new Error("Failed to get reader from scale");
+      }
       while (this.isReading) {
         const { value, done } = await this.reader.read();
         if (done) break;

@@ -605,13 +605,13 @@
     "PAYMENTS": {
       "CASH": "Cash",
       "CARD": "Card",
-      "TRANSFER": "Transfer"
+      "INTERNAL": "Internal Sale"
     },
     "PAYMENT": {
       "TITLE": {
         "CASH": "Cash Payment",
         "CARD": "Card Payment",
-        "TRANSFER": "Transfer Payment"
+        "INTERNAL": "Internal Sale"
       },
       "TOTAL_AMOUNT": "Total Amount:",
       "CASH_RECEIVED": "Cash Received:",

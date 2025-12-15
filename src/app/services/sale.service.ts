@@ -12,11 +12,6 @@ export class SaleService {
 
   private apiUrl = `${environment.apiUrl}/sales`;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   getSales(filters?: {
     status?: string;
     startDate?: string;

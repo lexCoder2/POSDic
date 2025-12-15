@@ -1,0 +1,154 @@
+@use "sass:color";
+@use "../../../styles/theme" as *;
+
+.number-keyboard {
+  outline: none;
+  width: 100%;
+  margin: 0 auto;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.display {
+  margin-bottom: 1rem;
+  min-height: 60px;
+  height: 60px;
+  padding: $spacing-xs $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: $radius-2xl;
+  background: $neumorphic-bg;
+  transition: all 0.3s ease;
+
+  .display-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    word-break: break-all;
+    text-align: right;
+    flex: 1;
+    transition: color 0.3s ease;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  padding: $spacing-xs;
+
+  .key-btn {
+    @include button-base;
+    min-height: 60px;
+    height: 60px;
+    padding: $spacing-xs;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: $radius-xl;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: $neumorphic-bg;
+    color: var(--text-primary);
+    box-shadow: $shadow-neumorphic;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+      background: var(--neumorphic-surface);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      box-shadow: $shadow-neumorphic-inset;
+      transform: translateY(0);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &.number {
+      color: var(--text-primary);
+      font-weight: 700;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+
+    &.operation {
+      background: var(--neumorphic-surface);
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+
+      &.backspace {
+        color: $danger;
+        font-size: 1.5rem;
+
+        &:hover {
+          color: color.adjust($danger, $lightness: -10%);
+          background: rgba($danger, 0.1);
+        }
+      }
+
+      &.decimal {
+        font-size: 2rem;
+        color: $primary;
+
+        &:hover {
+          color: color.adjust($primary, $lightness: -10%);
+          background: rgba($primary, 0.1);
+        }
+      }
+
+      &.clear {
+        background: $danger;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        gap: $spacing-xs;
+
+        &:hover {
+          background: color.adjust($danger, $lightness: -10%);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba($danger, 0.3);
+        }
+
+        &:active {
+          transform: translateY(0);
+          box-shadow: $shadow-neumorphic-inset;
+        }
+      }
+    }
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    &.zero {
+      // Make zero button stand out slightly
+      font-weight: 800;
+    }
+  }
+}
+
+// Touch device optimizations
+@media (hover: none) and (pointer: coarse) {
+  .key-btn {
+    min-height: $touch-target-lg;
+
+    &:active {
+      background: var(--neumorphic-surface);
+    }
+  }
+}

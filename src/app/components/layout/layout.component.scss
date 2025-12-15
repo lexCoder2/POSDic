@@ -42,6 +42,75 @@
     font-size: 1.2rem;
   }
 }
+
+.header-print-toggle {
+  display: flex;
+  align-items: center;
+  margin-right: $spacing-sm;
+
+  .print-toggle-label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-md;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--bg-tertiary);
+    }
+  }
+
+  .print-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider-header {
+      background: $success;
+
+      &::before {
+        transform: translateX(20px);
+      }
+    }
+
+    &:checked ~ .toggle-icon {
+      color: $success;
+    }
+  }
+
+  .toggle-slider-header {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background: var(--text-muted);
+    border-radius: 24px;
+    transition: background 0.3s ease;
+    margin-right: $spacing-sm;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .toggle-icon {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+  }
+}
 // ===== SIDEBAR =====
 .sidebar {
   width: $sidebar-width;
@@ -87,7 +156,7 @@
     }
 
     span {
-      @media (max-height: 800px) {
+      @media (max-height: 840px) {
         display: none;
         position: absolute;
         left: 100%;
@@ -1129,7 +1198,7 @@
   display: flex;
   justify-content: flex-end;
   gap: $spacing-sm;
-  padding: $spacing-lg;
+  padding: $spacing-sm;
   border-top: 1px solid var(--border-color);
   background: $gray-50;
   margin: 0 (-$spacing-lg) (-$spacing-lg);
@@ -1138,7 +1207,7 @@
   .btn {
     @include button-base();
     min-width: 120px;
-    padding: $spacing-sm $spacing-lg;
+    padding: $spacing-xs $spacing-lg;
     font-weight: $font-weight-medium;
 
     &.btn-primary {

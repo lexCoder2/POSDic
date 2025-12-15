@@ -194,7 +194,9 @@
       "REGISTERS": "Cajas",
       "USERS": "Usuarios",
       "RECEIPT_TEMPLATES": "Plantillas de Recibo"
-    }
+    },
+
+    "WITHDRAW_CASH": "Retirar Efectivo"
   },
   "SETTINGS": {
     "TITLE": "Ajustes",
@@ -573,13 +575,13 @@
     "PAYMENTS": {
       "CASH": "Efectivo",
       "CARD": "Tarjeta",
-      "TRANSFER": "Transferencia"
+      "INTERNAL": "Venta Interna"
     },
     "PAYMENT": {
       "TITLE": {
         "CASH": "Pago en Efectivo",
         "CARD": "Pago con Tarjeta",
-        "TRANSFER": "Pago por Transferencia"
+        "INTERNAL": "Venta Interna"
       },
       "TOTAL_AMOUNT": "Importe Total:",
       "CASH_RECEIVED": "Efectivo Recibido:",

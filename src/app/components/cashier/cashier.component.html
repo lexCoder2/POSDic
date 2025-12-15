@@ -183,12 +183,12 @@
             <span>{{ "CASHIER.PAYMENTS.CARD" | translate }}</span>
           </button>
           <button
-            class="payment-btn transfer"
-            (click)="completeSale('transfer')"
+            class="payment-btn internal"
+            (click)="completeSale('internal')"
             [disabled]="items().length === 0 || isProcessing()"
           >
-            <i class="fas fa-exchange-alt"></i>
-            <span>{{ "CASHIER.PAYMENTS.TRANSFER" | translate }}</span>
+            <i class="fas fa-building"></i>
+            <span>{{ "CASHIER.PAYMENTS.INTERNAL" | translate }}</span>
           </button>
         </div>
       </div>
@@ -211,14 +211,14 @@
               class="fas"
               [class.fa-money-bill-wave]="selectedPaymentMethod() === 'cash'"
               [class.fa-credit-card]="selectedPaymentMethod() === 'card'"
-              [class.fa-exchange-alt]="selectedPaymentMethod() === 'transfer'"
+              [class.fa-building]="selectedPaymentMethod() === 'internal'"
             ></i>
             {{
               selectedPaymentMethod() === "cash"
                 ? ("CASHIER.PAYMENT.TITLE.CASH" | translate)
                 : selectedPaymentMethod() === "card"
                   ? ("CASHIER.PAYMENT.TITLE.CARD" | translate)
-                  : ("CASHIER.PAYMENT.TITLE.TRANSFER" | translate)
+                  : ("CASHIER.PAYMENT.TITLE.INTERNAL" | translate)
             }}
           </h2>
           <button class="close-btn" (click)="cancelPayment()">
@@ -237,47 +237,26 @@
           <!-- Cash Payment Form -->
           @if (selectedPaymentMethod() === "cash") {
             <div class="cash-payment">
-              <div class="form-group">
-                <label for="cashReceived">{{
-                  "CASHIER.PAYMENT.CASH_RECEIVED" | translate
-                }}</label>
-                <input
-                  #cashReceivedInput
-                  id="cashReceived"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  [(ngModel)]="cashReceived"
-                  (ngModelChange)="onCashReceivedChange()"
-                  placeholder="{{
-                    'CASHIER.PAYMENT.CASH_RECEIVED' | translate
-                  }}"
-                  class="cash-input"
-                  [class.invalid]="
-                    cashReceived() && parseFloat(cashReceived()) < total()
-                  "
-                />
+              <!-- Number Keyboard -->
+              <app-number-keyboard
+                (valueChange)="onKeyboardInput($event)"
+              ></app-number-keyboard>
+
+              <div
+                class="change-display"
+                [class.insufficient]="
+                  !cashReceived() || parseFloat(cashReceived()) < total()
+                "
+              >
+                <span class="change-label">{{
+                  "CASHIER.PAYMENT.CHANGE" | translate
+                }}</span>
+                <span class="change-value">{{ change() | appCurrency }}</span>
               </div>
-
-              @if (change() > 0) {
-                <div class="change-display">
-                  <span class="change-label">{{
-                    "CASHIER.PAYMENT.CHANGE" | translate
-                  }}</span>
-                  <span class="change-value">{{ change() | appCurrency }}</span>
-                </div>
-              }
-
-              @if (cashReceived() && parseFloat(cashReceived()) < total()) {
-                <div class="error-message">
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ "CASHIER.PAYMENT.AMOUNT_TOO_LOW" | translate }}
-                </div>
-              }
             </div>
           }
 
-          <!-- Card/Transfer Confirmation -->
+          <!-- Card/Internal Confirmation -->
           @if (selectedPaymentMethod() !== "cash") {
             <div class="confirmation-message">
               <i class="fas fa-check-circle"></i>

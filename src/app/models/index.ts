@@ -148,7 +148,7 @@ export interface Sale {
   discountTotal?: number;
   taxTotal?: number;
   total: number;
-  paymentMethod: "cash" | "card" | "transfer" | "mixed";
+  paymentMethod: "cash" | "card" | "transfer" | "mixed" | "internal";
   paymentDetails?: {
     cash?: number;
     card?: number;

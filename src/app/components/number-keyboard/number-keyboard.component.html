@@ -1,0 +1,92 @@
+<div
+  #keyboardContainer
+  class="number-keyboard"
+  tabindex="-1"
+  (keydown)="onKeyDown($event)"
+>
+  <div class="display">
+    <span class="display-value">{{ display() }}</span>
+  </div>
+
+  <div class="keyboard-grid">
+    <!-- Row 1 -->
+    <button
+      class="key-btn number"
+      (click)="appendNumber('7'); blurButton($event)"
+    >
+      7
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('8'); blurButton($event)"
+    >
+      8
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('9'); blurButton($event)"
+    >
+      9
+    </button>
+
+    <!-- Row 2 -->
+    <button
+      class="key-btn number"
+      (click)="appendNumber('4'); blurButton($event)"
+    >
+      4
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('5'); blurButton($event)"
+    >
+      5
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('6'); blurButton($event)"
+    >
+      6
+    </button>
+
+    <!-- Row 3 -->
+    <button
+      class="key-btn number"
+      (click)="appendNumber('1'); blurButton($event)"
+    >
+      1
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('2'); blurButton($event)"
+    >
+      2
+    </button>
+    <button
+      class="key-btn number"
+      (click)="appendNumber('3'); blurButton($event)"
+    >
+      3
+    </button>
+
+    <!-- Row 4 -->
+    <button
+      class="key-btn operation backspace"
+      (click)="backspace(); blurButton($event)"
+    >
+      <i class="fas fa-backspace"></i>
+    </button>
+    <button
+      class="key-btn number zero"
+      (click)="appendNumber('0'); blurButton($event)"
+    >
+      0
+    </button>
+    <button
+      class="key-btn operation decimal"
+      (click)="appendDecimal(); blurButton($event)"
+    >
+      .
+    </button>
+  </div>
+</div>

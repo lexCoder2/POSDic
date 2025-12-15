@@ -98,6 +98,9 @@ export class LayoutComponent implements OnInit, OnDestroy {
   showNewRegisterInput = false;
   canManageOtherRegisters = false;
   deviceBoundRegister: string | null = null;
+
+  // Print receipts toggle
+  printReceiptsEnabled = true;
   deviceId = "";
   deviceName = "";
   newRegisterNumber = "";
@@ -189,6 +192,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
         const wasOpen = !!this.currentRegister;
         const isNowOpen = !!register;
         this.currentRegister = register;
+
+        // Sync print receipts toggle with register setting
+        if (register) {
+          this.printReceiptsEnabled = register.printReceiptsEnabled !== false;
+        }
 
         // Load expected cash only when register opens (not on every update)
         if (!wasOpen && isNowOpen) {
@@ -298,6 +306,19 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  onPrintToggleChange(): void {
+    if (this.currentRegister?._id) {
+      this.registerService
+        .updatePrintSetting(this.currentRegister._id, this.printReceiptsEnabled)
+        .subscribe({
+          error: () => {
+            // Revert on error
+            this.printReceiptsEnabled = !this.printReceiptsEnabled;
+          },
+        });
+    }
   }
 
   switchUser(): void {

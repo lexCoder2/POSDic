@@ -762,12 +762,12 @@
           }
         }
 
-        &.transfer {
-          background: $info;
+        &.internal {
+          background: $warning;
           color: white;
 
           &:hover:not(:disabled) {
-            background: color.adjust($info, $lightness: -10%);
+            background: color.adjust($warning, $lightness: -10%);
           }
         }
       }
@@ -801,7 +801,7 @@
     background: white;
     border-radius: 16px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.3s ease-out;
 
@@ -817,7 +817,7 @@
     }
 
     .modal-header {
-      padding: 2rem;
+      padding: $spacing-sm;
       border-bottom: 2px solid $secondary-dark;
       display: flex;
       justify-content: space-between;
@@ -865,17 +865,17 @@
       }
     }
     .modal-body {
-      padding: 2rem;
+      padding: $spacing-md;
       background: $neumorphic-surface;
 
       .sale-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1.5rem;
+        padding: $spacing-md $spacing-lg;
         background: $white;
         border-radius: 12px;
-        margin-bottom: 2rem;
+        margin-bottom: $spacing-md;
 
         .label {
           font-size: 1.25rem;
@@ -891,41 +891,13 @@
       }
 
       .cash-payment {
-        .form-group {
-          margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
 
-          label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-          }
-
-          .cash-input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1.5rem;
-            font-weight: 600;
-            transition: all 0.2s;
-
-            &:focus {
-              outline: none;
-              border-color: $primary;
-              box-shadow: 0 0 0 3px rgba($primary, 0.1);
-            }
-
-            &.invalid {
-              border-color: $danger;
-
-              &:focus {
-                border-color: $danger;
-                box-shadow: 0 0 0 3px rgba($danger, 0.1);
-              }
-            }
-          }
+        app-number-keyboard {
+          display: block;
+          width: 100%;
         }
 
         .change-display {
@@ -937,17 +909,33 @@
           border: 2px solid $success;
           border-radius: 12px;
           margin-bottom: 1rem;
+          transition: all 0.3s ease;
 
           .change-label {
             font-size: 1.25rem;
             font-weight: 600;
             color: $success;
+            transition: color 0.3s ease;
           }
 
           .change-value {
             font-size: 2rem;
             font-weight: 700;
             color: $success;
+            transition: color 0.3s ease;
+          }
+
+          &.insufficient {
+            background: rgba($danger, 0.1);
+            border-color: $danger;
+
+            .change-label {
+              color: $danger;
+            }
+
+            .change-value {
+              color: $danger;
+            }
           }
         }
 
@@ -987,7 +975,7 @@
     }
 
     .modal-footer {
-      padding: 1.5rem 2rem;
+      padding: 1rem 2rem;
       border-top: 1px solid var(--border-color);
       display: flex;
       gap: 1rem;
