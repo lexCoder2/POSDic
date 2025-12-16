@@ -13,6 +13,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
+import { ModalComponent } from "../../modal/modal.component";
 import { SaleService } from "../../../services/sale.service";
 import { ToastService } from "../../../services/toast.service";
 import { Sale, SaleItem } from "../../../models";
@@ -35,7 +36,7 @@ export interface RefundResult {
 @Component({
   selector: "app-returns-modal",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe, ModalComponent],
   templateUrl: "./returns-modal.component.html",
   styleUrls: ["./returns-modal.component.scss"],
 })

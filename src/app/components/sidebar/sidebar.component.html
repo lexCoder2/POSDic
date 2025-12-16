@@ -25,15 +25,18 @@
       >
         <i class="fas fa-chart-line"></i>
         <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
+        <kbd class="fkey-label">F1</kbd>
       </button>
     }
     <button class="sidebar-btn" routerLink="/pos" routerLinkActive="active">
       <i class="fas fa-cash-register"></i>
       <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>
+      <kbd class="fkey-label">F2</kbd>
     </button>
     <button class="sidebar-btn" routerLink="/cashier" routerLinkActive="active">
       <i class="fas fa-calculator"></i>
       <span>{{ "GLOBAL.SIDEBAR.QUICK_CASHIER" | translate }}</span>
+      <kbd class="fkey-label">F3</kbd>
     </button>
     @if (isAdminOrManager) {
       <button
@@ -43,6 +46,7 @@
       >
         <i class="fas fa-chart-bar"></i>
         <span>{{ "GLOBAL.SIDEBAR.STATISTICS" | translate }}</span>
+        <kbd class="fkey-label">F4</kbd>
       </button>
     }
     <button
@@ -52,6 +56,7 @@
     >
       <i class="fas fa-warehouse"></i>
       <span>{{ "GLOBAL.SIDEBAR.INVENTORY" | translate }}</span>
+      <kbd class="fkey-label">F5</kbd>
     </button>
 
     @if (isAdmin) {
@@ -62,12 +67,14 @@
       >
         <i class="fas fa-truck"></i>
         <span>{{ "GLOBAL.SIDEBAR.SUPPLIERS" | translate }}</span>
+        <kbd class="fkey-label">F6</kbd>
       </button>
     }
     @if (isAdminOrManager) {
       <button class="sidebar-btn" routerLink="/sales" routerLinkActive="active">
         <i class="fas fa-shopping-cart"></i>
         <span>{{ "GLOBAL.SIDEBAR.SALES" | translate }}</span>
+        <kbd class="fkey-label">F7</kbd>
       </button>
     }
     @if (isAdminOrManager) {
@@ -78,15 +85,27 @@
       >
         <i class="fas fa-cash-register"></i>
         <span>{{ "GLOBAL.SIDEBAR.REGISTERS" | translate }}</span>
+        <kbd class="fkey-label">F8</kbd>
       </button>
     }
     @if (isAdminOrManager) {
       <button class="sidebar-btn" routerLink="/users" routerLinkActive="active">
         <i class="fas fa-users"></i>
         <span>{{ "GLOBAL.SIDEBAR.USERS" | translate }}</span>
+        <kbd class="fkey-label">F9</kbd>
       </button>
     }
-    <!-- Templates moved into Settings -->
+    @if (isAdminOrManager) {
+      <button
+        class="sidebar-btn"
+        routerLink="/settings"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-cog"></i>
+        <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
+        <kbd class="fkey-label">F10</kbd>
+      </button>
+    }
   </nav>
 
   <!-- Sidebar Toggle Button -->

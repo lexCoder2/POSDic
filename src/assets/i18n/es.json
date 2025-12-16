@@ -611,6 +611,9 @@
     "REGISTER_WARNING": "No hay caja abierta. Por favor abra una caja para hacer ventas.",
     "OPEN_REGISTER": "Abrir Caja",
     "ADD": "Agregar",
+    "CALCULATOR": {
+      "NAME_PLACEHOLDER": "Nombre del artículo (opcional)"
+    },
     "MULTIPLY": {
       "LABEL": "x",
       "ADD_LABEL": "Ingresa la cantidad a agregar:",
@@ -1101,6 +1104,16 @@
   "FAVORITES": {
     "EMPTY": "Aún no hay productos favoritos",
     "TITLE": "Favoritos"
+  },
+  "QUICK_ACCESS": {
+    "ADD": "Agregar a Acceso Rápido",
+    "REMOVE": "Quitar de Acceso Rápido",
+    "TITLE": "Acceso Rápido",
+    "EMPTY": "No hay productos en acceso rápido",
+    "SUCCESS_ADD": "Agregado a acceso rápido",
+    "SUCCESS_REMOVE": "Quitado de acceso rápido",
+    "ERROR_ADD": "Error al agregar a acceso rápido",
+    "ERROR_REMOVE": "Error al quitar de acceso rápido"
   },
   "LOGIN": {
     "SUBTITLE": "Sistema Punto de Venta",

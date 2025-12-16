@@ -8,6 +8,7 @@ import {
 import { DecimalPipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { ModalComponent } from "../../modal/modal.component";
 import { Product } from "../../../models";
 
 export interface WeightConfirmEvent {
@@ -18,7 +19,7 @@ export interface WeightConfirmEvent {
 @Component({
   selector: "app-weight-modal",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, DecimalPipe],
+  imports: [FormsModule, TranslatePipe, DecimalPipe, ModalComponent],
   templateUrl: "./weight-modal.component.html",
   styleUrls: ["./weight-modal.component.scss"],
 })

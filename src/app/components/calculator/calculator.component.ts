@@ -8,10 +8,12 @@ import {
   input,
 } from "@angular/core";
 
+import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 
 export interface CalculatorAddEvent {
   value: number;
+  customName?: string;
 }
 
 export interface CalculatorMultiplyConfirmEvent {
@@ -23,7 +25,7 @@ export interface CalculatorMultiplyConfirmEvent {
 @Component({
   selector: "app-calculator",
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: "./calculator.component.html",
   styleUrls: ["./calculator.component.scss"],
 })
@@ -43,6 +45,7 @@ export class CalculatorComponent implements AfterViewInit {
 
   // State
   display = signal<string>("0");
+  customName = signal<string>("");
   isMultiplying = signal<boolean>(false);
   multiplyMode = signal<"add" | "update" | null>(null);
   pendingMultiplyValue = signal<number | null>(null);
@@ -107,8 +110,12 @@ export class CalculatorComponent implements AfterViewInit {
         this.confirmMultiply();
         return;
       }
-      this.addItem.emit({ value });
+      this.addItem.emit({
+        value,
+        customName: this.customName().trim() || undefined,
+      });
       this.display.set("0");
+      this.customName.set("");
     }
   }
 

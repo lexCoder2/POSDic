@@ -43,10 +43,10 @@ cd server && node seed.js
 
 **State Management Pattern:**
 
-- **BehaviorSubject for cross-component state**: `CartStateService.cart$` (cart items), `SearchStateService.searchQuery$`
-- **No Signals in services**: State exposed via RxJS observables, not signals (see `cart-state.service.ts`)
-- **Local component state**: Use signals (`signal()`, `computed()`) for UI state like `showModal = signal(false)`
-- **Memory cleanup**: Always use `takeUntil(destroy$)` pattern in components subscribing to observables
+- **BehaviorSubject for cross-component state**: `CartStateService.cart$` (cart items), `SearchStateService.searchQuery$`, `AuthService.currentUser$`
+- **Services use BehaviorSubject, NOT signals**: All state services expose observables (see `cart-state.service.ts`, `search-state.service.ts`, `register.service.ts`)
+- **Local component state**: Use signals (`signal()`, `computed()`) ONLY for component UI state like `showModal = signal(false)`, `isLoading = signal(false)`
+- **Memory cleanup**: ALWAYS use `takeUntil(destroy$)` pattern in components subscribing to observables
 
 **Critical Services:**
 
@@ -268,11 +268,12 @@ export class ProductService {
 
 ### State Management
 
-- **Cart State**: Managed by `CartStateService` with signals (e.g., `cartCount()`, `cartTotal()`)
-- **Search State**: `SearchStateService` shares search query across components
-- **User State**: `AuthService.getCurrentUser()` returns current user or null
-- **Register State**: `RegisterService` manages active register with device binding (cashiers must open register)
+- **Cart State**: Managed by `CartStateService` with `cart$: Observable<Cart>` (BehaviorSubject-backed)
+- **Search State**: `SearchStateService.searchQuery$` shares search query across components via BehaviorSubject
+- **User State**: `AuthService.currentUser$` observable + `getCurrentUser()` method for sync access
+- **Register State**: `RegisterService.currentRegister$` manages active register with device binding (cashiers must open register)
 - **Device Identification**: `DeviceService` generates unique device fingerprints for register binding
+- **Component Signals**: Use signals ONLY for local component UI state (`showModal = signal(false)`), NOT for service state
 
 ## Common Workflows
 

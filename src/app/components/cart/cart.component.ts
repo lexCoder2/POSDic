@@ -214,4 +214,20 @@ export class CartComponent {
   calculateSubtotal(): number {
     return this.calculateTotal() - this.discountAmount();
   }
+
+  addToQuickAccess(item: CartItem, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!item.product._id) return;
+
+    this.cartService.addProductToQuickAccess(item.product._id).subscribe({
+      next: () => {
+        // Success notification will be handled by the service or parent
+      },
+      error: (err) => {
+        console.error("Error adding to quick access:", err);
+      },
+    });
+  }
 }

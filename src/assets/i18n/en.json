@@ -623,6 +623,9 @@
     "REGISTER_WARNING": "No register is open. Please open a register to make sales.",
     "OPEN_REGISTER": "Open Register",
     "ADD": "Add",
+    "CALCULATOR": {
+      "NAME_PLACEHOLDER": "Item name (optional)"
+    },
     "MULTIPLY": {
       "LABEL": "x",
       "ADD_LABEL": "Enter quantity to add:",
@@ -1088,6 +1091,16 @@
   "FAVORITES": {
     "EMPTY": "No favorite products yet",
     "TITLE": "Favorites"
+  },
+  "QUICK_ACCESS": {
+    "ADD": "Add to Quick Access",
+    "REMOVE": "Remove from Quick Access",
+    "TITLE": "Quick Access",
+    "EMPTY": "No quick access products",
+    "SUCCESS_ADD": "Added to quick access",
+    "SUCCESS_REMOVE": "Removed from quick access",
+    "ERROR_ADD": "Error adding to quick access",
+    "ERROR_REMOVE": "Error removing from quick access"
   },
   "LOGIN": {
     "SUBTITLE": "Point of Sale System",

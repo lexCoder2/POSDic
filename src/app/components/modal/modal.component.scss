@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(31, 31, 31, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +16,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: opacify($color: $neumorphic-surface, $amount: 0.2);
   border-radius: $radius-lg;
   box-shadow: $shadow-xl;
   width: 95%;
@@ -45,10 +45,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-lg;
+  padding: $spacing-sm $spacing-lg;
   border-bottom: 1px solid var(--border-color);
   gap: $spacing-md;
-
+  background: $neumorphic-surface;
   .modal-header-content {
     flex: 1;
     display: flex;
@@ -107,7 +107,7 @@
   gap: $spacing-sm;
   padding: $spacing-lg;
   border-top: 1px solid var(--border-color);
-  background: $gray-50;
+  background: transparentize($gray-50, 0.05);
   border-radius: 0 0 $radius-lg $radius-lg;
 }
 

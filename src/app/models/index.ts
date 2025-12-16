@@ -101,6 +101,7 @@ export interface User {
   active?: boolean;
   permissions?: string[];
   internalSalesLimit?: number;
+  quickAccess?: string[];
   lastLogin?: Date;
   createdAt?: Date;
 }
@@ -261,6 +262,7 @@ export interface CartItem {
   discount: number;
   weight?: number;
   subtotal: number;
+  customName?: string;
 }
 
 export interface Register {

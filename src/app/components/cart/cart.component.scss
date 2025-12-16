@@ -284,6 +284,14 @@
         color: $gray-700;
       }
 
+      .item-original-name {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        opacity: 0.7;
+        font-style: italic;
+        margin-top: 0.125rem;
+      }
+
       .item-brand {
         font-size: 0.8rem;
         color: var(--text-secondary);
@@ -391,8 +399,9 @@
 
       .item-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.25rem;
         margin-left: 0.75rem;
+        flex-direction: column;
       }
 
       .action-btn {
@@ -413,6 +422,13 @@
 
         &:hover {
           transform: scale(1.1);
+        }
+
+        &.star-btn {
+          &:hover {
+            background: rgba($warning, 0.15);
+            color: $warning;
+          }
         }
 
         &.edit-btn {
@@ -589,10 +605,10 @@
         &.cash {
           background: linear-gradient(
             90deg,
-            rgba(255, 255, 255, 0.9),
-            var(--bg-tertiary)
+            rgba(23, 187, 72, 0.9),
+            rgba(15, 155, 66, 0.9)
           );
-          color: $gray-700;
+          color: $gray-100;
         }
 
         &.card {

@@ -8,6 +8,7 @@ import {
 
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
+import { ModalComponent } from "../../modal/modal.component";
 
 export interface QuickProductData {
   barcode: string;
@@ -19,7 +20,7 @@ export interface QuickProductData {
 @Component({
   selector: "app-quick-product-modal",
   standalone: true,
-  imports: [FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe, ModalComponent],
   templateUrl: "./quick-product-modal.component.html",
   styleUrls: ["./quick-product-modal.component.scss"],
 })

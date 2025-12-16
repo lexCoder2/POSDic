@@ -132,4 +132,24 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       this.closeDeleteModal();
     }
   }
+
+  addToQuickAccess(event: MouseEvent, product: Product): void {
+    event.stopPropagation();
+    if (!product._id) return;
+
+    this.productService.addToQuickAccess(product._id).subscribe({
+      next: () => {
+        this.toastService.show(
+          `${product.name} added to quick access`,
+          "success"
+        );
+      },
+      error: (err) => {
+        this.toastService.show(
+          err.error?.message || "Error adding to quick access",
+          "error"
+        );
+      },
+    });
+  }
 }

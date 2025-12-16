@@ -175,4 +175,91 @@ router.get("/me/settings", protect, async (req, res) => {
   }
 });
 
+// @route   GET /api/users/me/quick-access
+// @desc    Get current user's quick access products
+// @access  Private
+router.get("/me/quick-access", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select("quickAccess")
+      .populate("quickAccess");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user.quickAccess || []);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// @route   POST /api/users/me/quick-access/:productId
+// @desc    Add product to quick access
+// @access  Private
+router.post("/me/quick-access/:productId", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Initialize quickAccess array if it doesn't exist
+    if (!user.quickAccess) {
+      user.quickAccess = [];
+    }
+
+    // Check if product is already in quick access
+    if (user.quickAccess.includes(req.params.productId)) {
+      return res
+        .status(400)
+        .json({ message: "Product already in quick access" });
+    }
+
+    // Add product to quick access
+    user.quickAccess.push(req.params.productId);
+    await user.save();
+
+    const updatedUser = await User.findById(user._id)
+      .select("quickAccess")
+      .populate("quickAccess");
+
+    res.json(updatedUser.quickAccess);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// @route   DELETE /api/users/me/quick-access/:productId
+// @desc    Remove product from quick access
+// @access  Private
+router.delete("/me/quick-access/:productId", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.quickAccess) {
+      return res.status(400).json({ message: "No quick access products" });
+    }
+
+    // Remove product from quick access
+    user.quickAccess = user.quickAccess.filter(
+      (id) => id.toString() !== req.params.productId
+    );
+    await user.save();
+
+    const updatedUser = await User.findById(user._id)
+      .select("quickAccess")
+      .populate("quickAccess");
+
+    res.json(updatedUser.quickAccess);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;

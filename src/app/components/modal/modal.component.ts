@@ -12,6 +12,7 @@ export class ModalComponent {
   @Input() title = "";
   @Input() icon = "";
   @Input() size: "sm" | "md" | "lg" | "xl" = "md";
+  @Input() customClass = "";
   @Input() showCloseButton = true;
   @Input() closeOnBackdropClick = true;
   @Output() close = new EventEmitter<void>();

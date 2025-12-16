@@ -37,7 +37,12 @@ export class CartService {
     localStorage.setItem("pos_cart", JSON.stringify(this.cartItems.value));
   }
 
-  addItem(product: Product, quantity = 1, weight?: number): void {
+  addItem(
+    product: Product,
+    quantity = 1,
+    weight?: number,
+    customName?: string
+  ): void {
     const items = this.cartItems.value;
     const existingItem = items.find((item) => item.product._id === product._id);
 
@@ -47,6 +52,10 @@ export class CartService {
         existingItem.quantity = weight;
       } else {
         existingItem.quantity += quantity;
+      }
+      // Update custom name if provided
+      if (customName) {
+        existingItem.customName = customName;
       }
       existingItem.subtotal =
         existingItem.product.price * existingItem.quantity -
@@ -62,6 +71,7 @@ export class CartService {
         discount: 0,
         weight: weight,
         subtotal: product.price * qty,
+        customName: customName,
       });
     }
 
@@ -184,5 +194,12 @@ export class CartService {
     return this.http.get(`${this.apiUrl}`, {
       params: { cashier: cashierId, status: "active" },
     });
+  }
+
+  addProductToQuickAccess(productId: string): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}/users/me/quick-access/${productId}`,
+      {}
+    );
   }
 }

@@ -743,7 +743,7 @@ router.get(
 
           // Generate QR code as data URL
           const qrSize =
-            labelSize === "small" ? 80 : labelSize === "medium" ? 130 : 170;
+            labelSize === "small" ? 60 : labelSize === "medium" ? 100 : 140;
           const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
             width: qrSize,
             margin: 1,

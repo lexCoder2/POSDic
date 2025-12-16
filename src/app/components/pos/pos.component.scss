@@ -503,123 +503,122 @@
 .withdraw-modal,
 .register-modal {
   max-width: 420px;
+}
 
-  .form-group {
-    margin-bottom: $spacing-lg;
+.form-group {
+  margin-bottom: $spacing-lg;
 
-    label {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-      margin-bottom: $spacing-sm;
-      font-weight: $font-weight-semibold;
-      color: $gray-700;
-      font-size: $font-size-sm;
+  label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-semibold;
+    color: $gray-700;
+    font-size: $font-size-sm;
 
-      i {
-        color: $primary;
-      }
-    }
-
-    .form-control {
-      width: 100%;
-      padding: $spacing-md;
-      border: 2px solid var(--border-color);
-      border-radius: $radius-md;
-      font-size: $font-size-base;
-      transition: $transition-base;
-
-      &:focus {
-        outline: none;
-        border-color: $primary;
-        @include focus-ring($primary);
-      }
-
-      &::placeholder {
-        color: $gray-400;
-      }
-    }
-
-    textarea.form-control {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .input-wrapper {
-      position: relative;
-
-      .currency {
-        position: absolute;
-        left: $spacing-md;
-        top: 50%;
-        transform: translateY(-50%);
-        font-weight: $font-weight-semibold;
-        color: $gray-500;
-        font-size: $font-size-lg;
-      }
-
-      .amount-input {
-        padding-left: $spacing-3xl;
-        font-size: $font-size-xl;
-        font-weight: $font-weight-semibold;
-      }
-    }
-
-    .difference {
-      margin-top: $spacing-sm;
-      font-size: $font-size-sm;
-      font-weight: $font-weight-semibold;
-
-      .positive {
-        color: $success;
-      }
-
-      .negative {
-        color: $danger;
-      }
+    i {
+      color: $primary;
     }
   }
 
-  .register-summary {
-    background: var(--bg-tertiary);
-    border-radius: $radius-md;
+  .form-control {
+    width: 100%;
     padding: $spacing-md;
-    margin-bottom: $spacing-lg;
+    border: 2px solid var(--border-color);
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    transition: $transition-base;
 
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: $spacing-sm 0;
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      @include focus-ring($primary);
+    }
 
-      &:not(:last-child) {
-        border-bottom: 1px solid var(--border-color);
-      }
+    &::placeholder {
+      color: $gray-400;
+    }
+  }
 
-      span {
-        color: $gray-600;
-        font-size: $font-size-sm;
-      }
+  textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+  }
 
-      .value {
-        font-weight: $font-weight-semibold;
-        color: $gray-800;
+  .input-wrapper {
+    position: relative;
 
-        &.highlight {
-          color: $primary;
-          font-size: $font-size-lg;
-        }
-      }
+    .currency {
+      position: absolute;
+      left: $spacing-md;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: $font-weight-semibold;
+      color: $gray-500;
+      font-size: $font-size-lg;
+    }
+
+    .amount-input {
+      padding-left: $spacing-3xl;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  .difference {
+    margin-top: $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+
+    .positive {
+      color: $success;
+    }
+
+    .negative {
+      color: $danger;
     }
   }
 }
 
+.register-summary {
+  background: var(--bg-tertiary);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    span {
+      color: $gray-600;
+      font-size: $font-size-sm;
+    }
+
+    .value {
+      font-weight: $font-weight-semibold;
+      color: $gray-800;
+
+      &.highlight {
+        color: $primary;
+        font-size: $font-size-lg;
+      }
+    }
+  }
+}
 .modal-footer {
   display: flex;
   gap: $spacing-md;
   padding: $spacing-lg $spacing-xl;
-  background: var(--bg-tertiary);
   border-radius: 0 0 $radius-2xl $radius-2xl;
+  background: $neumorphic-surface;
 
   .btn-cancel,
   .btn-confirm {

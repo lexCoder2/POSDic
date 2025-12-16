@@ -70,7 +70,16 @@
               </div>
               <div class="item-header">
                 <div class="item-title">
-                  <h4 class="item-name">{{ item.product.name }}</h4>
+                  <h4 class="item-name">
+                    {{ item.customName || item.product.name }}
+                  </h4>
+                  @if (
+                    item.customName && item.product.name !== item.customName
+                  ) {
+                    <div class="item-original-name">
+                      {{ item.product.name }}
+                    </div>
+                  }
                   @if (item.product.brand) {
                     <div class="item-brand">
                       {{ item.product.brand }}
@@ -106,6 +115,13 @@
                 </button>
               </div>
               <div class="item-actions">
+                <button
+                  class="action-btn star-btn"
+                  (click)="addToQuickAccess(item, $event)"
+                  title="{{ 'QUICK_ACCESS.ADD' | translate }}"
+                >
+                  <i class="fas fa-star"></i>
+                </button>
                 <button
                   class="action-btn edit-btn"
                   (click)="openPriceEditor(item)"
@@ -170,7 +186,7 @@
         title="Pay with cash"
       >
         <i class="fas fa-money-bill-wave"></i>
-        <span>Cash</span>
+        <span>{{ "POS.PAYMENTS.CASH" | translate }}</span>
       </button>
       <button
         class="quick-pay-btn card"
@@ -179,7 +195,7 @@
         title="Pay with card"
       >
         <i class="fas fa-credit-card"></i>
-        <span>Card</span>
+        <span>{{ "POS.PAYMENTS.CARD" | translate }}</span>
       </button>
       @if (canMakeInternalSale) {
         <button

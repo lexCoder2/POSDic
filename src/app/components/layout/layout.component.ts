@@ -277,6 +277,52 @@ export class LayoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  @HostListener("document:keydown", ["$event"])
+  onKeyDown(event: KeyboardEvent): void {
+    // Ignore if user is typing in an input/textarea
+    const target = event.target as HTMLElement;
+    if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+      return;
+    }
+
+    // F key navigation shortcuts
+    const fKeyRoutes: { [key: string]: string } = {
+      F1: "/dashboard",
+      F2: "/pos",
+      F3: "/cashier",
+      F4: "/statistics",
+      F5: "/inventory",
+      F6: "/providers",
+      F7: "/sales",
+      F8: "/registers",
+      F9: "/users",
+      F10: "/settings",
+    };
+
+    const route = fKeyRoutes[event.key];
+    if (route) {
+      event.preventDefault();
+
+      // Check permissions before navigating
+      if (
+        route === "/dashboard" ||
+        route === "/statistics" ||
+        route === "/sales" ||
+        route === "/registers" ||
+        route === "/users" ||
+        route === "/settings"
+      ) {
+        if (!this.isAdminOrManager) return;
+      }
+      if (route === "/providers") {
+        if (!this.isAdmin) return;
+      }
+
+      this.router.navigate([route]);
+      this.closeSidebar(); // Close mobile sidebar after navigation
+    }
+  }
+
   toggleUserDropdown(): void {
     this.showUserDropdown = !this.showUserDropdown;
   }

@@ -34,6 +34,7 @@ import {
   CalculatorAddEvent,
 } from "../calculator/calculator.component";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
+import { ModalComponent } from "../modal/modal.component";
 
 // Modal Components
 import {
@@ -75,6 +76,7 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
     CalculatorComponent,
     TranslatePipe,
     CurrencyPipe,
+    ModalComponent,
     CheckoutModalComponent,
     WeightModalComponent,
     QuickProductModalComponent,
@@ -659,7 +661,7 @@ export class PosComponent implements OnInit, OnDestroy {
     const sale = {
       items: this.cartItems.map((item) => ({
         product: item.product._id!,
-        productName: item.product.name,
+        productName: item.customName || item.product.name,
         productCode:
           item.product.product_id || item.product.sku || item.product.ean || "",
         quantity: item.quantity,
@@ -1046,19 +1048,23 @@ export class PosComponent implements OnInit, OnDestroy {
 
   onCalculatorAddGeneric(event: CalculatorAddEvent): void {
     // Create a generic product for the cart
+    const productName = event.customName
+      ? event.customName
+      : `Generic Item - ${event.value.toFixed(2)}`;
+
     const genericProduct: Product = {
       _id: `temp-${Date.now()}`,
       product_id: `GENERIC-${Date.now()}`,
-      name: `Generic Item - ${event.value.toFixed(2)}`,
+      name: productName,
       price: event.value,
       stock: 1,
       active: true,
       category: "Generic",
     };
 
-    this.cartService.addItem(genericProduct, 1);
+    this.cartService.addItem(genericProduct, 1, undefined, event.customName);
     this.toastService.show(
-      `Added generic item: ${event.value.toFixed(2)}`,
+      `Added: ${event.customName || "generic item"} - ${event.value.toFixed(2)}`,
       "success",
       1000
     );

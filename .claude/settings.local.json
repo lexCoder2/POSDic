@@ -5,7 +5,8 @@
       "Bash(openssl version:*)",
       "Bash(openssl genrsa:*)",
       "WebSearch",
-      "WebFetch(domain:www.manualslib.com)"
+      "WebFetch(domain:www.manualslib.com)",
+      "Bash(ng build:*)"
     ],
     "deny": [],
     "ask": []

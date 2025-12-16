@@ -81,4 +81,24 @@ export class ProductService {
   generateUniqueEAN(): Observable<{ ean: string }> {
     return this.http.post<{ ean: string }>(`${this.apiUrl}/generate-ean`, {});
   }
+
+  // Quick Access methods
+  getQuickAccess(): Observable<Product[]> {
+    return this.http.get<Product[]>(
+      `${environment.apiUrl}/users/me/quick-access`
+    );
+  }
+
+  addToQuickAccess(productId: string): Observable<Product[]> {
+    return this.http.post<Product[]>(
+      `${environment.apiUrl}/users/me/quick-access/${productId}`,
+      {}
+    );
+  }
+
+  removeFromQuickAccess(productId: string): Observable<Product[]> {
+    return this.http.delete<Product[]>(
+      `${environment.apiUrl}/users/me/quick-access/${productId}`
+    );
+  }
 }

@@ -300,7 +300,6 @@ $card-hover-shadow: $shadow-neumorphic-lg;
 
   // Global dark mode overrides for common elements
   body {
-    background-color: var(--bg-secondary);
     color: var(--text-primary);
   }
 
@@ -309,7 +308,6 @@ $card-hover-shadow: $shadow-neumorphic-lg;
   .card,
   .modal-content,
   .dropdown-menu {
-    background-color: var(--bg-secondary) !important;
     color: var(--text-primary) !important;
   }
 

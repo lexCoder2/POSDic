@@ -12,6 +12,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
+import { ModalComponent } from "../../modal/modal.component";
 
 export interface LooseProductData {
   weight: number;
@@ -23,7 +24,7 @@ export interface LooseProductData {
 @Component({
   selector: "app-loose-product-modal",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe, ModalComponent],
   templateUrl: "./loose-product-modal.component.html",
   styleUrls: ["./loose-product-modal.component.scss"],
 })

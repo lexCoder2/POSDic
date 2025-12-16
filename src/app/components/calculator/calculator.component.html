@@ -1,4 +1,15 @@
 <div #calculatorContainer class="calculator" tabindex="-1">
+  <!-- Optional Name Input -->
+  <div class="name-input-container">
+    <input
+      type="text"
+      class="name-input"
+      [(ngModel)]="customName"
+      [placeholder]="'CASHIER.CALCULATOR.NAME_PLACEHOLDER' | translate"
+      maxlength="50"
+    />
+  </div>
+
   <div
     class="display"
     (dblclick)="selectAll()"

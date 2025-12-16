@@ -60,6 +60,12 @@ const userSchema = new mongoose.Schema(
     lastLogin: {
       type: Date,
     },
+    quickAccess: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
     settings: {
       displayName: {
         type: String,

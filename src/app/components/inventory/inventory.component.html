@@ -115,6 +115,13 @@
                 <td>
                   <div class="action-buttons">
                     <button
+                      class="btn-star"
+                      (click)="addToQuickAccess(product, $event)"
+                      title="{{ 'QUICK_ACCESS.ADD' | translate }}"
+                    >
+                      <i class="fas fa-star"></i>
+                    </button>
+                    <button
                       class="btn-edit"
                       (click)="openProductModal(product)"
                       title="{{ 'INVENTORY.ACTIONS.EDIT' | translate }}"

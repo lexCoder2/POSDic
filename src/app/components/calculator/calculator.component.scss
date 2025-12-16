@@ -9,6 +9,38 @@
   }
 }
 
+.name-input-container {
+  margin-bottom: 1rem;
+
+  .name-input {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border: 2px solid $blue-light-hsl;
+    border-radius: $radius-2xl;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    transition: all 0.2s ease;
+    outline: none;
+
+    &::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    &:focus {
+      border-color: $primary;
+      background: var(--bg-primary);
+      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    &:hover:not(:focus) {
+      border-color: color.adjust($blue-light-hsl, $lightness: -5%);
+    }
+  }
+}
+
 .display {
   margin-bottom: 1rem;
   min-height: 50px;

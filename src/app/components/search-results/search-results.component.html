@@ -57,15 +57,24 @@
               <i class="fas fa-plus"></i>
             </button>
           </div>
-          @if (isAdmin()) {
+          <div class="result-actions">
             <button
-              class="btn-delete"
-              (click)="openDeleteModal($event, product)"
-              title="Delete product"
+              class="btn-quick-access"
+              (click)="addToQuickAccess($event, product)"
+              title="{{ 'QUICK_ACCESS.ADD' | translate }}"
             >
-              <i class="fas fa-trash"></i>
+              <i class="fas fa-star"></i>
             </button>
-          }
+            @if (isAdmin()) {
+              <button
+                class="btn-delete"
+                (click)="openDeleteModal($event, product)"
+                title="Delete product"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            }
+          </div>
         </div>
       }
     </div>

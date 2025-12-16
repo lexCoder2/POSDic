@@ -232,6 +232,14 @@
   }
 }
 
+.result-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-direction: column;
+}
+
+.btn-quick-access,
 .btn-delete {
   width: 32px;
   height: 32px;
@@ -246,11 +254,6 @@
   transition: all 0.2s ease;
   opacity: 0;
   transform: translateX(10px);
-
-  &:hover {
-    background: rgba($danger, 0.1);
-    color: $danger;
-  }
 
   &:active {
     transform: scale(0.95);
@@ -272,9 +275,26 @@
   }
 }
 
-.result-item:hover .btn-delete {
-  opacity: 1;
-  transform: translateX(0);
+.btn-quick-access {
+  &:hover {
+    background: rgba($warning, 0.1);
+    color: $warning;
+  }
+}
+
+.btn-delete {
+  &:hover {
+    background: rgba($danger, 0.1);
+    color: $danger;
+  }
+}
+
+.result-item:hover {
+  .btn-quick-access,
+  .btn-delete {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .no-results {

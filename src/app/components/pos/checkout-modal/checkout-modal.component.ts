@@ -12,6 +12,7 @@ import {
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
+import { ModalComponent } from "../../modal/modal.component";
 import { CartItem } from "../../../models";
 
 export type PaymentMethod = "cash" | "card" | "transfer" | "mixed";
@@ -34,7 +35,7 @@ export interface CheckoutResult {
 @Component({
   selector: "app-checkout-modal",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe, ModalComponent],
   templateUrl: "./checkout-modal.component.html",
   styleUrls: ["./checkout-modal.component.scss"],
 })

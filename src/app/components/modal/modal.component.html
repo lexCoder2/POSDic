@@ -1,7 +1,7 @@
 @if (show) {
   <div class="modal-overlay" (click)="onBackdropClick()">
     <div
-      class="modal-content"
+      class="modal-content {{ customClass }}"
       [class.modal-sm]="size === 'sm'"
       [class.modal-md]="size === 'md'"
       [class.modal-lg]="size === 'lg'"
