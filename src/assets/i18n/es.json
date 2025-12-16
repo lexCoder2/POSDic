@@ -445,21 +445,23 @@
       "BRAND_PLACEHOLDER": "Ingrese nombre de la marca",
       "SEARCH_BRAND": "Buscar marca...",
       "CREATE_NEW": "Crear nuevo",
-      "CATEGORY_LABEL": "Categoría *",
+      "CATEGORY_LABEL": "Categoría",
       "CATEGORY_PLACEHOLDER": "Seleccione una categoría",
       "SEARCH_CATEGORY": "Buscar categoría...",
-      "PRICE_LABEL": "Precio (₱) *",
+      "PRICE_LABEL": "Precio a la venta",
       "PRICE_PLACEHOLDER": "0.00",
-      "COST_LABEL": "Costo (₱)",
+      "COST_LABEL": "Costo de compra",
       "COST_PLACEHOLDER": "0.00",
-      "STOCK_LABEL": "Stock *",
+      "STOCK_LABEL": "Stock",
       "STOCK_PLACEHOLDER": "0",
       "MIN_STOCK_LABEL": "Stock Mínimo",
       "MIN_STOCK_PLACEHOLDER": "0",
       "AVAILABLE_LABEL": "Disponible para la venta",
       "REQUIRES_SCALE_LABEL": "Requiere báscula",
       "IMAGE_LABEL": "URL de Imagen",
-      "IMAGE_PLACEHOLDER": "https://example.com/image.jpg"
+      "IMAGE_PLACEHOLDER": "https://example.com/image.jpg",
+      "SHOW_ALL_FIELDS": "agregar detalles",
+      "CREATE_ANOTHER": "Crear otro producto"
     },
     "CATEGORIES": {
       "TITLE": "Categorías de Productos",
@@ -510,7 +512,8 @@
       "ADMIN_DELETE": "Solo los administradores pueden eliminar productos",
       "CONFIRM_DELETE": "¿Está seguro que desea eliminar \"{{name}}\"?",
       "PRODUCT_DELETED": "¡Producto eliminado correctamente!",
-      "PRODUCT_DELETE_FAILED": "Error al eliminar el producto"
+      "PRODUCT_DELETE_FAILED": "Error al eliminar el producto",
+      "EAN_GENERATION_FAILED": "Error al generar el código EAN"
     },
     "CATEGORY_ALERTS": {
       "FILL_REQUIRED": "Por favor ingrese un nombre de categoría",
@@ -687,112 +690,113 @@
       "WITHDRAW": "Retiro",
       "RETURNS": "Devolucion",
       "PRINT": "Ticket"
+    },
+    "REGISTER": {
+      "OPEN_TITLE": "Abrir Caja",
+      "CLOSE_TITLE": "Cerrar Caja",
+      "NUMBER": "Número de Caja",
+      "NUMBER_PLACEHOLDER": "ej., Caja 1",
+      "OPENING_CASH": "Efectivo Inicial",
+      "CLOSING_CASH": "Efectivo Final",
+      "EXPECTED_CASH": "Efectivo Esperado",
+      "DIFFERENCE": "Diferencia",
+      "NOTES": "Notas",
+      "NOTES_PLACEHOLDER": "Notas opcionales...",
+      "OPEN": "Abrir Caja",
+      "CLOSE": "Cerrar Caja"
+    },
+
+    "RETURNS": {
+      "TITLE": "Devoluciones y Reembolsos",
+      "SEARCH_PLACEHOLDER": "Buscar por número de venta o recibo...",
+      "SEARCH_HINT": "Busque una venta para procesar una devolución",
+      "NO_SALES_FOUND": "No se encontraron ventas con esa búsqueda",
+      "ITEMS": "artículos",
+      "SALE": "Venta",
+      "REFUND_TYPE": "Tipo de Reembolso",
+      "FULL_REFUND": "Reembolso Total",
+      "PARTIAL_REFUND": "Reembolso Parcial",
+      "SELECT_ITEMS": "Seleccionar Artículos a Reembolsar",
+      "REASON": "Motivo de la Devolución",
+      "REASON_PLACEHOLDER": "Ingrese el motivo de la devolución...",
+      "ORIGINAL_TOTAL": "Total Original",
+      "REFUND_AMOUNT": "Monto a Reembolsar",
+      "PROCESS_REFUND": "Procesar Reembolso",
+      "BACK_TO_SEARCH": "Volver a Buscar"
+    },
+    "CHECKOUT": {
+      "TITLE": "Checkout",
+      "ITEMS": "artículos",
+      "PAYMENT_METHOD": "Método de Pago",
+      "CASH_AMOUNT": "Importe en Efectivo",
+      "CARD_AMOUNT": "Importe en Tarjeta",
+      "TRANSFER_AMOUNT": "Importe por Transferencia",
+      "CHANGE": "Cambio"
+    },
+    "PAYMENTS": {
+      "CASH": "Efectivo",
+      "CARD": "Tarjeta",
+      "TRANSFER": "Transferencia",
+      "MIXED": "Mixto"
+    },
+    "BUTTONS": {
+      "COMPLETE_SALE": "Completar Venta"
+    },
+    "MOBILE_QUICK_ACCESS": "Acceso Rápido",
+    "SCALE": {
+      "CONNECTED": "Báscula Conectada",
+      "DISCONNECTED": "Báscula Desconectada",
+      "CONNECT_IN_SETTINGS": "Conecte la báscula desde Configuración para usar detección de peso",
+      "STABLE": "Estable",
+      "STABILIZING": "Estabilizando...",
+      "USING_SCALE": "Usando Báscula",
+      "USE_SCALE": "Usar Báscula"
+    },
+    "WEIGHT_MODAL": {
+      "TITLE": "Capturar Peso",
+      "SCALE_CONNECTED": "Báscula Conectada",
+      "SCALE_DISCONNECTED": "Báscula Desconectada",
+      "STABILIZING": "Estabilizando...",
+      "MANUAL_WEIGHT": "Peso Manual",
+      "WEIGHT": "Peso",
+      "INFO": "Ingrese el peso manualmente o use la lectura de la báscula conectada",
+      "CONFIRM": "Agregar al Carrito"
+    },
+    "INTERNAL_SALE": {
+      "TITLE": "Venta Interna - Consumo de Tienda",
+      "BUTTON": "Interno",
+      "WARNING": "Esto registrará productos consumidos por la tienda. El inventario se reducirá pero no se requiere pago.",
+      "ITEMS": "Artículos",
+      "TOTAL": "Monto Total",
+      "NOTES": "Notas",
+      "NOTES_PLACEHOLDER": "Razón del consumo interno...",
+      "LIMIT": "Tu límite",
+      "CONFIRM": "Confirmar Venta Interna"
+    },
+    "QUICK_PRODUCT": {
+      "TITLE": "Creación Rápida de Producto",
+      "INFO": "Producto no encontrado. Créalo rápidamente para continuar con tu venta. Puedes completar los detalles más tarde desde el panel.",
+      "BARCODE": "Código de Barras",
+      "PRODUCT_NAME": "Nombre del Producto",
+      "NAME_PLACEHOLDER": "Ingresa el nombre del producto",
+      "PRICE": "Precio",
+      "REQUIRES_SCALE": "Requiere Báscula (Producto a Granel)",
+      "NOTE": "Este producto será marcado como incompleto. Recuerda completar su información desde el panel.",
+      "CREATE_AND_ADD": "Crear y Agregar al Carrito"
+    },
+    "CALCULATOR": {
+      "TITLE": "Calculadora Rápida",
+      "INFO": "Ingresa precios directamente para agregar artículos genéricos al carrito."
+    },
+    "LOOSE_PRODUCT": {
+      "TITLE": "Producto a Granel",
+      "WEIGHT": "Peso",
+      "PRICE_PER_KG": "Precio por kg",
+      "DESCRIPTION": "Descripción",
+      "DESCRIPTION_PLACEHOLDER": "ej., Plátanos, Manzanas...",
+      "TOTAL": "Total",
+      "ADD_TO_CART": "Agregar al Carrito"
     }
-  },
-  "REGISTER": {
-    "OPEN_TITLE": "Abrir Caja",
-    "CLOSE_TITLE": "Cerrar Caja",
-    "NUMBER": "Número de Caja",
-    "NUMBER_PLACEHOLDER": "ej., Caja 1",
-    "OPENING_CASH": "Efectivo Inicial",
-    "CLOSING_CASH": "Efectivo Final",
-    "EXPECTED_CASH": "Efectivo Esperado",
-    "DIFFERENCE": "Diferencia",
-    "NOTES": "Notas",
-    "NOTES_PLACEHOLDER": "Notas opcionales...",
-    "OPEN": "Abrir Caja",
-    "CLOSE": "Cerrar Caja"
-  },
-  "RETURNS": {
-    "TITLE": "Devoluciones y Reembolsos",
-    "SEARCH_PLACEHOLDER": "Buscar por número de venta o recibo...",
-    "SEARCH_HINT": "Busque una venta para procesar una devolución",
-    "NO_SALES_FOUND": "No se encontraron ventas con esa búsqueda",
-    "ITEMS": "artículos",
-    "SALE": "Venta",
-    "REFUND_TYPE": "Tipo de Reembolso",
-    "FULL_REFUND": "Reembolso Total",
-    "PARTIAL_REFUND": "Reembolso Parcial",
-    "SELECT_ITEMS": "Seleccionar Artículos a Reembolsar",
-    "REASON": "Motivo de la Devolución",
-    "REASON_PLACEHOLDER": "Ingrese el motivo de la devolución...",
-    "ORIGINAL_TOTAL": "Total Original",
-    "REFUND_AMOUNT": "Monto a Reembolsar",
-    "PROCESS_REFUND": "Procesar Reembolso",
-    "BACK_TO_SEARCH": "Volver a Buscar"
-  },
-  "CHECKOUT": {
-    "TITLE": "Checkout",
-    "ITEMS": "artículos",
-    "PAYMENT_METHOD": "Método de Pago",
-    "CASH_AMOUNT": "Importe en Efectivo",
-    "CARD_AMOUNT": "Importe en Tarjeta",
-    "TRANSFER_AMOUNT": "Importe por Transferencia",
-    "CHANGE": "Cambio"
-  },
-  "PAYMENTS": {
-    "CASH": "Efectivo",
-    "CARD": "Tarjeta",
-    "TRANSFER": "Transferencia",
-    "MIXED": "Mixto"
-  },
-  "BUTTONS": {
-    "COMPLETE_SALE": "Completar Venta"
-  },
-  "MOBILE_QUICK_ACCESS": "Acceso Rápido",
-  "SCALE": {
-    "CONNECTED": "Báscula Conectada",
-    "DISCONNECTED": "Báscula Desconectada",
-    "CONNECT_IN_SETTINGS": "Conecte la báscula desde Configuración para usar detección de peso",
-    "STABLE": "Estable",
-    "STABILIZING": "Estabilizando...",
-    "USING_SCALE": "Usando Báscula",
-    "USE_SCALE": "Usar Báscula"
-  },
-  "WEIGHT_MODAL": {
-    "TITLE": "Capturar Peso",
-    "SCALE_CONNECTED": "Báscula Conectada",
-    "SCALE_DISCONNECTED": "Báscula Desconectada",
-    "STABILIZING": "Estabilizando...",
-    "MANUAL_WEIGHT": "Peso Manual",
-    "WEIGHT": "Peso",
-    "INFO": "Ingrese el peso manualmente o use la lectura de la báscula conectada",
-    "CONFIRM": "Agregar al Carrito"
-  },
-  "INTERNAL_SALE": {
-    "TITLE": "Venta Interna - Consumo de Tienda",
-    "BUTTON": "Interno",
-    "WARNING": "Esto registrará productos consumidos por la tienda. El inventario se reducirá pero no se requiere pago.",
-    "ITEMS": "Artículos",
-    "TOTAL": "Monto Total",
-    "NOTES": "Notas",
-    "NOTES_PLACEHOLDER": "Razón del consumo interno...",
-    "LIMIT": "Tu límite",
-    "CONFIRM": "Confirmar Venta Interna"
-  },
-  "QUICK_PRODUCT": {
-    "TITLE": "Creación Rápida de Producto",
-    "INFO": "Producto no encontrado. Créalo rápidamente para continuar con tu venta. Puedes completar los detalles más tarde desde el panel.",
-    "BARCODE": "Código de Barras",
-    "PRODUCT_NAME": "Nombre del Producto",
-    "NAME_PLACEHOLDER": "Ingresa el nombre del producto",
-    "PRICE": "Precio",
-    "REQUIRES_SCALE": "Requiere Báscula (Producto a Granel)",
-    "NOTE": "Este producto será marcado como incompleto. Recuerda completar su información desde el panel.",
-    "CREATE_AND_ADD": "Crear y Agregar al Carrito"
-  },
-  "CALCULATOR": {
-    "TITLE": "Calculadora Rápida",
-    "INFO": "Ingresa precios directamente para agregar artículos genéricos al carrito."
-  },
-  "LOOSE_PRODUCT": {
-    "TITLE": "Producto a Granel",
-    "WEIGHT": "Peso",
-    "PRICE_PER_KG": "Precio por kg",
-    "DESCRIPTION": "Descripción",
-    "DESCRIPTION_PLACEHOLDER": "ej., Plátanos, Manzanas...",
-    "TOTAL": "Total",
-    "ADD_TO_CART": "Agregar al Carrito"
   },
   "CART": {
     "SALE": "Venta",

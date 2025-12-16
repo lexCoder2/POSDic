@@ -1,11 +1,11 @@
 import { Component, OnInit, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { ToastService, ToastMessage } from "../../services/toast.service";
 
 @Component({
   selector: "app-toast",
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: "./toast.component.html",
   styleUrls: ["./toast.component.scss"],
 })

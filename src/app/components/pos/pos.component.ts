@@ -8,7 +8,7 @@ import {
   ChangeDetectorRef,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { Router } from "@angular/router";
@@ -67,7 +67,6 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
   selector: "app-pos",
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     CartComponent,
     SearchResultsComponent,
@@ -76,7 +75,6 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
     CalculatorComponent,
     TranslatePipe,
     CurrencyPipe,
-    // Modal Components
     CheckoutModalComponent,
     WeightModalComponent,
     QuickProductModalComponent,

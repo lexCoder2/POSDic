@@ -19,7 +19,7 @@
   background: white;
   border-radius: $radius-lg;
   box-shadow: $shadow-xl;
-  width: 90%;
+  width: 95%;
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease;
@@ -47,6 +47,20 @@
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid var(--border-color);
+  gap: $spacing-md;
+
+  .modal-header-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .modal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    white-space: nowrap;
+  }
 
   h3 {
     margin: 0;
@@ -73,6 +87,7 @@
     line-height: 1;
     transition: color $transition-base;
     border-radius: $radius-sm;
+    flex-shrink: 0;
 
     &:hover {
       color: var(--text-primary);

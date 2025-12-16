@@ -8,29 +8,31 @@
   <!-- Sales Tabs -->
   <div class="sales-tabs">
     <div class="tabs-container">
-      <button
-        *ngFor="let tab of salesTabs; let i = index"
-        class="sale-tab"
-        [class.active]="i === activeSaleTabIndex"
-        (click)="onSwitchTab(i)"
-      >
-        <span class="tab-title">
-          <span class="tab-number"
-            >{{ "CART.SALE" | translate }} #{{ i + 1 }}</span
-          >
-          <span class="tab-items" *ngIf="tab.items.length > 0"
-            >({{ tab.items.length }})</span
-          >
-        </span>
+      @for (tab of salesTabs; track tab; let i = $index) {
         <button
-          *ngIf="salesTabs.length > 1"
-          class="close-tab"
-          (click)="onCloseTab(i, $event)"
-          title="{{ 'CART.CLOSE_TAB' | translate }}"
+          class="sale-tab"
+          [class.active]="i === activeSaleTabIndex"
+          (click)="onSwitchTab(i)"
         >
-          <i class="fas fa-times"></i>
+          <span class="tab-title">
+            <span class="tab-number"
+              >{{ "CART.SALE" | translate }} #{{ i + 1 }}</span
+            >
+            @if (tab.items.length > 0) {
+              <span class="tab-items">({{ tab.items.length }})</span>
+            }
+          </span>
+          @if (salesTabs.length > 1) {
+            <button
+              class="close-tab"
+              (click)="onCloseTab(i, $event)"
+              title="{{ 'CART.CLOSE_TAB' | translate }}"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          }
         </button>
-      </button>
+      }
       <button
         class="add-tab-btn"
         (click)="onAddTab()"
@@ -44,64 +46,72 @@
   <!-- Register Status Indicator -->
 
   <div class="cart-content">
-    <div *ngIf="cartItems.length === 0" class="empty-cart">
-      <p>{{ "CART.EMPTY" | translate }}</p>
-    </div>
+    @if (cartItems.length === 0) {
+      <div class="empty-cart">
+        <p>{{ "CART.EMPTY" | translate }}</p>
+      </div>
+    }
 
     <!-- Group items by supplier -->
-    <div class="supplier-group" *ngFor="let group of getItemsBySupplier()">
-      <div class="cart-item" *ngFor="let item of group.items">
-        <div class="item-info">
-          <div class="item-image">
-            <img
-              [src]="
-                item.product.local_image
-                  ? getProductImageUrl(item.product)
-                  : 'assets/placeholder-product.png'
-              "
-              [alt]="item.product.name"
-            />
-          </div>
-          <div class="item-header">
-            <div class="item-title">
-              <h4 class="item-name">{{ item.product.name }}</h4>
-              <div class="item-brand" *ngIf="item.product.brand">
-                {{ item.product.brand }}
+    @for (group of getItemsBySupplier(); track group) {
+      <div class="supplier-group">
+        @for (item of group.items; track item) {
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-image">
+                <img
+                  [src]="
+                    item.product.local_image
+                      ? getProductImageUrl(item.product)
+                      : 'assets/placeholder-product.png'
+                  "
+                  [alt]="item.product.name"
+                />
               </div>
-              <span class="item-price">{{
-                item.product.price | appCurrency
-              }}</span>
+              <div class="item-header">
+                <div class="item-title">
+                  <h4 class="item-name">{{ item.product.name }}</h4>
+                  @if (item.product.brand) {
+                    <div class="item-brand">
+                      {{ item.product.brand }}
+                    </div>
+                  }
+                  <span class="item-price">{{
+                    item.product.price | appCurrency
+                  }}</span>
+                </div>
+              </div>
+            </div>
+            <button
+              class="remove-btn"
+              (click)="onRemoveItem(item.product._id!)"
+              title="{{ 'CART.REMOVE_ITEM' | translate }}"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+            <div class="item-details">
+              <div class="item-quantity-controls">
+                <button
+                  class="qty-btn decrease"
+                  (click)="decreaseQuantity(item)"
+                  aria-label="Decrease quantity"
+                >
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span class="item-quantity">{{ item.quantity }}</span>
+                <button
+                  class="qty-btn increase"
+                  (click)="increaseQuantity(item)"
+                  aria-label="Increase quantity"
+                >
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <button
-          class="remove-btn"
-          (click)="onRemoveItem(item.product._id!)"
-          title="{{ 'CART.REMOVE_ITEM' | translate }}"
-        >
-          <i class="fas fa-times"></i>
-        </button>
-        <div class="item-details">
-          <div class="item-quantity-controls">
-            <button
-              class="qty-btn decrease"
-              (click)="decreaseQuantity(item)"
-              aria-label="Decrease quantity"
-            >
-              <i class="fas fa-minus"></i>
-            </button>
-            <span class="item-quantity">{{ item.quantity }}</span>
-            <button
-              class="qty-btn increase"
-              (click)="increaseQuantity(item)"
-              aria-label="Increase quantity"
-            >
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
+        }
       </div>
-    </div>
+    }
   </div>
 
   <div class="cart-footer">
@@ -134,16 +144,17 @@
         <i class="fas fa-credit-card"></i>
         <span>Card</span>
       </button>
-      <button
-        class="quick-pay-btn internal"
-        *ngIf="canMakeInternalSale"
-        (click)="internalSale.emit()"
-        [disabled]="cartItems.length === 0"
-        [title]="'POS.INTERNAL_SALE.BUTTON' | translate"
-      >
-        <i class="fas fa-warehouse"></i>
-        <span>{{ "POS.INTERNAL_SALE.BUTTON" | translate }}</span>
-      </button>
+      @if (canMakeInternalSale) {
+        <button
+          class="quick-pay-btn internal"
+          (click)="internalSale.emit()"
+          [disabled]="cartItems.length === 0"
+          [title]="'POS.INTERNAL_SALE.BUTTON' | translate"
+        >
+          <i class="fas fa-warehouse"></i>
+          <span>{{ "POS.INTERNAL_SALE.BUTTON" | translate }}</span>
+        </button>
+      }
     </div>
 
     <!-- Place order button removed — quick-pay buttons handle checkout flows -->
@@ -151,34 +162,32 @@
 </aside>
 
 <!-- Close Tab Confirmation Modal -->
-<div
-  class="modal-overlay"
-  *ngIf="showCloseConfirmation()"
-  (click)="cancelCloseTab()"
->
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-exclamation-triangle"></i>
-        {{ "CART.MODAL.TITLE" | translate }}
-      </h3>
-    </div>
-    <div class="modal-body">
-      <p>
-        {{
-          "CART.MODAL.CONTAINS"
-            | translate: { count: salesTabs[tabToClose()!]?.items?.length }
-        }}
-      </p>
-      <p>{{ "CART.MODAL.CONFIRM" | translate }}</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="cancelCloseTab()">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-confirm" (click)="confirmCloseTab()">
-        <i class="fas fa-check"></i> {{ "CART.MODAL.CLOSE_TAB" | translate }}
-      </button>
+@if (showCloseConfirmation()) {
+  <div class="modal-overlay" (click)="cancelCloseTab()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ "CART.MODAL.TITLE" | translate }}
+        </h3>
+      </div>
+      <div class="modal-body">
+        <p>
+          {{
+            "CART.MODAL.CONTAINS"
+              | translate: { count: salesTabs[tabToClose()!]?.items?.length }
+          }}
+        </p>
+        <p>{{ "CART.MODAL.CONFIRM" | translate }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelCloseTab()">
+          <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+        </button>
+        <button class="btn-confirm" (click)="confirmCloseTab()">
+          <i class="fas fa-check"></i> {{ "CART.MODAL.CLOSE_TAB" | translate }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

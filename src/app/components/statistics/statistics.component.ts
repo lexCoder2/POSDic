@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
@@ -24,13 +24,7 @@ interface SalesAnalytics {
 @Component({
   selector: "app-statistics",
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TranslatePipe,
-    CurrencyPipe,
-    PageTitleComponent,
-  ],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe, PageTitleComponent],
   templateUrl: "./statistics.component.html",
   styleUrls: ["./statistics.component.scss"],
 })

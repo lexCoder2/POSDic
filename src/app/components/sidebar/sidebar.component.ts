@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 
 @Component({
   selector: "app-sidebar",
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: "./sidebar.component.html",
   styleUrls: ["./sidebar.component.scss"],
 })

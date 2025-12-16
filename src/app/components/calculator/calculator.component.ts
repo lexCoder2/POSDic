@@ -7,7 +7,7 @@ import {
   AfterViewInit,
   input,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { TranslatePipe } from "../../pipes/translate.pipe";
 
 export interface CalculatorAddEvent {
@@ -23,7 +23,7 @@ export interface CalculatorMultiplyConfirmEvent {
 @Component({
   selector: "app-calculator",
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: "./calculator.component.html",
   styleUrls: ["./calculator.component.scss"],
 })

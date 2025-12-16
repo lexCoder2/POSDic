@@ -1,13 +1,15 @@
 <div class="cashier-container">
   <!-- Register Warning Banner -->
-  <div class="register-warning" *ngIf="!currentRegister()">
-    <i class="fas fa-exclamation-triangle"></i>
-    <span>{{ "CASHIER.REGISTER_WARNING" | translate }}</span>
-    <button class="open-register-btn" (click)="openRegisterModal()">
-      <i class="fas fa-door-open"></i>
-      {{ "CASHIER.OPEN_REGISTER" | translate }}
-    </button>
-  </div>
+  @if (!currentRegister()) {
+    <div class="register-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ "CASHIER.REGISTER_WARNING" | translate }}</span>
+      <button class="open-register-btn" (click)="openRegisterModal()">
+        <i class="fas fa-door-open"></i>
+        {{ "CASHIER.OPEN_REGISTER" | translate }}
+      </button>
+    </div>
+  }
 
   <div class="cashier-content">
     <!-- Mobile Tabs (calculator / sales) -->
@@ -63,80 +65,92 @@
           </div>
         </div>
 
-        <div class="items-list" *ngIf="items().length > 0; else noItems">
-          <div
-            class="item-row"
-            *ngFor="let item of items()"
-            [class.selected]="selectedItemId() === item.id"
-          >
-            <div class="item-actions">
-              <button
-                class="qty-btn decrease"
-                (click)="decreaseQuantity(item.id); $event.stopPropagation()"
-                title="Decrease quantity"
+        @if (items().length > 0) {
+          <div class="items-list">
+            @for (item of items(); track item) {
+              <div
+                class="item-row"
+                [class.selected]="selectedItemId() === item.id"
               >
-                <i class="fas fa-minus"></i>
-              </button>
-              <span class="qty-display">{{ item.quantity }}</span>
-              <button
-                class="qty-btn increase"
-                (click)="increaseQuantity(item.id); $event.stopPropagation()"
-                title="Increase quantity"
-              >
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            <div
-              class="item-info"
-              (click)="editItem(item.id)"
-              title="Click to edit"
-            >
-              <div class="item-header">
-                <span class="item-number">#{{ item.id + 1 }}</span>
-                <div class="item-price-section">
-                  <span class="item-quantity" *ngIf="item.quantity > 1"
-                    >{{ item.quantity }}x</span
+                <div class="item-actions">
+                  <button
+                    class="qty-btn decrease"
+                    (click)="
+                      decreaseQuantity(item.id); $event.stopPropagation()
+                    "
+                    title="Decrease quantity"
                   >
-                  <span class="item-unit-price" *ngIf="item.quantity > 1"
-                    >{{ item.unitPrice | appCurrency }} =</span
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span class="qty-display">{{ item.quantity }}</span>
+                  <button
+                    class="qty-btn increase"
+                    (click)="
+                      increaseQuantity(item.id); $event.stopPropagation()
+                    "
+                    title="Increase quantity"
                   >
-                  <span class="item-price">{{ item.price | appCurrency }}</span>
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <div
+                  class="item-info"
+                  (click)="editItem(item.id)"
+                  title="Click to edit"
+                >
+                  <div class="item-header">
+                    <span class="item-number">#{{ item.id + 1 }}</span>
+                    <div class="item-price-section">
+                      @if (item.quantity > 1) {
+                        <span class="item-quantity">{{ item.quantity }}x</span>
+                      }
+                      @if (item.quantity > 1) {
+                        <span class="item-unit-price"
+                          >{{ item.unitPrice | appCurrency }} =</span
+                        >
+                      }
+                      <span class="item-price">{{
+                        item.price | appCurrency
+                      }}</span>
+                    </div>
+                  </div>
+                  @if (item.description || item.weight) {
+                    <div class="item-details">
+                      @if (item.description) {
+                        <span class="item-description">
+                          <i class="fas fa-tag"></i>
+                          {{ item.description }}
+                        </span>
+                      }
+                      @if (item.weight && item.pricePerKg) {
+                        <span class="item-weight">
+                          <i class="fas fa-weight"></i>
+                          {{ item.weight.toFixed(3) }}kg @
+                          {{ item.pricePerKg | appCurrency }}/kg
+                        </span>
+                      }
+                    </div>
+                  }
+                </div>
+                <div class="item-end-actions">
+                  <button
+                    class="remove-btn"
+                    (click)="removeItem(item.id); $event.stopPropagation()"
+                    title="Remove item"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
               </div>
-              <div class="item-details" *ngIf="item.description || item.weight">
-                <span class="item-description" *ngIf="item.description">
-                  <i class="fas fa-tag"></i>
-                  {{ item.description }}
-                </span>
-                <span
-                  class="item-weight"
-                  *ngIf="item.weight && item.pricePerKg"
-                >
-                  <i class="fas fa-weight"></i>
-                  {{ item.weight.toFixed(3) }}kg @
-                  {{ item.pricePerKg | appCurrency }}/kg
-                </span>
-              </div>
-            </div>
-            <div class="item-end-actions">
-              <button
-                class="remove-btn"
-                (click)="removeItem(item.id); $event.stopPropagation()"
-                title="Remove item"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+            }
           </div>
-        </div>
-
-        <ng-template #noItems>
+        } @else {
           <div class="no-items">
             <i class="fas fa-shopping-basket"></i>
             <p>{{ "CASHIER.ITEMS.EMPTY" | translate }}</p>
             <p class="hint">{{ "CASHIER.ITEMS.HINT" | translate }}</p>
           </div>
-        </ng-template>
+        }
       </div>
 
       <!-- Total Section -->

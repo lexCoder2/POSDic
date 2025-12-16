@@ -1,0 +1,399 @@
+<app-modal
+  [show]="show"
+  [title]="
+    isEditingProduct
+      ? ('INVENTORY.MODAL.EDIT_PRODUCT' | translate)
+      : ('INVENTORY.MODAL.ADD_PRODUCT' | translate)
+  "
+  size="xl"
+  [closeOnBackdropClick]="false"
+  (close)="onCloseModal()"
+>
+  <!-- Header Toggle for Required Fields -->
+  <div modal-header-actions class="header-toggle-required-fields">
+    <label>{{ "INVENTORY.FORM.SHOW_ALL_FIELDS" | translate }}</label>
+    <app-toggle-switch
+      [checked]="!showRequiredFieldsOnly()"
+      (change)="onShowRequiredFieldsToggle(!$event)"
+    ></app-toggle-switch>
+  </div>
+
+  <form (ngSubmit)="saveProduct()" (keydown)="onFormKeydown($event)">
+    <div class="form-content-columns">
+      <!-- Left Column -->
+      <div class="form-column">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="product-ean">{{
+              "INVENTORY.FORM.BARCODE_LABEL" | translate
+            }}</label>
+            <div class="barcode-input-container">
+              <input
+                type="text"
+                id="product-ean"
+                #barcodeInput
+                [(ngModel)]="productForm.ean"
+                name="ean"
+                required
+                tabindex="1"
+                placeholder="{{
+                  'INVENTORY.FORM.BARCODE_PLACEHOLDER' | translate
+                }}"
+                (keydown)="onBarcodeKeydown($event)"
+              />
+              <button
+                type="button"
+                class="btn-generate-ean"
+                title="Click to generate EAN or press 'b'"
+                tabindex="-1"
+                (click)="generateAndSetEAN()"
+              >
+                <i class="fas fa-barcode"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="mat-autocomplete-field">
+              <mat-label>{{
+                "INVENTORY.FORM.CATEGORY_LABEL" | translate
+              }}</mat-label>
+              <input
+                type="text"
+                matInput
+                [(ngModel)]="productForm.category"
+                name="category"
+                required
+                tabindex="3"
+                [placeholder]="
+                  'INVENTORY.FORM.CATEGORY_PLACEHOLDER' | translate
+                "
+                [matAutocomplete]="categoryAuto"
+                (input)="filterCategories(productForm.category || '')"
+              />
+              <mat-autocomplete #categoryAuto="matAutocomplete">
+                @for (cat of filteredCategories; track cat) {
+                  <mat-option [value]="cat.name">
+                    {{ cat.name }}
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+        </div>
+        @if (!showRequiredFieldsOnly()) {
+          <div class="form-row">
+            <div class="form-group">
+              <mat-form-field
+                appearance="outline"
+                class="mat-autocomplete-field"
+              >
+                <mat-label>{{
+                  "INVENTORY.FORM.BRAND_LABEL" | translate
+                }}</mat-label>
+                <input
+                  type="text"
+                  matInput
+                  [(ngModel)]="productForm.brand"
+                  name="brand"
+                  tabindex="4"
+                  [placeholder]="'INVENTORY.FORM.BRAND_PLACEHOLDER' | translate"
+                  [matAutocomplete]="brandAuto"
+                  (input)="filterBrands(productForm.brand || '')"
+                />
+                <mat-autocomplete #brandAuto="matAutocomplete">
+                  @for (brand of filteredBrands; track brand) {
+                    <mat-option [value]="brand">
+                      {{ brand }}
+                    </mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+        }
+
+        <div class="form-row form-row-half">
+          <div class="form-group">
+            <label for="product-price">
+              {{ "INVENTORY.FORM.PRICE_LABEL" | translate }} ({{
+                currencySymbol()
+              }})
+            </label>
+            <input
+              type="number"
+              id="product-price"
+              [(ngModel)]="productForm.price"
+              name="price"
+              required
+              min="0"
+              step="0.01"
+              tabindex="5"
+              placeholder="{{ 'INVENTORY.FORM.PRICE_PLACEHOLDER' | translate }}"
+            />
+          </div>
+          @if (!showRequiredFieldsOnly()) {
+            <div class="form-group">
+              <label for="product-cost">
+                {{ "INVENTORY.FORM.COST_LABEL" | translate }} ({{
+                  currencySymbol()
+                }})
+              </label>
+              <input
+                type="number"
+                id="product-cost"
+                [(ngModel)]="productForm.cost"
+                name="cost"
+                min="0"
+                step="0.01"
+                tabindex="6"
+                placeholder="{{
+                  'INVENTORY.FORM.COST_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+          }
+        </div>
+
+        @if (!showRequiredFieldsOnly()) {
+          <div class="form-row form-row-half">
+            <div class="form-group">
+              <label for="product-stock">{{
+                "INVENTORY.FORM.STOCK_LABEL" | translate
+              }}</label>
+              <input
+                type="number"
+                id="product-stock"
+                [(ngModel)]="productForm.stock"
+                name="stock"
+                min="0"
+                tabindex="7"
+                placeholder="{{
+                  'INVENTORY.FORM.STOCK_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+            <div class="form-group">
+              <label for="product-minStock">{{
+                "INVENTORY.FORM.MIN_STOCK_LABEL" | translate
+              }}</label>
+              <input
+                type="number"
+                id="product-minStock"
+                [(ngModel)]="productForm.minStock"
+                name="minStock"
+                min="0"
+                tabindex="8"
+                placeholder="{{
+                  'INVENTORY.FORM.MIN_STOCK_PLACEHOLDER' | translate
+                }}"
+              />
+            </div>
+          </div>
+        }
+
+        <div class="form-row form-row-half">
+          @if (!showRequiredFieldsOnly()) {
+            <div class="form-group">
+              <label>{{ "INVENTORY.FORM.AVAILABLE_LABEL" | translate }}</label>
+              <app-toggle-switch
+                [checked]="productForm.active"
+                [tabindex]="9"
+                (change)="productForm.active = $event"
+              ></app-toggle-switch>
+            </div>
+          }
+
+          <div class="form-group">
+            <label
+              >{{ "INVENTORY.FORM.REQUIRES_SCALE_LABEL" | translate }} *</label
+            >
+            <app-toggle-switch
+              [checked]="productForm.requiresScale"
+              [tabindex]="10"
+              (change)="productForm.requiresScale = $event"
+            ></app-toggle-switch>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="form-column">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="product-name">{{
+              "INVENTORY.FORM.NAME_LABEL" | translate
+            }}</label>
+            <input
+              type="text"
+              id="product-name"
+              [(ngModel)]="productForm.name"
+              name="name"
+              required
+              tabindex="2"
+              placeholder="{{ 'INVENTORY.FORM.NAME_PLACEHOLDER' | translate }}"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>{{ "INVENTORY.FORM.IMAGE_LABEL" | translate }}</label>
+          <div
+            class="image-upload-area"
+            (drop)="onImageDrop($event)"
+            (dragover)="onDragOver($event)"
+            [class.has-image]="imagePreview() || productForm.image_url"
+          >
+            @if (showWebcam) {
+              <div class="webcam-container">
+                <video #videoElement autoplay playsinline></video>
+                <canvas #canvasElement style="display: none"></canvas>
+                <div class="webcam-controls">
+                  <button
+                    type="button"
+                    class="btn-capture"
+                    (click)="capturePhoto()"
+                  >
+                    <i class="fas fa-camera"></i> Capture
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-cancel-webcam"
+                    (click)="stopWebcam()"
+                  >
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                </div>
+              </div>
+            }
+            @if (!showWebcam && !imagePreview() && !productForm.image_url) {
+              <div class="upload-placeholder">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop an image here or</p>
+                <div class="upload-buttons">
+                  <label for="image-file-input" class="upload-button">
+                    <i class="fas fa-folder-open"></i> Browse Files
+                  </label>
+                  <button
+                    type="button"
+                    class="upload-button webcam-button"
+                    (click)="startWebcam()"
+                  >
+                    <i class="fas fa-camera"></i> Take Photo
+                  </button>
+                </div>
+                <input
+                  type="file"
+                  id="image-file-input"
+                  accept="image/*"
+                  (change)="onImageSelected($event)"
+                  style="display: none"
+                />
+              </div>
+            }
+            @if (imagePreview() || productForm.image_url) {
+              <div class="image-preview">
+                <img
+                  [src]="imagePreview() || productForm.image_url"
+                  alt="Product image"
+                />
+                <button
+                  type="button"
+                  class="remove-image-btn"
+                  (click)="removeImage()"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            }
+            @if (uploadingImage()) {
+              <div class="uploading-overlay">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing...</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop Tool Modal -->
+    @if (showCropTool()) {
+      <div class="crop-modal-overlay">
+        <div class="crop-modal">
+          <div class="crop-header">
+            <h3>Crop Image</h3>
+            <button type="button" class="close-btn" (click)="cancelCrop()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div
+            class="crop-container"
+            (mousemove)="onCropMouseMove($event)"
+            (mouseup)="onCropMouseUp()"
+            (mouseleave)="onCropMouseUp()"
+          >
+            <img [src]="cropImage()" alt="Image to crop" />
+
+            <div
+              class="crop-box"
+              [style.left.%]="(cropArea.x / imageNaturalSize.width) * 100"
+              [style.top.%]="(cropArea.y / imageNaturalSize.height) * 100"
+              [style.width.%]="(cropArea.width / imageNaturalSize.width) * 100"
+              [style.height.%]="
+                (cropArea.height / imageNaturalSize.height) * 100
+              "
+              (mousedown)="onCropMouseDown($event)"
+            >
+              <div
+                class="crop-handle nw"
+                (mousedown)="onCropMouseDown($event, 'nw')"
+              ></div>
+              <div
+                class="crop-handle se"
+                (mousedown)="onCropMouseDown($event, 'se')"
+              ></div>
+            </div>
+          </div>
+
+          <div class="crop-actions">
+            <button type="button" class="btn-cancel" (click)="cancelCrop()">
+              Cancel
+            </button>
+            <button type="button" class="btn-apply" (click)="applyCrop()">
+              Apply Crop
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="form-actions">
+      <!-- Create Another Toggle (only for new products) -->
+      @if (!isEditingProduct) {
+        <div class="create-another-toggle">
+          <label>{{ "INVENTORY.FORM.CREATE_ANOTHER" | translate }}</label>
+          <app-toggle-switch
+            [checked]="createAnotherProduct()"
+            (change)="onCreateAnotherToggle($event)"
+          ></app-toggle-switch>
+        </div>
+      }
+
+      <div class="form-actions-buttons">
+        <button type="button" class="btn-cancel" (click)="onCloseModal()">
+          {{ "GLOBAL.CANCEL" | translate }}
+        </button>
+        <button type="submit" class="btn-save">
+          {{
+            isEditingProduct
+              ? ("INVENTORY.ACTIONS.UPDATE_PRODUCT" | translate)
+              : ("INVENTORY.ACTIONS.CREATE_PRODUCT" | translate)
+          }}
+        </button>
+      </div>
+    </div>
+  </form>
+</app-modal>

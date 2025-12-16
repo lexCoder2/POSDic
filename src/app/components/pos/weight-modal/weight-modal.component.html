@@ -1,76 +1,76 @@
-<div class="modal-overlay" *ngIf="show" (click)="onClose()">
-  <div class="modal-content weight-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-weight"></i>
-        {{ "POS.WEIGHT_MODAL.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="onClose()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="product-info">
-        <i class="fas fa-box"></i>
-        <span>{{ product?.name }}</span>
+@if (show) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-content weight-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-weight"></i>
+          {{ "POS.WEIGHT_MODAL.TITLE" | translate }}
+        </h3>
+        <button class="btn-close" (click)="onClose()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-
-      <div class="weight-display">
-        <!-- Scale Connection Indicator -->
-        <div
-          class="scale-status-badge"
-          [class.connected]="scaleConnected"
-          [class.disconnected]="!scaleConnected"
-        >
-          <i
-            [class.fa-link]="scaleConnected"
-            [class.fa-unlink]="!scaleConnected"
-            class="fas"
-          ></i>
-          <span>{{
-            scaleConnected
-              ? ("POS.WEIGHT_MODAL.SCALE_CONNECTED" | translate)
-              : ("POS.WEIGHT_MODAL.SCALE_DISCONNECTED" | translate)
-          }}</span>
+      <div class="modal-body">
+        <div class="product-info">
+          <i class="fas fa-box"></i>
+          <span>{{ product?.name }}</span>
         </div>
-        <p class="scale-hint" *ngIf="!scaleConnected">
-          <i class="fas fa-info-circle"></i>
-          {{ "POS.SCALE.CONNECT_IN_SETTINGS" | translate }}
-        </p>
-
-        <!-- Weight Input -->
-        <div class="manual-weight-input">
-          <label>
-            <i class="fas fa-weight"></i>
-            {{ "POS.WEIGHT_MODAL.WEIGHT" | translate }}
-          </label>
-          <div class="input-wrapper">
-            <input
-              type="number"
-              [(ngModel)]="manualWeight"
-              placeholder="0.000"
-              min="0.001"
-              step="0.001"
-            />
-            <span class="unit">{{ savedWeightUnit }}</span>
+        <div class="weight-display">
+          <!-- Scale Connection Indicator -->
+          <div
+            class="scale-status-badge"
+            [class.connected]="scaleConnected"
+            [class.disconnected]="!scaleConnected"
+          >
+            <i
+              [class.fa-link]="scaleConnected"
+              [class.fa-unlink]="!scaleConnected"
+              class="fas"
+            ></i>
+            <span>{{
+              scaleConnected
+                ? ("POS.WEIGHT_MODAL.SCALE_CONNECTED" | translate)
+                : ("POS.WEIGHT_MODAL.SCALE_DISCONNECTED" | translate)
+            }}</span>
+          </div>
+          @if (!scaleConnected) {
+            <p class="scale-hint">
+              <i class="fas fa-info-circle"></i>
+              {{ "POS.SCALE.CONNECT_IN_SETTINGS" | translate }}
+            </p>
+          }
+          <!-- Weight Input -->
+          <div class="manual-weight-input">
+            <label>
+              <i class="fas fa-weight"></i>
+              {{ "POS.WEIGHT_MODAL.WEIGHT" | translate }}
+            </label>
+            <div class="input-wrapper">
+              <input
+                type="number"
+                [(ngModel)]="manualWeight"
+                placeholder="0.000"
+                min="0.001"
+                step="0.001"
+              />
+              <span class="unit">{{ savedWeightUnit }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="onClose()">
-        <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button
-        class="btn-complete"
-        (click)="onConfirm()"
-        [disabled]="!manualWeight || manualWeight <= 0"
-      >
-        <i class="fas fa-check"></i>
-        {{ "POS.WEIGHT_MODAL.CONFIRM" | translate }}
-      </button>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="onClose()">
+          <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
+        </button>
+        <button
+          class="btn-complete"
+          (click)="onConfirm()"
+          [disabled]="!manualWeight || manualWeight <= 0"
+        >
+          <i class="fas fa-check"></i>
+          {{ "POS.WEIGHT_MODAL.CONFIRM" | translate }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

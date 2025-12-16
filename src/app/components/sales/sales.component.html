@@ -103,107 +103,116 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let sale of paginatedSales()">
-          <td>
-            <strong>{{ sale.saleNumber }}</strong>
-          </td>
-          <td>{{ sale.createdAt | date: "short" }}</td>
-          <td>
-            {{
-              "SALES.ITEMS_COUNT" | translate: { count: getTotalItems(sale) }
-            }}
-          </td>
-          <td>
-            <strong>{{ sale.total | appCurrency }}</strong>
-          </td>
-          <td>
-            <span
-              class="payment-badge"
-              [class]="'payment-' + sale.paymentMethod"
-            >
-              {{ sale.paymentMethod | titlecase }}
-            </span>
-          </td>
-          <td>{{ getCashierName(sale.cashier) }}</td>
-          <td>
-            <span class="status-badge" [class]="'status-' + sale.status">
-              {{ sale.status | titlecase }}
-            </span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button
-                class="btn-view"
-                (click)="viewSale(sale)"
-                title="{{ 'SALES.ACTIONS.VIEW' | translate }}"
+        @for (sale of paginatedSales(); track sale) {
+          <tr>
+            <td>
+              <strong>{{ sale.saleNumber }}</strong>
+            </td>
+            <td>{{ sale.createdAt | date: "short" }}</td>
+            <td>
+              {{
+                "SALES.ITEMS_COUNT" | translate: { count: getTotalItems(sale) }
+              }}
+            </td>
+            <td>
+              <strong>{{ sale.total | appCurrency }}</strong>
+            </td>
+            <td>
+              <span
+                class="payment-badge"
+                [class]="'payment-' + sale.paymentMethod"
               >
-                <i class="fas fa-eye"></i>
-              </button>
-              <button
-                class="btn-print"
-                (click)="printReceipt(sale)"
-                title="{{ 'SALES.ACTIONS.PRINT' | translate }}"
-              >
-                <i class="fas fa-print"></i>
-              </button>
-              <button
-                class="btn-refund"
-                (click)="openRefundModal(sale)"
-                [disabled]="
-                  !isAdmin() ||
-                  (sale.status !== 'completed' && sale.status !== 'in_progress')
-                "
-                title="Refund"
-              >
-                <i class="fas fa-undo"></i>
-              </button>
-              <button
-                class="btn-cancel"
-                (click)="cancelSale(sale._id!)"
-                [disabled]="!isAdmin() || sale.status !== 'completed'"
-                title="{{ 'SALES.ACTIONS.CANCEL' | translate }}"
-              >
-                <i class="fas fa-ban"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <tr *ngIf="filteredSales().length === 0">
-          <td colspan="8" class="empty-state">
-            {{ "SALES.EMPTY" | translate }}
-          </td>
-        </tr>
+                {{ sale.paymentMethod | titlecase }}
+              </span>
+            </td>
+            <td>{{ getCashierName(sale.cashier) }}</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + sale.status">
+                {{ sale.status | titlecase }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button
+                  class="btn-view"
+                  (click)="viewSale(sale)"
+                  title="{{ 'SALES.ACTIONS.VIEW' | translate }}"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button
+                  class="btn-print"
+                  (click)="printReceipt(sale)"
+                  title="{{ 'SALES.ACTIONS.PRINT' | translate }}"
+                >
+                  <i class="fas fa-print"></i>
+                </button>
+                <button
+                  class="btn-refund"
+                  (click)="openRefundModal(sale)"
+                  [disabled]="
+                    !isAdmin() ||
+                    (sale.status !== 'completed' &&
+                      sale.status !== 'in_progress')
+                  "
+                  title="Refund"
+                >
+                  <i class="fas fa-undo"></i>
+                </button>
+                <button
+                  class="btn-cancel"
+                  (click)="cancelSale(sale._id!)"
+                  [disabled]="!isAdmin() || sale.status !== 'completed'"
+                  title="{{ 'SALES.ACTIONS.CANCEL' | translate }}"
+                >
+                  <i class="fas fa-ban"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+        @if (filteredSales().length === 0) {
+          <tr>
+            <td colspan="8" class="empty-state">
+              {{ "SALES.EMPTY" | translate }}
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
 
-    <div class="pagination" *ngIf="filteredSales().length > 0">
-      <button
-        class="pagination-btn"
-        (click)="prevPage()"
-        [disabled]="currentPage() === 1"
-      >
-        <i class="fas fa-chevron-left"></i> {{ "GLOBAL.PREVIOUS" | translate }}
-      </button>
-      <div class="pagination-pages">
+    @if (filteredSales().length > 0) {
+      <div class="pagination">
         <button
-          *ngFor="let page of getVisiblePages()"
-          class="pagination-page"
-          [class.active]="currentPage() === page"
-          [class.ellipsis]="page === -1"
-          [disabled]="page === -1"
-          (click)="page > 0 && goToPage(page)"
+          class="pagination-btn"
+          (click)="prevPage()"
+          [disabled]="currentPage() === 1"
         >
-          {{ page === -1 ? "..." : page }}
+          <i class="fas fa-chevron-left"></i>
+          {{ "GLOBAL.PREVIOUS" | translate }}
+        </button>
+        <div class="pagination-pages">
+          @for (page of getVisiblePages(); track page) {
+            <button
+              class="pagination-page"
+              [class.active]="currentPage() === page"
+              [class.ellipsis]="page === -1"
+              [disabled]="page === -1"
+              (click)="page > 0 && goToPage(page)"
+            >
+              {{ page === -1 ? "..." : page }}
+            </button>
+          }
+        </div>
+        <button
+          class="pagination-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()"
+        >
+          {{ "GLOBAL.NEXT" | translate }} <i class="fas fa-chevron-right"></i>
         </button>
       </div>
-      <button
-        class="pagination-btn"
-        (click)="nextPage()"
-        [disabled]="currentPage() === totalPages()"
-      >
-        {{ "GLOBAL.NEXT" | translate }} <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
+    }
   </div>
 
   <!-- Sale Details Modal -->
@@ -216,100 +225,115 @@
     size="lg"
     (close)="showSaleModal = false"
   >
-    <div *ngIf="selectedSale">
-      <div class="sale-info">
-        <div class="info-row">
-          <span class="info-label">{{ "SALES.DETAILS.DATE" | translate }}</span>
-          <span>{{ selectedSale.createdAt | date: "medium" }}</span>
+    @if (selectedSale) {
+      <div>
+        <div class="sale-info">
+          <div class="info-row">
+            <span class="info-label">{{
+              "SALES.DETAILS.DATE" | translate
+            }}</span>
+            <span>{{ selectedSale.createdAt | date: "medium" }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{
+              "SALES.DETAILS.CASHIER" | translate
+            }}</span>
+            <span>{{ getCashierName(selectedSale.cashier) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{
+              "SALES.DETAILS.PAYMENT_METHOD" | translate
+            }}</span>
+            <span
+              class="payment-badge"
+              [class]="'payment-' + selectedSale.paymentMethod"
+            >
+              {{ selectedSale.paymentMethod | titlecase }}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{
+              "SALES.DETAILS.STATUS" | translate
+            }}</span>
+            <span
+              class="status-badge"
+              [class]="'status-' + selectedSale.status"
+            >
+              {{ selectedSale.status | titlecase }}
+            </span>
+          </div>
+          @if (selectedSale.notes) {
+            <div class="info-row">
+              <span class="info-label">{{
+                "SALES.DETAILS.NOTES" | translate
+              }}</span>
+              <span>{{ selectedSale.notes }}</span>
+            </div>
+          }
         </div>
-        <div class="info-row">
-          <span class="info-label">{{
-            "SALES.DETAILS.CASHIER" | translate
-          }}</span>
-          <span>{{ getCashierName(selectedSale.cashier) }}</span>
+        <h3>{{ "SALES.DETAILS.ITEMS" | translate }}</h3>
+        <div class="neumorphic-table table-responsive">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>{{ "SALES.DETAILS.TABLE.PRODUCT" | translate }}</th>
+                <th>{{ "SALES.DETAILS.TABLE.QTY" | translate }}</th>
+                <th>{{ "SALES.DETAILS.TABLE.UNIT_PRICE" | translate }}</th>
+                <th>{{ "SALES.DETAILS.TABLE.DISCOUNT" | translate }}</th>
+                <th>{{ "SALES.DETAILS.TABLE.TOTAL" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of selectedSale.items; track item) {
+                <tr>
+                  <td>
+                    {{ item.productName || getProductName(item.product) }}
+                  </td>
+                  <td>{{ item.quantity }}</td>
+                  <td>
+                    {{ item.unitPrice | appCurrency }}
+                  </td>
+                  <td>
+                    {{ item.discountAmount || 0 | appCurrency }}
+                  </td>
+                  <td>
+                    <strong>{{ item.total | appCurrency }}</strong>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-        <div class="info-row">
-          <span class="info-label">{{
-            "SALES.DETAILS.PAYMENT_METHOD" | translate
-          }}</span>
-          <span
-            class="payment-badge"
-            [class]="'payment-' + selectedSale.paymentMethod"
-          >
-            {{ selectedSale.paymentMethod | titlecase }}
-          </span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">{{
-            "SALES.DETAILS.STATUS" | translate
-          }}</span>
-          <span class="status-badge" [class]="'status-' + selectedSale.status">
-            {{ selectedSale.status | titlecase }}
-          </span>
-        </div>
-        <div class="info-row" *ngIf="selectedSale.notes">
-          <span class="info-label">{{
-            "SALES.DETAILS.NOTES" | translate
-          }}</span>
-          <span>{{ selectedSale.notes }}</span>
+        <div class="sale-totals">
+          <div class="total-row">
+            <span>{{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}</span>
+            <span>{{ selectedSale.subtotal | appCurrency }}</span>
+          </div>
+          @if (selectedSale.discountTotal) {
+            <div class="total-row">
+              <span>{{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}</span>
+              <span>-{{ selectedSale.discountTotal | appCurrency }}</span>
+            </div>
+          }
+          @if (selectedSale.taxTotal) {
+            <div class="total-row">
+              <span>{{ "SALES.DETAILS.TOTALS.TAX" | translate }}</span>
+              <span>{{ selectedSale.taxTotal | appCurrency }}</span>
+            </div>
+          }
+          <div class="total-row grand-total">
+            <span
+              ><strong>{{
+                "SALES.DETAILS.TOTALS.TOTAL" | translate
+              }}</strong></span
+            >
+            <span
+              ><strong>{{ selectedSale.total | appCurrency }}</strong></span
+            >
+          </div>
         </div>
       </div>
-
-      <h3>{{ "SALES.DETAILS.ITEMS" | translate }}</h3>
-      <div class="neumorphic-table table-responsive">
-        <table class="items-table">
-          <thead>
-            <tr>
-              <th>{{ "SALES.DETAILS.TABLE.PRODUCT" | translate }}</th>
-              <th>{{ "SALES.DETAILS.TABLE.QTY" | translate }}</th>
-              <th>{{ "SALES.DETAILS.TABLE.UNIT_PRICE" | translate }}</th>
-              <th>{{ "SALES.DETAILS.TABLE.DISCOUNT" | translate }}</th>
-              <th>{{ "SALES.DETAILS.TABLE.TOTAL" | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of selectedSale.items">
-              <td>{{ item.productName || getProductName(item.product) }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>
-                {{ item.unitPrice | appCurrency }}
-              </td>
-              <td>
-                {{ item.discountAmount || 0 | appCurrency }}
-              </td>
-              <td>
-                <strong>{{ item.total | appCurrency }}</strong>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="sale-totals">
-        <div class="total-row">
-          <span>{{ "SALES.DETAILS.TOTALS.SUBTOTAL" | translate }}</span>
-          <span>{{ selectedSale.subtotal | appCurrency }}</span>
-        </div>
-        <div class="total-row" *ngIf="selectedSale.discountTotal">
-          <span>{{ "SALES.DETAILS.TOTALS.DISCOUNT" | translate }}</span>
-          <span>-{{ selectedSale.discountTotal | appCurrency }}</span>
-        </div>
-        <div class="total-row" *ngIf="selectedSale.taxTotal">
-          <span>{{ "SALES.DETAILS.TOTALS.TAX" | translate }}</span>
-          <span>{{ selectedSale.taxTotal | appCurrency }}</span>
-        </div>
-        <div class="total-row grand-total">
-          <span
-            ><strong>{{
-              "SALES.DETAILS.TOTALS.TOTAL" | translate
-            }}</strong></span
-          >
-          <span
-            ><strong>{{ selectedSale.total | appCurrency }}</strong></span
-          >
-        </div>
-      </div>
-    </div>
+    }
   </app-modal>
 
   <!-- Refund Modal -->
@@ -320,99 +344,112 @@
     [closeOnBackdropClick]="false"
     (close)="showRefundModal = false"
   >
-    <div *ngIf="selectedSaleForRefund">
-      <div class="refund-type-selector">
-        <label>
-          <input
-            type="radio"
-            name="refundType"
-            value="full"
-            [(ngModel)]="refundType"
-            (change)="onRefundTypeChange()"
-          />
-          Full Refund ({{ selectedSaleForRefund.total | appCurrency }})
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="refundType"
-            value="partial"
-            [(ngModel)]="refundType"
-            (change)="onRefundTypeChange()"
-          />
-          Partial Refund
-        </label>
-      </div>
-
-      <!-- Partial Refund Items Selection -->
-      <div class="refund-items" *ngIf="refundType === 'partial'">
-        <h3>Select Items to Refund</h3>
-        <div class="neumorphic-table table-responsive">
-          <table class="items-table">
-            <thead>
-              <tr>
-                <th>Select</th>
-                <th>Product</th>
-                <th>Unit Price</th>
-                <th>Qty Sold</th>
-                <th>Qty to Refund</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                *ngFor="let item of selectedSaleForRefund.items; let i = index"
-              >
-                <td>
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="refundItems[i].selected"
-                    (change)="updateRefundTotal()"
-                  />
-                </td>
-                <td>{{ item.productName || getProductName(item.product) }}</td>
-                <td>{{ item.unitPrice | appCurrency }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>
-                  <input
-                    type="number"
-                    [(ngModel)]="refundItems[i].quantity"
-                    [max]="item.quantity"
-                    [min]="1"
-                    [disabled]="!refundItems[i].selected"
-                    (change)="updateRefundTotal()"
-                    class="qty-input"
-                  />
-                </td>
-                <td>
-                  <strong *ngIf="refundItems[i].selected">{{
-                    item.unitPrice * refundItems[i].quantity -
-                      (item.discountAmount || 0) *
-                        (refundItems[i].quantity / item.quantity) | appCurrency
-                  }}</strong>
-                  <span *ngIf="!refundItems[i].selected">-</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    @if (selectedSaleForRefund) {
+      <div>
+        <div class="refund-type-selector">
+          <label>
+            <input
+              type="radio"
+              name="refundType"
+              value="full"
+              [(ngModel)]="refundType"
+              (change)="onRefundTypeChange()"
+            />
+            Full Refund ({{ selectedSaleForRefund.total | appCurrency }})
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="refundType"
+              value="partial"
+              [(ngModel)]="refundType"
+              (change)="onRefundTypeChange()"
+            />
+            Partial Refund
+          </label>
         </div>
-        <div class="refund-summary">
-          <strong>Refund Total: {{ refundTotal | appCurrency }}</strong>
+        <!-- Partial Refund Items Selection -->
+        @if (refundType === "partial") {
+          <div class="refund-items">
+            <h3>Select Items to Refund</h3>
+            <div class="neumorphic-table table-responsive">
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Select</th>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Qty Sold</th>
+                    <th>Qty to Refund</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (
+                    item of selectedSaleForRefund.items;
+                    track item;
+                    let i = $index
+                  ) {
+                    <tr>
+                      <td>
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="refundItems[i].selected"
+                          (change)="updateRefundTotal()"
+                        />
+                      </td>
+                      <td>
+                        {{ item.productName || getProductName(item.product) }}
+                      </td>
+                      <td>{{ item.unitPrice | appCurrency }}</td>
+                      <td>{{ item.quantity }}</td>
+                      <td>
+                        <input
+                          type="number"
+                          [(ngModel)]="refundItems[i].quantity"
+                          [max]="item.quantity"
+                          [min]="1"
+                          [disabled]="!refundItems[i].selected"
+                          (change)="updateRefundTotal()"
+                          class="qty-input"
+                        />
+                      </td>
+                      <td>
+                        @if (refundItems[i].selected) {
+                          <strong>{{
+                            item.unitPrice * refundItems[i].quantity -
+                              (item.discountAmount || 0) *
+                                (refundItems[i].quantity / item.quantity)
+                              | appCurrency
+                          }}</strong>
+                        }
+                        @if (!refundItems[i].selected) {
+                          <span>-</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="refund-summary">
+              <strong>Refund Total: {{ refundTotal | appCurrency }}</strong>
+            </div>
+          </div>
+        }
+        <!-- Reason Input -->
+        <div class="form-group">
+          <label for="refundReason">Reason for Refund *</label>
+          <textarea
+            id="refundReason"
+            [(ngModel)]="refundReason"
+            placeholder="Enter reason for refund..."
+            rows="3"
+            required
+          ></textarea>
         </div>
       </div>
-
-      <!-- Reason Input -->
-      <div class="form-group">
-        <label for="refundReason">Reason for Refund *</label>
-        <textarea
-          id="refundReason"
-          [(ngModel)]="refundReason"
-          placeholder="Enter reason for refund..."
-          rows="3"
-          required
-        ></textarea>
-      </div>
-    </div>
+    }
 
     <div modal-footer class="modal-footer">
       <button class="btn-secondary" (click)="showRefundModal = false">

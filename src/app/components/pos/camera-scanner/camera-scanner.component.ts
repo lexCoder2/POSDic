@@ -8,14 +8,14 @@ import {
   SimpleChanges,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { ToastService } from "../../../services/toast.service";
 import { Html5Qrcode } from "html5-qrcode";
 
 @Component({
   selector: "app-camera-scanner",
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: "./camera-scanner.component.html",
   styleUrls: ["./camera-scanner.component.scss"],
 })

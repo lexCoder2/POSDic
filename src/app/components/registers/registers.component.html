@@ -67,284 +67,305 @@
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="spinner"></div>
-    <p>{{ "REGISTER.LOADING" | translate }}</p>
-  </div>
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ "REGISTER.LOADING" | translate }}</p>
+    </div>
+  }
 
   <!-- Registers Table -->
-  <div *ngIf="!loading" class="table-container">
-    <table class="registers-table">
-      <thead>
-        <tr>
-          <th>{{ "REGISTER.NUMBER" | translate }}</th>
-          <th>{{ "REGISTER.OPENED_BY" | translate }}</th>
-          <th>{{ "REGISTER.OPENED_AT" | translate }}</th>
-          <th>{{ "REGISTER.CLOSED_AT" | translate }}</th>
-          <th>{{ "REGISTER.DURATION" | translate }}</th>
-          <th>{{ "REGISTER.OPENING_CASH" | translate }}</th>
-          <th>{{ "REGISTER.CLOSING_CASH" | translate }}</th>
-          <th>{{ "REGISTER.DIFFERENCE" | translate }}</th>
-          <th>{{ "REGISTER.TOTAL_SALES" | translate }}</th>
-          <th>{{ "REGISTER.STATUS" | translate }}</th>
-          <th>{{ "REGISTER.ACTIONS" | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let register of paginatedRegisters">
-          <td>{{ register.registerNumber }}</td>
-          <td>{{ getOpenedByName(register) }}</td>
-          <td>{{ register.openedAt | date: "short" }}</td>
-          <td>
-            {{ register.closedAt ? (register.closedAt | date: "short") : "-" }}
-          </td>
-          <td>{{ calculateDuration(register) }}</td>
-          <td class="currency">{{ register.openingCash | appCurrency }}</td>
-          <td class="currency">
-            {{
-              register.closingCash
-                ? "$" + (register.closingCash | number: "1.2-2")
-                : "-"
-            }}
-          </td>
-          <td
-            class="currency"
-            [ngClass]="{
-              positive: register.cashDifference && register.cashDifference > 0,
-              negative: register.cashDifference && register.cashDifference < 0,
-            }"
-          >
-            {{
-              register.cashDifference !== null &&
-              register.cashDifference !== undefined
-                ? "$" + (register.cashDifference | number: "1.2-2")
-                : "-"
-            }}
-          </td>
-          <td class="currency">
-            {{
-              register.totalSales
-                ? "$" + (register.totalSales | number: "1.2-2")
-                : "-"
-            }}
-          </td>
-          <td>
-            <span class="status-badge" [ngClass]="register.status">
-              {{
-                register.status === "open"
-                  ? ("REGISTER.OPEN" | translate)
-                  : ("REGISTER.CLOSED" | translate)
-              }}
-            </span>
-            <span
-              *ngIf="register.isAutoClose"
-              class="auto-close-badge"
-              title="{{ 'REGISTER.AUTO_CLOSED_TOOLTIP' | translate }}"
-            >
-              <i class="fas fa-robot"></i>
-              {{ "REGISTER.AUTO_CLOSED" | translate }}
-            </span>
-          </td>
-          <td class="actions">
-            <button
-              class="btn-icon"
-              (click)="viewDetails(register)"
-              title="View Details"
-            >
-              <i class="fas fa-eye"></i>
-            </button>
-            <button
-              *ngIf="currentUser?.role === 'admin'"
-              class="btn-icon btn-danger"
-              (click)="confirmDelete(register)"
-              title="Delete"
-            >
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="paginatedRegisters.length === 0">
-          <td colspan="11" class="no-data">
-            {{ "REGISTER.NO_REGISTERS" | translate }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  @if (!loading) {
+    <div class="table-container">
+      <table class="registers-table">
+        <thead>
+          <tr>
+            <th>{{ "REGISTER.NUMBER" | translate }}</th>
+            <th>{{ "REGISTER.OPENED_BY" | translate }}</th>
+            <th>{{ "REGISTER.OPENED_AT" | translate }}</th>
+            <th>{{ "REGISTER.CLOSED_AT" | translate }}</th>
+            <th>{{ "REGISTER.DURATION" | translate }}</th>
+            <th>{{ "REGISTER.OPENING_CASH" | translate }}</th>
+            <th>{{ "REGISTER.CLOSING_CASH" | translate }}</th>
+            <th>{{ "REGISTER.DIFFERENCE" | translate }}</th>
+            <th>{{ "REGISTER.TOTAL_SALES" | translate }}</th>
+            <th>{{ "REGISTER.STATUS" | translate }}</th>
+            <th>{{ "REGISTER.ACTIONS" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (register of paginatedRegisters; track register) {
+            <tr>
+              <td>{{ register.registerNumber }}</td>
+              <td>{{ getOpenedByName(register) }}</td>
+              <td>{{ register.openedAt | date: "short" }}</td>
+              <td>
+                {{
+                  register.closedAt ? (register.closedAt | date: "short") : "-"
+                }}
+              </td>
+              <td>{{ calculateDuration(register) }}</td>
+              <td class="currency">{{ register.openingCash | appCurrency }}</td>
+              <td class="currency">
+                {{
+                  register.closingCash
+                    ? "$" + (register.closingCash | number: "1.2-2")
+                    : "-"
+                }}
+              </td>
+              <td
+                class="currency"
+                [ngClass]="{
+                  positive:
+                    register.cashDifference && register.cashDifference > 0,
+                  negative:
+                    register.cashDifference && register.cashDifference < 0,
+                }"
+              >
+                {{
+                  register.cashDifference !== null &&
+                  register.cashDifference !== undefined
+                    ? "$" + (register.cashDifference | number: "1.2-2")
+                    : "-"
+                }}
+              </td>
+              <td class="currency">
+                {{
+                  register.totalSales
+                    ? "$" + (register.totalSales | number: "1.2-2")
+                    : "-"
+                }}
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="register.status">
+                  {{
+                    register.status === "open"
+                      ? ("REGISTER.OPEN" | translate)
+                      : ("REGISTER.CLOSED" | translate)
+                  }}
+                </span>
+                @if (register.isAutoClose) {
+                  <span
+                    class="auto-close-badge"
+                    title="{{ 'REGISTER.AUTO_CLOSED_TOOLTIP' | translate }}"
+                  >
+                    <i class="fas fa-robot"></i>
+                    {{ "REGISTER.AUTO_CLOSED" | translate }}
+                  </span>
+                }
+              </td>
+              <td class="actions">
+                <button
+                  class="btn-icon"
+                  (click)="viewDetails(register)"
+                  title="View Details"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                @if (currentUser?.role === "admin") {
+                  <button
+                    class="btn-icon btn-danger"
+                    (click)="confirmDelete(register)"
+                    title="Delete"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+          @if (paginatedRegisters.length === 0) {
+            <tr>
+              <td colspan="11" class="no-data">
+                {{ "REGISTER.NO_REGISTERS" | translate }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 
   <!-- Pagination -->
-  <div *ngIf="!loading && totalPages > 1" class="pagination">
-    <button
-      class="btn btn-secondary btn-sm"
-      (click)="previousPage()"
-      [disabled]="currentPage === 1"
-    >
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <span class="page-info">
-      {{ "REGISTER.PAGE" | translate }} {{ currentPage }}
-      {{ "REGISTER.OF" | translate }} {{ totalPages }} ({{
-        filteredRegisters.length
-      }}
-      {{ "REGISTER.TOTAL" | translate }})
-    </span>
-    <button
-      class="btn btn-secondary btn-sm"
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-    >
-      <i class="fas fa-chevron-right"></i>
-    </button>
-  </div>
+  @if (!loading && totalPages > 1) {
+    <div class="pagination">
+      <button
+        class="btn btn-secondary btn-sm"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+      >
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <span class="page-info">
+        {{ "REGISTER.PAGE" | translate }} {{ currentPage }}
+        {{ "REGISTER.OF" | translate }} {{ totalPages }} ({{
+          filteredRegisters.length
+        }}
+        {{ "REGISTER.TOTAL" | translate }})
+      </span>
+      <button
+        class="btn btn-secondary btn-sm"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  }
 </div>
 
 <!-- Detail Modal -->
-<div
-  class="modal-overlay"
-  *ngIf="showDetailModal()"
-  (click)="closeDetailModal()"
->
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ "REGISTER.DETAILS" | translate }}</h2>
-      <button class="btn-close" (click)="closeDetailModal()">✕</button>
-    </div>
-    <div class="modal-body" *ngIf="selectedRegister">
-      <div class="detail-grid">
-        <div class="detail-item">
-          <label>{{ "REGISTER.NUMBER" | translate }}</label>
-          <span>{{ selectedRegister.registerNumber }}</span>
+@if (showDetailModal()) {
+  <div class="modal-overlay" (click)="closeDetailModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ "REGISTER.DETAILS" | translate }}</h2>
+        <button class="btn-close" (click)="closeDetailModal()">✕</button>
+      </div>
+      @if (selectedRegister) {
+        <div class="modal-body">
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>{{ "REGISTER.NUMBER" | translate }}</label>
+              <span>{{ selectedRegister.registerNumber }}</span>
+            </div>
+            <div class="detail-item">
+              <label>{{ "REGISTER.STATUS" | translate }}</label>
+              <span class="status-badge" [ngClass]="selectedRegister.status">
+                {{
+                  selectedRegister.status === "open"
+                    ? ("REGISTER.OPEN" | translate)
+                    : ("REGISTER.CLOSED" | translate)
+                }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>{{ "REGISTER.OPENED_BY" | translate }}</label>
+              <span>{{ getOpenedByName(selectedRegister) }}</span>
+            </div>
+            <div class="detail-item">
+              <label>{{ "REGISTER.OPENED_AT" | translate }}</label>
+              <span>{{ selectedRegister.openedAt | date: "medium" }}</span>
+            </div>
+            @if (selectedRegister.closedBy) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.CLOSED_BY" | translate }}</label>
+                <span>{{ getClosedByName(selectedRegister) }}</span>
+              </div>
+            }
+            @if (selectedRegister.closedAt) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.CLOSED_AT" | translate }}</label>
+                <span>{{ selectedRegister.closedAt | date: "medium" }}</span>
+              </div>
+            }
+            <div class="detail-item">
+              <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
+              <span class="currency">{{
+                selectedRegister.openingCash | appCurrency
+              }}</span>
+            </div>
+            @if (
+              selectedRegister.closingCash !== null &&
+              selectedRegister.closingCash !== undefined
+            ) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.CLOSING_CASH" | translate }}</label>
+                <span class="currency">{{
+                  selectedRegister.closingCash | appCurrency
+                }}</span>
+              </div>
+            }
+            @if (
+              selectedRegister.expectedCash !== null &&
+              selectedRegister.expectedCash !== undefined
+            ) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.EXPECTED_CASH" | translate }}</label>
+                <span class="currency">{{
+                  selectedRegister.expectedCash | appCurrency
+                }}</span>
+              </div>
+            }
+            @if (
+              selectedRegister.cashDifference !== null &&
+              selectedRegister.cashDifference !== undefined
+            ) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.DIFFERENCE" | translate }}</label>
+                <span
+                  class="currency"
+                  [ngClass]="{
+                    positive: selectedRegister.cashDifference > 0,
+                    negative: selectedRegister.cashDifference < 0,
+                  }"
+                >
+                  {{ selectedRegister.cashDifference | appCurrency }}
+                </span>
+              </div>
+            }
+            @if (
+              selectedRegister.totalSales !== null &&
+              selectedRegister.totalSales !== undefined
+            ) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.TOTAL_SALES" | translate }}</label>
+                <span class="currency">{{
+                  selectedRegister.totalSales | appCurrency
+                }}</span>
+              </div>
+            }
+            @if (
+              selectedRegister.totalTransactions !== null &&
+              selectedRegister.totalTransactions !== undefined
+            ) {
+              <div class="detail-item">
+                <label>{{ "REGISTER.TOTAL_TRANSACTIONS" | translate }}</label>
+                <span>{{ selectedRegister.totalTransactions }}</span>
+              </div>
+            }
+            @if (selectedRegister.notes) {
+              <div class="detail-item full-width">
+                <label>{{ "REGISTER.NOTES" | translate }}</label>
+                <p class="notes">{{ selectedRegister.notes }}</p>
+              </div>
+            }
+          </div>
         </div>
-        <div class="detail-item">
-          <label>{{ "REGISTER.STATUS" | translate }}</label>
-          <span class="status-badge" [ngClass]="selectedRegister.status">
-            {{
-              selectedRegister.status === "open"
-                ? ("REGISTER.OPEN" | translate)
-                : ("REGISTER.CLOSED" | translate)
-            }}
-          </span>
-        </div>
-        <div class="detail-item">
-          <label>{{ "REGISTER.OPENED_BY" | translate }}</label>
-          <span>{{ getOpenedByName(selectedRegister) }}</span>
-        </div>
-        <div class="detail-item">
-          <label>{{ "REGISTER.OPENED_AT" | translate }}</label>
-          <span>{{ selectedRegister.openedAt | date: "medium" }}</span>
-        </div>
-        <div class="detail-item" *ngIf="selectedRegister.closedBy">
-          <label>{{ "REGISTER.CLOSED_BY" | translate }}</label>
-          <span>{{ getClosedByName(selectedRegister) }}</span>
-        </div>
-        <div class="detail-item" *ngIf="selectedRegister.closedAt">
-          <label>{{ "REGISTER.CLOSED_AT" | translate }}</label>
-          <span>{{ selectedRegister.closedAt | date: "medium" }}</span>
-        </div>
-        <div class="detail-item">
-          <label>{{ "REGISTER.OPENING_CASH" | translate }}</label>
-          <span class="currency">{{
-            selectedRegister.openingCash | appCurrency
-          }}</span>
-        </div>
-        <div
-          class="detail-item"
-          *ngIf="
-            selectedRegister.closingCash !== null &&
-            selectedRegister.closingCash !== undefined
-          "
-        >
-          <label>{{ "REGISTER.CLOSING_CASH" | translate }}</label>
-          <span class="currency">{{
-            selectedRegister.closingCash | appCurrency
-          }}</span>
-        </div>
-        <div
-          class="detail-item"
-          *ngIf="
-            selectedRegister.expectedCash !== null &&
-            selectedRegister.expectedCash !== undefined
-          "
-        >
-          <label>{{ "REGISTER.EXPECTED_CASH" | translate }}</label>
-          <span class="currency">{{
-            selectedRegister.expectedCash | appCurrency
-          }}</span>
-        </div>
-        <div
-          class="detail-item"
-          *ngIf="
-            selectedRegister.cashDifference !== null &&
-            selectedRegister.cashDifference !== undefined
-          "
-        >
-          <label>{{ "REGISTER.DIFFERENCE" | translate }}</label>
-          <span
-            class="currency"
-            [ngClass]="{
-              positive: selectedRegister.cashDifference > 0,
-              negative: selectedRegister.cashDifference < 0,
-            }"
-          >
-            {{ selectedRegister.cashDifference | appCurrency }}
-          </span>
-        </div>
-        <div
-          class="detail-item"
-          *ngIf="
-            selectedRegister.totalSales !== null &&
-            selectedRegister.totalSales !== undefined
-          "
-        >
-          <label>{{ "REGISTER.TOTAL_SALES" | translate }}</label>
-          <span class="currency">{{
-            selectedRegister.totalSales | appCurrency
-          }}</span>
-        </div>
-        <div
-          class="detail-item"
-          *ngIf="
-            selectedRegister.totalTransactions !== null &&
-            selectedRegister.totalTransactions !== undefined
-          "
-        >
-          <label>{{ "REGISTER.TOTAL_TRANSACTIONS" | translate }}</label>
-          <span>{{ selectedRegister.totalTransactions }}</span>
-        </div>
-        <div class="detail-item full-width" *ngIf="selectedRegister.notes">
-          <label>{{ "REGISTER.NOTES" | translate }}</label>
-          <p class="notes">{{ selectedRegister.notes }}</p>
-        </div>
+      }
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="closeDetailModal()">
+          {{ "REGISTER.CLOSE" | translate }}
+        </button>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" (click)="closeDetailModal()">
-        {{ "REGISTER.CLOSE" | translate }}
-      </button>
-    </div>
   </div>
-</div>
+}
 
 <!-- Delete Confirmation Modal -->
-<div class="modal-overlay" *ngIf="showDeleteConfirm()" (click)="cancelDelete()">
-  <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ "REGISTER.CONFIRM_DELETE" | translate }}</h2>
-      <button class="btn-close" (click)="cancelDelete()">✕</button>
-    </div>
-    <div class="modal-body">
-      <p>{{ "REGISTER.DELETE_WARNING" | translate }}</p>
-      <p *ngIf="selectedRegister">
-        <strong>{{ selectedRegister.registerNumber }}</strong>
-      </p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" (click)="cancelDelete()">
-        {{ "REGISTER.CANCEL" | translate }}
-      </button>
-      <button class="btn btn-danger" (click)="deleteRegister()">
-        {{ "REGISTER.DELETE" | translate }}
-      </button>
+@if (showDeleteConfirm()) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content modal-confirm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ "REGISTER.CONFIRM_DELETE" | translate }}</h2>
+        <button class="btn-close" (click)="cancelDelete()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ "REGISTER.DELETE_WARNING" | translate }}</p>
+        @if (selectedRegister) {
+          <p>
+            <strong>{{ selectedRegister.registerNumber }}</strong>
+          </p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelDelete()">
+          {{ "REGISTER.CANCEL" | translate }}
+        </button>
+        <button class="btn btn-danger" (click)="deleteRegister()">
+          {{ "REGISTER.DELETE" | translate }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

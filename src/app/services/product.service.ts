@@ -77,4 +77,8 @@ export class ProductService {
   bulkImport(formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/bulk-import`, formData);
   }
+
+  generateUniqueEAN(): Observable<{ ean: string }> {
+    return this.http.post<{ ean: string }>(`${this.apiUrl}/generate-ean`, {});
+  }
 }

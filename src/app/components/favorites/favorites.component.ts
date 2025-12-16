@@ -7,7 +7,7 @@ import {
   signal,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { Subject, takeUntil, timeout, catchError, of } from "rxjs";
 import { Product } from "../../models";
 import { ProductService } from "../../services/product.service";
@@ -18,7 +18,7 @@ import { environment } from "@environments/environment";
 @Component({
   selector: "app-favorites",
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CurrencyPipe],
+  imports: [TranslatePipe, CurrencyPipe],
   templateUrl: "./favorites.component.html",
   styleUrls: ["./favorites.component.scss"],
 })

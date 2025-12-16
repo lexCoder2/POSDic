@@ -6,7 +6,7 @@ import {
   signal,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { CartService } from "../../services/cart.service";
@@ -16,7 +16,7 @@ import { environment } from "@environments/environment";
 @Component({
   selector: "app-cart",
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CurrencyPipe],
+  imports: [TranslatePipe, CurrencyPipe],
   templateUrl: "./cart.component.html",
   styleUrls: ["./cart.component.scss"],
 })

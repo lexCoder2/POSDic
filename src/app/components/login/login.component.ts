@@ -7,7 +7,7 @@ import {
   ElementRef,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { finalize, catchError, of } from "rxjs";
@@ -18,7 +18,7 @@ import { Html5Qrcode } from "html5-qrcode";
 @Component({
   selector: "app-login",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.scss"],
 })

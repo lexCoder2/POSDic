@@ -60,397 +60,178 @@
   </div>
 
   <!-- Products Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'products'">
-    <div class="products-table-wrapper neumorphic-table table-responsive">
-      <table class="products-table">
-        <thead>
-          <tr>
-            <th>{{ "INVENTORY.TABLE.IMAGE" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.NAME" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.BARCODE" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.BRAND" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.CATEGORY" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.PRICE" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.STOCK" | translate }}</th>
-            <th>{{ "INVENTORY.TABLE.ACTIONS" | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let product of products()">
-            <td>
-              <div class="product-image-container">
-                @if (product.local_image) {
-                  <img
-                    [src]="imgBaseUrl + '/' + product.local_image"
-                    [alt]="product.name"
-                    class="product-thumb"
-                    (error)="onImageError($event)"
-                  />
-                }
-                <div
-                  class="product-thumb-placeholder"
-                  [style.display]="product.local_image ? 'none' : 'flex'"
-                >
-                  <i class="fas fa-image"></i>
-                </div>
-              </div>
-            </td>
-            <td>{{ product.name }}</td>
-            <td>{{ product.ean || product.ean13 || product.upc }}</td>
-            <td>{{ product.brand || "-" }}</td>
-            <td>{{ product.category }}</td>
-            <td>{{ product.price | currency: "MXN" : "symbol" : "1.2-2" }}</td>
-            <td>
-              <span
-                class="stock-badge"
-                [class.low-stock]="(product.stock ?? 0) < 10"
-              >
-                {{ product.stock }}
-              </span>
-            </td>
-            <td>
-              <div class="action-buttons">
-                <button
-                  class="btn-edit"
-                  (click)="openProductModal(product)"
-                  title="{{ 'INVENTORY.ACTIONS.EDIT' | translate }}"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  class="btn-delete"
-                  (click)="deleteProduct(product._id!)"
-                  [disabled]="!isAdmin()"
-                  title="{{ 'INVENTORY.ACTIONS.DELETE' | translate }}"
-                >
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="products().length === 0">
-            <td colspan="8" class="empty-state">
-              {{ "INVENTORY.EMPTY" | translate }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="pagination" *ngIf="totalRecords() > 0">
-        <button
-          class="pagination-btn"
-          (click)="prevPage()"
-          [disabled]="currentPage() === 1"
-        >
-          <i class="fas fa-chevron-left"></i>
-          {{ "GLOBAL.PREVIOUS" | translate }}
-        </button>
-        <div class="pagination-pages">
-          <button
-            *ngFor="let page of getVisiblePages()"
-            class="pagination-page"
-            [class.active]="currentPage() === page"
-            [class.ellipsis]="page === -1"
-            [disabled]="page === -1"
-            (click)="page > 0 && goToPage(page)"
-          >
-            {{ page === -1 ? "..." : page }}
-          </button>
-        </div>
-        <button
-          class="pagination-btn"
-          (click)="nextPage()"
-          [disabled]="currentPage() === totalPages()"
-        >
-          {{ "GLOBAL.NEXT" | translate }} <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Categories Tab -->
-  <div class="tab-content" *ngIf="activeTab === 'categories'">
-    <div class="content-header">
-      <h2>{{ "INVENTORY.CATEGORIES.TITLE" | translate }}</h2>
-      <button class="btn-add" (click)="openCategoryModal()">
-        <i class="fas fa-plus"></i>
-        {{ "INVENTORY.ADD_CATEGORY" | translate }}
-      </button>
-    </div>
-
-    <div class="categories-grid">
-      <div class="category-card" *ngFor="let category of categories">
-        <div class="category-info">
-          <h3>{{ category.name }}</h3>
-          <p class="category-desc" *ngIf="category.description">
-            {{ category.description }}
-          </p>
-        </div>
-        <div class="category-actions">
-          <button class="btn-edit" (click)="openCategoryModal(category)">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button
-            class="btn-delete"
-            (click)="deleteCategory(category._id!)"
-            [disabled]="!isAdmin()"
-          >
-            <i class="fas fa-trash-alt"></i>
-          </button>
-        </div>
-      </div>
-      <div class="empty-state" *ngIf="categories.length === 0">
-        {{ "INVENTORY.CATEGORIES.EMPTY" | translate }}
-      </div>
-    </div>
-  </div>
-
-  <!-- Product Modal -->
-  <app-modal
-    [show]="showProductModal"
-    [title]="
-      isEditingProduct
-        ? ('INVENTORY.MODAL.EDIT_PRODUCT' | translate)
-        : ('INVENTORY.MODAL.ADD_PRODUCT' | translate)
-    "
-    size="md"
-    [closeOnBackdropClick]="false"
-    (close)="showProductModal = false"
-  >
-    <form (ngSubmit)="saveProduct()">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="product-ean">{{
-            "INVENTORY.FORM.BARCODE_LABEL" | translate
-          }}</label>
-          <input
-            type="text"
-            id="product-ean"
-            #barcodeInput
-            [(ngModel)]="productForm.ean"
-            name="ean"
-            required
-            placeholder="{{ 'INVENTORY.FORM.BARCODE_PLACEHOLDER' | translate }}"
-          />
-        </div>
-        <div class="form-group">
-          <label for="product-name">{{
-            "INVENTORY.FORM.NAME_LABEL" | translate
-          }}</label>
-          <input
-            type="text"
-            id="product-name"
-            [(ngModel)]="productForm.name"
-            name="name"
-            required
-            placeholder="{{ 'INVENTORY.FORM.NAME_PLACEHOLDER' | translate }}"
-          />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="mat-autocomplete-field">
-            <mat-label>{{
-              "INVENTORY.FORM.BRAND_LABEL" | translate
-            }}</mat-label>
-            <input
-              type="text"
-              matInput
-              [(ngModel)]="productForm.brand"
-              name="brand"
-              [placeholder]="'INVENTORY.FORM.BRAND_PLACEHOLDER' | translate"
-              [matAutocomplete]="brandAuto"
-              (input)="filterBrands(productForm.brand || '')"
-            />
-            <mat-autocomplete #brandAuto="matAutocomplete">
-              <mat-option
-                *ngFor="let brand of filteredBrands()"
-                [value]="brand"
-              >
-                {{ brand }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="mat-autocomplete-field">
-            <mat-label>{{
-              "INVENTORY.FORM.CATEGORY_LABEL" | translate
-            }}</mat-label>
-            <input
-              type="text"
-              matInput
-              [(ngModel)]="productForm.category"
-              name="category"
-              required
-              [placeholder]="'INVENTORY.FORM.CATEGORY_PLACEHOLDER' | translate"
-              [matAutocomplete]="categoryAuto"
-              (input)="filterCategories(productForm.category || '')"
-            />
-            <mat-autocomplete #categoryAuto="matAutocomplete">
-              <mat-option
-                *ngFor="let cat of filteredCategories()"
-                [value]="cat.name"
-              >
-                {{ cat.name }}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="product-price">
-            {{ "INVENTORY.FORM.PRICE_LABEL" | translate }} ({{
-              currencySymbol()
-            }})
-          </label>
-          <input
-            type="number"
-            id="product-price"
-            [(ngModel)]="productForm.price"
-            name="price"
-            required
-            min="0"
-            step="0.01"
-            placeholder="{{ 'INVENTORY.FORM.PRICE_PLACEHOLDER' | translate }}"
-          />
-        </div>
-        <div class="form-group">
-          <label for="product-cost">
-            {{ "INVENTORY.FORM.COST_LABEL" | translate }} ({{
-              currencySymbol()
-            }})
-          </label>
-          <input
-            type="number"
-            id="product-cost"
-            [(ngModel)]="productForm.cost"
-            name="cost"
-            min="0"
-            step="0.01"
-            placeholder="{{ 'INVENTORY.FORM.COST_PLACEHOLDER' | translate }}"
-          />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="product-stock">{{
-            "INVENTORY.FORM.STOCK_LABEL" | translate
-          }}</label>
-          <input
-            type="number"
-            id="product-stock"
-            [(ngModel)]="productForm.stock"
-            name="stock"
-            required
-            min="0"
-            placeholder="{{ 'INVENTORY.FORM.STOCK_PLACEHOLDER' | translate }}"
-          />
-        </div>
-        <div class="form-group">
-          <label for="product-minStock">{{
-            "INVENTORY.FORM.MIN_STOCK_LABEL" | translate
-          }}</label>
-          <input
-            type="number"
-            id="product-minStock"
-            [(ngModel)]="productForm.minStock"
-            name="minStock"
-            min="0"
-            placeholder="{{
-              'INVENTORY.FORM.MIN_STOCK_PLACEHOLDER' | translate
-            }}"
-          />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>{{ "INVENTORY.FORM.AVAILABLE_LABEL" | translate }}</label>
-          <app-toggle-switch
-            [checked]="productForm.active"
-            (change)="productForm.active = $event"
-          ></app-toggle-switch>
-        </div>
-        <div class="form-group">
-          <label>{{ "INVENTORY.FORM.REQUIRES_SCALE_LABEL" | translate }}</label>
-          <app-toggle-switch
-            [checked]="productForm.requiresScale"
-            (change)="productForm.requiresScale = $event"
-          ></app-toggle-switch>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>{{ "INVENTORY.FORM.IMAGE_LABEL" | translate }}</label>
-        <div
-          class="image-upload-area"
-          (drop)="onImageDrop($event)"
-          (dragover)="onDragOver($event)"
-          [class.has-image]="imagePreview || productForm.image_url"
-        >
-          <div
-            *ngIf="!imagePreview && !productForm.image_url"
-            class="upload-placeholder"
-          >
-            <i class="fas fa-cloud-upload-alt"></i>
-            <p>Drag and drop an image here or</p>
-            <label for="image-file-input" class="upload-button">
-              <i class="fas fa-folder-open"></i> Browse Files
-            </label>
-            <input
-              type="file"
-              id="image-file-input"
-              accept="image/*"
-              (change)="onImageSelected($event)"
-              style="display: none"
-            />
-          </div>
-          <div
-            *ngIf="imagePreview || productForm.image_url"
-            class="image-preview"
-          >
-            <img
-              [src]="imagePreview || productForm.image_url"
-              alt="Product image"
-            />
+  @if (activeTab === "products") {
+    <div class="tab-content">
+      <div class="products-table-wrapper neumorphic-table table-responsive">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>{{ "INVENTORY.TABLE.IMAGE" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.NAME" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.BARCODE" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.BRAND" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.CATEGORY" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.PRICE" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.STOCK" | translate }}</th>
+              <th>{{ "INVENTORY.TABLE.ACTIONS" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products(); track product) {
+              <tr>
+                <td>
+                  <div class="product-image-container">
+                    @if (product.local_image) {
+                      <img
+                        [src]="imgBaseUrl + '/' + product.local_image"
+                        [alt]="product.name"
+                        class="product-thumb"
+                        (error)="onImageError($event)"
+                      />
+                    }
+                    <div
+                      class="product-thumb-placeholder"
+                      [style.display]="product.local_image ? 'none' : 'flex'"
+                    >
+                      <i class="fas fa-image"></i>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.ean || product.ean13 || product.upc }}</td>
+                <td>{{ product.brand || "-" }}</td>
+                <td>{{ product.category }}</td>
+                <td>
+                  {{ product.price | currency: "MXN" : "symbol" : "1.2-2" }}
+                </td>
+                <td>
+                  <span
+                    class="stock-badge"
+                    [class.low-stock]="(product.stock ?? 0) < 10"
+                  >
+                    {{ product.stock }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      class="btn-edit"
+                      (click)="openProductModal(product)"
+                      title="{{ 'INVENTORY.ACTIONS.EDIT' | translate }}"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn-delete"
+                      (click)="deleteProduct(product._id!)"
+                      [disabled]="!isAdmin()"
+                      title="{{ 'INVENTORY.ACTIONS.DELETE' | translate }}"
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (products().length === 0) {
+              <tr>
+                <td colspan="8" class="empty-state">
+                  {{ "INVENTORY.EMPTY" | translate }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (totalRecords() > 0) {
+          <div class="pagination">
             <button
-              type="button"
-              class="remove-image-btn"
-              (click)="removeImage()"
+              class="pagination-btn"
+              (click)="prevPage()"
+              [disabled]="currentPage() === 1"
             >
-              <i class="fas fa-times"></i>
+              <i class="fas fa-chevron-left"></i>
+              {{ "GLOBAL.PREVIOUS" | translate }}
+            </button>
+            <div class="pagination-pages">
+              @for (page of getVisiblePages(); track page) {
+                <button
+                  class="pagination-page"
+                  [class.active]="currentPage() === page"
+                  [class.ellipsis]="page === -1"
+                  [disabled]="page === -1"
+                  (click)="page > 0 && goToPage(page)"
+                >
+                  {{ page === -1 ? "..." : page }}
+                </button>
+              }
+            </div>
+            <button
+              class="pagination-btn"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+            >
+              {{ "GLOBAL.NEXT" | translate }}
+              <i class="fas fa-chevron-right"></i>
             </button>
           </div>
-          <div *ngIf="uploadingImage" class="uploading-overlay">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Uploading...</p>
-          </div>
-        </div>
+        }
       </div>
+    </div>
+  }
 
-      <div class="form-actions">
-        <button
-          type="button"
-          class="btn-cancel"
-          (click)="showProductModal = false"
-        >
-          {{ "GLOBAL.CANCEL" | translate }}
-        </button>
-        <button type="submit" class="btn-save">
-          {{
-            isEditingProduct
-              ? ("INVENTORY.ACTIONS.UPDATE_PRODUCT" | translate)
-              : ("INVENTORY.ACTIONS.CREATE_PRODUCT" | translate)
-          }}
+  <!-- Categories Tab -->
+  @if (activeTab === "categories") {
+    <div class="tab-content">
+      <div class="content-header">
+        <h2>{{ "INVENTORY.CATEGORIES.TITLE" | translate }}</h2>
+        <button class="btn-add" (click)="openCategoryModal()">
+          <i class="fas fa-plus"></i>
+          {{ "INVENTORY.ADD_CATEGORY" | translate }}
         </button>
       </div>
-    </form>
-  </app-modal>
+      <div class="categories-grid">
+        @for (category of categories; track category) {
+          <div class="category-card">
+            <div class="category-info">
+              <h3>{{ category.name }}</h3>
+              @if (category.description) {
+                <p class="category-desc">
+                  {{ category.description }}
+                </p>
+              }
+            </div>
+            <div class="category-actions">
+              <button class="btn-edit" (click)="openCategoryModal(category)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="btn-delete"
+                (click)="deleteCategory(category._id!)"
+                [disabled]="!isAdmin()"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        }
+        @if (categories.length === 0) {
+          <div class="empty-state">
+            {{ "INVENTORY.CATEGORIES.EMPTY" | translate }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Product Modal -->
+  <app-product-form
+    [show]="showProductModal"
+    [product]="selectedProduct"
+    [categories]="categories"
+    [allBrands]="allBrands()"
+    (closeModal)="closeProductModal()"
+    (productSaved)="onProductSaved($event)"
+  ></app-product-form>
 
   <!-- Category Modal -->
   <app-modal
@@ -580,52 +361,61 @@
         <i class="fas fa-file-download"></i>
         {{ "INVENTORY.DOWNLOAD_TEMPLATE" | translate }}
       </button>
-      <span class="file-name" *ngIf="selectedFile">
-        {{ selectedFile.name }}
-      </span>
+      @if (selectedFile) {
+        <span class="file-name">
+          {{ selectedFile.name }}
+        </span>
+      }
     </div>
 
-    <div
-      class="import-progress"
-      *ngIf="importProgress > 0 && importProgress < 100"
-    >
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="importProgress"></div>
-      </div>
-      <p>
-        {{
-          "INVENTORY.IMPORT.PROGRESS" | translate: { percent: importProgress }
-        }}
-      </p>
-    </div>
-
-    <div class="import-results" *ngIf="importResults">
-      <div class="results-summary" [class.success]="importResults.failed === 0">
-        <h3>{{ "INVENTORY.IMPORT.COMPLETE_TITLE" | translate }}</h3>
+    @if (importProgress > 0 && importProgress < 100) {
+      <div class="import-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="importProgress"></div>
+        </div>
         <p>
-          <i class="fas fa-check-circle"></i>
           {{
-            "INVENTORY.IMPORT.SUCCESSFUL"
-              | translate: { count: importResults.successful }
-          }}
-        </p>
-        <p *ngIf="importResults.failed > 0" class="error">
-          <i class="fas fa-times-circle"></i>
-          {{
-            "INVENTORY.IMPORT.FAILED_COUNT"
-              | translate: { count: importResults.failed }
+            "INVENTORY.IMPORT.PROGRESS" | translate: { percent: importProgress }
           }}
         </p>
       </div>
-      <div
-        class="error-list"
-        *ngIf="importResults.errors && importResults.errors.length > 0"
-      >
-        <h4>Errors:</h4>
-        <ul>
-          <li *ngFor="let error of importResults.errors">{{ error }}</li>
-        </ul>
+    }
+
+    @if (importResults) {
+      <div class="import-results">
+        <div
+          class="results-summary"
+          [class.success]="importResults.failed === 0"
+        >
+          <h3>{{ "INVENTORY.IMPORT.COMPLETE_TITLE" | translate }}</h3>
+          <p>
+            <i class="fas fa-check-circle"></i>
+            {{
+              "INVENTORY.IMPORT.SUCCESSFUL"
+                | translate: { count: importResults.successful }
+            }}
+          </p>
+          @if (importResults.failed > 0) {
+            <p class="error">
+              <i class="fas fa-times-circle"></i>
+              {{
+                "INVENTORY.IMPORT.FAILED_COUNT"
+                  | translate: { count: importResults.failed }
+              }}
+            </p>
+          }
+        </div>
+        @if (importResults.errors && importResults.errors.length > 0) {
+          <div class="error-list">
+            <h4>Errors:</h4>
+            <ul>
+              @for (error of importResults.errors; track error) {
+                <li>{{ error }}</li>
+              }
+            </ul>
+          </div>
+        }
       </div>
-    </div>
+    }
   </app-modal>
 </div>

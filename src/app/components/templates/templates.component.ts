@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -19,7 +19,6 @@ import { TranslationService } from "../../services/translation.service";
   selector: "app-templates",
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     ToggleSwitchComponent,

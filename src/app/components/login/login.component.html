@@ -60,118 +60,125 @@
         </button>
       </div>
 
-      <div *ngIf="error" class="error-message">
-        <i class="fas fa-exclamation-circle"></i>
-        {{ error }}
-      </div>
+      @if (error) {
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ error }}
+        </div>
+      }
 
       <!-- Scanner Login Mode (Default) -->
-      <div *ngIf="loginMode === 'scanner'" class="scanner-login-section">
-        <p class="scanner-instructions">
-          {{ "LOGIN.SCANNER_INSTRUCTIONS" | translate }}
-        </p>
-
-        <div class="scanner-input-wrapper">
-          <i class="fas fa-qrcode scanner-icon"></i>
-          <input
-            #mainQrInput
-            type="text"
-            class="scanner-input"
-            [(ngModel)]="qrInputValue"
-            (keydown.enter)="onMainQrInputEnter()"
-            (input)="onInputChange()"
-            [placeholder]="'LOGIN.SCANNER_PLACEHOLDER' | translate"
+      @if (loginMode === "scanner") {
+        <div class="scanner-login-section">
+          <p class="scanner-instructions">
+            {{ "LOGIN.SCANNER_INSTRUCTIONS" | translate }}
+          </p>
+          <div class="scanner-input-wrapper">
+            <i class="fas fa-qrcode scanner-icon"></i>
+            <input
+              #mainQrInput
+              type="text"
+              class="scanner-input"
+              [(ngModel)]="qrInputValue"
+              (keydown.enter)="onMainQrInputEnter()"
+              (input)="onInputChange()"
+              [placeholder]="'LOGIN.SCANNER_PLACEHOLDER' | translate"
+              [disabled]="qrLoading"
+            />
+          </div>
+          <p class="scanner-hint">
+            <i class="fas fa-info-circle"></i>
+            {{ "LOGIN.SCANNER_HINT" | translate }}
+          </p>
+          @if (qrLoading) {
+            <div class="scanner-loading">
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+            </div>
+          }
+          <!-- Camera option -->
+          <button
+            type="button"
+            class="btn-use-camera"
+            (click)="openCameraScanner()"
             [disabled]="qrLoading"
-          />
+          >
+            <i class="fas fa-camera"></i>
+            {{ "LOGIN.USE_CAMERA_INSTEAD" | translate }}
+          </button>
         </div>
-
-        <p class="scanner-hint">
-          <i class="fas fa-info-circle"></i>
-          {{ "LOGIN.SCANNER_HINT" | translate }}
-        </p>
-
-        <div *ngIf="qrLoading" class="scanner-loading">
-          <i class="fas fa-spinner fa-spin"></i>
-          {{ "LOGIN.QR_AUTHENTICATING" | translate }}
-        </div>
-
-        <!-- Camera option -->
-        <button
-          type="button"
-          class="btn-use-camera"
-          (click)="openCameraScanner()"
-          [disabled]="qrLoading"
-        >
-          <i class="fas fa-camera"></i>
-          {{ "LOGIN.USE_CAMERA_INSTEAD" | translate }}
-        </button>
-      </div>
+      }
 
       <!-- Password Login Mode -->
-      <form
-        *ngIf="loginMode === 'password'"
-        (ngSubmit)="onSubmit()"
-        class="login-form"
-        [class.has-error]="!!error"
-      >
-        <!-- Username Input -->
-        <div class="form-group">
-          <label for="username">{{ "LOGIN.USERNAME" | translate }}</label>
-          <div class="input-wrapper">
-            <i class="fas fa-user"></i>
-            <input
-              type="text"
-              id="username"
-              [(ngModel)]="username"
-              name="username"
-              [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate"
-              required
-              [disabled]="loading"
-              autocomplete="username"
-              (input)="onInputChange()"
-            />
+      @if (loginMode === "password") {
+        <form
+          (ngSubmit)="onSubmit()"
+          class="login-form"
+          [class.has-error]="!!error"
+        >
+          <!-- Username Input -->
+          <div class="form-group">
+            <label for="username">{{ "LOGIN.USERNAME" | translate }}</label>
+            <div class="input-wrapper">
+              <i class="fas fa-user"></i>
+              <input
+                type="text"
+                id="username"
+                [(ngModel)]="username"
+                name="username"
+                [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate"
+                required
+                [disabled]="loading"
+                autocomplete="username"
+                (input)="onInputChange()"
+              />
+            </div>
           </div>
-        </div>
-
-        <!-- Password Input -->
-        <div class="form-group">
-          <label for="password">{{ "LOGIN.PASSWORD" | translate }}</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock"></i>
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              id="password"
-              [(ngModel)]="password"
-              name="password"
-              [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
-              required
-              [disabled]="loading"
-              autocomplete="current-password"
-              (input)="onInputChange()"
-            />
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePasswordVisibility()"
-              [title]="showPassword ? 'Hide password' : 'Show password'"
-            >
-              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-            </button>
+          <!-- Password Input -->
+          <div class="form-group">
+            <label for="password">{{ "LOGIN.PASSWORD" | translate }}</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                [(ngModel)]="password"
+                name="password"
+                [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
+                required
+                [disabled]="loading"
+                autocomplete="current-password"
+                (input)="onInputChange()"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [title]="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <i
+                  [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                ></i>
+              </button>
+            </div>
           </div>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="btn-submit" [disabled]="loading">
-          <span *ngIf="!loading">
-            <i class="fas fa-sign-in-alt"></i>
-            {{ "LOGIN.SUBMIT" | translate }}
-          </span>
-          <span *ngIf="loading">
-            <i class="fas fa-spinner fa-spin"></i>
-            {{ "LOGIN.LOADING" | translate }}
-          </span>
-        </button>
-      </form>
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit" [disabled]="loading">
+            @if (!loading) {
+              <span>
+                <i class="fas fa-sign-in-alt"></i>
+                {{ "LOGIN.SUBMIT" | translate }}
+              </span>
+            }
+            @if (loading) {
+              <span>
+                <i class="fas fa-spinner fa-spin"></i>
+                {{ "LOGIN.LOADING" | translate }}
+              </span>
+            }
+          </button>
+        </form>
+      }
 
       <div class="footer-text">
         <i class="fas fa-shield-alt"></i>
@@ -182,27 +189,27 @@
 </div>
 
 <!-- Camera Scanner Modal -->
-<div
-  class="qr-modal-overlay"
-  *ngIf="showCameraScanner"
-  (click)="closeCameraScanner()"
->
-  <div class="qr-modal-content" (click)="$event.stopPropagation()">
-    <div class="qr-modal-header">
-      <h3>{{ "LOGIN.CAMERA_SCAN_TITLE" | translate }}</h3>
-      <button class="btn-close" (click)="closeCameraScanner()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="qr-modal-body">
-      <p class="qr-instructions">
-        {{ "LOGIN.QR_CAMERA_INSTRUCTIONS" | translate }}
-      </p>
-      <div id="qr-login-scanner" class="qr-scanner-container"></div>
-      <div *ngIf="qrLoading" class="qr-loading">
-        <i class="fas fa-spinner fa-spin"></i>
-        {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+@if (showCameraScanner) {
+  <div class="qr-modal-overlay" (click)="closeCameraScanner()">
+    <div class="qr-modal-content" (click)="$event.stopPropagation()">
+      <div class="qr-modal-header">
+        <h3>{{ "LOGIN.CAMERA_SCAN_TITLE" | translate }}</h3>
+        <button class="btn-close" (click)="closeCameraScanner()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="qr-modal-body">
+        <p class="qr-instructions">
+          {{ "LOGIN.QR_CAMERA_INSTRUCTIONS" | translate }}
+        </p>
+        <div id="qr-login-scanner" class="qr-scanner-container"></div>
+        @if (qrLoading) {
+          <div class="qr-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ "LOGIN.QR_AUTHENTICATING" | translate }}
+          </div>
+        }
       </div>
     </div>
   </div>
-</div>
+}

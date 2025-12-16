@@ -9,7 +9,7 @@ import {
   OnInit,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { Router, NavigationEnd } from "@angular/router";
 import { filter, Subscription } from "rxjs";
@@ -40,7 +40,6 @@ import { OpenRegisterComponent } from "../open-register/open-register.component"
   selector: "app-cashier",
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     CalculatorComponent,
     NumberKeyboardComponent,

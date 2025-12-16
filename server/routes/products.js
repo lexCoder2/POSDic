@@ -5,6 +5,8 @@ const Sale = require("../models/Sale");
 const { protect, checkPermission } = require("../middleware/auth");
 const multer = require("multer");
 const xlsx = require("xlsx");
+const fs = require("fs");
+const path = require("path");
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -415,6 +417,49 @@ router.get("/:id", protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/products/generate-ean
+// @desc    Generate unique internal EAN code
+// @access  Private (requires inventory permission)
+router.post(
+  "/generate-ean",
+  protect,
+  checkPermission("inventory"),
+  async (req, res) => {
+    try {
+      let ean;
+      let existingProduct;
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      // Generate unique EAN codes with prefix to mark as internal (9000xxxx)
+      do {
+        // Generate 10 random digits starting with 9000 (internal/generated prefix)
+        const randomPart = Math.floor(Math.random() * 1000000000)
+          .toString()
+          .padStart(9, "0");
+        ean = "9" + randomPart;
+
+        // Check if this EAN already exists in the database
+        existingProduct = await Product.findOne({
+          $or: [{ ean: ean }, { ean13: ean }, { upc: ean }],
+        });
+
+        attempts++;
+      } while (existingProduct && attempts < maxAttempts);
+
+      if (existingProduct && attempts >= maxAttempts) {
+        return res.status(500).json({
+          message: "Failed to generate unique EAN after maximum attempts",
+        });
+      }
+
+      res.json({ ean });
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
+
 // @route   POST /api/products
 // @desc    Create new product
 // @access  Private (requires inventory permission)
@@ -587,6 +632,130 @@ router.post(
     } catch (error) {
       res.status(500).json({
         message: "Error processing file",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// Configure multer for image uploads
+const imageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, "../product_images");
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
+});
+
+const imageUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit (will be resized)
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only images are allowed."));
+    }
+  },
+});
+
+// @route   POST /api/products/upload-image
+// @desc    Upload product image
+// @access  Private
+router.post(
+  "/upload-image",
+  protect,
+  imageUpload.single("image"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const imageUrl = `/product_images/${req.file.filename}`;
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res
+        .status(500)
+        .json({ message: "Error uploading image", error: error.message });
+    }
+  }
+);
+
+// @route   POST /api/products/remove-background
+// @desc    Remove background from uploaded image (with resizing)
+// @access  Private
+router.post(
+  "/remove-background",
+  protect,
+  imageUpload.single("image"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const { removeBackground } = require("@imgly/background-removal-node");
+      const { Blob } = require("buffer");
+
+      // Read the uploaded file (already resized by frontend)
+      const inputPath = req.file.path;
+      const imageBuffer = fs.readFileSync(inputPath);
+
+      console.log(
+        "Image size:",
+        (imageBuffer.length / 1024 / 1024).toFixed(2),
+        "MB"
+      );
+      console.log("Processing background removal for:", req.file.mimetype);
+
+      // Create a Blob with proper mime type
+      const imageBlob = new Blob([imageBuffer], { type: req.file.mimetype });
+
+      // Remove background
+      const resultBlob = await removeBackground(imageBlob);
+      const buffer = Buffer.from(await resultBlob.arrayBuffer());
+
+      // Save the processed image
+      const processedFilename = `processed-${Date.now()}.png`;
+      const outputPath = path.join(
+        __dirname,
+        "../product_images",
+        processedFilename
+      );
+
+      fs.writeFileSync(outputPath, buffer);
+
+      // Delete original file
+      fs.unlinkSync(inputPath);
+
+      const imageUrl = `/product_images/${processedFilename}`;
+
+      console.log("Background removal completed successfully");
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Error removing background:", error);
+      // If background removal fails, return the original image
+      if (req.file) {
+        const imageUrl = `/product_images/${req.file.filename}`;
+        return res.json({
+          imageUrl,
+          warning: "Background removal failed, using original image",
+        });
+      }
+      res.status(500).json({
+        message: "Error processing image",
         error: error.message,
       });
     }

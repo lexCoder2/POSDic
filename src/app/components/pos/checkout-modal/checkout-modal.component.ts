@@ -8,7 +8,7 @@ import {
   SimpleChanges,
   OnChanges,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
@@ -34,7 +34,7 @@ export interface CheckoutResult {
 @Component({
   selector: "app-checkout-modal",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./checkout-modal.component.html",
   styleUrls: ["./checkout-modal.component.scss"],
 })

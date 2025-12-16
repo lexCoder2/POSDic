@@ -5,7 +5,7 @@ import {
   Output,
   OnChanges,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 
@@ -19,7 +19,7 @@ export interface QuickProductData {
 @Component({
   selector: "app-quick-product-modal",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: "./quick-product-modal.component.html",
   styleUrls: ["./quick-product-modal.component.scss"],
 })

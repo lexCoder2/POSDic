@@ -7,7 +7,7 @@ import {
   HostListener,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { Router, NavigationEnd } from "@angular/router";
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from "rxjs";
@@ -21,7 +21,7 @@ import { TranslatePipe } from "@app/pipes/translate.pipe";
 @Component({
   selector: "app-global-search",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: "./global-search.component.html",
   styleUrls: ["./global-search.component.scss"],
 })

@@ -287,21 +287,6 @@
       "SCAN_TO_LOGIN": "Scan this code to login",
       "ERROR": "Unable to generate badge"
     },
-    "SCALE": {
-      "TITLE": "Digital Scale",
-      "DESCRIPTION": "Connect to a digital scale for weighing products. Connect the scale here once, and it will be available in POS and Cashier views.",
-      "CONNECT": "Connect Scale",
-      "DISCONNECT": "Disconnect Scale",
-      "STATUS_CONNECTED": "Scale Connected",
-      "STATUS_DISCONNECTED": "Scale Disconnected",
-      "CONNECTED": "Scale connected successfully",
-      "DISCONNECTED": "Scale disconnected",
-      "CONNECTION_FAILED": "Failed to connect to scale",
-      "CONNECTION_ERROR": "Error connecting to scale",
-      "DISCONNECTION_ERROR": "Error disconnecting scale",
-      "STABLE": "Stable",
-      "STABILIZING": "Stabilizing..."
-    },
     "SAVED": "Settings saved",
     "SAVE_FAILED": "Failed to save settings"
   },
@@ -472,11 +457,8 @@
       "BARCODE_PLACEHOLDER": "Enter barcode/EAN",
       "BRAND_LABEL": "Brand",
       "BRAND_PLACEHOLDER": "Enter brand name",
-      "SEARCH_BRAND": "Search brand...",
-      "CREATE_NEW": "Create new",
       "CATEGORY_LABEL": "Category *",
       "CATEGORY_PLACEHOLDER": "Select a category",
-      "SEARCH_CATEGORY": "Search category...",
       "PRICE_LABEL": "Price (₱) *",
       "PRICE_PLACEHOLDER": "0.00",
       "COST_LABEL": "Cost (₱)",
@@ -488,7 +470,9 @@
       "AVAILABLE_LABEL": "Available for sale",
       "REQUIRES_SCALE_LABEL": "Requires weighing scale",
       "IMAGE_LABEL": "Image URL",
-      "IMAGE_PLACEHOLDER": "https://example.com/image.jpg"
+      "IMAGE_PLACEHOLDER": "https://example.com/image.jpg",
+      "SHOW_ALL_FIELDS": "Show all fields",
+      "CREATE_ANOTHER": "Create another product"
     },
     "CATEGORIES": {
       "TITLE": "Product Categories",
@@ -539,7 +523,8 @@
       "ADMIN_DELETE": "Only administrators can delete products",
       "CONFIRM_DELETE": "Are you sure you want to delete \"{{name}}\"?",
       "PRODUCT_DELETED": "Product deleted successfully!",
-      "PRODUCT_DELETE_FAILED": "Failed to delete product"
+      "PRODUCT_DELETE_FAILED": "Failed to delete product",
+      "EAN_GENERATION_FAILED": "Failed to generate EAN code"
     },
     "CATEGORY_ALERTS": {
       "FILL_REQUIRED": "Please enter a category name",
@@ -645,7 +630,6 @@
       "NOT_CONNECTED": "Not Connected",
       "CONNECT": "Connect Scale",
       "DISCONNECT": "Disconnect",
-      "CONNECT_IN_SETTINGS": "Connect scale from Settings to use weight detection",
       "USE_SCALE_LABEL": "Use scale weight automatically",
       "WEIGHT_AUTOMATIC": "Weight is automatically updated from scale"
     },
@@ -756,22 +740,12 @@
       "COMPLETE_SALE": "Complete Sale"
     },
     "MOBILE_QUICK_ACCESS": "Quick Access",
-    "SCALE": {
-      "CONNECTED": "Scale Connected",
-      "DISCONNECTED": "Scale Disconnected",
-      "CONNECT_IN_SETTINGS": "Connect scale from Settings to use weight detection",
-      "STABLE": "Stable",
-      "STABILIZING": "Stabilizing...",
-      "USING_SCALE": "Using Scale",
-      "USE_SCALE": "Use Scale"
-    },
     "WEIGHT_MODAL": {
       "TITLE": "Capture Weight",
       "SCALE_CONNECTED": "Scale Connected",
       "SCALE_DISCONNECTED": "Scale Disconnected",
       "STABILIZING": "Stabilizing...",
       "MANUAL_WEIGHT": "Manual Weight",
-      "WEIGHT": "Weight",
       "INFO": "Enter weight manually or use the connected scale reading",
       "CONFIRM": "Add to Cart"
     },

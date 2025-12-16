@@ -11,90 +11,95 @@
 
   <div class="modal-body">
     <!-- Device Info -->
-    <div class="device-info" *ngIf="deviceName">
-      <i class="fas fa-desktop"></i>
-      <span
-        >{{ "REGISTER.YOUR_DEVICE" | translate }}:
-        <strong>{{ deviceName }}</strong></span
-      >
-    </div>
+    @if (deviceName) {
+      <div class="device-info">
+        <i class="fas fa-desktop"></i>
+        <span
+          >{{ "REGISTER.YOUR_DEVICE" | translate }}:
+          <strong>{{ deviceName }}</strong></span
+        >
+      </div>
+    }
 
     <!-- Loading State -->
-    <div
-      class="loading-state"
-      *ngIf="loading() && availableRegisters().length === 0"
-    >
-      <i class="fas fa-spinner fa-spin"></i>
-      <p>{{ "REGISTER.LOADING" | translate }}</p>
-    </div>
+    @if (loading() && availableRegisters().length === 0) {
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>{{ "REGISTER.LOADING" | translate }}</p>
+      </div>
+    }
 
     <!-- Register Selection -->
-    <div
-      class="form-group"
-      *ngIf="!loading() || availableRegisters().length > 0"
-    >
-      <label>
-        <i class="fas fa-cash-register"></i>
-        {{ "REGISTER.SELECT_REGISTER" | translate }}
-      </label>
-
-      <select
-        [(ngModel)]="selectedRegister"
-        (change)="onRegisterChange()"
-        class="form-control"
-        [disabled]="loading()"
-      >
-        <option value="" disabled>
+    @if (!loading() || availableRegisters().length > 0) {
+      <div class="form-group">
+        <label>
+          <i class="fas fa-cash-register"></i>
           {{ "REGISTER.SELECT_REGISTER" | translate }}
-        </option>
-
-        <option
-          *ngFor="let register of availableRegisters()"
-          [value]="register.registerNumber"
-          [disabled]="isRegisterDisabled(register)"
-          [title]="getRegisterTooltip(register)"
+        </label>
+        <select
+          [(ngModel)]="selectedRegister"
+          (change)="onRegisterChange()"
+          class="form-control"
+          [disabled]="loading()"
         >
-          {{ register.registerNumber }}
-          <span *ngIf="register.isBoundToThisDevice">
-            ⭐ ({{ "REGISTER.YOUR_DEVICE" | translate }})
-          </span>
-          <span *ngIf="register.isBoundToOtherDevice && !canManageOthers">
-            🔒 ({{ "REGISTER.OTHER_DEVICE" | translate }})
-          </span>
-          <span *ngIf="register.lastClosedAt">
-            - {{ "REGISTER.LAST_CLOSED" | translate }}:
-            {{ register.lastClosedAt | date: "short" }}
-          </span>
-        </option>
-
-        <!-- Only admin/manager can create new registers -->
-        <option value="new" *ngIf="isAdminOrManager">
-          {{ "REGISTER.CREATE_NEW" | translate }}
-        </option>
-      </select>
-
-      <!-- Permission Notice for non-admin/manager -->
-      <div class="info-notice" *ngIf="!canManageOthers">
-        <i class="fas fa-info-circle"></i>
-        <span>{{ "REGISTER.CASHIER_NOTICE" | translate }}</span>
+          <option value="" disabled>
+            {{ "REGISTER.SELECT_REGISTER" | translate }}
+          </option>
+          @for (register of availableRegisters(); track register) {
+            <option
+              [value]="register.registerNumber"
+              [disabled]="isRegisterDisabled(register)"
+              [title]="getRegisterTooltip(register)"
+            >
+              {{ register.registerNumber }}
+              @if (register.isBoundToThisDevice) {
+                <span> ⭐ ({{ "REGISTER.YOUR_DEVICE" | translate }}) </span>
+              }
+              @if (register.isBoundToOtherDevice && !canManageOthers) {
+                <span> 🔒 ({{ "REGISTER.OTHER_DEVICE" | translate }}) </span>
+              }
+              @if (register.lastClosedAt) {
+                <span>
+                  - {{ "REGISTER.LAST_CLOSED" | translate }}:
+                  {{ register.lastClosedAt | date: "short" }}
+                </span>
+              }
+            </option>
+          }
+          <!-- Only admin/manager can create new registers -->
+          @if (isAdminOrManager) {
+            <option value="new">
+              {{ "REGISTER.CREATE_NEW" | translate }}
+            </option>
+          }
+        </select>
+        <!-- Permission Notice for non-admin/manager -->
+        @if (!canManageOthers) {
+          <div class="info-notice">
+            <i class="fas fa-info-circle"></i>
+            <span>{{ "REGISTER.CASHIER_NOTICE" | translate }}</span>
+          </div>
+        }
       </div>
-    </div>
+    }
 
     <!-- New Register Input (Only for admin/manager) -->
-    <div class="form-group" *ngIf="showNewRegisterInput">
-      <label>
-        <i class="fas fa-hashtag"></i>
-        {{ "REGISTER.REGISTER_NUMBER" | translate }}
-      </label>
-      <input
-        type="text"
-        [(ngModel)]="newRegisterNumber"
-        class="form-control"
-        [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
-        [disabled]="loading()"
-        maxlength="50"
-      />
-    </div>
+    @if (showNewRegisterInput) {
+      <div class="form-group">
+        <label>
+          <i class="fas fa-hashtag"></i>
+          {{ "REGISTER.REGISTER_NUMBER" | translate }}
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="newRegisterNumber"
+          class="form-control"
+          [placeholder]="'REGISTER.REGISTER_NUMBER_PLACEHOLDER' | translate"
+          [disabled]="loading()"
+          maxlength="50"
+        />
+      </div>
+    }
 
     <!-- Opening Cash -->
     <div class="form-group">
@@ -120,16 +125,13 @@
     </div>
 
     <!-- No Registers Available -->
-    <div
-      class="no-registers"
-      *ngIf="
-        !loading() && availableRegisters().length === 0 && !isAdminOrManager
-      "
-    >
-      <i class="fas fa-exclamation-triangle"></i>
-      <p>{{ "REGISTER.NO_AVAILABLE" | translate }}</p>
-      <p class="hint">{{ "REGISTER.CONTACT_MANAGER" | translate }}</p>
-    </div>
+    @if (!loading() && availableRegisters().length === 0 && !isAdminOrManager) {
+      <div class="no-registers">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>{{ "REGISTER.NO_AVAILABLE" | translate }}</p>
+        <p class="hint">{{ "REGISTER.CONTACT_MANAGER" | translate }}</p>
+      </div>
+    }
   </div>
 
   <div class="modal-footer">
@@ -145,8 +147,12 @@
         (showNewRegisterInput && !newRegisterNumber)
       "
     >
-      <i class="fas fa-spinner fa-spin" *ngIf="loading()"></i>
-      <i class="fas fa-door-open" *ngIf="!loading()"></i>
+      @if (loading()) {
+        <i class="fas fa-spinner fa-spin"></i>
+      }
+      @if (!loading()) {
+        <i class="fas fa-door-open"></i>
+      }
       {{ "REGISTER.OPEN" | translate }}
     </button>
   </div>

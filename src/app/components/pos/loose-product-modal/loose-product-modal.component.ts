@@ -8,7 +8,7 @@ import {
   OnChanges,
   SimpleChanges,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
@@ -23,7 +23,7 @@ export interface LooseProductData {
 @Component({
   selector: "app-loose-product-modal",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./loose-product-modal.component.html",
   styleUrls: ["./loose-product-modal.component.scss"],
 })

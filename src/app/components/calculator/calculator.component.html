@@ -5,14 +5,14 @@
     [class.selected]="isSelected()"
     [class.editing]="selectedItemId() !== null"
   >
-    <ng-container *ngIf="isMultiplying()">
+    @if (isMultiplying()) {
       <div class="multiply-label">
-        <span *ngIf="multiplyMode() === 'add'">{{
-          "CASHIER.MULTIPLY.ADD_LABEL" | translate
-        }}</span>
-        <span *ngIf="multiplyMode() === 'update'">{{
-          "CASHIER.MULTIPLY.UPDATE_LABEL" | translate
-        }}</span>
+        @if (multiplyMode() === "add") {
+          <span>{{ "CASHIER.MULTIPLY.ADD_LABEL" | translate }}</span>
+        }
+        @if (multiplyMode() === "update") {
+          <span>{{ "CASHIER.MULTIPLY.UPDATE_LABEL" | translate }}</span>
+        }
       </div>
       <span class="quantity-display">{{ display() }}</span>
       <span class="display-separator">&nbsp;x&nbsp;</span>
@@ -23,10 +23,10 @@
             ? lastItemPrice()
             : ""
       }}</span>
-    </ng-container>
-    <ng-container *ngIf="!isMultiplying()">
+    }
+    @if (!isMultiplying()) {
       <span class="display-value">{{ display() }}</span>
-    </ng-container>
+    }
     <button
       class="select-all-btn"
       (click)="selectAll(); blurButton($event)"

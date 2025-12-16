@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { TranslatePipe } from "../../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../../pipes/currency.pipe";
@@ -12,7 +12,7 @@ export interface InternalSaleResult {
 @Component({
   selector: "app-internal-sale-modal",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CurrencyPipe],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./internal-sale-modal.component.html",
   styleUrls: ["./internal-sale-modal.component.scss"],
 })

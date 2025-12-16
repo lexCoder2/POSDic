@@ -1,55 +1,60 @@
 <div class="favorites">
   <!-- Loading state -->
-  <div class="loading-state" *ngIf="isLoading()">
-    <i class="fas fa-spinner fa-spin"></i>
-    <p>{{ "GLOBAL.LOADING" | translate }}</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>{{ "GLOBAL.LOADING" | translate }}</p>
+    </div>
+  }
 
   <!-- Error state -->
-  <div class="error-state" *ngIf="!isLoading && loadError">
-    <i class="fas fa-exclamation-triangle"></i>
-    <p>{{ "GLOBAL.ERROR" | translate }}</p>
-    <button class="retry-btn" (click)="loadTopProducts()">
-      <i class="fas fa-redo"></i>
-      {{ "GLOBAL.RETRY" | translate }}
-    </button>
-  </div>
+  @if (!isLoading() && loadError()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ "GLOBAL.ERROR" | translate }}</p>
+      <button class="retry-btn" (click)="loadTopProducts()">
+        <i class="fas fa-redo"></i>
+        {{ "GLOBAL.RETRY" | translate }}
+      </button>
+    </div>
+  }
 
   <!-- Products grid -->
-  <div
-    class="products-grid"
-    *ngIf="!isLoading() && !loadError() && products.length > 0"
-  >
-    <div
-      class="product-card"
-      *ngFor="let product of products"
-      (click)="selectProduct(product)"
-    >
-      <div class="product-image">
-        <img
-          *ngIf="product.local_image"
-          [src]="getProductImageUrl(product)"
-          [alt]="product.name"
-          (error)="onImageError($event)"
-        />
-        <div *ngIf="!product.local_image" class="no-image">
-          <i class="fas fa-box"></i>
+  @if (!isLoading() && !loadError() && products.length > 0) {
+    <div class="products-grid">
+      @for (product of products; track product) {
+        <div class="product-card" (click)="selectProduct(product)">
+          <div class="product-image">
+            @if (product.local_image) {
+              <img
+                [src]="getProductImageUrl(product)"
+                [alt]="product.name"
+                (error)="onImageError($event)"
+              />
+            }
+            @if (!product.local_image) {
+              <div class="no-image">
+                <i class="fas fa-box"></i>
+              </div>
+            }
+          </div>
+          <div class="product-info">
+            <h4 class="product-name">{{ product.name }}</h4>
+            @if (product.brand) {
+              <p class="product-brand">{{ product.brand }}</p>
+            }
+            <p class="product-price">{{ product.price | appCurrency }}</p>
+          </div>
         </div>
-      </div>
-      <div class="product-info">
-        <h4 class="product-name">{{ product.name }}</h4>
-        <p class="product-brand" *ngIf="product.brand">{{ product.brand }}</p>
-        <p class="product-price">{{ product.price | appCurrency }}</p>
-      </div>
+      }
     </div>
-  </div>
+  }
 
   <!-- Empty state -->
-  <div
-    class="empty-state"
-    *ngIf="!isLoading() && !loadError() && products.length === 0"
-  >
-    <i class="fas fa-star"></i>
-    <p>{{ "FAVORITES.EMPTY" | translate }}</p>
-  </div>
+  @if (!isLoading() && !loadError() && products.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-star"></i>
+      <p>{{ "FAVORITES.EMPTY" | translate }}</p>
+    </div>
+  }
 </div>

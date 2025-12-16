@@ -1,26 +1,39 @@
-<div class="modal-overlay" *ngIf="show" (click)="onBackdropClick()">
-  <div
-    class="modal-content"
-    [class.modal-sm]="size === 'sm'"
-    [class.modal-md]="size === 'md'"
-    [class.modal-lg]="size === 'lg'"
-    [class.modal-xl]="size === 'xl'"
-    (click)="$event.stopPropagation()"
-  >
-    <div class="modal-header" *ngIf="title || showCloseButton">
-      <h3 *ngIf="title">
-        <i *ngIf="icon" [class]="icon"></i>
-        {{ title }}
-      </h3>
-      <button class="btn-close" *ngIf="showCloseButton" (click)="onClose()">
-        <i class="fas fa-times"></i>
-      </button>
+@if (show) {
+  <div class="modal-overlay" (click)="onBackdropClick()">
+    <div
+      class="modal-content"
+      [class.modal-sm]="size === 'sm'"
+      [class.modal-md]="size === 'md'"
+      [class.modal-lg]="size === 'lg'"
+      [class.modal-xl]="size === 'xl'"
+      (click)="$event.stopPropagation()"
+    >
+      @if (title || showCloseButton) {
+        <div class="modal-header">
+          <div class="modal-header-content">
+            @if (title) {
+              <h3>
+                @if (icon) {
+                  <i [class]="icon"></i>
+                }
+                {{ title }}
+              </h3>
+            }
+          </div>
+          <div class="modal-header-actions">
+            <ng-content select="[modal-header-actions]"></ng-content>
+          </div>
+          @if (showCloseButton) {
+            <button class="btn-close" (click)="onClose()">
+              <i class="fas fa-times"></i>
+            </button>
+          }
+        </div>
+      }
+      <div class="modal-body">
+        <ng-content></ng-content>
+      </div>
+      <ng-content select="[modal-footer]"></ng-content>
     </div>
-
-    <div class="modal-body">
-      <ng-content></ng-content>
-    </div>
-
-    <ng-content select="[modal-footer]"></ng-content>
   </div>
-</div>
+}

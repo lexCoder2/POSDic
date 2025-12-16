@@ -48,195 +48,212 @@
   <!-- Product Edit Section -->
   <div class="product-editor">
     <!-- Product Edit Form -->
-    <div class="product-form" *ngIf="currentProduct">
-      <div class="form-left">
-        <!-- Product Image -->
-        <div class="product-image">
-          <img
-            *ngIf="currentProduct.local_image"
-            [src]="apiUrl + '/' + currentProduct.local_image"
-            [alt]="currentProduct.name"
-          />
-          <div *ngIf="!currentProduct.local_image" class="no-image">
-            <i class="fas fa-image"></i>
+    @if (currentProduct) {
+      <div class="product-form">
+        <div class="form-left">
+          <!-- Product Image -->
+          <div class="product-image">
+            @if (currentProduct.local_image) {
+              <img
+                [src]="apiUrl + '/' + currentProduct.local_image"
+                [alt]="currentProduct.name"
+              />
+            }
+            @if (!currentProduct.local_image) {
+              <div class="no-image">
+                <i class="fas fa-image"></i>
+              </div>
+            }
           </div>
+          <div class="product-name">{{ currentProduct.name }}</div>
+          @if (currentProduct.category) {
+            <div class="product-category">
+              {{ currentProduct.category }}
+            </div>
+          }
         </div>
-        <div class="product-name">{{ currentProduct.name }}</div>
-        <div class="product-category" *ngIf="currentProduct.category">
-          {{ currentProduct.category }}
+        <div class="form-right">
+          <form (submit)="updateProduct()">
+            <!-- EAN Field -->
+            <div class="form-group">
+              <label for="ean-input">
+                <i class="fas fa-barcode"></i>
+                {{ "PRODUCTS.EAN" | translate }}
+              </label>
+              <input
+                id="ean-input"
+                type="text"
+                [(ngModel)]="newEan"
+                name="ean"
+                class="form-control"
+                [placeholder]="currentProduct.ean || ''"
+              />
+            </div>
+            <!-- Price Field (Main Focus) -->
+            <div class="form-group highlight">
+              <label for="price-input">
+                <i class="fas fa-dollar-sign"></i>
+                {{ "PRODUCTS.PRICE" | translate }}
+              </label>
+              <div class="input-with-change">
+                <input
+                  id="price-input"
+                  type="number"
+                  [(ngModel)]="newPrice"
+                  name="price"
+                  class="form-control"
+                  step="0.01"
+                  min="0"
+                  required
+                />
+                @if (newPrice !== currentProduct.price) {
+                  <span
+                    class="change-indicator"
+                    [class.positive]="newPrice > currentProduct.price"
+                    [class.negative]="newPrice < currentProduct.price"
+                  >
+                    {{ newPrice - currentProduct.price > 0 ? "+" : ""
+                    }}{{ newPrice - currentProduct.price | appCurrency }}
+                  </span>
+                }
+              </div>
+              <div class="old-value">
+                {{ "INVENTORY_SESSION.CURRENT" | translate }}:
+                {{ currentProduct.price | appCurrency }}
+              </div>
+            </div>
+            <!-- Stock Field (Main Focus) -->
+            <div class="form-group highlight">
+              <label for="stock-input">
+                <i class="fas fa-boxes"></i>
+                {{ "PRODUCTS.STOCK" | translate }}
+              </label>
+              <div class="input-with-change">
+                <input
+                  id="stock-input"
+                  type="number"
+                  [(ngModel)]="newStock"
+                  name="stock"
+                  class="form-control"
+                  step="1"
+                  min="0"
+                  required
+                />
+                @if (newStock !== (currentProduct.stock || 0)) {
+                  <span
+                    class="change-indicator"
+                    [class.positive]="newStock > (currentProduct.stock || 0)"
+                    [class.negative]="newStock < (currentProduct.stock || 0)"
+                  >
+                    {{ newStock - (currentProduct.stock || 0) > 0 ? "+" : ""
+                    }}{{ newStock - (currentProduct.stock || 0) }}
+                  </span>
+                }
+              </div>
+              <div class="old-value">
+                {{ "INVENTORY_SESSION.CURRENT" | translate }}:
+                {{ currentProduct.stock }}
+              </div>
+            </div>
+            <!-- Action Buttons -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" [disabled]="saving">
+                <i class="fas fa-save"></i>
+                {{ "INVENTORY_SESSION.UPDATE" | translate }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="clearProduct()"
+                [disabled]="saving"
+              >
+                <i class="fas fa-times"></i>
+                {{ "INVENTORY_SESSION.SKIP" | translate }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-
-      <div class="form-right">
-        <form (submit)="updateProduct()">
-          <!-- EAN Field -->
-          <div class="form-group">
-            <label for="ean-input">
-              <i class="fas fa-barcode"></i>
-              {{ "PRODUCTS.EAN" | translate }}
-            </label>
-            <input
-              id="ean-input"
-              type="text"
-              [(ngModel)]="newEan"
-              name="ean"
-              class="form-control"
-              [placeholder]="currentProduct.ean || ''"
-            />
-          </div>
-
-          <!-- Price Field (Main Focus) -->
-          <div class="form-group highlight">
-            <label for="price-input">
-              <i class="fas fa-dollar-sign"></i>
-              {{ "PRODUCTS.PRICE" | translate }}
-            </label>
-            <div class="input-with-change">
-              <input
-                id="price-input"
-                type="number"
-                [(ngModel)]="newPrice"
-                name="price"
-                class="form-control"
-                step="0.01"
-                min="0"
-                required
-              />
-              <span
-                class="change-indicator"
-                *ngIf="newPrice !== currentProduct.price"
-                [class.positive]="newPrice > currentProduct.price"
-                [class.negative]="newPrice < currentProduct.price"
-              >
-                {{ newPrice - currentProduct.price > 0 ? "+" : ""
-                }}{{ newPrice - currentProduct.price | appCurrency }}
-              </span>
-            </div>
-            <div class="old-value">
-              {{ "INVENTORY_SESSION.CURRENT" | translate }}:
-              {{ currentProduct.price | appCurrency }}
-            </div>
-          </div>
-
-          <!-- Stock Field (Main Focus) -->
-          <div class="form-group highlight">
-            <label for="stock-input">
-              <i class="fas fa-boxes"></i>
-              {{ "PRODUCTS.STOCK" | translate }}
-            </label>
-            <div class="input-with-change">
-              <input
-                id="stock-input"
-                type="number"
-                [(ngModel)]="newStock"
-                name="stock"
-                class="form-control"
-                step="1"
-                min="0"
-                required
-              />
-              <span
-                class="change-indicator"
-                *ngIf="newStock !== (currentProduct.stock || 0)"
-                [class.positive]="newStock > (currentProduct.stock || 0)"
-                [class.negative]="newStock < (currentProduct.stock || 0)"
-              >
-                {{ newStock - (currentProduct.stock || 0) > 0 ? "+" : ""
-                }}{{ newStock - (currentProduct.stock || 0) }}
-              </span>
-            </div>
-            <div class="old-value">
-              {{ "INVENTORY_SESSION.CURRENT" | translate }}:
-              {{ currentProduct.stock }}
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" [disabled]="saving">
-              <i class="fas fa-save"></i>
-              {{ "INVENTORY_SESSION.UPDATE" | translate }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              (click)="clearProduct()"
-              [disabled]="saving"
-            >
-              <i class="fas fa-times"></i>
-              {{ "INVENTORY_SESSION.SKIP" | translate }}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    }
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="!currentProduct">
-      <i class="fas fa-search"></i>
-      <p>{{ "INVENTORY_SESSION.EMPTY_STATE" | translate }}</p>
-    </div>
+    @if (!currentProduct) {
+      <div class="empty-state">
+        <i class="fas fa-search"></i>
+        <p>{{ "INVENTORY_SESSION.EMPTY_STATE" | translate }}</p>
+      </div>
+    }
   </div>
 
   <!-- Updates Table -->
-  <div class="updates-section" *ngIf="session().updates.length > 0">
-    <h3>
-      <i class="fas fa-history"></i>
-      {{ "INVENTORY_SESSION.RECENT_UPDATES" | translate }}
-    </h3>
-    <div class="table-container">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>{{ "INVENTORY_SESSION.TIME" | translate }}</th>
-            <th>{{ "PRODUCTS.NAME" | translate }}</th>
-            <th>{{ "PRODUCTS.EAN" | translate }}</th>
-            <th>{{ "INVENTORY_SESSION.PRICE_CHANGE" | translate }}</th>
-            <th>{{ "INVENTORY_SESSION.STOCK_CHANGE" | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let update of session().updates">
-            <td>{{ update.timestamp | date: "shortTime" }}</td>
-            <td>{{ update.productName }}</td>
-            <td>
-              <span class="ean-code">{{ update.ean || "-" }}</span>
-            </td>
-            <td>
-              <div class="change-cell">
-                <span class="old-val">{{ update.oldPrice | appCurrency }}</span>
-                <i class="fas fa-arrow-right"></i>
-                <span class="new-val">{{ update.newPrice | appCurrency }}</span>
-                <span
-                  class="change-badge"
-                  [class.positive]="getPriceChange(update) > 0"
-                  [class.negative]="getPriceChange(update) < 0"
-                  *ngIf="getPriceChange(update) !== 0"
-                >
-                  {{ getPriceChange(update) > 0 ? "+" : ""
-                  }}{{ getPriceChange(update) | appCurrency }}
-                </span>
-              </div>
-            </td>
-            <td>
-              <div class="change-cell">
-                <span class="old-val">{{ update.oldStock }}</span>
-                <i class="fas fa-arrow-right"></i>
-                <span class="new-val">{{ update.newStock }}</span>
-                <span
-                  class="change-badge"
-                  [class.positive]="getStockChange(update) > 0"
-                  [class.negative]="getStockChange(update) < 0"
-                  *ngIf="getStockChange(update) !== 0"
-                >
-                  {{ getStockChange(update) > 0 ? "+" : ""
-                  }}{{ getStockChange(update) }}
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  @if (session().updates.length > 0) {
+    <div class="updates-section">
+      <h3>
+        <i class="fas fa-history"></i>
+        {{ "INVENTORY_SESSION.RECENT_UPDATES" | translate }}
+      </h3>
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{{ "INVENTORY_SESSION.TIME" | translate }}</th>
+              <th>{{ "PRODUCTS.NAME" | translate }}</th>
+              <th>{{ "PRODUCTS.EAN" | translate }}</th>
+              <th>{{ "INVENTORY_SESSION.PRICE_CHANGE" | translate }}</th>
+              <th>{{ "INVENTORY_SESSION.STOCK_CHANGE" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (update of session().updates; track update) {
+              <tr>
+                <td>{{ update.timestamp | date: "shortTime" }}</td>
+                <td>{{ update.productName }}</td>
+                <td>
+                  <span class="ean-code">{{ update.ean || "-" }}</span>
+                </td>
+                <td>
+                  <div class="change-cell">
+                    <span class="old-val">{{
+                      update.oldPrice | appCurrency
+                    }}</span>
+                    <i class="fas fa-arrow-right"></i>
+                    <span class="new-val">{{
+                      update.newPrice | appCurrency
+                    }}</span>
+                    @if (getPriceChange(update) !== 0) {
+                      <span
+                        class="change-badge"
+                        [class.positive]="getPriceChange(update) > 0"
+                        [class.negative]="getPriceChange(update) < 0"
+                      >
+                        {{ getPriceChange(update) > 0 ? "+" : ""
+                        }}{{ getPriceChange(update) | appCurrency }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <div class="change-cell">
+                    <span class="old-val">{{ update.oldStock }}</span>
+                    <i class="fas fa-arrow-right"></i>
+                    <span class="new-val">{{ update.newStock }}</span>
+                    @if (getStockChange(update) !== 0) {
+                      <span
+                        class="change-badge"
+                        [class.positive]="getStockChange(update) > 0"
+                        [class.negative]="getStockChange(update) < 0"
+                      >
+                        {{ getStockChange(update) > 0 ? "+" : ""
+                        }}{{ getStockChange(update) }}
+                      </span>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  }
 </div>

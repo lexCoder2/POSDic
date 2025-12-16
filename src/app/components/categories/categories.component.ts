@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: "app-categories",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   template: `
     <div class="page-container">
       <h1>Category Management</h1>

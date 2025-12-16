@@ -1,109 +1,109 @@
-<div class="modal-overlay" *ngIf="show" (click)="onClose()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>
-        <i class="fas fa-weight"></i>
-        {{ "POS.LOOSE_PRODUCT.TITLE" | translate }}
-      </h3>
-      <button class="btn-close" (click)="onClose()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <!-- Scale Connection Indicator -->
-      <div class="scale-connection-indicator">
-        <div
-          class="scale-status-badge"
-          [class.connected]="scaleConnected"
-          [class.disconnected]="!scaleConnected"
-        >
-          <i
-            [class.fa-link]="scaleConnected"
-            [class.fa-unlink]="!scaleConnected"
-            class="fas"
-          ></i>
-          <span>
-            {{
-              scaleConnected
-                ? ("POS.SCALE.CONNECTED" | translate)
-                : ("POS.SCALE.DISCONNECTED" | translate)
-            }}
-          </span>
-        </div>
-        <p class="scale-hint" *ngIf="!scaleConnected">
-          <i class="fas fa-info-circle"></i>
-          {{ "POS.SCALE.CONNECT_IN_SETTINGS" | translate }}
-        </p>
-      </div>
-
-      <!-- Weight Input -->
-      <div class="form-group">
-        <label>
+@if (show) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
           <i class="fas fa-weight"></i>
-          {{ "POS.LOOSE_PRODUCT.WEIGHT" | translate }} (kg)
-        </label>
-        <input
-          #weightInput
-          type="number"
-          [(ngModel)]="weight"
-          placeholder="0.000"
-          min="0"
-          step="0.001"
-        />
+          {{ "POS.LOOSE_PRODUCT.TITLE" | translate }}
+        </h3>
+        <button class="btn-close" (click)="onClose()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-
-      <!-- Price per Kg Input -->
-      <div class="form-group">
-        <label>
-          <i class="fas fa-dollar-sign"></i>
-          {{ "POS.LOOSE_PRODUCT.PRICE_PER_KG" | translate }}
-        </label>
-        <input
-          type="number"
-          [(ngModel)]="pricePerKg"
-          placeholder="0.00"
-          min="0"
-          step="0.01"
-        />
-      </div>
-
-      <!-- Description Input -->
-      <div class="form-group">
-        <label>
-          <i class="fas fa-tag"></i>
-          {{ "POS.LOOSE_PRODUCT.DESCRIPTION" | translate }}
-        </label>
-        <input
-          type="text"
-          [(ngModel)]="description"
-          placeholder="{{
-            'POS.LOOSE_PRODUCT.DESCRIPTION_PLACEHOLDER' | translate
-          }}"
-        />
-      </div>
-
-      <!-- Calculated Total -->
-      <div class="total-preview" *ngIf="calculatedTotal > 0">
-        <div class="total-label">
-          {{ "POS.LOOSE_PRODUCT.TOTAL" | translate }}
+      <div class="modal-body">
+        <!-- Scale Connection Indicator -->
+        <div class="scale-connection-indicator">
+          <div
+            class="scale-status-badge"
+            [class.connected]="scaleConnected"
+            [class.disconnected]="!scaleConnected"
+          >
+            <i
+              [class.fa-link]="scaleConnected"
+              [class.fa-unlink]="!scaleConnected"
+              class="fas"
+            ></i>
+            <span>
+              {{
+                scaleConnected
+                  ? ("POS.SCALE.CONNECTED" | translate)
+                  : ("POS.SCALE.DISCONNECTED" | translate)
+              }}
+            </span>
+          </div>
+          @if (!scaleConnected) {
+            <p class="scale-hint">
+              <i class="fas fa-info-circle"></i>
+              {{ "POS.SCALE.CONNECT_IN_SETTINGS" | translate }}
+            </p>
+          }
         </div>
-        <div class="total-value">{{ calculatedTotal | appCurrency }}</div>
-        <div class="total-breakdown">
-          {{ weight }} kg × {{ pricePerKgValue | appCurrency }}/kg
+        <!-- Weight Input -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-weight"></i>
+            {{ "POS.LOOSE_PRODUCT.WEIGHT" | translate }} (kg)
+          </label>
+          <input
+            #weightInput
+            type="number"
+            [(ngModel)]="weight"
+            placeholder="0.000"
+            min="0"
+            step="0.001"
+          />
         </div>
+        <!-- Price per Kg Input -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-dollar-sign"></i>
+            {{ "POS.LOOSE_PRODUCT.PRICE_PER_KG" | translate }}
+          </label>
+          <input
+            type="number"
+            [(ngModel)]="pricePerKg"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
+        </div>
+        <!-- Description Input -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-tag"></i>
+            {{ "POS.LOOSE_PRODUCT.DESCRIPTION" | translate }}
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="description"
+            placeholder="{{
+              'POS.LOOSE_PRODUCT.DESCRIPTION_PLACEHOLDER' | translate
+            }}"
+          />
+        </div>
+        <!-- Calculated Total -->
+        @if (calculatedTotal > 0) {
+          <div class="total-preview">
+            <div class="total-label">
+              {{ "POS.LOOSE_PRODUCT.TOTAL" | translate }}
+            </div>
+            <div class="total-value">{{ calculatedTotal | appCurrency }}</div>
+            <div class="total-breakdown">
+              {{ weight }} kg × {{ pricePerKgValue | appCurrency }}/kg
+            </div>
+          </div>
+        }
       </div>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="onClose()">
-        <i class="fas fa-times"></i>
-        {{ "GLOBAL.CANCEL" | translate }}
-      </button>
-      <button class="btn-confirm" (click)="onConfirm()" [disabled]="!isValid">
-        <i class="fas fa-plus"></i>
-        {{ "POS.LOOSE_PRODUCT.ADD_TO_CART" | translate }}
-      </button>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="onClose()">
+          <i class="fas fa-times"></i>
+          {{ "GLOBAL.CANCEL" | translate }}
+        </button>
+        <button class="btn-confirm" (click)="onConfirm()" [disabled]="!isValid">
+          <i class="fas fa-plus"></i>
+          {{ "POS.LOOSE_PRODUCT.ADD_TO_CART" | translate }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

@@ -6,7 +6,7 @@ import {
   ElementRef,
   AfterViewInit,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { TranslatePipe } from "../../pipes/translate.pipe";
 
 export interface NumberKeyboardInputEvent {
@@ -16,7 +16,7 @@ export interface NumberKeyboardInputEvent {
 @Component({
   selector: "app-number-keyboard",
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: "./number-keyboard.component.html",
   styleUrls: ["./number-keyboard.component.scss"],
 })

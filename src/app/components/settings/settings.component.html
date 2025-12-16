@@ -11,14 +11,15 @@
         <button class="btn btn-primary" (click)="previewReceipt()">
           {{ "SETTINGS.PRINTING.PREVIEW" | translate }}
         </button>
-        <button
-          *ngIf="isAdmin"
-          class="btn btn-secondary"
-          routerLink="/templates"
-          title="Manage receipt templates"
-        >
-          {{ "TEMPLATES.TITLE" | translate }}
-        </button>
+        @if (isAdmin) {
+          <button
+            class="btn btn-secondary"
+            routerLink="/templates"
+            title="Manage receipt templates"
+          >
+            {{ "TEMPLATES.TITLE" | translate }}
+          </button>
+        }
       </div>
     </div>
 
@@ -131,9 +132,11 @@
         "SETTINGS.USER_PREFERENCES.DEFAULT_PRINTER" | translate
       }}</label>
       <select [(ngModel)]="defaultPrinter" (change)="onDefaultPrinterChange()">
-        <option *ngFor="let printer of availablePrinters" [value]="printer">
-          {{ printer }}
-        </option>
+        @for (printer of availablePrinters; track printer) {
+          <option [value]="printer">
+            {{ printer }}
+          </option>
+        }
       </select>
       <p class="form-hint">
         {{ "SETTINGS.USER_PREFERENCES.DEFAULT_PRINTER_DESC" | translate }}
@@ -145,12 +148,11 @@
         "SETTINGS.USER_PREFERENCES.CURRENCY" | translate
       }}</label>
       <select [(ngModel)]="selectedCurrency">
-        <option
-          *ngFor="let currency of currencyService.currencies"
-          [value]="currency.code"
-        >
-          {{ currency.symbol }} - {{ currency.name }} ({{ currency.code }})
-        </option>
+        @for (currency of currencyService.currencies; track currency) {
+          <option [value]="currency.code">
+            {{ currency.symbol }} - {{ currency.name }} ({{ currency.code }})
+          </option>
+        }
       </select>
     </div>
 
@@ -191,52 +193,57 @@
         </span>
       </div>
 
-      <div class="scale-reading" *ngIf="scaleConnected && currentWeight > 0">
-        <div class="weight-display">
-          <span class="weight-value">{{
-            currentWeight | number: "1.3-3"
-          }}</span>
-          <span class="weight-unit">{{ currentWeightUnit }}</span>
-          <span
-            class="stability-indicator"
-            [class.stable]="currentWeightStable"
-            [class.unstable]="!currentWeightStable"
-          >
-            <i
-              [class.fa-check-circle]="currentWeightStable"
-              [class.fa-sync]="!currentWeightStable"
-              [class.fa-spin]="!currentWeightStable"
-              class="fas"
-            ></i>
-            {{
-              currentWeightStable
-                ? ("SETTINGS.SCALE.STABLE" | translate)
-                : ("SETTINGS.SCALE.STABILIZING" | translate)
-            }}
-          </span>
+      @if (scaleConnected && currentWeight > 0) {
+        <div class="scale-reading">
+          <div class="weight-display">
+            <span class="weight-value">{{
+              currentWeight | number: "1.3-3"
+            }}</span>
+            <span class="weight-unit">{{ currentWeightUnit }}</span>
+            <span
+              class="stability-indicator"
+              [class.stable]="currentWeightStable"
+              [class.unstable]="!currentWeightStable"
+            >
+              <i
+                [class.fa-check-circle]="currentWeightStable"
+                [class.fa-sync]="!currentWeightStable"
+                [class.fa-spin]="!currentWeightStable"
+                class="fas"
+              ></i>
+              {{
+                currentWeightStable
+                  ? ("SETTINGS.SCALE.STABLE" | translate)
+                  : ("SETTINGS.SCALE.STABILIZING" | translate)
+              }}
+            </span>
+          </div>
         </div>
-      </div>
+      }
     </div>
 
     <div class="form-actions">
-      <button
-        *ngIf="!scaleConnected"
-        class="btn btn-primary"
-        (click)="connectScale()"
-        [disabled]="connectingScale"
-      >
-        <i class="fas fa-spinner fa-spin" *ngIf="connectingScale"></i>
-        <i class="fas fa-link" *ngIf="!connectingScale"></i>
-        {{ "SETTINGS.SCALE.CONNECT" | translate }}
-      </button>
-      <button
-        *ngIf="scaleConnected"
-        class="btn btn-danger"
-        (click)="disconnectScale()"
-      >
-        <i class="fas fa-unlink"></i>
-        {{ "SETTINGS.SCALE.DISCONNECT" | translate }}
-      </button>
+      @if (!scaleConnected) {
+        <button
+          class="btn btn-primary"
+          (click)="connectScale()"
+          [disabled]="connectingScale"
+        >
+          @if (connectingScale) {
+            <i class="fas fa-spinner fa-spin"></i>
+          }
+          @if (!connectingScale) {
+            <i class="fas fa-link"></i>
+          }
+          {{ "SETTINGS.SCALE.CONNECT" | translate }}
+        </button>
+      }
+      @if (scaleConnected) {
+        <button class="btn btn-danger" (click)="disconnectScale()">
+          <i class="fas fa-unlink"></i>
+          {{ "SETTINGS.SCALE.DISCONNECT" | translate }}
+        </button>
+      }
     </div>
   </section>
 
@@ -263,8 +270,12 @@
         (click)="printQrBadge()"
         [disabled]="printingBadge"
       >
-        <i class="fas fa-spinner fa-spin" *ngIf="printingBadge"></i>
-        <i class="fas fa-print" *ngIf="!printingBadge"></i>
+        @if (printingBadge) {
+          <i class="fas fa-spinner fa-spin"></i>
+        }
+        @if (!printingBadge) {
+          <i class="fas fa-print"></i>
+        }
         {{ "SETTINGS.QR_BADGE.PRINT" | translate }}
       </button>
     </div>

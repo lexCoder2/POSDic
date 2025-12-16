@@ -10,7 +10,7 @@ import {
   ChangeDetectorRef,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { Product } from "../../models";
@@ -24,7 +24,7 @@ import { Subject, takeUntil } from "rxjs";
 @Component({
   selector: "app-search-results",
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CurrencyPipe],
+  imports: [TranslatePipe, CurrencyPipe],
   templateUrl: "./search-results.component.html",
   styleUrls: ["./search-results.component.scss"],
 })

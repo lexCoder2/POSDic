@@ -8,34 +8,38 @@ import { Product } from "../../models";
   imports: [CommonModule],
   template: `
     <div class="quick-access">
-      <div class="products-grid" *ngIf="products.length > 0">
-        <div
-          class="product-card"
-          *ngFor="let product of products"
-          (click)="productSelected.emit(product)"
-        >
-          <div class="product-image">
-            <img
-              [src]="product.image_url || 'assets/placeholder-product.png'"
-              [alt]="product.name"
-              (error)="onImageError($event)"
-            />
-          </div>
-          <div class="product-info">
-            <h4 class="product-name">{{ product.name }}</h4>
-            <p class="product-brand" *ngIf="product.brand">
-              {{ product.brand }}
-            </p>
-            <p class="product-price">
-              {{ product.price | currency: "PHP" : "symbol" : "1.2-2" }}
-            </p>
-          </div>
+      @if (products.length > 0) {
+        <div class="products-grid">
+          @for (product of products; track product) {
+            <div class="product-card" (click)="productSelected.emit(product)">
+              <div class="product-image">
+                <img
+                  [src]="product.image_url || 'assets/placeholder-product.png'"
+                  [alt]="product.name"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                @if (product.brand) {
+                  <p class="product-brand">
+                    {{ product.brand }}
+                  </p>
+                }
+                <p class="product-price">
+                  {{ product.price | currency: "PHP" : "symbol" : "1.2-2" }}
+                </p>
+              </div>
+            </div>
+          }
         </div>
-      </div>
-      <div class="empty-state" *ngIf="products.length === 0">
-        <i class="fas fa-bolt"></i>
-        <p>No quick access products</p>
-      </div>
+      }
+      @if (products.length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-bolt"></i>
+          <p>No quick access products</p>
+        </div>
+      }
     </div>
   `,
   styles: [

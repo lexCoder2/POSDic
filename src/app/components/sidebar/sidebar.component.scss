@@ -19,7 +19,7 @@
     transform: translateX(0);
   }
 
-  @media (max-width: $breakpoint-md - 1) {
+  @media (max-width: $breakpoint-md) {
     transform: translateX(-100%);
 
     &.mobile-open {

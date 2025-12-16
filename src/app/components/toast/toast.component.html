@@ -1,19 +1,26 @@
 <div class="toast-container">
-  <div
-    class="toast"
-    *ngFor="let t of toasts"
-    [class.error]="t.type === 'error'"
-    [class.success]="t.type === 'success'"
-    [class.info]="t.type === 'info'"
-  >
-    <div class="toast-inner">
-      <span class="toast-icon" aria-hidden="true">
-        <i *ngIf="t.type === 'success'" class="fas fa-check-circle"></i>
-        <i *ngIf="t.type === 'error'" class="fas fa-times-circle"></i>
-        <i *ngIf="t.type === 'info'" class="fas fa-info-circle"></i>
-      </span>
-      <div class="toast-message">{{ t.message }}</div>
-      <button class="toast-close" (click)="remove(t.id)">✕</button>
+  @for (t of toasts; track t) {
+    <div
+      class="toast"
+      [class.error]="t.type === 'error'"
+      [class.success]="t.type === 'success'"
+      [class.info]="t.type === 'info'"
+    >
+      <div class="toast-inner">
+        <span class="toast-icon" aria-hidden="true">
+          @if (t.type === "success") {
+            <i class="fas fa-check-circle"></i>
+          }
+          @if (t.type === "error") {
+            <i class="fas fa-times-circle"></i>
+          }
+          @if (t.type === "info") {
+            <i class="fas fa-info-circle"></i>
+          }
+        </span>
+        <div class="toast-message">{{ t.message }}</div>
+        <button class="toast-close" (click)="remove(t.id)">✕</button>
+      </div>
     </div>
-  </div>
+  }
 </div>

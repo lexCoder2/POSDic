@@ -4,689 +4,691 @@
   </button>
   <div class="content">
     <!-- Templates List -->
-    <div class="templates-list" *ngIf="!showForm()">
-      <div class="loading" *ngIf="isLoading()">
-        <p>{{ "TEMPLATES.LOADING" | translate }}</p>
-      </div>
-
-      <div
-        class="templates-grid"
-        *ngIf="!isLoading() && templates().length > 0"
-      >
-        <div class="template-card" *ngFor="let template of templates()">
-          <div class="card-header">
-            <h3>{{ template.name }}</h3>
-            <p>{{ template.description }}</p>
-            <div class="template-info">
-              <span class="badge">{{ template.templateType }}</span>
-              <span class="badge">{{ template.paperSize }}</span>
-              <span *ngIf="template.isDefault" class="badge default-badge">{{
-                "TEMPLATES.DEFAULT_BADGE" | translate
-              }}</span>
-            </div>
+    @if (!showForm()) {
+      <div class="templates-list">
+        @if (isLoading()) {
+          <div class="loading">
+            <p>{{ "TEMPLATES.LOADING" | translate }}</p>
           </div>
-          <div class="card-preview">
-            <div
-              [innerHTML]="
-                sanitizer.bypassSecurityTrustHtml(
-                  generateTemplatePreview(template)
-                )
-              "
-            ></div>
+        }
+        @if (!isLoading() && templates().length > 0) {
+          <div class="templates-grid">
+            @for (template of templates(); track template) {
+              <div class="template-card">
+                <div class="card-header">
+                  <h3>{{ template.name }}</h3>
+                  <p>{{ template.description }}</p>
+                  <div class="template-info">
+                    <span class="badge">{{ template.templateType }}</span>
+                    <span class="badge">{{ template.paperSize }}</span>
+                    @if (template.isDefault) {
+                      <span class="badge default-badge">{{
+                        "TEMPLATES.DEFAULT_BADGE" | translate
+                      }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="card-preview">
+                  <div
+                    [innerHTML]="
+                      sanitizer.bypassSecurityTrustHtml(
+                        generateTemplatePreview(template)
+                      )
+                    "
+                  ></div>
+                </div>
+                <div class="card-actions">
+                  <button
+                    class="btn-secondary"
+                    (click)="selectTemplate(template)"
+                  >
+                    {{ "TEMPLATES.EDIT" | translate }}
+                  </button>
+                  @if (!template.isDefault) {
+                    <button
+                      class="btn-tertiary"
+                      (click)="setAsDefault(template)"
+                    >
+                      {{ "TEMPLATES.SET_DEFAULT" | translate }}
+                    </button>
+                  }
+                  @if (template.isDefault) {
+                    <span class="default-note">{{
+                      "TEMPLATES.CURRENT_DEFAULT" | translate
+                    }}</span>
+                  }
+                </div>
+              </div>
+            }
           </div>
-          <div class="card-actions">
-            <button class="btn-secondary" (click)="selectTemplate(template)">
-              {{ "TEMPLATES.EDIT" | translate }}
-            </button>
-            <button
-              *ngIf="!template.isDefault"
-              class="btn-tertiary"
-              (click)="setAsDefault(template)"
-            >
-              {{ "TEMPLATES.SET_DEFAULT" | translate }}
-            </button>
-            <span *ngIf="template.isDefault" class="default-note">{{
-              "TEMPLATES.CURRENT_DEFAULT" | translate
-            }}</span>
+        }
+        @if (!isLoading() && templates().length === 0) {
+          <div class="no-templates">
+            <p>{{ "TEMPLATES.NO_TEMPLATES" | translate }}</p>
           </div>
-        </div>
+        }
       </div>
-
-      <div
-        class="no-templates"
-        *ngIf="!isLoading() && templates().length === 0"
-      >
-        <p>{{ "TEMPLATES.NO_TEMPLATES" | translate }}</p>
-      </div>
-    </div>
+    }
 
     <!-- Template Form -->
-    <div class="template-form" *ngIf="showForm()">
-      <h2>
-        {{
-          selectedTemplate()
-            ? ("TEMPLATES.EDIT_HEADER" | translate)
-            : ("TEMPLATES.CREATE_HEADER" | translate)
-        }}
-      </h2>
-
-      <div class="form-with-preview">
-        <!-- Form Section -->
-        <div class="form-section-wrapper">
-          <form [formGroup]="templateForm">
-            <!-- Basic Info -->
-            <div class="form-section">
-              <h3>{{ "TEMPLATES.SECTION_BASIC" | translate }}</h3>
-
-              <div class="form-group">
-                <label>{{ "TEMPLATES.FORM.NAME_LABEL" | translate }}</label>
-                <input
-                  type="text"
-                  formControlName="name"
-                  placeholder="{{
-                    'TEMPLATES.FORM.NAME_PLACEHOLDER' | translate
-                  }}"
-                  class="form-control"
-                />
-                <span class="error" *ngIf="templateForm.get('name')?.touched">
-                  {{ getFieldError("name") }}
-                </span>
-              </div>
-
-              <div class="form-group">
-                <label>{{
-                  "TEMPLATES.FORM.DESCRIPTION_LABEL" | translate
-                }}</label>
-                <textarea
-                  formControlName="description"
-                  placeholder="{{
-                    'TEMPLATES.FORM.DESCRIPTION_PLACEHOLDER' | translate
-                  }}"
-                  class="form-control"
-                  rows="2"
-                ></textarea>
-              </div>
-
-              <div class="form-row">
+    @if (showForm()) {
+      <div class="template-form">
+        <h2>
+          {{
+            selectedTemplate()
+              ? ("TEMPLATES.EDIT_HEADER" | translate)
+              : ("TEMPLATES.CREATE_HEADER" | translate)
+          }}
+        </h2>
+        <div class="form-with-preview">
+          <!-- Form Section -->
+          <div class="form-section-wrapper">
+            <form [formGroup]="templateForm">
+              <!-- Basic Info -->
+              <div class="form-section">
+                <h3>{{ "TEMPLATES.SECTION_BASIC" | translate }}</h3>
                 <div class="form-group">
-                  <label>{{
-                    "TEMPLATES.FORM.TEMPLATE_TYPE_LABEL" | translate
-                  }}</label>
-                  <select formControlName="templateType" class="form-control">
-                    <option value="receipt">
-                      {{ "TEMPLATES.OPTIONS.RECEIPT" | translate }}
-                    </option>
-                    <option value="invoice">
-                      {{ "TEMPLATES.OPTIONS.INVOICE" | translate }}
-                    </option>
-                    <option value="label">
-                      {{ "TEMPLATES.OPTIONS.LABEL" | translate }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>{{
-                    "TEMPLATES.FORM.PAPER_SIZE_LABEL" | translate
-                  }}</label>
-                  <select formControlName="paperSize" class="form-control">
-                    <option value="58mm">
-                      {{ "TEMPLATES.OPTIONS.PAPER_58" | translate }}
-                    </option>
-                    <option value="80mm">
-                      {{ "TEMPLATES.OPTIONS.PAPER_80" | translate }}
-                    </option>
-                    <option value="A4">
-                      {{ "TEMPLATES.OPTIONS.PAPER_A4" | translate }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Header Settings -->
-            <div class="form-section">
-              <h3>{{ "TEMPLATES.SECTION_HEADER" | translate }}</h3>
-
-              <div class="form-group checkbox">
-                <input
-                  type="checkbox"
-                  formControlName="showLogo"
-                  id="showLogo"
-                />
-                <label for="showLogo">{{
-                  "TEMPLATES.FORM.SHOW_LOGO" | translate
-                }}</label>
-              </div>
-
-              <div class="form-group">
-                <label>Store Name</label>
-                <div style="display: flex; gap: 10px; align-items: center">
+                  <label>{{ "TEMPLATES.FORM.NAME_LABEL" | translate }}</label>
                   <input
                     type="text"
-                    formControlName="storeName"
+                    formControlName="name"
                     placeholder="{{
-                      'TEMPLATES.FORM.STORE_NAME_PLACEHOLDER' | translate
+                      'TEMPLATES.FORM.NAME_PLACEHOLDER' | translate
                     }}"
                     class="form-control"
                   />
-                  <app-toggle-switch
-                    [checked]="isFieldVisible('showStoreName')"
-                    (change)="
-                      templateForm.patchValue({ showStoreName: $event })
-                    "
-                    size="small"
-                  ></app-toggle-switch>
+                  @if (templateForm.get("name")?.touched) {
+                    <span class="error">
+                      {{ getFieldError("name") }}
+                    </span>
+                  }
                 </div>
-                <div
-                  class="style-options-compact"
-                  *ngIf="isFieldVisible('showStoreName')"
-                >
-                  <select
-                    formControlName="storeNameSize"
-                    class="style-select"
-                    title="Text Size"
-                  >
-                    <option value="small">S</option>
-                    <option value="medium">M</option>
-                    <option value="large">L</option>
-                  </select>
-                  <select
-                    formControlName="storeNameFont"
-                    class="style-select"
-                    title="Font Family"
-                  >
-                    <option value="monospace">Mono</option>
-                    <option value="sans-serif">Sans</option>
-                    <option value="serif">Serif</option>
-                  </select>
-                  <label class="style-checkbox">
-                    <input type="checkbox" formControlName="storeNameBold" />
-                    <span>B</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>Store Address</label>
-                <div style="display: flex; gap: 10px; align-items: center">
-                  <input
-                    type="text"
-                    formControlName="storeAddress"
+                <div class="form-group">
+                  <label>{{
+                    "TEMPLATES.FORM.DESCRIPTION_LABEL" | translate
+                  }}</label>
+                  <textarea
+                    formControlName="description"
                     placeholder="{{
-                      'TEMPLATES.FORM.STORE_ADDRESS_PLACEHOLDER' | translate
+                      'TEMPLATES.FORM.DESCRIPTION_PLACEHOLDER' | translate
                     }}"
                     class="form-control"
-                  />
-                  <app-toggle-switch
-                    [checked]="isFieldVisible('showStoreAddress')"
-                    (change)="
-                      templateForm.patchValue({ showStoreAddress: $event })
-                    "
-                    size="small"
-                  ></app-toggle-switch>
+                    rows="2"
+                  ></textarea>
                 </div>
-                <div
-                  class="style-options-compact"
-                  *ngIf="isFieldVisible('showStoreAddress')"
-                >
-                  <select
-                    formControlName="storeAddressSize"
-                    class="style-select"
-                    title="Text Size"
-                  >
-                    <option value="small">S</option>
-                    <option value="medium">M</option>
-                    <option value="large">L</option>
-                  </select>
-                  <select
-                    formControlName="storeAddressFont"
-                    class="style-select"
-                    title="Font Family"
-                  >
-                    <option value="monospace">Mono</option>
-                    <option value="sans-serif">Sans</option>
-                    <option value="serif">Serif</option>
-                  </select>
-                  <label class="style-checkbox">
-                    <input type="checkbox" formControlName="storeAddressBold" />
-                    <span>B</span>
-                  </label>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>{{
+                      "TEMPLATES.FORM.TEMPLATE_TYPE_LABEL" | translate
+                    }}</label>
+                    <select formControlName="templateType" class="form-control">
+                      <option value="receipt">
+                        {{ "TEMPLATES.OPTIONS.RECEIPT" | translate }}
+                      </option>
+                      <option value="invoice">
+                        {{ "TEMPLATES.OPTIONS.INVOICE" | translate }}
+                      </option>
+                      <option value="label">
+                        {{ "TEMPLATES.OPTIONS.LABEL" | translate }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>{{
+                      "TEMPLATES.FORM.PAPER_SIZE_LABEL" | translate
+                    }}</label>
+                    <select formControlName="paperSize" class="form-control">
+                      <option value="58mm">
+                        {{ "TEMPLATES.OPTIONS.PAPER_58" | translate }}
+                      </option>
+                      <option value="80mm">
+                        {{ "TEMPLATES.OPTIONS.PAPER_80" | translate }}
+                      </option>
+                      <option value="A4">
+                        {{ "TEMPLATES.OPTIONS.PAPER_A4" | translate }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
-
-              <div class="form-row">
+              <!-- Header Settings -->
+              <div class="form-section">
+                <h3>{{ "TEMPLATES.SECTION_HEADER" | translate }}</h3>
+                <div class="form-group checkbox">
+                  <input
+                    type="checkbox"
+                    formControlName="showLogo"
+                    id="showLogo"
+                  />
+                  <label for="showLogo">{{
+                    "TEMPLATES.FORM.SHOW_LOGO" | translate
+                  }}</label>
+                </div>
                 <div class="form-group">
-                  <label>Store Phone</label>
+                  <label>Store Name</label>
                   <div style="display: flex; gap: 10px; align-items: center">
                     <input
                       type="text"
-                      formControlName="storePhone"
+                      formControlName="storeName"
                       placeholder="{{
-                        'TEMPLATES.FORM.STORE_PHONE_PLACEHOLDER' | translate
+                        'TEMPLATES.FORM.STORE_NAME_PLACEHOLDER' | translate
                       }}"
                       class="form-control"
                     />
                     <app-toggle-switch
-                      [checked]="isFieldVisible('showStorePhone')"
+                      [checked]="isFieldVisible('showStoreName')"
                       (change)="
-                        templateForm.patchValue({ showStorePhone: $event })
+                        templateForm.patchValue({ showStoreName: $event })
                       "
                       size="small"
                     ></app-toggle-switch>
                   </div>
-                  <div
-                    class="style-options-compact"
-                    *ngIf="isFieldVisible('showStorePhone')"
-                  >
-                    <select
-                      formControlName="storePhoneSize"
-                      class="style-select"
-                      title="Text Size"
-                    >
-                      <option value="small">S</option>
-                      <option value="medium">M</option>
-                      <option value="large">L</option>
-                    </select>
-                    <select
-                      formControlName="storePhoneFont"
-                      class="style-select"
-                      title="Font Family"
-                    >
-                      <option value="monospace">Mono</option>
-                      <option value="sans-serif">Sans</option>
-                      <option value="serif">Serif</option>
-                    </select>
-                    <label class="style-checkbox">
-                      <input type="checkbox" formControlName="storePhoneBold" />
-                      <span>B</span>
-                    </label>
-                  </div>
+                  @if (isFieldVisible("showStoreName")) {
+                    <div class="style-options-compact">
+                      <select
+                        formControlName="storeNameSize"
+                        class="style-select"
+                        title="Text Size"
+                      >
+                        <option value="small">S</option>
+                        <option value="medium">M</option>
+                        <option value="large">L</option>
+                      </select>
+                      <select
+                        formControlName="storeNameFont"
+                        class="style-select"
+                        title="Font Family"
+                      >
+                        <option value="monospace">Mono</option>
+                        <option value="sans-serif">Sans</option>
+                        <option value="serif">Serif</option>
+                      </select>
+                      <label class="style-checkbox">
+                        <input
+                          type="checkbox"
+                          formControlName="storeNameBold"
+                        />
+                        <span>B</span>
+                      </label>
+                    </div>
+                  }
                 </div>
-
                 <div class="form-group">
-                  <label>Store Email</label>
+                  <label>Store Address</label>
                   <div style="display: flex; gap: 10px; align-items: center">
                     <input
-                      type="email"
-                      formControlName="storeEmail"
+                      type="text"
+                      formControlName="storeAddress"
                       placeholder="{{
-                        'TEMPLATES.FORM.STORE_EMAIL_PLACEHOLDER' | translate
+                        'TEMPLATES.FORM.STORE_ADDRESS_PLACEHOLDER' | translate
                       }}"
                       class="form-control"
                     />
                     <app-toggle-switch
-                      [checked]="isFieldVisible('showStoreEmail')"
+                      [checked]="isFieldVisible('showStoreAddress')"
                       (change)="
-                        templateForm.patchValue({ showStoreEmail: $event })
+                        templateForm.patchValue({ showStoreAddress: $event })
                       "
                       size="small"
                     ></app-toggle-switch>
                   </div>
-                  <div
-                    class="style-options-compact"
-                    *ngIf="isFieldVisible('showStoreEmail')"
+                  @if (isFieldVisible("showStoreAddress")) {
+                    <div class="style-options-compact">
+                      <select
+                        formControlName="storeAddressSize"
+                        class="style-select"
+                        title="Text Size"
+                      >
+                        <option value="small">S</option>
+                        <option value="medium">M</option>
+                        <option value="large">L</option>
+                      </select>
+                      <select
+                        formControlName="storeAddressFont"
+                        class="style-select"
+                        title="Font Family"
+                      >
+                        <option value="monospace">Mono</option>
+                        <option value="sans-serif">Sans</option>
+                        <option value="serif">Serif</option>
+                      </select>
+                      <label class="style-checkbox">
+                        <input
+                          type="checkbox"
+                          formControlName="storeAddressBold"
+                        />
+                        <span>B</span>
+                      </label>
+                    </div>
+                  }
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Store Phone</label>
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <input
+                        type="text"
+                        formControlName="storePhone"
+                        placeholder="{{
+                          'TEMPLATES.FORM.STORE_PHONE_PLACEHOLDER' | translate
+                        }}"
+                        class="form-control"
+                      />
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showStorePhone')"
+                        (change)="
+                          templateForm.patchValue({ showStorePhone: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                    @if (isFieldVisible("showStorePhone")) {
+                      <div class="style-options-compact">
+                        <select
+                          formControlName="storePhoneSize"
+                          class="style-select"
+                          title="Text Size"
+                        >
+                          <option value="small">S</option>
+                          <option value="medium">M</option>
+                          <option value="large">L</option>
+                        </select>
+                        <select
+                          formControlName="storePhoneFont"
+                          class="style-select"
+                          title="Font Family"
+                        >
+                          <option value="monospace">Mono</option>
+                          <option value="sans-serif">Sans</option>
+                          <option value="serif">Serif</option>
+                        </select>
+                        <label class="style-checkbox">
+                          <input
+                            type="checkbox"
+                            formControlName="storePhoneBold"
+                          />
+                          <span>B</span>
+                        </label>
+                      </div>
+                    }
+                  </div>
+                  <div class="form-group">
+                    <label>Store Email</label>
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <input
+                        type="email"
+                        formControlName="storeEmail"
+                        placeholder="{{
+                          'TEMPLATES.FORM.STORE_EMAIL_PLACEHOLDER' | translate
+                        }}"
+                        class="form-control"
+                      />
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showStoreEmail')"
+                        (change)="
+                          templateForm.patchValue({ showStoreEmail: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                    @if (isFieldVisible("showStoreEmail")) {
+                      <div class="style-options-compact">
+                        <select
+                          formControlName="storeEmailSize"
+                          class="style-select"
+                          title="Text Size"
+                        >
+                          <option value="small">S</option>
+                          <option value="medium">M</option>
+                          <option value="large">L</option>
+                        </select>
+                        <select
+                          formControlName="storeEmailFont"
+                          class="style-select"
+                          title="Font Family"
+                        >
+                          <option value="monospace">Mono</option>
+                          <option value="sans-serif">Sans</option>
+                          <option value="serif">Serif</option>
+                        </select>
+                        <label class="style-checkbox">
+                          <input
+                            type="checkbox"
+                            formControlName="storeEmailBold"
+                          />
+                          <span>B</span>
+                        </label>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+              <!-- Body Settings -->
+              <div class="form-section">
+                <h3>Item Details</h3>
+                <div class="checkbox-group">
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_PRODUCT_CODE" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showProductCode')"
+                        (change)="
+                          templateForm.patchValue({ showProductCode: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_BARCODE" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showBarcode')"
+                        (change)="
+                          templateForm.patchValue({ showBarcode: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_QUANTITY" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showQuantity')"
+                        (change)="
+                          templateForm.patchValue({ showQuantity: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_UNIT_PRICE" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showUnitPrice')"
+                        (change)="
+                          templateForm.patchValue({ showUnitPrice: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_DISCOUNT" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showDiscount')"
+                        (change)="
+                          templateForm.patchValue({ showDiscount: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_TAX" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showTax')"
+                        (change)="templateForm.patchValue({ showTax: $event })"
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <label style="flex: 1">{{
+                        "TEMPLATES.FORM.SHOW_SUBTOTAL" | translate
+                      }}</label>
+                      <app-toggle-switch
+                        [checked]="isFieldVisible('showSubtotal')"
+                        (change)="
+                          templateForm.patchValue({ showSubtotal: $event })
+                        "
+                        size="small"
+                      ></app-toggle-switch>
+                    </div>
+                  </div>
+                </div>
+                <div class="style-options-compact">
+                  <select
+                    formControlName="productSize"
+                    class="style-select"
+                    title="Item Size"
                   >
+                    <option value="small">S</option>
+                    <option value="medium">M</option>
+                    <option value="large">L</option>
+                  </select>
+                  <select
+                    formControlName="productFont"
+                    class="style-select"
+                    title="Item Font"
+                  >
+                    <option value="monospace">Mono</option>
+                    <option value="sans-serif">Sans</option>
+                    <option value="serif">Serif</option>
+                  </select>
+                  <label class="style-checkbox">
+                    <input type="checkbox" formControlName="productBold" />
+                    <span>B</span>
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label>Font Size</label>
+                  <select formControlName="fontSize" class="form-control">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Footer Settings -->
+              <div class="form-section">
+                <h3>Footer</h3>
+                <div class="checkbox-group">
+                  <div class="form-group toggle-group">
+                    <label>{{
+                      "TEMPLATES.FORM.SHOW_TOTALS" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="templateForm.get('showTotals')?.value"
+                      (change)="templateForm.patchValue({ showTotals: $event })"
+                    ></app-toggle-switch>
+                  </div>
+                  <div class="form-group toggle-group">
+                    <label>{{
+                      "TEMPLATES.FORM.SHOW_PAYMENT_METHOD" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="templateForm.get('showPaymentMethod')?.value"
+                      (change)="
+                        templateForm.patchValue({ showPaymentMethod: $event })
+                      "
+                    ></app-toggle-switch>
+                  </div>
+                  <div class="form-group toggle-group">
+                    <label>{{
+                      "TEMPLATES.FORM.SHOW_CASHIER" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="templateForm.get('showCashier')?.value"
+                      (change)="
+                        templateForm.patchValue({ showCashier: $event })
+                      "
+                    ></app-toggle-switch>
+                  </div>
+                  <div class="form-group toggle-group">
+                    <label>{{
+                      "TEMPLATES.FORM.SHOW_DATETIME" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="templateForm.get('showDateTime')?.value"
+                      (change)="
+                        templateForm.patchValue({ showDateTime: $event })
+                      "
+                    ></app-toggle-switch>
+                  </div>
+                  <div class="form-group toggle-group">
+                    <label>{{
+                      "TEMPLATES.FORM.SHOW_THANKYOU" | translate
+                    }}</label>
+                    <app-toggle-switch
+                      [checked]="templateForm.get('showThankYou')?.value"
+                      (change)="
+                        templateForm.patchValue({ showThankYou: $event })
+                      "
+                    ></app-toggle-switch>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Custom Message</label>
+                  <input
+                    type="text"
+                    formControlName="customMessage"
+                    placeholder="{{
+                      'TEMPLATES.FORM.CUSTOM_MESSAGE_PLACEHOLDER' | translate
+                    }}"
+                    class="form-control"
+                  />
+                </div>
+                <div class="style-options-compact">
+                  <div class="style-group">
+                    <span class="style-label">Totals:</span>
                     <select
-                      formControlName="storeEmailSize"
+                      formControlName="totalSize"
                       class="style-select"
-                      title="Text Size"
+                      title="Totals Size"
                     >
                       <option value="small">S</option>
                       <option value="medium">M</option>
                       <option value="large">L</option>
                     </select>
                     <select
-                      formControlName="storeEmailFont"
+                      formControlName="totalFont"
                       class="style-select"
-                      title="Font Family"
+                      title="Totals Font"
                     >
                       <option value="monospace">Mono</option>
                       <option value="sans-serif">Sans</option>
                       <option value="serif">Serif</option>
                     </select>
                     <label class="style-checkbox">
-                      <input type="checkbox" formControlName="storeEmailBold" />
+                      <input type="checkbox" formControlName="totalBold" />
+                      <span>B</span>
+                    </label>
+                  </div>
+                  <div class="style-group">
+                    <span class="style-label">Footer:</span>
+                    <select
+                      formControlName="footerSize"
+                      class="style-select"
+                      title="Footer Size"
+                    >
+                      <option value="small">S</option>
+                      <option value="medium">M</option>
+                      <option value="large">L</option>
+                    </select>
+                    <select
+                      formControlName="footerFont"
+                      class="style-select"
+                      title="Footer Font"
+                    >
+                      <option value="monospace">Mono</option>
+                      <option value="sans-serif">Sans</option>
+                      <option value="serif">Serif</option>
+                    </select>
+                    <label class="style-checkbox">
+                      <input type="checkbox" formControlName="footerBold" />
                       <span>B</span>
                     </label>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <!-- Body Settings -->
-            <div class="form-section">
-              <h3>Item Details</h3>
-
-              <div class="checkbox-group">
                 <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_PRODUCT_CODE" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showProductCode')"
-                      (change)="
-                        templateForm.patchValue({ showProductCode: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_BARCODE" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showBarcode')"
-                      (change)="
-                        templateForm.patchValue({ showBarcode: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_QUANTITY" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showQuantity')"
-                      (change)="
-                        templateForm.patchValue({ showQuantity: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_UNIT_PRICE" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showUnitPrice')"
-                      (change)="
-                        templateForm.patchValue({ showUnitPrice: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_DISCOUNT" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showDiscount')"
-                      (change)="
-                        templateForm.patchValue({ showDiscount: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_TAX" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showTax')"
-                      (change)="templateForm.patchValue({ showTax: $event })"
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; gap: 10px; align-items: center">
-                    <label style="flex: 1">{{
-                      "TEMPLATES.FORM.SHOW_SUBTOTAL" | translate
-                    }}</label>
-                    <app-toggle-switch
-                      [checked]="isFieldVisible('showSubtotal')"
-                      (change)="
-                        templateForm.patchValue({ showSubtotal: $event })
-                      "
-                      size="small"
-                    ></app-toggle-switch>
-                  </div>
+                  <label>{{
+                    "TEMPLATES.FORM.TEXT_ALIGNMENT" | translate
+                  }}</label>
+                  <select formControlName="textAlign" class="form-control">
+                    <option value="left">
+                      {{ "TEMPLATES.OPTIONS.ALIGN_LEFT" | translate }}
+                    </option>
+                    <option value="center">
+                      {{ "TEMPLATES.OPTIONS.ALIGN_CENTER" | translate }}
+                    </option>
+                    <option value="right">
+                      {{ "TEMPLATES.OPTIONS.ALIGN_RIGHT" | translate }}
+                    </option>
+                  </select>
                 </div>
               </div>
-
-              <div class="style-options-compact">
-                <select
-                  formControlName="productSize"
-                  class="style-select"
-                  title="Item Size"
+              <!-- Actions -->
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  (click)="cancelEdit()"
                 >
-                  <option value="small">S</option>
-                  <option value="medium">M</option>
-                  <option value="large">L</option>
-                </select>
-                <select
-                  formControlName="productFont"
-                  class="style-select"
-                  title="Item Font"
+                  {{ "GLOBAL.CANCEL" | translate }}
+                </button>
+                @if (selectedTemplate() && isEditing()) {
+                  <button
+                    type="button"
+                    class="btn-danger"
+                    (click)="deleteTemplate()"
+                  >
+                    {{ "TEMPLATES.ACTIONS.DELETE" | translate }}
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="btn-primary"
+                  (click)="saveTemplate()"
+                  [disabled]="!templateForm.valid"
                 >
-                  <option value="monospace">Mono</option>
-                  <option value="sans-serif">Sans</option>
-                  <option value="serif">Serif</option>
-                </select>
-                <label class="style-checkbox">
-                  <input type="checkbox" formControlName="productBold" />
-                  <span>B</span>
-                </label>
+                  {{
+                    selectedTemplate()
+                      ? ("TEMPLATES.ACTIONS.UPDATE" | translate)
+                      : ("TEMPLATES.ACTIONS.CREATE" | translate)
+                  }}
+                </button>
               </div>
-
-              <div class="form-group">
-                <label>Font Size</label>
-                <select formControlName="fontSize" class="form-control">
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Footer Settings -->
-            <div class="form-section">
-              <h3>Footer</h3>
-
-              <div class="checkbox-group">
-                <div class="form-group toggle-group">
-                  <label>{{ "TEMPLATES.FORM.SHOW_TOTALS" | translate }}</label>
-                  <app-toggle-switch
-                    [checked]="templateForm.get('showTotals')?.value"
-                    (change)="templateForm.patchValue({ showTotals: $event })"
-                  ></app-toggle-switch>
-                </div>
-
-                <div class="form-group toggle-group">
-                  <label>{{
-                    "TEMPLATES.FORM.SHOW_PAYMENT_METHOD" | translate
-                  }}</label>
-                  <app-toggle-switch
-                    [checked]="templateForm.get('showPaymentMethod')?.value"
-                    (change)="
-                      templateForm.patchValue({ showPaymentMethod: $event })
-                    "
-                  ></app-toggle-switch>
-                </div>
-
-                <div class="form-group toggle-group">
-                  <label>{{ "TEMPLATES.FORM.SHOW_CASHIER" | translate }}</label>
-                  <app-toggle-switch
-                    [checked]="templateForm.get('showCashier')?.value"
-                    (change)="templateForm.patchValue({ showCashier: $event })"
-                  ></app-toggle-switch>
-                </div>
-
-                <div class="form-group toggle-group">
-                  <label>{{
-                    "TEMPLATES.FORM.SHOW_DATETIME" | translate
-                  }}</label>
-                  <app-toggle-switch
-                    [checked]="templateForm.get('showDateTime')?.value"
-                    (change)="templateForm.patchValue({ showDateTime: $event })"
-                  ></app-toggle-switch>
-                </div>
-
-                <div class="form-group toggle-group">
-                  <label>{{
-                    "TEMPLATES.FORM.SHOW_THANKYOU" | translate
-                  }}</label>
-                  <app-toggle-switch
-                    [checked]="templateForm.get('showThankYou')?.value"
-                    (change)="templateForm.patchValue({ showThankYou: $event })"
-                  ></app-toggle-switch>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>Custom Message</label>
-                <input
-                  type="text"
-                  formControlName="customMessage"
-                  placeholder="{{
-                    'TEMPLATES.FORM.CUSTOM_MESSAGE_PLACEHOLDER' | translate
-                  }}"
-                  class="form-control"
-                />
-              </div>
-
-              <div class="style-options-compact">
-                <div class="style-group">
-                  <span class="style-label">Totals:</span>
-                  <select
-                    formControlName="totalSize"
-                    class="style-select"
-                    title="Totals Size"
-                  >
-                    <option value="small">S</option>
-                    <option value="medium">M</option>
-                    <option value="large">L</option>
-                  </select>
-                  <select
-                    formControlName="totalFont"
-                    class="style-select"
-                    title="Totals Font"
-                  >
-                    <option value="monospace">Mono</option>
-                    <option value="sans-serif">Sans</option>
-                    <option value="serif">Serif</option>
-                  </select>
-                  <label class="style-checkbox">
-                    <input type="checkbox" formControlName="totalBold" />
-                    <span>B</span>
-                  </label>
-                </div>
-
-                <div class="style-group">
-                  <span class="style-label">Footer:</span>
-                  <select
-                    formControlName="footerSize"
-                    class="style-select"
-                    title="Footer Size"
-                  >
-                    <option value="small">S</option>
-                    <option value="medium">M</option>
-                    <option value="large">L</option>
-                  </select>
-                  <select
-                    formControlName="footerFont"
-                    class="style-select"
-                    title="Footer Font"
-                  >
-                    <option value="monospace">Mono</option>
-                    <option value="sans-serif">Sans</option>
-                    <option value="serif">Serif</option>
-                  </select>
-                  <label class="style-checkbox">
-                    <input type="checkbox" formControlName="footerBold" />
-                    <span>B</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>{{ "TEMPLATES.FORM.TEXT_ALIGNMENT" | translate }}</label>
-                <select formControlName="textAlign" class="form-control">
-                  <option value="left">
-                    {{ "TEMPLATES.OPTIONS.ALIGN_LEFT" | translate }}
-                  </option>
-                  <option value="center">
-                    {{ "TEMPLATES.OPTIONS.ALIGN_CENTER" | translate }}
-                  </option>
-                  <option value="right">
-                    {{ "TEMPLATES.OPTIONS.ALIGN_RIGHT" | translate }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn-secondary"
-                (click)="cancelEdit()"
-              >
-                {{ "GLOBAL.CANCEL" | translate }}
-              </button>
-              <button
-                type="button"
-                class="btn-danger"
-                *ngIf="selectedTemplate() && isEditing()"
-                (click)="deleteTemplate()"
-              >
-                {{ "TEMPLATES.ACTIONS.DELETE" | translate }}
-              </button>
-              <button
-                type="button"
-                class="btn-primary"
-                (click)="saveTemplate()"
-                [disabled]="!templateForm.valid"
-              >
-                {{
-                  selectedTemplate()
-                    ? ("TEMPLATES.ACTIONS.UPDATE" | translate)
-                    : ("TEMPLATES.ACTIONS.CREATE" | translate)
-                }}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Preview Section -->
-        <div class="preview-section">
-          <div class="preview-header">
-            <h3>{{ "TEMPLATES.PREVIEW_TITLE" | translate }}</h3>
-            <div class="preview-mode-toggle">
-              <label>{{ "TEMPLATES.PREVIEW_MODE" | translate }}</label>
-              <app-toggle-switch
-                [checked]="previewMode() === 'styled'"
-                (change)="previewMode.set($event ? 'styled' : 'text')"
-              ></app-toggle-switch>
-              <span class="mode-label">{{
-                previewMode() === "styled" ? "Styled" : "Text Only"
-              }}</span>
-            </div>
+            </form>
           </div>
-          <div class="preview-container">
-            <div [innerHTML]="getSafePreview()"></div>
+          <!-- Preview Section -->
+          <div class="preview-section">
+            <div class="preview-header">
+              <h3>{{ "TEMPLATES.PREVIEW_TITLE" | translate }}</h3>
+              <div class="preview-mode-toggle">
+                <label>{{ "TEMPLATES.PREVIEW_MODE" | translate }}</label>
+                <app-toggle-switch
+                  [checked]="previewMode() === 'styled'"
+                  (change)="previewMode.set($event ? 'styled' : 'text')"
+                ></app-toggle-switch>
+                <span class="mode-label">{{
+                  previewMode() === "styled" ? "Styled" : "Text Only"
+                }}</span>
+              </div>
+            </div>
+            <div class="preview-container">
+              <div [innerHTML]="getSafePreview()"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>

@@ -6,7 +6,7 @@ import {
   computed,
   inject,
 } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { FormsModule } from "@angular/forms";
 import { Subject, takeUntil, skip } from "rxjs";
 import { ProviderService } from "../../services/provider.service";
@@ -21,7 +21,7 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
 @Component({
   selector: "app-providers",
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, ToggleSwitchComponent],
+  imports: [FormsModule, TranslatePipe, ToggleSwitchComponent],
   templateUrl: "./providers.component.html",
   styleUrls: ["./providers.component.scss"],
 })

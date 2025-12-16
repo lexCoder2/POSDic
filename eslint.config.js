@@ -43,7 +43,8 @@ module.exports = defineConfig([
     ],
     rules: {
       "@angular-eslint/template/click-events-have-key-events": "off",
-      "@angular-eslint/template/interactive-supports-focus": "warn",
+      "@angular-eslint/template/interactive-supports-focus": "off",
+      "@angular-eslint/template/label-has-associated-control": "off",
     },
   },
 ]);

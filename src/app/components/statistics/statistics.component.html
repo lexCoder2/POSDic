@@ -21,300 +21,326 @@
       </button>
     </div>
   </div>
-  <div class="loading-overlay" *ngIf="isLoading()">
-    <div class="spinner"></div>
-    <p>{{ "STATISTICS.LOADING" | translate }}</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>{{ "STATISTICS.LOADING" | translate }}</p>
+    </div>
+  }
 
-  <div class="statistics-content" *ngIf="!isLoading()">
-    <!-- Key Metrics -->
-    <div class="metrics-grid">
-      <div class="metric-card primary">
-        <div class="metric-icon">
-          <i class="fas fa-dollar-sign"></i>
+  @if (!isLoading()) {
+    <div class="statistics-content">
+      <!-- Key Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="metric-content">
+            <h3>{{ "STATISTICS.METRICS.TOTAL_REVENUE" | translate }}</h3>
+            <p class="metric-value">{{ totalRevenue() | appCurrency }}</p>
+            <span class="metric-label">{{
+              "STATISTICS.METRICS.ALL_TIME" | translate
+            }}</span>
+          </div>
         </div>
-        <div class="metric-content">
-          <h3>{{ "STATISTICS.METRICS.TOTAL_REVENUE" | translate }}</h3>
-          <p class="metric-value">{{ totalRevenue() | appCurrency }}</p>
-          <span class="metric-label">{{
-            "STATISTICS.METRICS.ALL_TIME" | translate
-          }}</span>
+        <div class="metric-card success">
+          <div class="metric-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="metric-content">
+            <h3>{{ "STATISTICS.METRICS.TOTAL_SALES" | translate }}</h3>
+            <p class="metric-value">{{ totalSales() }}</p>
+            <span class="metric-label">{{
+              "STATISTICS.METRICS.COMPLETED" | translate
+            }}</span>
+          </div>
+        </div>
+        <div class="metric-card info">
+          <div class="metric-icon">
+            <i class="fas fa-receipt"></i>
+          </div>
+          <div class="metric-content">
+            <h3>{{ "STATISTICS.METRICS.AVG_TRANSACTION" | translate }}</h3>
+            <p class="metric-value">
+              {{ averageTransaction() | appCurrency }}
+            </p>
+            <span class="metric-label">{{
+              "STATISTICS.METRICS.PER_SALE" | translate
+            }}</span>
+          </div>
+        </div>
+        <div class="metric-card warning">
+          <div class="metric-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="metric-content">
+            <h3>{{ "STATISTICS.METRICS.PERIOD_REVENUE" | translate }}</h3>
+            <p class="metric-value">{{ periodRevenue() | appCurrency }}</p>
+            <span class="metric-label">{{
+              selectedPeriod() === "week"
+                ? ("STATISTICS.PERIOD.WEEK" | translate)
+                : selectedPeriod() === "month"
+                  ? ("STATISTICS.PERIOD.MONTH" | translate)
+                  : ("STATISTICS.PERIOD.YEAR" | translate)
+            }}</span>
+          </div>
         </div>
       </div>
-
-      <div class="metric-card success">
-        <div class="metric-icon">
-          <i class="fas fa-shopping-cart"></i>
+      <!-- Charts Grid -->
+      <div class="charts-grid">
+        <!-- Sales Trend Chart -->
+        <div class="chart-card large">
+          <div class="chart-header">
+            <h2>
+              <i class="fas fa-chart-line"></i>
+              {{ "STATISTICS.CHARTS.SALES_TREND" | translate }}
+            </h2>
+          </div>
+          <div class="chart-body">
+            @if (analytics().salesTrend.values.length > 0) {
+              <div class="bar-chart">
+                <div class="chart-bars">
+                  @for (
+                    value of analytics().salesTrend.values;
+                    track value;
+                    let i = $index
+                  ) {
+                    <div
+                      class="bar-wrapper"
+                      [title]="
+                        analytics().salesTrend.labels[i] +
+                        ': $' +
+                        value.toFixed(2)
+                      "
+                    >
+                      <div class="bar-value">
+                        {{ value > 0 ? (value | appCurrency: 0) : "" }}
+                      </div>
+                      <div
+                        class="bar"
+                        [style.height.%]="
+                          getBarHeight(
+                            value,
+                            getMaxValue(analytics().salesTrend.values)
+                          )
+                        "
+                      ></div>
+                      <div class="bar-label">
+                        {{ analytics().salesTrend.labels[i].split("/")[1] }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="no-data">
+                <i class="fas fa-chart-bar"></i>
+                <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
+              </div>
+            }
+          </div>
         </div>
-        <div class="metric-content">
-          <h3>{{ "STATISTICS.METRICS.TOTAL_SALES" | translate }}</h3>
-          <p class="metric-value">{{ totalSales() }}</p>
-          <span class="metric-label">{{
-            "STATISTICS.METRICS.COMPLETED" | translate
-          }}</span>
+        <!-- Monthly Sales Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2>
+              <i class="fas fa-calendar"></i>
+              {{ "STATISTICS.CHARTS.MONTHLY_SALES" | translate }}
+            </h2>
+          </div>
+          <div class="chart-body">
+            @if (analytics().monthlySales.values.length > 0) {
+              <div class="bar-chart vertical">
+                <div class="chart-bars">
+                  @for (
+                    value of analytics().monthlySales.values;
+                    track value;
+                    let i = $index
+                  ) {
+                    <div
+                      class="bar-wrapper"
+                      [title]="
+                        analytics().monthlySales.labels[i] +
+                        ': ' +
+                        value +
+                        ' sales'
+                      "
+                    >
+                      <div class="bar-value">{{ value > 0 ? value : "" }}</div>
+                      <div
+                        class="bar"
+                        [style.height.%]="
+                          getBarHeight(
+                            value,
+                            getMaxValue(analytics().monthlySales.values)
+                          )
+                        "
+                      ></div>
+                      <div class="bar-label">
+                        {{ analytics().monthlySales.labels[i].split(" ")[0] }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="no-data">
+                <i class="fas fa-chart-bar"></i>
+                <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
+              </div>
+            }
+          </div>
         </div>
-      </div>
-
-      <div class="metric-card info">
-        <div class="metric-icon">
-          <i class="fas fa-receipt"></i>
+        <!-- Top Products Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2>
+              <i class="fas fa-trophy"></i>
+              {{ "STATISTICS.CHARTS.TOP_PRODUCTS" | translate }}
+            </h2>
+          </div>
+          <div class="chart-body">
+            @if (analytics().topCategories.values.length > 0) {
+              <div class="horizontal-bar-chart">
+                @for (
+                  value of analytics().topCategories.values;
+                  track value;
+                  let i = $index
+                ) {
+                  <div class="h-bar-item">
+                    <div class="h-bar-label">
+                      {{ analytics().topCategories.labels[i] }}
+                    </div>
+                    <div class="h-bar-container">
+                      <div
+                        class="h-bar"
+                        [style.width.%]="
+                          getBarHeight(
+                            value,
+                            getMaxValue(analytics().topCategories.values)
+                          )
+                        "
+                      >
+                        <span class="h-bar-value">{{
+                          value | appCurrency
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="no-data">
+                <i class="fas fa-chart-bar"></i>
+                <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
+              </div>
+            }
+          </div>
         </div>
-        <div class="metric-content">
-          <h3>{{ "STATISTICS.METRICS.AVG_TRANSACTION" | translate }}</h3>
-          <p class="metric-value">
-            {{ averageTransaction() | appCurrency }}
-          </p>
-          <span class="metric-label">{{
-            "STATISTICS.METRICS.PER_SALE" | translate
-          }}</span>
+        <!-- Payment Methods Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2>
+              <i class="fas fa-credit-card"></i>
+              {{ "STATISTICS.CHARTS.PAYMENT_METHODS" | translate }}
+            </h2>
+          </div>
+          <div class="chart-body">
+            @if (analytics().paymentMethods.values.length > 0) {
+              <div class="payment-chart">
+                @for (
+                  value of analytics().paymentMethods.values;
+                  track value;
+                  let i = $index
+                ) {
+                  <div class="payment-item">
+                    <div class="payment-info">
+                      <span class="payment-name">{{
+                        analytics().paymentMethods.labels[i]
+                      }}</span>
+                      <span class="payment-count"
+                        >{{ value }}
+                        {{ "STATISTICS.TRANSACTIONS" | translate }}</span
+                      >
+                    </div>
+                    <div class="payment-bar-container">
+                      <div
+                        class="payment-bar"
+                        [style.width.%]="
+                          getBarHeight(
+                            value,
+                            getMaxValue(analytics().paymentMethods.values)
+                          )
+                        "
+                      ></div>
+                    </div>
+                    <div class="payment-percentage">
+                      {{ ((value / totalSales()) * 100).toFixed(1) }}%
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="no-data">
+                <i class="fas fa-chart-bar"></i>
+                <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
+              </div>
+            }
+          </div>
         </div>
-      </div>
-
-      <div class="metric-card warning">
-        <div class="metric-icon">
-          <i class="fas fa-calendar-alt"></i>
-        </div>
-        <div class="metric-content">
-          <h3>{{ "STATISTICS.METRICS.PERIOD_REVENUE" | translate }}</h3>
-          <p class="metric-value">{{ periodRevenue() | appCurrency }}</p>
-          <span class="metric-label">{{
-            selectedPeriod() === "week"
-              ? ("STATISTICS.PERIOD.WEEK" | translate)
-              : selectedPeriod() === "month"
-                ? ("STATISTICS.PERIOD.MONTH" | translate)
-                : ("STATISTICS.PERIOD.YEAR" | translate)
-          }}</span>
+        <!-- Daily Sales Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2>
+              <i class="fas fa-calendar-day"></i>
+              {{ "STATISTICS.CHARTS.RECENT_DAILY_SALES" | translate }}
+            </h2>
+          </div>
+          <div class="chart-body">
+            @if (analytics().dailySales.values.length > 0) {
+              <div class="bar-chart small">
+                <div class="chart-bars">
+                  @for (
+                    value of analytics().dailySales.values;
+                    track value;
+                    let i = $index
+                  ) {
+                    <div
+                      class="bar-wrapper"
+                      [title]="
+                        analytics().dailySales.labels[i] +
+                        ': ' +
+                        value +
+                        ' sales'
+                      "
+                    >
+                      <div class="bar-value">{{ value > 0 ? value : "" }}</div>
+                      <div
+                        class="bar"
+                        [style.height.%]="
+                          getBarHeight(
+                            value,
+                            getMaxValue(analytics().dailySales.values)
+                          )
+                        "
+                      ></div>
+                      <div class="bar-label">
+                        {{ analytics().dailySales.labels[i].split("/")[1] }}
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="no-data">
+                <i class="fas fa-chart-bar"></i>
+                <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
+              </div>
+            }
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Charts Grid -->
-    <div class="charts-grid">
-      <!-- Sales Trend Chart -->
-      <div class="chart-card large">
-        <div class="chart-header">
-          <h2>
-            <i class="fas fa-chart-line"></i>
-            {{ "STATISTICS.CHARTS.SALES_TREND" | translate }}
-          </h2>
-        </div>
-        <div class="chart-body">
-          <div
-            class="bar-chart"
-            *ngIf="analytics().salesTrend.values.length > 0; else noData"
-          >
-            <div class="chart-bars">
-              <div
-                class="bar-wrapper"
-                *ngFor="
-                  let value of analytics().salesTrend.values;
-                  let i = index
-                "
-                [title]="
-                  analytics().salesTrend.labels[i] + ': $' + value.toFixed(2)
-                "
-              >
-                <div class="bar-value">
-                  {{ value > 0 ? (value | appCurrency: 0) : "" }}
-                </div>
-                <div
-                  class="bar"
-                  [style.height.%]="
-                    getBarHeight(
-                      value,
-                      getMaxValue(analytics().salesTrend.values)
-                    )
-                  "
-                ></div>
-                <div class="bar-label">
-                  {{ analytics().salesTrend.labels[i].split("/")[1] }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Monthly Sales Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2>
-            <i class="fas fa-calendar"></i>
-            {{ "STATISTICS.CHARTS.MONTHLY_SALES" | translate }}
-          </h2>
-        </div>
-        <div class="chart-body">
-          <div
-            class="bar-chart vertical"
-            *ngIf="analytics().monthlySales.values.length > 0; else noData"
-          >
-            <div class="chart-bars">
-              <div
-                class="bar-wrapper"
-                *ngFor="
-                  let value of analytics().monthlySales.values;
-                  let i = index
-                "
-                [title]="
-                  analytics().monthlySales.labels[i] + ': ' + value + ' sales'
-                "
-              >
-                <div class="bar-value">{{ value > 0 ? value : "" }}</div>
-                <div
-                  class="bar"
-                  [style.height.%]="
-                    getBarHeight(
-                      value,
-                      getMaxValue(analytics().monthlySales.values)
-                    )
-                  "
-                ></div>
-                <div class="bar-label">
-                  {{ analytics().monthlySales.labels[i].split(" ")[0] }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Top Products Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2>
-            <i class="fas fa-trophy"></i>
-            {{ "STATISTICS.CHARTS.TOP_PRODUCTS" | translate }}
-          </h2>
-        </div>
-        <div class="chart-body">
-          <div
-            class="horizontal-bar-chart"
-            *ngIf="analytics().topCategories.values.length > 0; else noData"
-          >
-            <div
-              class="h-bar-item"
-              *ngFor="
-                let value of analytics().topCategories.values;
-                let i = index
-              "
-            >
-              <div class="h-bar-label">
-                {{ analytics().topCategories.labels[i] }}
-              </div>
-              <div class="h-bar-container">
-                <div
-                  class="h-bar"
-                  [style.width.%]="
-                    getBarHeight(
-                      value,
-                      getMaxValue(analytics().topCategories.values)
-                    )
-                  "
-                >
-                  <span class="h-bar-value">{{ value | appCurrency }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Payment Methods Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2>
-            <i class="fas fa-credit-card"></i>
-            {{ "STATISTICS.CHARTS.PAYMENT_METHODS" | translate }}
-          </h2>
-        </div>
-        <div class="chart-body">
-          <div
-            class="payment-chart"
-            *ngIf="analytics().paymentMethods.values.length > 0; else noData"
-          >
-            <div
-              class="payment-item"
-              *ngFor="
-                let value of analytics().paymentMethods.values;
-                let i = index
-              "
-            >
-              <div class="payment-info">
-                <span class="payment-name">{{
-                  analytics().paymentMethods.labels[i]
-                }}</span>
-                <span class="payment-count"
-                  >{{ value }} {{ "STATISTICS.TRANSACTIONS" | translate }}</span
-                >
-              </div>
-              <div class="payment-bar-container">
-                <div
-                  class="payment-bar"
-                  [style.width.%]="
-                    getBarHeight(
-                      value,
-                      getMaxValue(analytics().paymentMethods.values)
-                    )
-                  "
-                ></div>
-              </div>
-              <div class="payment-percentage">
-                {{ ((value / totalSales()) * 100).toFixed(1) }}%
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Sales Chart -->
-      <div class="chart-card">
-        <div class="chart-header">
-          <h2>
-            <i class="fas fa-calendar-day"></i>
-            {{ "STATISTICS.CHARTS.RECENT_DAILY_SALES" | translate }}
-          </h2>
-        </div>
-        <div class="chart-body">
-          <div
-            class="bar-chart small"
-            *ngIf="analytics().dailySales.values.length > 0; else noData"
-          >
-            <div class="chart-bars">
-              <div
-                class="bar-wrapper"
-                *ngFor="
-                  let value of analytics().dailySales.values;
-                  let i = index
-                "
-                [title]="
-                  analytics().dailySales.labels[i] + ': ' + value + ' sales'
-                "
-              >
-                <div class="bar-value">{{ value > 0 ? value : "" }}</div>
-                <div
-                  class="bar"
-                  [style.height.%]="
-                    getBarHeight(
-                      value,
-                      getMaxValue(analytics().dailySales.values)
-                    )
-                  "
-                ></div>
-                <div class="bar-label">
-                  {{ analytics().dailySales.labels[i].split("/")[1] }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <ng-template #noData>
-    <div class="no-data">
-      <i class="fas fa-chart-bar"></i>
-      <p>{{ "STATISTICS.NO_DATA" | translate }}</p>
-    </div>
-  </ng-template>
+  }
 </div>
