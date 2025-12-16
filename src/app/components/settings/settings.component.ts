@@ -391,8 +391,15 @@ export class SettingsComponent implements OnInit {
         let optimizedBadgeHtml = badgeHtml;
 
         try {
-          // Use the first available printer
-          const printerName = printers[0];
+          // Use the selected default printer or fallback to first available
+          const savedDefaultPrinter = localStorage.getItem("printer.default");
+          const printerName =
+            savedDefaultPrinter && savedDefaultPrinter !== "default"
+              ? savedDefaultPrinter
+              : printers[0];
+
+          console.log(`Using printer for QR badge: ${printerName}`);
+
           const paperWidth =
             await this.qzTrayService.getOptimalPaperWidth(printerName);
           const dpi = await this.qzTrayService.getOptimalDpi(printerName);

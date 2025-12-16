@@ -4,6 +4,8 @@
   padding: 1.5rem;
   background: var(--bg-primary);
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 
   .header {
     margin-bottom: 2rem;
@@ -26,6 +28,8 @@
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    overflow: hidden;
 
     .btn-primary {
       background: $primary;
@@ -463,9 +467,10 @@
 
   .form-with-preview {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 400px;
     gap: 2rem;
     align-items: start;
+    max-width: 100%;
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr;
@@ -473,13 +478,15 @@
     }
 
     .form-section-wrapper {
-      flex: 1;
+      min-width: 0;
     }
 
     .preview-section {
-      flex: 1;
-      position: sticky;
-      top: 100px;
+      position: fixed;
+      top: 173px;
+      max-height: calc(100vh - 120px);
+      align-self: start;
+      right: 24px;
 
       .preview-header {
         display: flex;
@@ -487,6 +494,7 @@
         align-items: center;
         margin-bottom: 1rem;
         gap: 1rem;
+        flex-wrap: wrap;
 
         h3 {
           font-size: 1.1rem;
@@ -494,6 +502,7 @@
           color: var(--text-primary);
           margin: 0;
           flex: 1;
+          min-width: 150px;
         }
 
         .preview-mode-toggle {
@@ -524,12 +533,17 @@
         padding: 1rem;
         background: #fafafa;
         overflow-y: auto;
-        max-height: 600px;
+        overflow-x: hidden;
+        max-height: calc(100vh - 220px);
         display: flex;
         justify-content: center;
 
-        div {
+        .preview-iframe {
           width: 100%;
+          min-height: 500px;
+          border: none;
+          background: white;
+          border-radius: 4px;
         }
       }
     }

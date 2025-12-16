@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from "@angular/core";
+import { Component, OnInit, signal, inject, effect } from "@angular/core";
 
 import {
   FormsModule,
@@ -8,9 +8,11 @@ import {
   Validators,
 } from "@angular/forms";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { debounceTime } from "rxjs/operators";
 import { PrintTemplateService } from "../../services/print-template.service";
 import { ToastService } from "../../services/toast.service";
-import { PrintTemplate } from "../../models";
+import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
+import { PrintTemplate, Sale, SaleItem } from "../../models";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { TranslationService } from "../../services/translation.service";
@@ -29,6 +31,7 @@ import { TranslationService } from "../../services/translation.service";
 })
 export class TemplatesComponent implements OnInit {
   private printTemplateService = inject(PrintTemplateService);
+  private receiptGeneratorService = inject(ReceiptGeneratorService);
   private fb = inject(FormBuilder);
   sanitizer = inject(DomSanitizer);
   private translationService = inject(TranslationService);
@@ -41,6 +44,7 @@ export class TemplatesComponent implements OnInit {
   showForm = signal<boolean>(false);
   previewMode = signal<"text" | "styled">("styled");
   templateForm: FormGroup;
+  previewHtml = signal<string>("");
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -98,13 +102,24 @@ export class TemplatesComponent implements OnInit {
       textAlign: ["center"],
       isDefault: [false],
     });
+
+    // Auto-regenerate preview when preview mode changes
+    effect(() => {
+      this.previewMode(); // Track signal
+      if (this.showForm()) {
+        this.generatePreview();
+      }
+    });
   }
 
   ngOnInit(): void {
     this.loadTemplates();
-    // Subscribe to form changes for live preview
-    this.templateForm.valueChanges.subscribe(() => {
-      // This will trigger change detection for the preview
+    // Generate initial preview
+    this.generatePreview();
+
+    // Subscribe to form changes for live preview with debounce
+    this.templateForm.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+      this.generatePreview();
     });
   }
 
@@ -386,13 +401,39 @@ export class TemplatesComponent implements OnInit {
   }
 
   getSafePreview(): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(this.generatePreview());
+    return this.sanitizer.bypassSecurityTrustHtml(this.previewHtml());
   }
 
-  generatePreview(): string {
+  async generatePreview(): Promise<void> {
     const formValue = this.templateForm.value;
     const mode = this.previewMode();
 
+    // Create sample sale data for preview
+    const sampleSale = this.createSampleSale();
+
+    // Convert form values to PrintTemplate format
+    const template = this.formValueToTemplate(formValue);
+
+    try {
+      // Use the real receipt generator service
+      const html = await this.receiptGeneratorService.generateReceipt(
+        sampleSale,
+        template,
+        {
+          plainTextMode: mode === "text",
+        }
+      );
+
+      this.previewHtml.set(html);
+    } catch (error) {
+      console.error("Error generating preview:", error);
+      // Fallback to simple preview if generation fails
+      this.previewHtml.set(this.generateFallbackPreview(formValue, mode));
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private generateFallbackPreview(formValue: any, mode: string): string {
     // If text mode, generate text-only preview
     if (mode === "text") {
       return this.generatePlainTextPreview(formValue);
@@ -402,9 +443,134 @@ export class TemplatesComponent implements OnInit {
     return this.generateStyledPreview(formValue);
   }
 
+  private createSampleSale(): Sale {
+    // Create sample sale data for preview
+    const sampleItems: SaleItem[] = [
+      {
+        product: {
+          _id: "1",
+          product_id: "PROD-001",
+          name: "Sample Product A",
+          sku: "PROD-001",
+          price: 15.99,
+          stock: 100,
+          category: "Sample",
+          active: true,
+          available: true,
+        },
+        quantity: 2,
+        unitPrice: 15.99,
+        discount: 0,
+        subtotal: 31.98,
+        total: 0,
+      },
+      {
+        product: {
+          _id: "2",
+          product_id: "PROD-002",
+          name: "Sample Product B",
+          sku: "PROD-002",
+          price: 24.5,
+          stock: 50,
+          category: "Sample",
+          active: true,
+          available: true,
+        },
+        quantity: 1,
+        unitPrice: 24.5,
+        discount: 0,
+        subtotal: 24.5,
+        total: 0,
+      },
+    ];
+
+    return {
+      _id: "PREVIEW-001",
+      saleNumber: "SALE-" + new Date().getTime(),
+      items: sampleItems,
+      subtotal: 56.48,
+      discount: 0,
+      tax: 4.52,
+      total: 61.0,
+      paymentMethod: "cash",
+      cashier: "Demo Cashier",
+      register: "Register 1",
+      status: "completed",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Sale;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private formValueToTemplate(formValue: any): PrintTemplate {
+    return {
+      _id: "preview",
+      name: formValue.name || "Preview",
+      description: formValue.description || "",
+      templateType: formValue.templateType,
+      paperSize: formValue.paperSize,
+      isDefault: false,
+      active: true,
+      header: {
+        showLogo: formValue.showLogo,
+        showStoreName: formValue.showStoreName,
+        showStoreAddress: formValue.showStoreAddress,
+        showStorePhone: formValue.showStorePhone,
+        showStoreEmail: formValue.showStoreEmail,
+        storeName: formValue.storeName,
+        storeAddress: formValue.storeAddress,
+        storePhone: formValue.storePhone,
+        storeEmail: formValue.storeEmail,
+        storeNameSize: formValue.storeNameSize,
+        storeNameFont: formValue.storeNameFont,
+        storeNameBold: formValue.storeNameBold,
+        storeAddressSize: formValue.storeAddressSize,
+        storeAddressFont: formValue.storeAddressFont,
+        storeAddressBold: formValue.storeAddressBold,
+        storePhoneSize: formValue.storePhoneSize,
+        storePhoneFont: formValue.storePhoneFont,
+        storePhoneBold: formValue.storePhoneBold,
+        storeEmailSize: formValue.storeEmailSize,
+        storeEmailFont: formValue.storeEmailFont,
+        storeEmailBold: formValue.storeEmailBold,
+      },
+      body: {
+        showProductCode: formValue.showProductCode,
+        showBarcode: formValue.showBarcode,
+        showQuantity: formValue.showQuantity,
+        showUnitPrice: formValue.showUnitPrice,
+        showDiscount: formValue.showDiscount,
+        showTax: formValue.showTax,
+        showSubtotal: formValue.showSubtotal,
+        productSize: formValue.productSize,
+        productFont: formValue.productFont,
+        productBold: formValue.productBold,
+        fontSize: formValue.fontSize,
+      },
+      footer: {
+        showTotals: formValue.showTotals,
+        showPaymentMethod: formValue.showPaymentMethod,
+        showCashier: formValue.showCashier,
+        showDateTime: formValue.showDateTime,
+        showThankYou: formValue.showThankYou,
+        customMessage: formValue.customMessage,
+        totalSize: formValue.totalSize,
+        totalFont: formValue.totalFont,
+        totalBold: formValue.totalBold,
+        footerSize: formValue.footerSize,
+        footerFont: formValue.footerFont,
+        footerBold: formValue.footerBold,
+      },
+      styles: {
+        textAlign: formValue.textAlign,
+      },
+    } as PrintTemplate;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private generatePlainTextPreview(formValue: any): string {
     const width = formValue.paperSize === "58mm" ? 28 : 40;
-    let lines: string[] = [];
+    const lines: string[] = [];
 
     // Header
     if (formValue.showLogo) {
@@ -465,6 +631,7 @@ export class TemplatesComponent implements OnInit {
     return `<div style="font-family: 'Courier New', monospace; width: 280px; margin: 0 auto; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; font-size: 12px; line-height: 1.4; background: white; white-space: pre-wrap; word-wrap: break-word;"><code>${this.escapeHtml(textContent)}</code></div>`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private generateStyledPreview(formValue: any): string {
     const fontSize =
       formValue.fontSize === "small"
