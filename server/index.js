@@ -131,6 +131,7 @@ const providerRoutes = require("./routes/providers");
 const templateRoutes = require("./routes/templates");
 const cartRoutes = require("./routes/carts");
 const registerRoutes = require("./routes/registers");
+const adminRoutes = require("./routes/admin");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -141,6 +142,7 @@ app.use("/api/providers", providerRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/registers", registerRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

@@ -13,6 +13,7 @@ import { UserService } from "../../services/user.service";
 import { QzTrayService } from "../../services/qz-tray.service";
 import { ScaleService } from "../../services/scale.service";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
+import { environment } from "@environments/environment";
 
 @Component({
   selector: "app-settings",
@@ -60,6 +61,11 @@ export class SettingsComponent implements OnInit {
   currentWeight = 0;
   currentWeightUnit = "kg";
   currentWeightStable = false;
+
+  // Reset Database properties
+  showResetDBConfirm = false;
+  resetConfirmationText = "";
+  resettingDatabase = false;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -533,6 +539,76 @@ export class SettingsComponent implements OnInit {
         ) || "Error disconnecting scale",
         "error"
       );
+    }
+  }
+
+  toggleResetDBConfirm(): void {
+    this.showResetDBConfirm = !this.showResetDBConfirm;
+    this.resetConfirmationText = "";
+  }
+
+  async resetDatabase(): Promise<void> {
+    if (this.resetConfirmationText.toLowerCase() !== "confirm") {
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.RESET_DB.INVALID_CONFIRM"
+        ) || "Please type 'confirm' to proceed",
+        "error"
+      );
+      return;
+    }
+
+    if (!this.isAdmin) {
+      this.toastService.show(
+        this.translationService.translate("SETTINGS.RESET_DB.ADMIN_ONLY") ||
+          "Only administrators can reset the database",
+        "error"
+      );
+      return;
+    }
+
+    this.resettingDatabase = true;
+
+    try {
+      // Make API call to reset database
+      const response = await fetch(
+        `${environment.apiUrl}/admin/reset-database`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("pos_token")}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      if (response.ok) {
+        this.toastService.show(
+          this.translationService.translate("SETTINGS.RESET_DB.SUCCESS") ||
+            "Database reset successfully",
+          "success"
+        );
+        this.showResetDBConfirm = false;
+        this.resetConfirmationText = "";
+      } else {
+        const error = await response.json();
+        this.toastService.show(
+          error.message ||
+            this.translationService.translate("SETTINGS.RESET_DB.ERROR") ||
+            "Error resetting database",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error resetting database:", error);
+      this.toastService.show(
+        this.translationService.translate("SETTINGS.RESET_DB.ERROR") ||
+          "Error resetting database",
+        "error"
+      );
+    } finally {
+      this.resettingDatabase = false;
     }
   }
 }

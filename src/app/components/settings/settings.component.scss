@@ -458,3 +458,170 @@
     }
   }
 }
+
+// Reset Database Section
+.reset-db-section {
+  &.danger-zone {
+    border-left: 4px solid $danger;
+    background: rgba(245, 101, 101, 0.05);
+
+    h3 {
+      color: $danger;
+    }
+
+    .danger-description {
+      color: #d32f2f;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  .reset-db-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .warning-box {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+
+    i {
+      color: #ff6b6b;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    p {
+      margin: 0;
+      color: #856404;
+      font-size: $font-size-sm;
+    }
+  }
+
+  .btn-danger {
+    background: $danger;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: $font-weight-semibold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background: darken($danger, 10%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba($danger, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    i {
+      font-size: $font-size-base;
+    }
+  }
+
+  .reset-confirmation-box {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background: var(--bg-tertiary);
+    border: 2px solid $danger;
+    border-radius: 8px;
+
+    .confirmation-label {
+      font-weight: $font-weight-semibold;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .confirmation-input {
+      padding: 0.75rem $spacing-md;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: white;
+      color: var(--text-primary);
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      font-family: "Courier New", monospace;
+
+      &:focus {
+        outline: none;
+        border-color: $danger;
+        box-shadow: 0 0 0 2px rgba($danger, 0.1);
+      }
+
+      &::placeholder {
+        color: var(--text-muted);
+      }
+    }
+
+    .confirmation-actions {
+      display: flex;
+      gap: $spacing-md;
+      justify-content: flex-end;
+
+      .btn {
+        padding: 0.625rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: $font-weight-semibold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        font-size: $font-size-sm;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn-secondary {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+
+        &:hover:not(:disabled) {
+          background: var(--bg-tertiary);
+          border-color: $gray-300;
+        }
+      }
+
+      .btn-danger {
+        background: $danger;
+        color: white;
+        padding: 0.625rem 1.25rem;
+
+        &:hover:not(:disabled) {
+          background: darken($danger, 10%);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba($danger, 0.3);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}

@@ -287,6 +287,19 @@
       "SCAN_TO_LOGIN": "Scan this code to login",
       "ERROR": "Unable to generate badge"
     },
+    "RESET_DB": {
+      "TITLE": "Reset Database",
+      "DESCRIPTION": "Reset the database, keeping only products, users, templates, and providers",
+      "WARNING": "This action will permanently delete all sales, carts, registers, and other data. Products, users, templates, and providers will be preserved. This action cannot be undone!",
+      "BUTTON": "Reset Database",
+      "CONFIRM_LABEL": "Type 'confirm' to reset the database:",
+      "CONFIRM_PLACEHOLDER": "Type the word 'confirm'",
+      "CONFIRM_BUTTON": "Reset Database",
+      "INVALID_CONFIRM": "Please type 'confirm' to proceed",
+      "ADMIN_ONLY": "Only administrators can reset the database",
+      "SUCCESS": "Database reset successfully",
+      "ERROR": "Error resetting database"
+    },
     "SAVED": "Settings saved",
     "SAVE_FAILED": "Failed to save settings"
   },

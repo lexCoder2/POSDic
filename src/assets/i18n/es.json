@@ -231,6 +231,19 @@
       "SCAN_TO_LOGIN": "Escanea este código para iniciar sesión",
       "ERROR": "No se pudo generar la credencial"
     },
+    "RESET_DB": {
+      "TITLE": "Restablecer Base de Datos",
+      "DESCRIPTION": "Restablecer la base de datos, conservando solo productos, usuarios, plantillas y proveedores",
+      "WARNING": "Esta acción eliminará permanentemente todas las ventas, carritos, registros y otros datos. Se conservarán los productos, usuarios, plantillas y proveedores. ¡Esta acción no se puede deshacer!",
+      "BUTTON": "Restablecer Base de Datos",
+      "CONFIRM_LABEL": "Escribe 'confirm' para restablecer la base de datos:",
+      "CONFIRM_PLACEHOLDER": "Escribe la palabra 'confirm'",
+      "CONFIRM_BUTTON": "Restablecer Base de Datos",
+      "INVALID_CONFIRM": "Por favor escribe 'confirm' para continuar",
+      "ADMIN_ONLY": "Solo los administradores pueden restablecer la base de datos",
+      "SUCCESS": "Base de datos restablecida exitosamente",
+      "ERROR": "Error al restablecer la base de datos"
+    },
     "SCALE": {
       "TITLE": "Báscula Digital",
       "DESCRIPTION": "Conecte una báscula digital para pesar productos. Conéctela aquí una vez y estará disponible en las vistas de POS y Caja.",

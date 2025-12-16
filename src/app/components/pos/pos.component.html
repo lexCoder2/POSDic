@@ -275,7 +275,7 @@
       <div class="modal-header">
         <h3>
           <i class="fas fa-money-bill-wave"></i>
-          {{ "POS.WITHDRAW.TITLE" | translate }}
+          {{ "WITHDRAW.TITLE" | translate }}
         </h3>
         <button class="btn-close" (click)="closeWithdrawModal()">
           <i class="fas fa-times"></i>
@@ -285,7 +285,7 @@
         <div class="form-group">
           <label for="withdrawAmount">
             <i class="fas fa-dollar-sign"></i>
-            {{ "POS.WITHDRAW.AMOUNT" | translate }}
+            {{ "WITHDRAW.AMOUNT" | translate }}
           </label>
           <div class="input-wrapper">
             <span class="currency">$</span>
@@ -303,14 +303,14 @@
         <div class="form-group">
           <label for="withdrawReason">
             <i class="fas fa-comment-alt"></i>
-            {{ "POS.WITHDRAW.REASON" | translate }}
+            {{ "WITHDRAW.REASON" | translate }}
           </label>
           <textarea
             id="withdrawReason"
             [(ngModel)]="withdrawReason"
             class="form-control"
             rows="3"
-            [placeholder]="'POS.WITHDRAW.REASON_PLACEHOLDER' | translate"
+            [placeholder]="'WITHDRAW.REASON_PLACEHOLDER' | translate"
           ></textarea>
         </div>
       </div>
@@ -324,7 +324,7 @@
           (click)="confirmWithdraw()"
         >
           <i class="fas fa-check"></i>
-          {{ "POS.WITHDRAW.CONFIRM" | translate }}
+          {{ "WITHDRAW.CONFIRM" | translate }}
         </button>
       </div>
     </div>

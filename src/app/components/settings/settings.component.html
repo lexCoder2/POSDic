@@ -1,10 +1,4 @@
 <div class="page-container">
-  <app-page-title
-    [title]="'SETTINGS.TITLE' | translate"
-    [description]="'SETTINGS.DESCRIPTION' | translate"
-  >
-  </app-page-title>
-
   <section class="card setting-section">
     <div class="setting-header">
       <div class="header-actions">
@@ -280,4 +274,72 @@
       </button>
     </div>
   </section>
+
+  <!-- Reset Database Section (Admin Only) -->
+  @if (isAdmin) {
+    <section class="card reset-db-section danger-zone">
+      <h3>{{ "SETTINGS.RESET_DB.TITLE" | translate }}</h3>
+      <p class="section-description danger-description">
+        {{ "SETTINGS.RESET_DB.DESCRIPTION" | translate }}
+      </p>
+
+      <div class="reset-db-content">
+        <div class="warning-box">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>{{ "SETTINGS.RESET_DB.WARNING" | translate }}</p>
+        </div>
+
+        @if (!showResetDBConfirm) {
+          <button
+            class="btn btn-danger"
+            (click)="toggleResetDBConfirm()"
+            title="Reset database (admin only)"
+          >
+            <i class="fas fa-redo-alt"></i>
+            {{ "SETTINGS.RESET_DB.BUTTON" | translate }}
+          </button>
+        } @else {
+          <div class="reset-confirmation-box">
+            <p class="confirmation-label">
+              {{ "SETTINGS.RESET_DB.CONFIRM_LABEL" | translate }}
+            </p>
+            <input
+              type="text"
+              [(ngModel)]="resetConfirmationText"
+              placeholder="{{
+                'SETTINGS.RESET_DB.CONFIRM_PLACEHOLDER' | translate
+              }}"
+              class="confirmation-input"
+              (keyup.enter)="resetDatabase()"
+            />
+            <div class="confirmation-actions">
+              <button
+                class="btn btn-secondary"
+                (click)="toggleResetDBConfirm()"
+                [disabled]="resettingDatabase"
+              >
+                <i class="fas fa-times"></i>
+                {{ "GLOBAL.CANCEL" | translate }}
+              </button>
+              <button
+                class="btn btn-danger"
+                (click)="resetDatabase()"
+                [disabled]="
+                  resettingDatabase ||
+                  resetConfirmationText.toLowerCase() !== 'confirm'
+                "
+              >
+                @if (resettingDatabase) {
+                  <i class="fas fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fas fa-exclamation-triangle"></i>
+                }
+                {{ "SETTINGS.RESET_DB.CONFIRM_BUTTON" | translate }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
 </div>
