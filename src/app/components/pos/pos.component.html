@@ -101,6 +101,7 @@
     [isMobileCartOpen]="isMobileCartOpen"
     [registerOpen]="!!currentRegister"
     [canMakeInternalSale]="canMakeInternalSale"
+    [cartId]="currentCartId"
     (switchTab)="switchSaleTab($event)"
     (addTab)="addSaleTab()"
     (closeTab)="closeSaleTab($event)"
@@ -110,6 +111,7 @@
     (placeOrderWithMethod)="handleQuickPay()"
     (internalSale)="openInternalSale()"
     (closeMobileCart)="toggleMobileCart()"
+    (priceChanged)="onItemPriceChanged($event)"
   ></app-cart>
 </div>
 

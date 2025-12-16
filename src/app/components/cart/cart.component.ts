@@ -6,17 +6,26 @@ import {
   signal,
   inject,
 } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { CartService } from "../../services/cart.service";
 import { CartItem, Product } from "../../models";
 import { environment } from "@environments/environment";
+import { CalculatorComponent } from "../calculator/calculator.component";
 
 @Component({
   selector: "app-cart",
   standalone: true,
-  imports: [TranslatePipe, CurrencyPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    CurrencyPipe,
+    CalculatorComponent,
+  ],
   templateUrl: "./cart.component.html",
   styleUrls: ["./cart.component.scss"],
 })
@@ -29,9 +38,13 @@ export class CartComponent {
   @Input() isMobileCartOpen = false;
   @Input() registerOpen = false;
   @Input() canMakeInternalSale = false;
+  @Input() cartId: string | null = null;
 
   showCloseConfirmation = signal<boolean>(false);
   tabToClose = signal<number | null>(null);
+  showPriceEditor = signal<boolean>(false);
+  editingItem = signal<CartItem | null>(null);
+  discountAmount = signal<number>(0);
 
   @Output() switchTab = new EventEmitter<number>();
   @Output() addTab = new EventEmitter<void>();
@@ -42,11 +55,10 @@ export class CartComponent {
   @Output() placeOrderWithMethod = new EventEmitter<string>();
   @Output() internalSale = new EventEmitter<void>();
   @Output() closeMobileCart = new EventEmitter<void>();
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
+  @Output() priceChanged = new EventEmitter<{
+    itemId: string;
+    newPrice: number;
+  }>();
 
   getItemsBySupplier(): { supplier: string; items: CartItem[] }[] {
     const groups: Record<string, CartItem[]> = {};
@@ -73,6 +85,10 @@ export class CartComponent {
 
   getTotalItems(): number {
     return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+  }
+
+  getItemSubtotal(item: CartItem): number {
+    return item.product.price * item.quantity;
   }
 
   calculateTotal(): number {
@@ -158,5 +174,44 @@ export class CartComponent {
 
   onCloseMobileCart(): void {
     this.closeMobileCart.emit();
+  }
+
+  openPriceEditor(item: CartItem): void {
+    this.editingItem.set(item);
+    this.showPriceEditor.set(true);
+  }
+
+  onPriceChanged(event: { value: number }): void {
+    const item = this.editingItem();
+    if (item && item.product._id) {
+      const oldPrice = item.product.price;
+      item.product.price = event.value;
+
+      // Emit event to parent component to handle database update
+      this.priceChanged.emit({
+        itemId: item.product._id,
+        newPrice: event.value,
+      });
+
+      this.closePriceEditor();
+    }
+  }
+
+  closePriceEditor(): void {
+    this.showPriceEditor.set(false);
+    this.editingItem.set(null);
+  }
+
+  applyDiscount(): void {
+    // Emit discount event or handle discount logic
+    const currentTotal = this.calculateTotal();
+    if (this.discountAmount() > 0 && this.discountAmount() <= currentTotal) {
+      // Discount applied
+      console.log("Discount applied:", this.discountAmount());
+    }
+  }
+
+  calculateSubtotal(): number {
+    return this.calculateTotal() - this.discountAmount();
   }
 }

@@ -80,15 +80,13 @@
                     item.product.price | appCurrency
                   }}</span>
                 </div>
+                <div class="item-subtotal">
+                  <span class="subtotal-amount">{{
+                    getItemSubtotal(item) | appCurrency
+                  }}</span>
+                </div>
               </div>
             </div>
-            <button
-              class="remove-btn"
-              (click)="onRemoveItem(item.product._id!)"
-              title="{{ 'CART.REMOVE_ITEM' | translate }}"
-            >
-              <i class="fas fa-times"></i>
-            </button>
             <div class="item-details">
               <div class="item-quantity-controls">
                 <button
@@ -107,6 +105,22 @@
                   <i class="fas fa-plus"></i>
                 </button>
               </div>
+              <div class="item-actions">
+                <button
+                  class="action-btn edit-btn"
+                  (click)="openPriceEditor(item)"
+                  title="{{ 'CART.EDIT_PRICE' | translate }}"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  class="action-btn remove-btn"
+                  (click)="onRemoveItem(item.product._id!)"
+                  title="{{ 'CART.REMOVE_ITEM' | translate }}"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -116,13 +130,36 @@
 
   <div class="cart-footer">
     <div class="cart-summary">
-      <div class="summary-row">
-        <span>{{ "CART.SUMMARY.ITEMS" | translate }}</span>
-        <span>{{ getTotalItems() }}x</span>
+      <div class="summary-row discount-row">
+        <span>{{ "CART.SUMMARY.DISCOUNT" | translate }}</span>
+        <div class="discount-controls">
+          <input
+            type="number"
+            [ngModel]="discountAmount()"
+            (ngModelChange)="discountAmount.set($event)"
+            class="discount-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
+          <button class="discount-btn" (click)="applyDiscount()">
+            <i class="fas fa-check"></i>
+          </button>
+        </div>
       </div>
+      @if (discountAmount() > 0) {
+        <div class="summary-row">
+          <span>{{ "CART.SUMMARY.DISCOUNT_AMOUNT" | translate }}</span>
+          <span class="discount-amount"
+            >-{{ discountAmount() | appCurrency }}</span
+          >
+        </div>
+      }
       <div class="summary-row total">
         <span>{{ "CART.SUMMARY.TOTAL" | translate }}</span>
-        <span class="total-amount">{{ calculateTotal() | appCurrency }}</span>
+        <span class="total-amount">{{
+          calculateSubtotal() | appCurrency
+        }}</span>
       </div>
     </div>
     <div class="quick-pay">
@@ -160,6 +197,40 @@
     <!-- Place order button removed — quick-pay buttons handle checkout flows -->
   </div>
 </aside>
+
+<!-- Price Editor Modal -->
+@if (showPriceEditor()) {
+  <div class="modal-overlay" (click)="closePriceEditor()">
+    <div
+      class="modal-content price-editor-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-tag"></i>
+          {{ "CART.EDIT_PRICE_TITLE" | translate }}
+        </h3>
+        <button class="close-modal-btn" (click)="closePriceEditor()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body price-editor-body">
+        @if (editingItem()) {
+          <div class="item-being-edited">
+            <p class="current-price">
+              {{ "CART.CURRENT_PRICE" | translate }}:
+              <strong>{{ editingItem()!.product.price | appCurrency }}</strong>
+            </p>
+          </div>
+        }
+        <app-calculator
+          (addItem)="onPriceChanged($event)"
+          [lastItemPrice]="editingItem()!.product.price ?? null"
+        ></app-calculator>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- Close Tab Confirmation Modal -->
 @if (showCloseConfirmation()) {

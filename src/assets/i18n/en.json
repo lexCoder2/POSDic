@@ -792,6 +792,9 @@
     "REMOVE_ALL": "Remove all",
     "EMPTY": "No items in cart",
     "REMOVE_ITEM": "Remove item",
+    "EDIT_PRICE": "Edit Price",
+    "EDIT_PRICE_TITLE": "Edit Item Price",
+    "CURRENT_PRICE": "Current Price",
     "COLUMN": {
       "PRODUCT": "Product",
       "QTY": "Qty",
@@ -800,6 +803,9 @@
     },
     "SUMMARY": {
       "ITEMS": "Items:",
+      "SUBTOTAL": "Subtotal:",
+      "DISCOUNT": "Discount:",
+      "DISCOUNT_AMOUNT": "Discount:",
       "TOTAL": "Total:"
     },
     "PLACE_ORDER": "Place order",

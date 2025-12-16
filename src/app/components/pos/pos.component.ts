@@ -119,6 +119,7 @@ export class PosComponent implements OnInit, OnDestroy {
   // Multiple sales tabs
   salesTabs: { items: CartItem[] }[] = [{ items: [] }];
   activeSaleTabIndex = 0;
+  currentCartId: string | null = null;
 
   // Camera scanner
   isCameraActive = false;
@@ -175,11 +176,6 @@ export class PosComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   // timestamp of last Enter key press for double-Enter detection
   private _lastEnterTime = 0;
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -527,6 +523,41 @@ export class PosComponent implements OnInit, OnDestroy {
 
   removeFromCart(productId: string): void {
     this.cartService.removeItem(productId);
+  }
+
+  onItemPriceChanged(event: { itemId: string; newPrice: number }): void {
+    const item = this.cartItems.find((i) => i.product._id === event.itemId);
+    if (item) {
+      item.product.price = event.newPrice;
+
+      // Save updated cart items to localStorage
+      localStorage.setItem("pos_cart", JSON.stringify(this.cartItems));
+
+      // Persist to database if cart ID exists
+      if (this.currentCartId) {
+        const cartData = {
+          items: this.cartItems.map((item) => ({
+            productId: item.product._id,
+            quantity: item.quantity,
+            price: item.product.price,
+            discount: item.discount || 0,
+          })),
+        };
+
+        this.cartService.updateCart(this.currentCartId, cartData).subscribe({
+          next: () => {
+            this.toastService.show("Price updated successfully", "success");
+          },
+          error: (err) => {
+            console.error("Error updating cart:", err);
+            this.toastService.show("Error updating price", "error");
+          },
+        });
+      } else {
+        // Show toast when price is updated (even without cart ID)
+        this.toastService.show("Price updated", "success");
+      }
+    }
   }
 
   getItemTotal(item: CartItem): number {
