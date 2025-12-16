@@ -35,6 +35,7 @@ import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { environment } from "@environments/environment";
 import { OpenRegisterComponent } from "../open-register/open-register.component";
+import { TranslationService } from "@app/services/translation.service";
 
 @Component({
   selector: "app-cashier",
@@ -60,6 +61,7 @@ export class CashierComponent implements OnInit, AfterViewInit {
   private registerService = inject(RegisterService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+  private translationService = inject(TranslationService);
 
   @ViewChild(CalculatorComponent)
   calculator!: CalculatorComponent;
@@ -158,12 +160,12 @@ export class CashierComponent implements OnInit, AfterViewInit {
   constructor(...args: unknown[]);
 
   constructor() {
-    // Subscribe to saved scale weight
+    // Subscribe to current scale weight (all readings, not just stable)
     effect(() => {
-      this.scaleService.savedWeight$.subscribe((reading) => {
+      this.scaleService.currentWeight$.subscribe((reading) => {
         this.currentScaleReading.set(reading);
-        // Auto-populate weight when saved weight is available
-        if (reading && reading.weight > 0) {
+        // Auto-populate weight when reading is available (continuous update)
+        if (reading && reading.weight > 0 && this.useScaleWeight()) {
           this.looseProductWeight.set(reading.weight.toFixed(3));
         }
       });
@@ -187,6 +189,9 @@ export class CashierComponent implements OnInit, AfterViewInit {
     });
     // Load active register
     this.registerService.getActiveRegister().subscribe();
+
+    // Auto-connect to scale if previously authorized
+    this.attemptAutoConnectScale();
 
     // Focus calculator when route changes to cashier
     this.router.events
@@ -696,12 +701,33 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.debouncedSaveCart();
   }
 
+  async attemptAutoConnectScale(): Promise<void> {
+    // Only auto-connect if not already connected
+    if (this.scaleConnected()) {
+      return;
+    }
+
+    try {
+      const connected = await this.scaleService.autoConnectScale();
+      if (connected) {
+        this.scaleConnected.set(true);
+        console.log("Scale auto-connected successfully");
+      }
+    } catch (error) {
+      // Silently fail - user can manually connect later
+      console.log("Scale auto-connect not available:", error);
+    }
+  }
+
   openLooseProductModal(): void {
     this.showLooseProductModal.set(true);
     this.looseProductWeight.set("");
     this.looseProductPricePerKg.set("");
     this.looseProductDescription.set("");
-    this.useScaleWeight.set(false);
+    // Auto-enable scale weight if scale is connected
+    if (this.scaleConnected()) {
+      this.useScaleWeight.set(true);
+    }
     // Focus on price input after modal renders
     setTimeout(() => {
       if (this.pricePerKgInput?.nativeElement) {
@@ -716,7 +742,8 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.looseProductWeight.set("");
     this.looseProductPricePerKg.set("");
     this.looseProductDescription.set("");
-    this.useScaleWeight.set(false);
+    // Don't disable scale weight - keep reading in background
+    // this.useScaleWeight.set(false); - Removed to maintain continuous reading
   }
 
   toggleUseScaleWeight(): void {
@@ -727,7 +754,8 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.useScaleWeight.update((v) => !v);
     if (this.useScaleWeight()) {
       const reading = this.currentScaleReading();
-      if (reading && reading.stable) {
+      // Use current reading regardless of stability for immediate feedback
+      if (reading && reading.weight > 0) {
         this.looseProductWeight.set(reading.weight.toFixed(3));
       }
     }
@@ -769,6 +797,64 @@ export class CashierComponent implements OnInit, AfterViewInit {
     this.debouncedSaveCart();
     // Return focus to calculator
     setTimeout(() => this.calculator?.focusCalculator(), 100);
+  }
+
+  confirmAndWeighAnother(): void {
+    const weight = parseFloat(this.looseProductWeight());
+    const pricePerKg = parseFloat(this.looseProductPricePerKg());
+    const defaultLooseProductName = this.translationService.translate(
+      "CASHIER.LOOSE_PRODUCT_MODAL.LOOSE_PRODUCT_DEFAULT_NAME"
+    );
+    const description =
+      this.looseProductDescription().trim() || defaultLooseProductName;
+
+    if (isNaN(weight) || weight <= 0) {
+      this.toastService.show("Please enter a valid weight.", "info");
+      return;
+    }
+
+    if (isNaN(pricePerKg) || pricePerKg <= 0) {
+      this.toastService.show("Please enter a valid price per kg.", "info");
+      return;
+    }
+
+    const calculatedPrice = weight * pricePerKg;
+    // Round up to increments of 0.5
+    const totalPrice = Math.ceil(calculatedPrice * 2) / 2;
+
+    const newItem = {
+      price: totalPrice,
+      unitPrice: totalPrice,
+      quantity: 1,
+      id: this.itemIdCounter++,
+      description,
+      weight,
+      pricePerKg,
+    };
+
+    this.items.update((items) => [...items, newItem]);
+    this.total.update((t) => t + totalPrice);
+    this.debouncedSaveCart();
+
+    // Reset form for next product but keep modal open
+    this.looseProductWeight.set("");
+    this.looseProductDescription.set("");
+    // Keep price per kg for convenience (same product type)
+    // Keep scale weight enabled if it was already enabled
+
+    // Show success feedback
+    this.toastService.show(
+      `${description} added! Ready for next item.`,
+      "success"
+    );
+
+    // Focus on price input for next entry
+    setTimeout(() => {
+      if (this.pricePerKgInput?.nativeElement) {
+        this.pricePerKgInput.nativeElement.focus();
+        this.pricePerKgInput.nativeElement.select();
+      }
+    }, 100);
   }
 
   handleLooseProductEnter(event: Event): void {

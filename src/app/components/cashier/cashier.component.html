@@ -456,11 +456,20 @@
 
         <div class="modal-footer">
           <button class="modal-btn cancel" (click)="cancelLooseProduct()">
-            Cancel
+            {{ "GLOBAL.CANCEL" | translate }}
+          </button>
+          <button
+            class="modal-btn secondary"
+            (click)="confirmAndWeighAnother()"
+          >
+            <i class="fas fa-plus"></i>
+            {{
+              "CASHIER.LOOSE_PRODUCT_MODAL.ADD_AND_WEIGH_ANOTHER" | translate
+            }}
           </button>
           <button class="modal-btn confirm" (click)="confirmLooseProduct()">
             <i class="fas fa-check"></i>
-            Add Item
+            {{ "CASHIER.LOOSE_PRODUCT_MODAL.ADD_ITEM" | translate }}
           </button>
         </div>
       </div>

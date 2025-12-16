@@ -1,25 +1,44 @@
 <div class="statistics-container">
   <div class="statistics-header">
-    <div class="period-selector">
+    <div class="tab-selector">
       <button
-        [class.active]="selectedPeriod() === 'week'"
-        (click)="setPeriod('week')"
+        [class.active]="selectedTab() === 'analytics'"
+        (click)="setTab('analytics')"
       >
-        {{ "STATISTICS.PERIOD.WEEK" | translate }}
+        <i class="fas fa-chart-line"></i>
+        {{ "STATISTICS.TABS.ANALYTICS" | translate }}
       </button>
       <button
-        [class.active]="selectedPeriod() === 'month'"
-        (click)="setPeriod('month')"
+        [class.active]="selectedTab() === 'reports'"
+        (click)="setTab('reports')"
       >
-        {{ "STATISTICS.PERIOD.MONTH" | translate }}
-      </button>
-      <button
-        [class.active]="selectedPeriod() === 'year'"
-        (click)="setPeriod('year')"
-      >
-        {{ "STATISTICS.PERIOD.YEAR" | translate }}
+        <i class="fas fa-file-pdf"></i>
+        {{ "STATISTICS.TABS.REPORTS" | translate }}
       </button>
     </div>
+
+    @if (selectedTab() === "analytics") {
+      <div class="period-selector">
+        <button
+          [class.active]="selectedPeriod() === 'week'"
+          (click)="setPeriod('week')"
+        >
+          {{ "STATISTICS.PERIOD.WEEK" | translate }}
+        </button>
+        <button
+          [class.active]="selectedPeriod() === 'month'"
+          (click)="setPeriod('month')"
+        >
+          {{ "STATISTICS.PERIOD.MONTH" | translate }}
+        </button>
+        <button
+          [class.active]="selectedPeriod() === 'year'"
+          (click)="setPeriod('year')"
+        >
+          {{ "STATISTICS.PERIOD.YEAR" | translate }}
+        </button>
+      </div>
+    }
   </div>
   @if (isLoading()) {
     <div class="loading-overlay">
@@ -28,7 +47,7 @@
     </div>
   }
 
-  @if (!isLoading()) {
+  @if (!isLoading() && selectedTab() === "analytics") {
     <div class="statistics-content">
       <!-- Key Metrics -->
       <div class="metrics-grid">
@@ -342,5 +361,9 @@
         </div>
       </div>
     </div>
+  }
+
+  @if (!isLoading() && selectedTab() === "reports") {
+    <app-reports></app-reports>
   }
 </div>

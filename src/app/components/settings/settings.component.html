@@ -157,6 +157,72 @@
     </div>
   </section>
 
+  <!-- Change Password Section -->
+  <section class="card password-section">
+    <h3>{{ "SETTINGS.CHANGE_PASSWORD.TITLE" | translate }}</h3>
+    <p class="section-description">
+      {{ "SETTINGS.CHANGE_PASSWORD.DESCRIPTION" | translate }}
+    </p>
+
+    <div class="form-row">
+      <label class="label">{{
+        "SETTINGS.CHANGE_PASSWORD.CURRENT_PASSWORD" | translate
+      }}</label>
+      <input
+        type="password"
+        [(ngModel)]="currentPassword"
+        placeholder="{{
+          'SETTINGS.CHANGE_PASSWORD.CURRENT_PASSWORD_PLACEHOLDER' | translate
+        }}"
+        autocomplete="current-password"
+      />
+    </div>
+
+    <div class="form-row">
+      <label class="label">{{
+        "SETTINGS.CHANGE_PASSWORD.NEW_PASSWORD" | translate
+      }}</label>
+      <input
+        type="password"
+        [(ngModel)]="newPassword"
+        placeholder="{{
+          'SETTINGS.CHANGE_PASSWORD.NEW_PASSWORD_PLACEHOLDER' | translate
+        }}"
+        autocomplete="new-password"
+      />
+    </div>
+
+    <div class="form-row">
+      <label class="label">{{
+        "SETTINGS.CHANGE_PASSWORD.CONFIRM_PASSWORD" | translate
+      }}</label>
+      <input
+        type="password"
+        [(ngModel)]="confirmPassword"
+        placeholder="{{
+          'SETTINGS.CHANGE_PASSWORD.CONFIRM_PASSWORD_PLACEHOLDER' | translate
+        }}"
+        autocomplete="new-password"
+      />
+    </div>
+
+    <div class="form-actions">
+      <button
+        class="btn btn-primary"
+        (click)="changePassword()"
+        [disabled]="changingPassword"
+      >
+        @if (changingPassword) {
+          <i class="fas fa-spinner fa-spin"></i>
+        }
+        @if (!changingPassword) {
+          <i class="fas fa-key"></i>
+        }
+        {{ "SETTINGS.CHANGE_PASSWORD.BUTTON" | translate }}
+      </button>
+    </div>
+  </section>
+
   <!-- Digital Scale Section -->
   <section class="card scale-section">
     <h3>

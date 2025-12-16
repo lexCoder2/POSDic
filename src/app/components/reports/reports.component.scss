@@ -1,0 +1,269 @@
+@use "../../../styles/theme" as *;
+
+.reports-content {
+  padding: 1rem 0;
+
+  .loading-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border-color);
+      border-top-color: $primary;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    p {
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+
+  .reports-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @include respond-to(sm) {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.75rem;
+    }
+
+    @include respond-to(xl) {
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  .report-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .report-header {
+      padding: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: linear-gradient(135deg, var(--bg-secondary), white);
+      border-bottom: 1px solid var(--border-color);
+
+      .report-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+
+        &.sales {
+          background: linear-gradient(135deg, $success, darken($success, 10%));
+        }
+
+        &.stock {
+          background: linear-gradient(135deg, $info, darken($info, 10%));
+        }
+
+        &.cashflow {
+          background: linear-gradient(135deg, $warning, darken($warning, 10%));
+        }
+
+        &.barcode {
+          background: linear-gradient(135deg, $primary, darken($primary, 10%));
+        }
+
+        &.qrcode {
+          background: linear-gradient(135deg, #6366f1, darken(#6366f1, 10%));
+        }
+      }
+
+      .report-title-section {
+        flex: 1;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .report-body {
+      padding: 1.5rem;
+      flex: 1;
+
+      .form-row {
+        margin-bottom: 1rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        label {
+          display: block;
+          font-weight: 500;
+          color: var(--text-primary);
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        input[type="date"],
+        select {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          font-size: 0.9rem;
+          transition: all 0.2s;
+          background: white;
+
+          &:focus {
+            outline: none;
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba($primary, 0.1);
+          }
+        }
+
+        &.checkbox-row {
+          display: flex;
+          align-items: center;
+
+          label {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            cursor: pointer;
+            user-select: none;
+
+            input[type="checkbox"] {
+              width: auto;
+              margin-right: 0.75rem;
+              cursor: pointer;
+              width: 18px;
+              height: 18px;
+              accent-color: $primary;
+            }
+
+            span {
+              font-weight: 400;
+            }
+          }
+        }
+
+        &.toggle-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.5rem 0;
+
+          label {
+            margin: 0;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            flex: 1;
+          }
+
+          app-toggle-switch {
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+
+    .report-footer {
+      padding: 1rem 1.5rem;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+
+      button {
+        width: 100%;
+        padding: 0.875rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        &.btn-primary {
+          background: linear-gradient(135deg, $primary, darken($primary, 10%));
+          color: white;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba($primary, 0.3);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+
+        i.fa-spinner {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      }
+    }
+  }
+}

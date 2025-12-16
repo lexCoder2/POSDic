@@ -67,6 +67,12 @@ export class SettingsComponent implements OnInit {
   resetConfirmationText = "";
   resettingDatabase = false;
 
+  // Change Password properties
+  currentPassword = "";
+  newPassword = "";
+  confirmPassword = "";
+  changingPassword = false;
+
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
@@ -530,7 +536,8 @@ export class SettingsComponent implements OnInit {
 
   async disconnectScale(): Promise<void> {
     try {
-      await this.scaleService.disconnectScale();
+      // Use permanent disconnect to disable auto-reconnection
+      await this.scaleService.disconnectScale(true);
       this.scaleConnected = false;
       this.currentWeight = 0;
       this.toastService.show(
@@ -546,6 +553,102 @@ export class SettingsComponent implements OnInit {
         ) || "Error disconnecting scale",
         "error"
       );
+    }
+  }
+
+  async changePassword(): Promise<void> {
+    // Validation
+    if (!this.currentPassword) {
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.CHANGE_PASSWORD.CURRENT_PASSWORD_REQUIRED"
+        ) || "Current password is required",
+        "error"
+      );
+      return;
+    }
+
+    if (!this.newPassword || this.newPassword.length < 6) {
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.CHANGE_PASSWORD.PASSWORD_TOO_SHORT"
+        ) || "Password must be at least 6 characters",
+        "error"
+      );
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.CHANGE_PASSWORD.PASSWORDS_DONT_MATCH"
+        ) || "Passwords don't match",
+        "error"
+      );
+      return;
+    }
+
+    this.changingPassword = true;
+
+    try {
+      const response = await fetch(
+        `${environment.apiUrl}/auth/change-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("pos_token")}`,
+          },
+          body: JSON.stringify({
+            currentPassword: this.currentPassword,
+            newPassword: this.newPassword,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        this.toastService.show(
+          this.translationService.translate(
+            "SETTINGS.CHANGE_PASSWORD.SUCCESS"
+          ) || "Password changed successfully",
+          "success"
+        );
+
+        // Clear form
+        this.currentPassword = "";
+        this.newPassword = "";
+        this.confirmPassword = "";
+      } else {
+        // Handle specific error messages
+        if (data.message && data.message.includes("incorrect")) {
+          this.toastService.show(
+            this.translationService.translate(
+              "SETTINGS.CHANGE_PASSWORD.INVALID_CURRENT_PASSWORD"
+            ) || data.message,
+            "error"
+          );
+        } else {
+          this.toastService.show(
+            data.message ||
+              this.translationService.translate(
+                "SETTINGS.CHANGE_PASSWORD.ERROR"
+              ) ||
+              "Failed to change password",
+            "error"
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      this.toastService.show(
+        this.translationService.translate("SETTINGS.CHANGE_PASSWORD.ERROR") ||
+          "Failed to change password",
+        "error"
+      );
+    } finally {
+      this.changingPassword = false;
     }
   }
 

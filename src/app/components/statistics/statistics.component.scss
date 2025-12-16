@@ -28,6 +28,43 @@
       }
     }
 
+    .tab-selector {
+      display: flex;
+      gap: 0.5rem;
+      background: white;
+      padding: 0.25rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          font-size: 1rem;
+        }
+
+        &:hover {
+          background-color: var(--bg-secondary);
+        }
+
+        &.active {
+          background: linear-gradient(135deg, $primary, darken($primary, 10%));
+          color: white;
+          box-shadow: 0 2px 8px rgba($primary, 0.3);
+        }
+      }
+    }
+
     .period-selector {
       display: flex;
       gap: 0.5rem;

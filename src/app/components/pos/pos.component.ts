@@ -231,11 +231,11 @@ export class PosComponent implements OnInit, OnDestroy {
         this.salesTabs[this.activeSaleTabIndex].items = [...items];
       });
 
-    // Subscribe to saved weight from scale
-    this.scaleService.savedWeight$
+    // Subscribe to current weight from scale (continuous reading)
+    this.scaleService.currentWeight$
       .pipe(takeUntil(this.destroy$))
       .subscribe((reading) => {
-        if (reading) {
+        if (reading && reading.weight > 0) {
           this.savedWeight = reading.weight;
           this.savedWeightUnit = reading.unit;
         } else {
@@ -245,6 +245,9 @@ export class PosComponent implements OnInit, OnDestroy {
 
     // Check if scale is connected
     this.scaleConnected = this.scaleService.isConnected();
+
+    // Auto-connect to scale if previously authorized
+    this.attemptAutoConnectScale();
 
     // Subscribe to register state
     this.registerService.currentRegister$
@@ -511,6 +514,26 @@ export class PosComponent implements OnInit, OnDestroy {
   closeWeightModal(): void {
     this.showWeightModal = false;
     this.weightModalProduct = null;
+    // Don't disconnect scale - keep reading in background
+  }
+
+  async attemptAutoConnectScale(): Promise<void> {
+    // Only auto-connect if not already connected
+    if (this.scaleConnected) {
+      return;
+    }
+
+    try {
+      const connected = await this.scaleService.autoConnectScale();
+      if (connected) {
+        this.scaleConnected = true;
+        console.log("Scale auto-connected successfully");
+        this.cdr.markForCheck();
+      }
+    } catch (error) {
+      // Silently fail - user can manually connect later
+      console.log("Scale auto-connect not available:", error);
+    }
   }
 
   updateQuantity(productId: string, quantity: number): void {

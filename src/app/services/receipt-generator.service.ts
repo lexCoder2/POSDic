@@ -116,7 +116,7 @@ export const DEFAULT_STYLE_CONFIG: StyleConfig = {
   textColor: "#000000",
   backgroundColor: "#ffffff",
   lineColor: "#000000",
-  lineStyle: "dashed",
+  lineStyle: "solid",
   separatorChar: "-",
 };
 
@@ -903,7 +903,7 @@ export class ReceiptGeneratorService {
         const priceStyle = productSizeInlineStyle
           ? ` style="${productSizeInlineStyle}"`
           : "";
-        descHtml += `<div class="item-sku"${priceStyle}>@$${item.unitPrice.toFixed(2)}</div>`;
+        descHtml += `<div class="item-sku"${priceStyle}>$${item.unitPrice.toFixed(2)}</div>`;
       }
       parts.push(`<td class="col-desc">${descHtml}</td>`);
 

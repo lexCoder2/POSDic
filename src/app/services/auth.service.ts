@@ -18,9 +18,6 @@ export class AuthService {
   private tokenKey = "pos_token";
   private userKey = "pos_user";
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
   constructor() {
     this.loadStoredUser();
   }

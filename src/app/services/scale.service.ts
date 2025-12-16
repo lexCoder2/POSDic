@@ -43,8 +43,11 @@ export class ScaleService {
   private reader: ReadableStreamDefaultReader<string> | null = null;
   private writer: WritableStreamDefaultWriter<Uint8Array> | null = null;
   private isReading = false;
+  private shouldAutoReconnect = true;
+  private reconnectionAttempts = 0;
+  private maxReconnectionAttempts = 3;
 
-  async connectScale(): Promise<boolean> {
+  async connectScale(silent = false): Promise<boolean> {
     try {
       // Check if Web Serial API is available
       if (!("serial" in navigator)) {
@@ -52,15 +55,21 @@ export class ScaleService {
         return false;
       }
 
-      // Request port from user
-      this.port = await (navigator as any).serial.requestPort();
+      // Request port from user (or use existing port for auto-connect)
+      if (!silent) {
+        this.port = await (navigator as any).serial.requestPort();
+      }
+
       if (!this.port) {
         console.error("No serial port selected");
         return false;
       }
+
       await this.port.open({ baudRate: 9600 });
 
       this.isReading = true;
+      this.shouldAutoReconnect = true;
+      this.reconnectionAttempts = 0;
       console.log("reading from scale starting");
 
       this.startReading();
@@ -68,6 +77,54 @@ export class ScaleService {
       return true;
     } catch (error) {
       console.error("Error connecting to scale:", error);
+      return false;
+    }
+  }
+
+  async autoConnectScale(): Promise<boolean> {
+    try {
+      // Check if Web Serial API is available
+      if (!("serial" in navigator)) {
+        console.log("Web Serial API not supported");
+        return false;
+      }
+
+      // Get previously authorized ports
+      const ports = await (navigator as any).serial.getPorts();
+      if (ports.length === 0) {
+        console.log("No previously authorized scale found");
+        return false;
+      }
+
+      // Use the first available port (most recently used)
+      this.port = ports[0];
+
+      if (!this.port) {
+        console.log("No port available");
+        return false;
+      }
+
+      try {
+        await this.port.open({ baudRate: 9600 });
+      } catch (error: unknown) {
+        // Port might already be open
+        if (error instanceof Error && error.name === "InvalidStateError") {
+          console.log("Port already open");
+          return true;
+        }
+        throw error;
+      }
+
+      this.isReading = true;
+      this.shouldAutoReconnect = true;
+      this.reconnectionAttempts = 0;
+      console.log("Auto-connected to scale");
+
+      this.startReading();
+
+      return true;
+    } catch (error) {
+      console.error("Error auto-connecting to scale:", error);
       return false;
     }
   }
@@ -83,7 +140,8 @@ export class ScaleService {
 
       // Set up reader to receive responses
       const textDecoder = new TextDecoderStream();
-      const readableStreamClosed = this.port.readable.pipeTo(
+      // Pipe readable stream to text decoder
+      this.port.readable.pipeTo(
         textDecoder.writable as WritableStream<Uint8Array>
       );
       this.reader = textDecoder.readable.getReader();
@@ -94,10 +152,22 @@ export class ScaleService {
       // Send "P" command periodically to request weight
       while (this.isReading) {
         await this.sendCommand("P");
-        await this.delay(500); // Request weight every 500ms
+        await this.delay(300); // Request weight every 300ms for more responsive reading
       }
     } catch (error) {
       console.error("Error reading from scale:", error);
+      // Attempt auto-reconnection if enabled
+      if (
+        this.shouldAutoReconnect &&
+        this.reconnectionAttempts < this.maxReconnectionAttempts
+      ) {
+        this.reconnectionAttempts++;
+        console.log(
+          `Attempting to reconnect (${this.reconnectionAttempts}/${this.maxReconnectionAttempts})...`
+        );
+        await this.delay(2000); // Wait 2 seconds before reconnecting
+        await this.autoConnectScale();
+      }
     }
   }
 
@@ -202,10 +272,11 @@ export class ScaleService {
         stable,
       };
 
+      // Always update current weight regardless of stability
       this.currentWeight.next(reading);
 
-      // Save weight state if weight > 0 and stable
-      if (weight > 0 && stable) {
+      // Update saved weight continuously if weight > 0 (removed stability requirement)
+      if (weight > 0) {
         this.savedWeight.next(reading);
       }
 
@@ -218,22 +289,42 @@ export class ScaleService {
     }
   }
 
-  async disconnectScale(): Promise<void> {
+  async disconnectScale(permanent = false): Promise<void> {
     this.isReading = false;
 
+    // If permanent disconnect, disable auto-reconnection
+    if (permanent) {
+      this.shouldAutoReconnect = false;
+    }
+
     if (this.reader) {
-      await this.reader.cancel();
+      try {
+        await this.reader.cancel();
+      } catch (error) {
+        console.error("Error canceling reader:", error);
+      }
       this.reader = null;
     }
 
     if (this.writer) {
-      this.writer.releaseLock();
+      try {
+        this.writer.releaseLock();
+      } catch (error) {
+        console.error("Error releasing writer:", error);
+      }
       this.writer = null;
     }
 
     if (this.port) {
-      await this.port.close();
-      this.port = null;
+      try {
+        await this.port.close();
+      } catch (error) {
+        console.error("Error closing port:", error);
+      }
+      // Only clear port reference if permanent disconnect
+      if (permanent) {
+        this.port = null;
+      }
     }
 
     this.currentWeight.next(null);

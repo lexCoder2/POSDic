@@ -228,6 +228,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   private handleQrCodeScanned(qrData: string): void {
     if (this.qrLoading) return;
 
+    // Change common characters if the keyboard layout is in Spanish
+    qrData = qrData
+      .replace(/Ñ/g, ":")
+      .replace(/ñ/g, ";")
+      .replace(/´/g, "'")
+      .replace(/'/g, "-");
+
     this.qrLoading = true;
     this.qrInputValue = "";
     this.cdr.detectChanges();

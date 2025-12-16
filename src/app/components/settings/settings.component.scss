@@ -52,21 +52,19 @@
     display: flex;
     gap: $spacing-md;
     align-items: center;
-
-    .btn-primary {
-      @include button-primary;
-    }
-
-    .btn-secondary {
-      @include button-secondary;
-    }
   }
 
   .preview-btn {
     @include button-primary;
   }
 }
+.btn-primary {
+  @include button-primary;
+}
 
+.btn-secondary {
+  @include button-secondary;
+}
 .preview-toggle {
   margin: 1rem 0;
   padding: $spacing-md;

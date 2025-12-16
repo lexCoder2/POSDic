@@ -259,6 +259,23 @@
       "STABLE": "Estable",
       "STABILIZING": "Estabilizando..."
     },
+    "CHANGE_PASSWORD": {
+      "TITLE": "Cambiar Contraseña",
+      "DESCRIPTION": "Actualizar la contraseña de tu cuenta",
+      "CURRENT_PASSWORD": "Contraseña Actual",
+      "CURRENT_PASSWORD_PLACEHOLDER": "Ingrese su contraseña actual",
+      "NEW_PASSWORD": "Nueva Contraseña",
+      "NEW_PASSWORD_PLACEHOLDER": "Ingrese nueva contraseña",
+      "CONFIRM_PASSWORD": "Confirmar Nueva Contraseña",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Reingrese nueva contraseña",
+      "BUTTON": "Cambiar Contraseña",
+      "SUCCESS": "Contraseña cambiada exitosamente",
+      "ERROR": "Error al cambiar contraseña",
+      "PASSWORDS_DONT_MATCH": "Las contraseñas no coinciden",
+      "PASSWORD_TOO_SHORT": "La contraseña debe tener al menos 6 caracteres",
+      "CURRENT_PASSWORD_REQUIRED": "La contraseña actual es requerida",
+      "INVALID_CURRENT_PASSWORD": "La contraseña actual es incorrecta"
+    },
     "SAVED": "Ajustes guardados",
     "SAVE_FAILED": "Error al guardar ajustes"
   },
@@ -642,7 +659,116 @@
       "PRICE_PER_KG_PLACEHOLDER": "Ingrese el precio por kg",
       "TOTAL_PRICE_LABEL": "Precio Total:",
       "CANCEL": "Cancelar",
-      "ADD_ITEM": "Agregar Artículo"
+      "ADD_ITEM": "Agregar Artículo",
+      "ADD_AND_WEIGH_ANOTHER": "Agregar y Pesar Otro",
+      "LOOSE_PRODUCT_DEFAULT_NAME": "Producto a Granel"
+    }
+  },
+  "REPORTS": {
+    "TITLE": "Reportes y Documentos",
+    "DESCRIPTION": "Generar reportes detallados y documentos de códigos de barras",
+    "SALES_REPORT": {
+      "TITLE": "Reporte de Ventas",
+      "DESCRIPTION": "Generar reportes detallados de ventas con filtro de rango de fechas",
+      "START_DATE": "Fecha de Inicio",
+      "END_DATE": "Fecha Final",
+      "INCLUDE_REFUNDS": "Incluir Devoluciones",
+      "GROUP_BY": "Agrupar Por",
+      "GROUP_BY_DAY": "Día",
+      "GROUP_BY_WEEK": "Semana",
+      "GROUP_BY_MONTH": "Mes",
+      "GENERATE": "Generar Reporte de Ventas",
+      "GENERATING": "Generando...",
+      "SUCCESS": "Reporte de ventas generado exitosamente",
+      "ERROR": "Error al generar reporte de ventas"
+    },
+    "STOCK_REPORT": {
+      "TITLE": "Reporte de Inventario",
+      "DESCRIPTION": "Generar reportes de inventario y niveles de stock",
+      "REPORT_TYPE": "Tipo de Reporte",
+      "CURRENT_STOCK": "Niveles de Stock Actuales",
+      "LOW_STOCK": "Productos con Stock Bajo",
+      "OUT_OF_STOCK": "Productos sin Stock",
+      "STOCK_VALUE": "Valoración de Inventario",
+      "CATEGORY": "Categoría (Opcional)",
+      "ALL_CATEGORIES": "Todas las Categorías",
+      "GENERATE": "Generar Reporte de Inventario",
+      "GENERATING": "Generando...",
+      "SUCCESS": "Reporte de inventario generado exitosamente",
+      "ERROR": "Error al generar reporte de inventario"
+    },
+    "CASHFLOW_REPORT": {
+      "TITLE": "Reporte de Flujo de Caja",
+      "DESCRIPTION": "Generar reportes de flujo de caja y financieros",
+      "START_DATE": "Fecha de Inicio",
+      "END_DATE": "Fecha Final",
+      "INCLUDE_WITHDRAWALS": "Incluir Retiros de Efectivo",
+      "BY_REGISTER": "Agrupar por Caja",
+      "BY_PAYMENT_METHOD": "Agrupar por Método de Pago",
+      "GENERATE": "Generar Reporte de Flujo de Caja",
+      "GENERATING": "Generando...",
+      "SUCCESS": "Reporte de flujo de caja generado exitosamente",
+      "ERROR": "Error al generar reporte de flujo de caja"
+    },
+    "BARCODE_GENERATOR": {
+      "TITLE": "Generador de Códigos de Barras",
+      "DESCRIPTION": "Generar etiquetas de códigos de barras imprimibles para productos",
+      "GENERATION_TYPE": "Tipo de Generación",
+      "BY_CATEGORY": "Por Categoría",
+      "BY_PRODUCT": "Por Selección de Productos",
+      "AUTO_GENERATE": "Auto-generar para Productos Nuevos",
+      "CATEGORY": "Seleccionar Categoría",
+      "ALL_CATEGORIES": "Todas las Categorías",
+      "BARCODE_TYPE": "Tipo de Código de Barras",
+      "EAN13": "EAN-13 (Estándar)",
+      "CODE128": "Code 128",
+      "QRCODE": "Código QR",
+      "LABEL_SIZE": "Tamaño de Etiqueta",
+      "SMALL": "Pequeña (40x20mm)",
+      "MEDIUM": "Mediana (60x30mm)",
+      "LARGE": "Grande (80x40mm)",
+      "INCLUDE_PRICE": "Incluir Precio en Etiqueta",
+      "INCLUDE_NAME": "Incluir Nombre del Producto",
+      "PRODUCTS_WITHOUT_BARCODE": "Productos sin código de barras",
+      "GENERATE": "Generar PDF de Códigos de Barras",
+      "GENERATING": "Generando...",
+      "SUCCESS": "PDF de códigos de barras generado exitosamente",
+      "ERROR": "Error al generar PDF de códigos de barras",
+      "NO_PRODUCTS": "No se encontraron productos para el criterio seleccionado"
+    },
+    "QR_CODE_GENERATOR": {
+      "TITLE": "Generador de Códigos QR",
+      "DESCRIPTION": "Generar códigos QR para productos con estándar de código de barras",
+      "BARCODE_STANDARD_FILTER": "Filtro de Estándar de Código",
+      "HAS_STANDARD": "Tiene Estándar de Código (SÍ)",
+      "NO_STANDARD": "Sin Estándar de Código (NO)",
+      "EMPTY_STANDARD": "Estándar de Código Vacío",
+      "MISSING_FIELD": "Campo de Estándar Faltante",
+      "CATEGORY": "Seleccionar Categoría",
+      "ALL_PRODUCTS": "Todos los Productos",
+      "LABEL_SIZE": "Tamaño de Etiqueta",
+      "SMALL": "Pequeña (40x40mm)",
+      "MEDIUM": "Mediana (60x60mm)",
+      "LARGE": "Grande (80x80mm)",
+      "MULTIPLE_PER_PAGE": "Múltiples Códigos QR por Página (A4)",
+      "INCLUDE_PRICE": "Incluir Precio en Etiqueta",
+      "INCLUDE_NAME": "Incluir Nombre del Producto",
+      "GENERATE": "Generar PDF de Códigos QR",
+      "GENERATING": "Generando...",
+      "SUCCESS": "PDF de códigos QR generado exitosamente",
+      "ERROR": "Error al generar PDF de códigos QR",
+      "NO_PRODUCTS": "No se encontraron productos para el criterio seleccionado"
+    },
+    "FORMAT": {
+      "PDF": "PDF",
+      "EXCEL": "Excel",
+      "CSV": "CSV"
+    },
+    "COMMON": {
+      "DATE_RANGE": "Rango de Fechas",
+      "FILTERS": "Filtros",
+      "OPTIONS": "Opciones",
+      "DOWNLOAD": "Descargar"
     }
   },
   "STATISTICS": {
@@ -670,7 +796,11 @@
       "RECENT_DAILY_SALES": "Ventas Diarias Recientes"
     },
     "TRANSACTIONS": "transacciones",
-    "NO_DATA": "No hay datos disponibles para este período"
+    "NO_DATA": "No hay datos disponibles para este período",
+    "TABS": {
+      "ANALYTICS": "Análisis",
+      "REPORTS": "Reportes"
+    }
   },
   "WITHDRAW": {
     "TITLE": "Retiro de Efectivo",

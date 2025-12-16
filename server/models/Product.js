@@ -131,6 +131,12 @@ const productSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
+    barcode_standard: {
+      type: String,
+      enum: ["EAN13", "UPC", "CODE128", "CODE39", "QR", ""],
+      default: "",
+      index: true,
+    },
   },
   {
     timestamps: true,

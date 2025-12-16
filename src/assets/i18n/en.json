@@ -279,6 +279,23 @@
       "CURRENCY": "Currency",
       "SAVE": "Save Preferences"
     },
+    "CHANGE_PASSWORD": {
+      "TITLE": "Change Password",
+      "DESCRIPTION": "Update your account password",
+      "CURRENT_PASSWORD": "Current Password",
+      "CURRENT_PASSWORD_PLACEHOLDER": "Enter your current password",
+      "NEW_PASSWORD": "New Password",
+      "NEW_PASSWORD_PLACEHOLDER": "Enter new password",
+      "CONFIRM_PASSWORD": "Confirm New Password",
+      "CONFIRM_PASSWORD_PLACEHOLDER": "Re-enter new password",
+      "BUTTON": "Change Password",
+      "SUCCESS": "Password changed successfully",
+      "ERROR": "Failed to change password",
+      "PASSWORDS_DONT_MATCH": "Passwords don't match",
+      "PASSWORD_TOO_SHORT": "Password must be at least 6 characters",
+      "CURRENT_PASSWORD_REQUIRED": "Current password is required",
+      "INVALID_CURRENT_PASSWORD": "Current password is incorrect"
+    },
     "QR_BADGE": {
       "TITLE": "Login Badge",
       "DESCRIPTION": "Print your personal QR code badge for quick login with a barcode scanner",
@@ -653,7 +670,9 @@
       "PRICE_PER_KG_PLACEHOLDER": "Enter price per kg",
       "TOTAL_PRICE_LABEL": "Total Price:",
       "CANCEL": "Cancel",
-      "ADD_ITEM": "Add Item"
+      "ADD_ITEM": "Add Item",
+      "ADD_AND_WEIGH_ANOTHER": "Add & Weigh Another",
+      "LOOSE_PRODUCT_DEFAULT_NAME": "Loose Item"
     }
   },
   "STATISTICS": {
@@ -681,7 +700,118 @@
       "RECENT_DAILY_SALES": "Recent Daily Sales"
     },
     "TRANSACTIONS": "transactions",
-    "NO_DATA": "No data available for this period"
+    "NO_DATA": "No data available for this period",
+    "TABS": {
+      "ANALYTICS": "Analytics",
+      "REPORTS": "Reports"
+    }
+  },
+  "REPORTS": {
+    "TITLE": "Reports & Documents",
+    "DESCRIPTION": "Generate detailed reports and barcode documents",
+    "SALES_REPORT": {
+      "TITLE": "Sales Report",
+      "DESCRIPTION": "Generate detailed sales reports with date range filtering",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "INCLUDE_REFUNDS": "Include Refunds",
+      "GROUP_BY": "Group By",
+      "GROUP_BY_DAY": "Day",
+      "GROUP_BY_WEEK": "Week",
+      "GROUP_BY_MONTH": "Month",
+      "GENERATE": "Generate Sales Report",
+      "GENERATING": "Generating...",
+      "SUCCESS": "Sales report generated successfully",
+      "ERROR": "Failed to generate sales report"
+    },
+    "STOCK_REPORT": {
+      "TITLE": "Stock Report",
+      "DESCRIPTION": "Generate inventory and stock level reports",
+      "REPORT_TYPE": "Report Type",
+      "CURRENT_STOCK": "Current Stock Levels",
+      "LOW_STOCK": "Low Stock Items",
+      "OUT_OF_STOCK": "Out of Stock Items",
+      "STOCK_VALUE": "Stock Valuation",
+      "CATEGORY": "Category (Optional)",
+      "ALL_CATEGORIES": "All Categories",
+      "GENERATE": "Generate Stock Report",
+      "GENERATING": "Generating...",
+      "SUCCESS": "Stock report generated successfully",
+      "ERROR": "Failed to generate stock report"
+    },
+    "CASHFLOW_REPORT": {
+      "TITLE": "Cash Flow Report",
+      "DESCRIPTION": "Generate cash flow and financial reports",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "INCLUDE_WITHDRAWALS": "Include Cash Withdrawals",
+      "BY_REGISTER": "Group by Register",
+      "BY_PAYMENT_METHOD": "Group by Payment Method",
+      "GENERATE": "Generate Cash Flow Report",
+      "GENERATING": "Generating...",
+      "SUCCESS": "Cash flow report generated successfully",
+      "ERROR": "Failed to generate cash flow report"
+    },
+    "BARCODE_GENERATOR": {
+      "TITLE": "Barcode Generator",
+      "DESCRIPTION": "Generate printable barcode labels for products",
+      "GENERATION_TYPE": "Generation Type",
+      "BY_CATEGORY": "By Category",
+      "BY_PRODUCT": "By Product Selection",
+      "AUTO_GENERATE": "Auto-generate for New Products",
+      "CATEGORY": "Select Category",
+      "ALL_CATEGORIES": "All Categories",
+      "BARCODE_TYPE": "Barcode Type",
+      "EAN13": "EAN-13 (Standard)",
+      "CODE128": "Code 128",
+      "QRCODE": "QR Code",
+      "LABEL_SIZE": "Label Size",
+      "SMALL": "Small (40x20mm)",
+      "MEDIUM": "Medium (60x30mm)",
+      "LARGE": "Large (80x40mm)",
+      "INCLUDE_PRICE": "Include Price on Label",
+      "INCLUDE_NAME": "Include Product Name",
+      "PRODUCTS_WITHOUT_BARCODE": "Products without barcode",
+      "GENERATE": "Generate Barcode PDF",
+      "GENERATING": "Generating...",
+      "SUCCESS": "Barcode PDF generated successfully",
+      "ERROR": "Failed to generate barcode PDF",
+      "NO_PRODUCTS": "No products found for the selected criteria"
+    },
+    "QR_CODE_GENERATOR": {
+      "TITLE": "QR Code Generator",
+      "DESCRIPTION": "Generate QR codes for products with barcode standards",
+      "BARCODE_STANDARD_FILTER": "Barcode Standard Filter",
+      "HAS_STANDARD": "Has Barcode Standard (YES)",
+      "NO_STANDARD": "No Barcode Standard (NO)",
+      "EMPTY_STANDARD": "Empty Barcode Standard",
+      "MISSING_FIELD": "Missing Barcode Standard Field",
+      "CATEGORY": "Select Category",
+      "ALL_PRODUCTS": "All Products",
+      "LABEL_SIZE": "Label Size",
+      "SMALL": "Small (40x40mm)",
+      "MEDIUM": "Medium (60x60mm)",
+      "LARGE": "Large (80x80mm)",
+      "MULTIPLE_PER_PAGE": "Multiple QR Codes per Page (A4)",
+      "INCLUDE_PRICE": "Include Price on Label",
+      "INCLUDE_NAME": "Include Product Name",
+      "GENERATE": "Generate QR Code PDF",
+      "GENERATING": "Generating...",
+      "SUCCESS": "QR code PDF generated successfully",
+      "ERROR": "Failed to generate QR code PDF",
+      "NO_PRODUCTS": "No products found for the selected criteria"
+    },
+    "FORMAT": {
+      "PDF": "PDF",
+      "EXCEL": "Excel",
+      "CSV": "CSV"
+    },
+    "COMMON": {
+      "DATE_RANGE": "Date Range",
+      "FILTERS": "Filters",
+      "OPTIONS": "Options",
+      "DOWNLOAD": "Download"
+    }
   },
   "POS": {
     "FAVORITES": "Favorites",

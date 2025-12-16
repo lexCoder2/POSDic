@@ -6,7 +6,7 @@ import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { SaleService } from "../../services/sale.service";
 import { ProductService } from "../../services/product.service";
 import { Sale, Product } from "../../models";
-import { PageTitleComponent } from "../page-title/page-title.component";
+import { ReportsComponent } from "../reports/reports.component";
 
 interface ChartData {
   labels: string[];
@@ -24,7 +24,7 @@ interface SalesAnalytics {
 @Component({
   selector: "app-statistics",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, CurrencyPipe, PageTitleComponent],
+  imports: [FormsModule, TranslatePipe, CurrencyPipe, ReportsComponent],
   templateUrl: "./statistics.component.html",
   styleUrls: ["./statistics.component.scss"],
 })
@@ -36,6 +36,7 @@ export class StatisticsComponent implements OnInit {
   products = signal<Product[]>([]);
   isLoading = signal<boolean>(true);
 
+  selectedTab = signal<"analytics" | "reports">("analytics");
   selectedPeriod = signal<"week" | "month" | "year">("month");
   selectedChart = signal<"sales" | "revenue" | "products">("sales");
 
@@ -205,10 +206,18 @@ export class StatisticsComponent implements OnInit {
       .reduce((sum, sale) => sum + sale.total, 0);
   });
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
+  // Get unique categories from products
+  categories = computed(() => {
+    const cats = new Set<string>();
+    this.products().forEach((p) => {
+      if (p.category) cats.add(p.category);
+    });
+    return Array.from(cats).sort();
+  });
 
-  constructor() {}
+  setTab(tab: "analytics" | "reports"): void {
+    this.selectedTab.set(tab);
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -217,13 +226,15 @@ export class StatisticsComponent implements OnInit {
   loadData(): void {
     this.isLoading.set(true);
 
-    this.saleService.getSales({ pageSize: 10000 }).subscribe({
+    // Load sales data
+    this.saleService.getSales().subscribe({
       next: (response) => {
         this.sales.set(response.data);
 
-        this.productService.getProducts({ pageSize: 10000 }).subscribe({
-          next: (prodResponse) => {
-            this.products.set(prodResponse.data);
+        // Load products after sales
+        this.productService.getProducts().subscribe({
+          next: (response) => {
+            this.products.set(response.data);
             this.isLoading.set(false);
           },
           error: () => {

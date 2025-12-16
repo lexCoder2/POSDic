@@ -83,6 +83,7 @@ export interface Product {
   provider?: string;
   active?: boolean;
   incompleteInfo?: boolean;
+  barcode_standard?: string;
 
   createdAt?: Date;
   updatedAt?: Date;

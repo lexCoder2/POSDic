@@ -1,0 +1,411 @@
+<div class="reports-content">
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>{{ "STATISTICS.LOADING" | translate }}</p>
+    </div>
+  }
+
+  @if (!isLoading()) {
+    <div class="reports-grid">
+      <!-- Sales Report Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon sales">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.SALES_REPORT.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.SALES_REPORT.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{ "REPORTS.SALES_REPORT.START_DATE" | translate }}</label>
+            <input type="date" [(ngModel)]="salesReportStartDate" />
+          </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.SALES_REPORT.END_DATE" | translate }}</label>
+            <input type="date" [(ngModel)]="salesReportEndDate" />
+          </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.SALES_REPORT.GROUP_BY" | translate }}</label>
+            <select [(ngModel)]="salesReportGroupBy">
+              <option value="day">
+                {{ "REPORTS.SALES_REPORT.GROUP_BY_DAY" | translate }}
+              </option>
+              <option value="week">
+                {{ "REPORTS.SALES_REPORT.GROUP_BY_WEEK" | translate }}
+              </option>
+              <option value="month">
+                {{ "REPORTS.SALES_REPORT.GROUP_BY_MONTH" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.SALES_REPORT.INCLUDE_REFUNDS" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="salesReportIncludeRefunds"
+              (change)="salesReportIncludeRefunds = $event"
+            ></app-toggle-switch>
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateSalesReport()"
+            [disabled]="generatingSalesReport()"
+          >
+            @if (generatingSalesReport()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.SALES_REPORT.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-file-pdf"></i>
+              {{ "REPORTS.SALES_REPORT.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Stock Report Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon stock">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.STOCK_REPORT.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.STOCK_REPORT.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{ "REPORTS.STOCK_REPORT.REPORT_TYPE" | translate }}</label>
+            <select [(ngModel)]="stockReportType">
+              <option value="current">
+                {{ "REPORTS.STOCK_REPORT.CURRENT_STOCK" | translate }}
+              </option>
+              <option value="low">
+                {{ "REPORTS.STOCK_REPORT.LOW_STOCK" | translate }}
+              </option>
+              <option value="out">
+                {{ "REPORTS.STOCK_REPORT.OUT_OF_STOCK" | translate }}
+              </option>
+              <option value="value">
+                {{ "REPORTS.STOCK_REPORT.STOCK_VALUE" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.STOCK_REPORT.CATEGORY" | translate }}</label>
+            <select [(ngModel)]="stockReportCategory">
+              <option value="">
+                {{ "REPORTS.STOCK_REPORT.ALL_CATEGORIES" | translate }}
+              </option>
+              @for (category of categories(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateStockReport()"
+            [disabled]="generatingStockReport()"
+          >
+            @if (generatingStockReport()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.STOCK_REPORT.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-file-excel"></i>
+              {{ "REPORTS.STOCK_REPORT.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Cash Flow Report Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon cashflow">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.CASHFLOW_REPORT.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.CASHFLOW_REPORT.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{
+              "REPORTS.CASHFLOW_REPORT.START_DATE" | translate
+            }}</label>
+            <input type="date" [(ngModel)]="cashflowReportStartDate" />
+          </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.CASHFLOW_REPORT.END_DATE" | translate }}</label>
+            <input type="date" [(ngModel)]="cashflowReportEndDate" />
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.CASHFLOW_REPORT.INCLUDE_WITHDRAWALS" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="cashflowIncludeWithdrawals"
+              (change)="cashflowIncludeWithdrawals = $event"
+            ></app-toggle-switch>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.CASHFLOW_REPORT.BY_REGISTER" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="cashflowGroupByRegister"
+              (change)="cashflowGroupByRegister = $event"
+            ></app-toggle-switch>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.CASHFLOW_REPORT.BY_PAYMENT_METHOD" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="cashflowGroupByPayment"
+              (change)="cashflowGroupByPayment = $event"
+            ></app-toggle-switch>
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateCashflowReport()"
+            [disabled]="generatingCashflowReport()"
+          >
+            @if (generatingCashflowReport()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.CASHFLOW_REPORT.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-file-pdf"></i>
+              {{ "REPORTS.CASHFLOW_REPORT.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Barcode Generator Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon barcode">
+            <i class="fas fa-barcode"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.BARCODE_GENERATOR.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.BARCODE_GENERATOR.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{
+              "REPORTS.BARCODE_GENERATOR.GENERATION_TYPE" | translate
+            }}</label>
+            <select [(ngModel)]="barcodeGenerationType">
+              <option value="category">
+                {{ "REPORTS.BARCODE_GENERATOR.BY_CATEGORY" | translate }}
+              </option>
+              <option value="auto">
+                {{ "REPORTS.BARCODE_GENERATOR.AUTO_GENERATE" | translate }}
+              </option>
+            </select>
+          </div>
+          @if (barcodeGenerationType === "category") {
+            <div class="form-row">
+              <label>{{
+                "REPORTS.BARCODE_GENERATOR.CATEGORY" | translate
+              }}</label>
+              <select [(ngModel)]="barcodeCategory">
+                <option value="">
+                  {{ "REPORTS.BARCODE_GENERATOR.ALL_CATEGORIES" | translate }}
+                </option>
+                @for (category of categories(); track category) {
+                  <option [value]="category">{{ category }}</option>
+                }
+              </select>
+            </div>
+          }
+          <div class="form-row">
+            <label>{{
+              "REPORTS.BARCODE_GENERATOR.BARCODE_TYPE" | translate
+            }}</label>
+            <select [(ngModel)]="barcodeType">
+              <option value="ean13">
+                {{ "REPORTS.BARCODE_GENERATOR.EAN13" | translate }}
+              </option>
+              <option value="code128">
+                {{ "REPORTS.BARCODE_GENERATOR.CODE128" | translate }}
+              </option>
+              <option value="qr">
+                {{ "REPORTS.BARCODE_GENERATOR.QRCODE" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>{{
+              "REPORTS.BARCODE_GENERATOR.LABEL_SIZE" | translate
+            }}</label>
+            <select [(ngModel)]="barcodeLabelSize">
+              <option value="small">
+                {{ "REPORTS.BARCODE_GENERATOR.SMALL" | translate }}
+              </option>
+              <option value="medium">
+                {{ "REPORTS.BARCODE_GENERATOR.MEDIUM" | translate }}
+              </option>
+              <option value="large">
+                {{ "REPORTS.BARCODE_GENERATOR.LARGE" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.BARCODE_GENERATOR.INCLUDE_PRICE" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="barcodeIncludePrice"
+              (change)="barcodeIncludePrice = $event"
+            ></app-toggle-switch>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.BARCODE_GENERATOR.INCLUDE_NAME" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="barcodeIncludeName"
+              (change)="barcodeIncludeName = $event"
+            ></app-toggle-switch>
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateBarcodePDF()"
+            [disabled]="generatingBarcodePDF()"
+          >
+            @if (generatingBarcodePDF()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.BARCODE_GENERATOR.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-print"></i>
+              {{ "REPORTS.BARCODE_GENERATOR.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- QR Code Generator Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon qrcode">
+            <i class="fas fa-qrcode"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.QR_CODE_GENERATOR.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.QR_CODE_GENERATOR.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.BARCODE_STANDARD_FILTER" | translate
+            }}</label>
+            <select [(ngModel)]="qrCodeBarcodeStandardFilter">
+              <option value="yes">
+                {{ "REPORTS.QR_CODE_GENERATOR.HAS_STANDARD" | translate }}
+              </option>
+              <option value="no">
+                {{ "REPORTS.QR_CODE_GENERATOR.NO_STANDARD" | translate }}
+              </option>
+              <option value="empty">
+                {{ "REPORTS.QR_CODE_GENERATOR.EMPTY_STANDARD" | translate }}
+              </option>
+              <option value="missing">
+                {{ "REPORTS.QR_CODE_GENERATOR.MISSING_FIELD" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.CATEGORY" | translate
+            }}</label>
+            <select [(ngModel)]="qrCodeCategory">
+              <option value="">
+                {{ "REPORTS.QR_CODE_GENERATOR.ALL_PRODUCTS" | translate }}
+              </option>
+              @for (category of categories(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.LABEL_SIZE" | translate
+            }}</label>
+            <select [(ngModel)]="qrCodeLabelSize">
+              <option value="small">
+                {{ "REPORTS.QR_CODE_GENERATOR.SMALL" | translate }}
+              </option>
+              <option value="medium">
+                {{ "REPORTS.QR_CODE_GENERATOR.MEDIUM" | translate }}
+              </option>
+              <option value="large">
+                {{ "REPORTS.QR_CODE_GENERATOR.LARGE" | translate }}
+              </option>
+            </select>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.MULTIPLE_PER_PAGE" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="qrCodeMultiplePerPage"
+              (change)="qrCodeMultiplePerPage = $event"
+            ></app-toggle-switch>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.INCLUDE_PRICE" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="qrCodeIncludePrice"
+              (change)="qrCodeIncludePrice = $event"
+            ></app-toggle-switch>
+          </div>
+          <div class="form-row toggle-row">
+            <label>{{
+              "REPORTS.QR_CODE_GENERATOR.INCLUDE_NAME" | translate
+            }}</label>
+            <app-toggle-switch
+              [checked]="qrCodeIncludeName"
+              (change)="qrCodeIncludeName = $event"
+            ></app-toggle-switch>
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateQRCodePDF()"
+            [disabled]="generatingQRCodePDF()"
+          >
+            @if (generatingQRCodePDF()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.QR_CODE_GENERATOR.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-qrcode"></i>
+              {{ "REPORTS.QR_CODE_GENERATOR.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

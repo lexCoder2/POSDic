@@ -41,11 +41,6 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   @ViewChild("globalSearchInput")
   globalSearchInput!: ElementRef<HTMLInputElement>;
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
-
   ngOnInit(): void {
     // Setup search debouncing
     this.searchSubject
@@ -143,7 +138,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     const trimmedQuery = query.trim();
 
     // Check if it looks like a sale number (e.g., SALE-A0000000)
-    const isSaleNumber = /^SALE(-|\/)[0-9A-F]{8}$/i.test(trimmedQuery);
+    const isSaleNumber = /^SALE(-|\/|')[0-9A-F]{8}$/i.test(trimmedQuery);
 
     if (isSaleNumber) {
       // Navigate to sales page and set the search query

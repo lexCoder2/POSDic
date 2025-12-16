@@ -1004,6 +1004,18 @@
           }
         }
 
+        &.secondary {
+          background: $blue-primary;
+          color: white;
+          min-width: 180px;
+
+          &:hover:not(:disabled) {
+            background: color.adjust($blue-primary, $lightness: -10%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba($blue-primary, 0.3);
+          }
+        }
+
         &.confirm {
           background: $success;
           color: white;
