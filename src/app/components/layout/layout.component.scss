@@ -601,6 +601,7 @@
       margin: 100px auto;
       padding: 0 2rem;
       gap: $spacing-lg;
+
       .sidebar-btn {
         align-items: center;
         justify-content: center;
@@ -632,7 +633,10 @@
     .sidebar-header {
       display: none;
     }
-
+    .header-print-toggle,
+    .user-swap {
+      display: none;
+    }
     .mobile-sidebar-toggle {
       display: inline-flex;
       align-items: center;

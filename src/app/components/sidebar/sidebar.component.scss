@@ -55,6 +55,7 @@
 
   @media (max-width: $breakpoint-md) {
     transform: translateX(-100%);
+    width: 9px;
 
     &.mobile-open {
       transform: translateX(0);
