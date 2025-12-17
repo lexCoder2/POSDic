@@ -608,7 +608,7 @@
   "CASHIER": {
     "TITLE": "Cajero Rápido",
     "DESCRIPTION": "Entrada rápida de productos y procesamiento de pagos",
-    "REGISTER_WARNING": "No hay caja abierta. Por favor abra una caja para hacer ventas.",
+    "REGISTER_WARNING": "Abra una caja para hacer ventas.",
     "OPEN_REGISTER": "Abrir Caja",
     "ADD": "Agregar",
     "CALCULATOR": {
@@ -616,8 +616,8 @@
     },
     "MULTIPLY": {
       "LABEL": "x",
-      "ADD_LABEL": "Ingresa la cantidad a agregar:",
-      "UPDATE_LABEL": "Ingresa la nueva cantidad para el último artículo:"
+      "ADD_LABEL": "Cantidad:",
+      "UPDATE_LABEL": "Nueva cantidad:"
     },
     "LOOSE_PRODUCT": "Producto a Granel",
     "ITEMS": {

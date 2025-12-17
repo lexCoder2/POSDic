@@ -44,7 +44,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Setup search debouncing
     this.searchSubject
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .pipe(debounceTime(700), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((query) => {
         this.performSearch(query);
       });
@@ -141,7 +141,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     const isSaleNumber = /^SALE(-|\/|')[0-9A-F]{8}$/i.test(trimmedQuery);
 
     if (isSaleNumber) {
-      // Navigate to sales page and set the search query
+      // Open sales page and set the search query, if it is on pos page, open returns modal
       this.router.navigate(["/sales"]).then(() => {
         this.searchStateService.setSearchQuery(trimmedQuery);
       });
@@ -150,7 +150,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     }
 
     // Check if it looks like a provider code (e.g., PROV-0000)
-    const isProviderCode = /^PROV(-|\/)[0-9A-F]{4}$/i.test(trimmedQuery);
+    const isProviderCode = /^PROV(-|\/|')[0-9A-F]{4}$/i.test(trimmedQuery);
 
     if (isProviderCode) {
       // Navigate to providers page and set the search query
@@ -205,9 +205,8 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
     const now = Date.now();
     if (
       query.trim() === this.lastEnterSearchQuery &&
-      now - this.lastEnterSearchTime < 500
+      now - this.lastEnterSearchTime < 900
     ) {
-      console.log("Debounced search skipped - already handled by Enter key");
       return;
     }
 
