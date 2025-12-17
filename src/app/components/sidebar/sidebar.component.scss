@@ -59,6 +59,34 @@
 
     &.mobile-open {
       transform: translateX(0);
+      width: 80vw;
+      .sidebar-nav {
+        justify-content: flex-start;
+        padding: 0 $spacing-md;
+      }
+      .sidebar-btn {
+        flex-direction: row;
+        padding: $spacing-lg;
+        gap: 0;
+        span {
+          display: inline-block !important;
+          position: static !important;
+          transform: none !important;
+          background: transparent !important;
+          color: inherit !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          opacity: 1 !important;
+          font-size: 0.875rem;
+          &::before {
+            display: none !important;
+          }
+        }
+      }
+      .sidebar-toggle {
+        display: none;
+      }
     }
   }
 }
