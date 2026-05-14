@@ -6,23 +6,24 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
+  z-index: var(--z-modal-backdrop);
   padding: $spacing-lg;
 }
 
 .modal-content {
-  background: $white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: $radius-2xl;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: $shadow-xl;
+  box-shadow: var(--shadow-3);
   @include smooth-scroll;
 }
 
@@ -32,7 +33,7 @@
   align-items: center;
   padding: $spacing-xl;
   background: $gradient-primary;
-  color: $white;
+  color: #fff;
   border-radius: $radius-2xl $radius-2xl 0 0;
 
   h3 {
@@ -51,12 +52,12 @@
     min-height: 36px;
     padding: 0;
     border-radius: $radius-full;
-    background: rgba($white, 0.2);
-    color: $white;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
     box-shadow: none;
 
     &:hover {
-      background: rgba($white, 0.3);
+      background: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -69,28 +70,33 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
     @include button-secondary;
     flex: 1;
-    background: $white;
-    color: $gray-500;
-    border: 2px solid var(--border-color);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+    border: 1px solid var(--button-secondary-border);
 
     &:hover {
-      background: var(--bg-tertiary);
+      background: var(--button-secondary-bg-hover);
     }
   }
 
   .btn-complete {
     @include button-primary;
     flex: 1;
-    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+    background: linear-gradient(
+      135deg,
+      var(--color-success) 0%,
+      var(--color-success-dark) 100%
+    );
 
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba($success, 0.3);
+      box-shadow: 0 4px 12px rgba(var(--color-success-rgb), 0.3);
     }
   }
 }
@@ -101,20 +107,20 @@
   align-items: flex-start;
   gap: $spacing-md;
   padding: $spacing-lg;
-  background: rgba($warning, 0.1);
-  border: 2px solid $warning;
+  background: rgba(var(--color-warning-rgb), 0.1);
+  border: 2px solid var(--color-warning);
   border-radius: $radius-md;
   margin-bottom: $spacing-xl;
 
   i {
-    color: $warning;
+    color: var(--color-warning);
     font-size: $font-size-3xl;
     flex-shrink: 0;
   }
 
   p {
     margin: 0;
-    color: $warning-dark;
+    color: var(--color-warning-dark);
     font-size: $font-size-sm;
     line-height: $line-height-normal;
   }
@@ -128,7 +134,7 @@
     margin: 0 0 $spacing-lg;
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
-    color: $gray-700;
+    color: var(--text-primary);
   }
 
   .item-list {
@@ -152,18 +158,18 @@
     .item-name {
       flex: 1;
       font-size: $font-size-sm;
-      color: $gray-700;
+      color: var(--text-primary);
     }
 
     .item-qty {
       font-size: $font-size-sm;
-      color: $gray-500;
+      color: var(--text-secondary);
       margin: 0 $spacing-lg;
     }
 
     .item-price {
       font-weight: $font-weight-semibold;
-      color: $gray-700;
+      color: var(--text-primary);
     }
   }
 
@@ -174,7 +180,7 @@
     padding: $spacing-lg;
     background: linear-gradient(135deg, $secondary 0%, $secondary-dark 100%);
     border-radius: $radius-md;
-    color: $white;
+    color: #fff;
     font-weight: $font-weight-semibold;
     font-size: $font-size-xl;
 
@@ -191,7 +197,7 @@
   label {
     display: block;
     font-weight: $font-weight-semibold;
-    color: $gray-700;
+    color: var(--text-primary);
     margin-bottom: $spacing-sm;
     font-size: $font-size-sm;
   }
@@ -207,8 +213,8 @@
 
     &:focus {
       outline: none;
-      border-color: $primary;
-      @include focus-ring($primary);
+      border-color: var(--color-primary);
+      @include focus-ring();
     }
   }
 }
@@ -219,14 +225,14 @@
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-md;
-  background: rgba($info, 0.1);
+  background: rgba(var(--color-info-rgb), 0.1);
   border-radius: $radius-sm;
-  color: $info-dark;
+  color: var(--color-info-dark);
   font-size: $font-size-sm;
   margin-top: $spacing-lg;
 
   i {
-    color: $info;
+    color: var(--color-info);
   }
 }
 

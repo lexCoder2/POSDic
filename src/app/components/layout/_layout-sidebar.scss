@@ -1,0 +1,121 @@
+// =============================================================================
+// _layout-sidebar.scss — Left sidebar navigation
+// =============================================================================
+@use "../../../styles/theme" as *;
+
+.sidebar-header {
+  padding: $spacing-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  i {
+    font-size: 1.5rem;
+  }
+}
+
+.sidebar {
+  width: $sidebar-width;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  z-index: $z-sidebar;
+  justify-content: center;
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 $spacing-xs;
+    gap: $spacing-sm;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .sidebar-btn {
+    width: 98%;
+    padding: $spacing-md $spacing-lg $spacing-md;
+    border: none;
+    max-height: calc(#{$sidebar-width} - $spacing-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition:
+      background var(--transition),
+      color var(--transition);
+    position: relative;
+    border-radius: var(--radius-md);
+    min-width: 70px;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    span {
+      @media (max-height: 840px) {
+        display: none;
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: $spacing-xs $spacing-md;
+        border-radius: var(--radius-md);
+        white-space: nowrap;
+        margin-left: $spacing-md;
+        font-size: 0.75rem;
+        font-weight: 500;
+        z-index: 1000;
+        box-shadow: var(--shadow-2);
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          opacity var(--transition),
+          transform var(--transition);
+
+        &::before {
+          content: "";
+          position: absolute;
+          right: 100%;
+          top: 50%;
+          transform: translateY(-50%);
+          border: 5px solid transparent;
+          border-right-color: var(--bg-secondary);
+        }
+      }
+    }
+
+    &:hover span {
+      @media (max-height: 800px) {
+        display: block;
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+
+    &:hover {
+      background: var(--bg-primary);
+      color: var(--color-primary);
+    }
+
+    &.active {
+      background: var(--bg-secondary);
+      color: var(--color-primary);
+      font-weight: 600;
+      box-shadow: var(--shadow-1);
+    }
+  }
+}

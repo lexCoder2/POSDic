@@ -133,6 +133,12 @@ const cartRoutes = require("./routes/carts");
 const registerRoutes = require("./routes/registers");
 const adminRoutes = require("./routes/admin");
 const reportRoutes = require("./routes/reports");
+const settingsRoutes = require("./routes/settings");
+const ticketRoutes = require("./routes/tickets");
+const shoppingListRoutes = require("./routes/shopping-lists");
+const aiRoutes = require("./routes/ai");
+const receiptScanRoutes = require("./routes/receipt-scan");
+const purchaseReceiptRoutes = require("./routes/purchase-receipts");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -145,6 +151,12 @@ app.use("/api/carts", cartRoutes);
 app.use("/api/registers", registerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/shopping-lists", shoppingListRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/receipt-scan", receiptScanRoutes);
+app.use("/api/purchase-receipts", purchaseReceiptRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -278,83 +290,23 @@ const startServer = async () => {
     const PORT = process.env.PORT || 3001;
     const HOST = "0.0.0.0"; // Listen on all network interfaces
 
-    // In production, run HTTP (nginx handles SSL termination)
-    // In development, run HTTPS with local certificates
-    if (process.env.NODE_ENV === "production") {
-      const http = require("http");
-      const networkInterfaces = require("os").networkInterfaces();
-      const localIP = Object.values(networkInterfaces)
-        .flat()
-        .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
+    // Use HTTP for both development and production
+    // (In production, nginx handles SSL termination)
+    const http = require("http");
+    const networkInterfaces = require("os").networkInterfaces();
+    const localIP = Object.values(networkInterfaces)
+      .flat()
+      .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
 
-      serverInstance = http.createServer(app).listen(PORT, HOST, () => {
-        console.log(`HTTP Server is running on port ${PORT}`);
-        console.log(`Local: http://localhost:${PORT}`);
-        if (localIP) {
-          console.log(`LAN: http://${localIP}:${PORT}`);
-        }
-        console.log(`Environment: ${process.env.NODE_ENV}`);
-        console.log("Ready to accept requests!");
-      });
-    } else {
-      // Development mode - use HTTPS with local certificates
-      const certsPath = path.join(__dirname, "certs");
-      const keyPath = path.join(certsPath, "localhost-key.pem");
-      const certPath = path.join(certsPath, "localhost-cert.pem");
-
-      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-        const httpsOptions = {
-          key: fs.readFileSync(keyPath),
-          cert: fs.readFileSync(certPath),
-        };
-
-        const networkInterfaces = require("os").networkInterfaces();
-        const localIP = Object.values(networkInterfaces)
-          .flat()
-          .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
-
-        serverInstance = https
-          .createServer(httpsOptions, app)
-          .listen(PORT, HOST, () => {
-            console.log(`HTTPS Server is running on port ${PORT}`);
-            console.log(`Local: https://localhost:${PORT}`);
-            if (localIP) {
-              console.log(`LAN: https://${localIP}:${PORT}`);
-              console.log(
-                `\nFor mobile apps, use: https://${localIP}:${PORT}/api`
-              );
-              console.log(
-                "Note: Mobile devices may need to trust the self-signed certificate"
-              );
-            }
-            console.log(
-              `Environment: ${process.env.NODE_ENV || "development"}`
-            );
-            console.log("Ready to accept requests!");
-          });
-      } else {
-        // Fallback to HTTP if no certs
-        const http = require("http");
-        const networkInterfaces = require("os").networkInterfaces();
-        const localIP = Object.values(networkInterfaces)
-          .flat()
-          .find((iface) => iface.family === "IPv4" && !iface.internal)?.address;
-
-        console.warn("SSL certificates not found, starting HTTP server...");
-        serverInstance = http.createServer(app).listen(PORT, HOST, () => {
-          console.log(`HTTP Server is running on port ${PORT}`);
-          console.log(`Local: http://localhost:${PORT}`);
-          if (localIP) {
-            console.log(`LAN: http://${localIP}:${PORT}`);
-            console.log(
-              `\nFor mobile apps, use: http://${localIP}:${PORT}/api`
-            );
-          }
-          console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-          console.log("Ready to accept requests!");
-        });
+    serverInstance = http.createServer(app).listen(PORT, HOST, () => {
+      console.log(`HTTP Server is running on port ${PORT}`);
+      console.log(`Local: http://localhost:${PORT}`);
+      if (localIP) {
+        console.log(`LAN: http://${localIP}:${PORT}`);
       }
-    }
+      console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log("Ready to accept requests!");
+    });
     // Add error handlers to server instance
     if (serverInstance) {
       serverInstance.on("error", (err) => {
@@ -392,10 +344,14 @@ const startServer = async () => {
   }
 };
 
-// Start the server
-startServer();
+// Start the server (only when run directly, not in tests)
+if (require.main === module) {
+  startServer();
 
-console.log("\n======================================");
-console.log("POSDic Server Starting...");
-console.log("Press Ctrl+C to shutdown gracefully");
-console.log("======================================\n");
+  console.log("\n======================================");
+  console.log("POSDic Server Starting...");
+  console.log("Press Ctrl+C to shutdown gracefully");
+  console.log("======================================\n");
+}
+
+module.exports = app;

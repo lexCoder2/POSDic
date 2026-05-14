@@ -6,23 +6,24 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
+  z-index: var(--z-modal-backdrop);
   padding: $spacing-lg;
 }
 
 .modal-content {
-  background: $white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: $radius-2xl;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: $shadow-xl;
+  box-shadow: var(--shadow-3);
   @include smooth-scroll;
 }
 
@@ -32,7 +33,7 @@
   align-items: center;
   padding: $spacing-xl;
   background: $gradient-primary;
-  color: $white;
+  color: #fff;
   border-radius: $radius-2xl $radius-2xl 0 0;
 
   h3 {
@@ -51,12 +52,12 @@
     min-height: 36px;
     padding: 0;
     border-radius: $radius-full;
-    background: rgba($white, 0.2);
-    color: $white;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
     box-shadow: none;
 
     &:hover {
-      background: rgba($white, 0.3);
+      background: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -69,28 +70,33 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
     @include button-secondary;
     flex: 1;
-    background: $white;
-    color: $gray-500;
-    border: 2px solid var(--border-color);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+    border: 1px solid var(--button-secondary-border);
 
     &:hover {
-      background: var(--bg-tertiary);
+      background: var(--button-secondary-bg-hover);
     }
   }
 
   .btn-complete {
     @include button-primary;
     flex: 1;
-    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+    background: linear-gradient(
+      135deg,
+      var(--color-success) 0%,
+      var(--color-success-dark) 100%
+    );
 
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba($success, 0.3);
+      box-shadow: 0 4px 12px rgba(var(--color-success-rgb), 0.3);
     }
 
     &:disabled {
@@ -113,13 +119,13 @@
 
     i {
       font-size: $font-size-3xl;
-      color: $primary;
+      color: var(--color-primary);
     }
 
     span {
       font-size: $font-size-xl;
       font-weight: $font-weight-semibold;
-      color: $gray-700;
+      color: var(--text-primary);
     }
   }
 
@@ -138,20 +144,20 @@
       font-size: $font-size-sm;
 
       &.connected {
-        background: $success-light;
-        color: $success-dark;
+        background: var(--color-success-light);
+        color: var(--color-success-dark);
 
         i {
-          color: $success;
+          color: var(--color-success);
         }
       }
 
       &.disconnected {
-        background: $danger-light;
-        color: $danger-dark;
+        background: var(--color-danger-light);
+        color: var(--color-danger-dark);
 
         i {
-          color: $danger;
+          color: var(--color-danger);
         }
       }
     }
@@ -172,25 +178,25 @@
         .number {
           font-size: $font-size-4xl;
           font-weight: $font-weight-bold;
-          color: $gray-700;
+          color: var(--text-primary);
         }
 
         .unit {
           font-size: $font-size-3xl;
           font-weight: $font-weight-semibold;
-          color: $gray-500;
+          color: var(--text-secondary);
         }
 
         &.stable {
           background: linear-gradient(
             135deg,
-            $success-light 0%,
-            lighten($success-light, 5%) 100%
+            var(--color-success-light) 0%,
+            var(--color-success-light) 100%
           );
 
           .number,
           .unit {
-            color: $success-dark;
+            color: var(--color-success-dark);
           }
         }
       }
@@ -200,7 +206,7 @@
         align-items: center;
         justify-content: center;
         gap: $spacing-sm;
-        color: $warning;
+        color: var(--color-warning);
         font-size: $font-size-sm;
         font-weight: $font-weight-semibold;
       }
@@ -213,11 +219,11 @@
         gap: $spacing-sm;
         margin-bottom: $spacing-sm;
         font-weight: $font-weight-semibold;
-        color: $gray-700;
+        color: var(--text-primary);
         font-size: $font-size-sm;
 
         i {
-          color: $primary;
+          color: var(--color-primary);
         }
       }
 
@@ -233,20 +239,20 @@
           border-radius: $radius-lg;
           font-size: $font-size-2xl;
           font-weight: $font-weight-semibold;
-          color: $gray-700;
+          color: var(--text-primary);
           outline: none;
           transition: $transition-base;
 
           &:focus {
-            border-color: $primary;
-            @include focus-ring($primary);
+            border-color: var(--color-primary);
+            @include focus-ring();
           }
         }
 
         .unit {
           font-size: $font-size-lg;
           font-weight: $font-weight-semibold;
-          color: $gray-500;
+          color: var(--text-secondary);
         }
       }
     }
@@ -258,13 +264,13 @@
     gap: $spacing-sm;
     margin-top: $spacing-lg;
     padding: $spacing-md;
-    background: $info-light;
+    background: var(--color-info-light);
     border-radius: $radius-md;
-    color: $info-dark;
+    color: var(--color-info-dark);
     font-size: $font-size-sm;
 
     i {
-      color: $info;
+      color: var(--color-info);
     }
   }
 }

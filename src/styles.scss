@@ -1,125 +1,57 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// =============================================================================
+// styles.scss — Global Entry Point
+// =============================================================================
+// Import order (all @use must come before CSS rules):
+//   1. _tokens     — CSS custom properties (light/dark vars)
+//   2. _animations — global @keyframes
+//   3. _typography — shared text utility classes
+//   4. _utilities  — shared UI component classes (.btn, .card, .modal-overlay…)
+//   5. table       — bare <table> defaults
+//   6. @angular/material — minimal theming (mat-autocomplete in product-form)
+//   7. Global resets + body/html structural rules
+// Fonts are loaded as <link> tags in src/index.html
+// =============================================================================
+
+// ---- 1. Design tokens (fonts in index.html) --------------------------------
+@use "styles/tokens";
+
+// ---- 2. Animations ----------------------------------------------------------
+@use "styles/animations";
+
+// ---- 3. Typography utilities ------------------------------------------------
+@use "styles/typography";
+
+// ---- 4. Shared UI utilities -------------------------------------------------
+@use "styles/utilities";
+
+// ---- 5. Table defaults ------------------------------------------------------
+@use "styles/table";
+
+// ---- 6. Angular Material — minimal theming aligned to brand -----------------
+// ONLY kept because product-form uses mat-autocomplete.
+// All other AM-themed colors come from our custom properties.
 @use "@angular/material" as mat;
 
 html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$magenta-palette,
+        primary: mat.$violet-palette,
         tertiary: mat.$violet-palette,
       ),
-      typography: Roboto,
-      density: 0,
+      typography: "Average Sans",
+      density: -1,
     )
   );
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-}
-/* Modern Global Styles - Touch Optimized */
-@import "styles/theme";
-@import "styles/table";
-
-// CSS Variables for Design System (generated from theme)
-:root {
-  --primary-color: #{$primary};
-  --primary-dark: #{$primary-dark};
-  --primary-light: #{$primary-light};
-  --secondary-color: #{$secondary};
-  --danger-color: #f56565;
-  --warning-color: #ed8936;
-  --success-color: #48bb78;
-  --info-color: #4299e1;
-
-  --text-primary: #{$text-primary};
-  --text-secondary: #{$text-secondary};
-  --text-muted: #{$text-muted};
-  --text-light: #{$text-light};
-  --text-inverse: #{$white};
-
-  --bg-primary: #{$bg-primary};
-  --bg-secondary: #{$bg-secondary};
-  --bg-tertiary: #{$bg-tertiary};
-  --bg-hover: #{$bg-hover};
-  --bg-active: #{$bg-active};
-
-  --border-color: #{$border-color};
-  --border-light: #{$border-light};
-
-  --card-bg: #{$card-bg};
-  --input-bg: #{$input-bg};
-  --sidebar-bg: #{$sidebar-bg};
-
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-neumorphic:
-    6px 6px 12px rgba(163, 177, 198, 0.6),
-    -6px -6px 12px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-sm:
-    3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-lg:
-    9px 9px 16px rgba(163, 177, 198, 0.6),
-    -9px -9px 16px rgba(255, 255, 255, 0.5);
-  --shadow-neumorphic-inset:
-    inset 3px 3px 6px rgba(163, 177, 198, 0.4),
-    inset -3px -3px 6px rgba(255, 255, 255, 0.5);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
-
-  // Touch-friendly minimum sizes
-  --touch-target: 36px;
-  --touch-target-lg: 56px;
-}
-
-* {
+// ---- 8. Global resets + structural rules ------------------------------------
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-body {
-  font-family: $font-family-base;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-primary);
-  background-image: $image-bg;
-  color: var(--text-primary);
-  line-height: 1.6;
-
-  // Prevent text size adjustment on mobile
-  -webkit-text-size-adjust: 100%;
-
-  // Improve touch scrolling
-  -webkit-overflow-scrolling: touch;
 }
 
 html,
@@ -128,18 +60,34 @@ body {
   overflow: hidden;
 }
 
+body {
+  font-family:
+    "Average Sans", "League Spartan", BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  color-scheme: light;
+}
+
+// Dark theme color-scheme hint
+html.theme-dark body {
+  color-scheme: dark;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
-
-  // Touch feedback
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
-
-  // Minimum touch target
-  min-width: var(--touch-target);
-  min-height: var(--touch-target);
+  min-width: var(--touch-md);
+  min-height: var(--touch-md);
 }
 
 input,
@@ -148,42 +96,35 @@ textarea {
   font-family: inherit;
   -webkit-appearance: none;
   appearance: none;
-
-  // Minimum touch target for inputs
-  min-height: var(--touch-target);
 }
 
-/* Utility classes */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ---- Global scrollbar -------------------------------------------------------
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+// ---- Page container utility -------------------------------------------------
 .page-container {
-  padding: 20px;
+  padding: var(--space-5);
   max-width: 1400px;
   margin: 0 auto;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
 }

@@ -6,23 +6,24 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
+  z-index: var(--z-modal-backdrop);
   padding: $spacing-lg;
 }
 
 .modal-content {
-  background: $white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: $radius-2xl;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: $shadow-xl;
+  box-shadow: var(--shadow-3);
   @include smooth-scroll;
 }
 
@@ -31,8 +32,12 @@
   justify-content: space-between;
   align-items: center;
   padding: $spacing-xl;
-  background: linear-gradient(135deg, $warning 0%, $warning-dark 100%);
-  color: $white;
+  background: linear-gradient(
+    135deg,
+    var(--color-warning) 0%,
+    var(--color-warning-dark) 100%
+  );
+  color: #fff;
   border-radius: $radius-2xl $radius-2xl 0 0;
 
   h3 {
@@ -51,12 +56,12 @@
     min-height: 36px;
     padding: 0;
     border-radius: $radius-full;
-    background: rgba($white, 0.2);
-    color: $white;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
     box-shadow: none;
 
     &:hover {
-      background: rgba($white, 0.3);
+      background: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -69,32 +74,37 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
     @include button-secondary;
     flex: 1;
-    background: $white;
-    color: $gray-500;
-    border: 2px solid var(--border-color);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+    border: 1px solid var(--button-secondary-border);
 
     &:hover {
-      background: var(--bg-tertiary);
+      background: var(--button-secondary-bg-hover);
     }
   }
 
   .btn-refund {
     @include button-primary;
     flex: 1;
-    background: linear-gradient(135deg, $warning 0%, $warning-dark 100%);
+    background: linear-gradient(
+      135deg,
+      var(--color-warning) 0%,
+      var(--color-warning-dark) 100%
+    );
     display: flex;
     align-items: center;
     justify-content: center;
     gap: $spacing-sm;
 
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba($warning, 0.3);
+      box-shadow: 0 4px 12px rgba(var(--color-warning-rgb), 0.3);
     }
 
     &:disabled {
@@ -117,12 +127,13 @@
     transition: $transition-base;
 
     &:focus-within {
-      border-color: $warning;
-      @include focus-ring($warning);
+      border-color: var(--color-warning);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(var(--color-warning-rgb), 0.25);
     }
 
     i {
-      color: $gray-400;
+      color: var(--text-light);
       font-size: $font-size-lg;
     }
 
@@ -131,11 +142,11 @@
       border: none;
       background: transparent;
       font-size: $font-size-base;
-      color: $gray-700;
+      color: var(--text-primary);
       outline: none;
 
       &::placeholder {
-        color: $gray-400;
+        color: var(--text-light);
       }
     }
 
@@ -146,12 +157,12 @@
       min-height: 36px;
       padding: 0;
       border-radius: $radius-md;
-      background: $warning;
-      color: $white;
+      background: var(--color-warning);
+      color: #fff;
       box-shadow: none;
 
       &:hover:not(:disabled) {
-        background: $warning-dark;
+        background: var(--color-warning-dark);
       }
 
       &:disabled {
@@ -171,7 +182,7 @@
 
   .sale-item {
     padding: $spacing-lg;
-    background: $white;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: $radius-lg;
     margin-bottom: $spacing-sm;
@@ -179,8 +190,8 @@
     transition: $transition-all;
 
     &:hover {
-      border-color: $warning;
-      background: rgba($warning, 0.05);
+      border-color: var(--color-warning);
+      background: rgba(var(--color-warning-rgb), 0.05);
       transform: translateX(4px);
     }
 
@@ -192,13 +203,13 @@
 
       .sale-number {
         font-weight: $font-weight-bold;
-        color: $gray-800;
+        color: var(--text-primary);
         font-size: $font-size-base;
       }
 
       .sale-date {
         font-size: $font-size-sm;
-        color: $gray-500;
+        color: var(--text-secondary);
       }
     }
 
@@ -210,19 +221,19 @@
 
       .sale-items {
         font-size: $font-size-sm;
-        color: $gray-500;
+        color: var(--text-secondary);
       }
 
       .sale-total {
         font-weight: $font-weight-semibold;
-        color: $primary;
+        color: var(--color-primary);
         font-size: $font-size-lg;
       }
     }
 
     .sale-cashier {
       font-size: $font-size-sm;
-      color: $gray-500;
+      color: var(--text-secondary);
 
       i {
         margin-right: $spacing-xs;
@@ -239,7 +250,7 @@
   align-items: center;
   justify-content: center;
   padding: $spacing-3xl;
-  color: $gray-400;
+  color: var(--text-light);
 
   i {
     font-size: 3rem;
@@ -262,7 +273,7 @@
       @include button-base;
       padding: $spacing-sm $spacing-md;
       background: transparent;
-      color: $gray-600;
+      color: var(--text-secondary);
       border: 1px solid var(--border-color);
       box-shadow: none;
       font-size: $font-size-sm;
@@ -273,7 +284,7 @@
 
       &:hover {
         background: var(--bg-tertiary);
-        color: $gray-700;
+        color: var(--text-primary);
       }
     }
   }
@@ -292,13 +303,13 @@
 
       .label {
         font-size: $font-size-sm;
-        color: $gray-500;
+        color: var(--text-secondary);
       }
 
       .value {
         font-size: $font-size-xl;
         font-weight: $font-weight-bold;
-        color: $gray-800;
+        color: var(--text-primary);
       }
     }
 
@@ -306,7 +317,7 @@
       display: flex;
       gap: $spacing-lg;
       font-size: $font-size-sm;
-      color: $gray-500;
+      color: var(--text-secondary);
 
       span {
         display: flex;
@@ -315,7 +326,7 @@
       }
 
       i {
-        color: $warning;
+        color: var(--color-warning);
       }
     }
   }
@@ -329,13 +340,13 @@
     margin: 0 0 $spacing-md;
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: $gray-700;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: $spacing-sm;
 
     i {
-      color: $warning;
+      color: var(--color-warning);
     }
   }
 
@@ -350,32 +361,32 @@
     flex-direction: column;
     padding: $spacing-lg;
     border: 2px solid var(--border-color);
-    background: $white;
+    background: var(--button-secondary-bg);
     box-shadow: none;
 
     i {
       font-size: $font-size-2xl;
-      color: $gray-500;
+      color: var(--text-secondary);
       margin-bottom: $spacing-xs;
     }
 
     span {
       font-size: $font-size-sm;
       font-weight: $font-weight-medium;
-      color: $gray-600;
+      color: var(--text-secondary);
     }
 
     &:hover {
-      background: var(--bg-tertiary);
+      background: var(--button-secondary-bg-hover);
     }
 
     &.active {
-      border-color: $warning;
-      background: $warning;
+      border-color: var(--color-warning);
+      background: var(--color-warning);
 
       i,
       span {
-        color: $white;
+        color: #fff;
       }
     }
   }
@@ -389,13 +400,13 @@
     margin: 0 0 $spacing-md;
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
-    color: $gray-700;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: $spacing-sm;
 
     i {
-      color: $warning;
+      color: var(--color-warning);
     }
   }
 
@@ -410,7 +421,7 @@
     align-items: center;
     gap: $spacing-md;
     padding: $spacing-md;
-    background: $white;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: $radius-md;
     margin-bottom: $spacing-xs;
@@ -422,18 +433,18 @@
     }
 
     &.selected {
-      border-color: $warning;
-      background: rgba($warning, 0.05);
+      border-color: var(--color-warning);
+      background: rgba(var(--color-warning-rgb), 0.05);
 
       .item-checkbox i {
-        color: $warning;
+        color: var(--color-warning);
       }
     }
 
     .item-checkbox {
       i {
         font-size: $font-size-lg;
-        color: $gray-300;
+        color: var(--border-light);
       }
     }
 
@@ -445,13 +456,13 @@
 
       .item-name {
         font-weight: $font-weight-medium;
-        color: $gray-700;
+        color: var(--text-primary);
         font-size: $font-size-sm;
       }
 
       .item-price {
         font-size: $font-size-xs;
-        color: $gray-500;
+        color: var(--text-secondary);
       }
     }
 
@@ -489,7 +500,7 @@
 
     .item-total {
       font-weight: $font-weight-semibold;
-      color: $gray-700;
+      color: var(--text-primary);
       font-size: $font-size-sm;
     }
   }
@@ -505,11 +516,11 @@
     gap: $spacing-sm;
     margin-bottom: $spacing-sm;
     font-weight: $font-weight-semibold;
-    color: $gray-700;
+    color: var(--text-primary);
     font-size: $font-size-sm;
 
     i {
-      color: $warning;
+      color: var(--color-warning);
     }
   }
 
@@ -519,19 +530,20 @@
     border: 2px solid var(--border-color);
     border-radius: $radius-lg;
     font-size: $font-size-base;
-    color: $gray-700;
+    color: var(--text-primary);
     resize: none;
     outline: none;
     transition: $transition-base;
     font-family: inherit;
 
     &:focus {
-      border-color: $warning;
-      @include focus-ring($warning);
+      border-color: var(--color-warning);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(var(--color-warning-rgb), 0.25);
     }
 
     &::placeholder {
-      color: $gray-400;
+      color: var(--text-light);
     }
   }
 }
@@ -548,7 +560,7 @@
     align-items: center;
     padding: $spacing-sm 0;
     font-size: $font-size-base;
-    color: $gray-600;
+    color: var(--text-secondary);
 
     &:not(:last-child) {
       border-bottom: 1px solid var(--border-color);
@@ -558,7 +570,7 @@
       padding-top: $spacing-md;
       font-size: $font-size-xl;
       font-weight: $font-weight-bold;
-      color: $warning-dark;
+      color: var(--color-warning-dark);
     }
   }
 }

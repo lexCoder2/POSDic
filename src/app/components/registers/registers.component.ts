@@ -14,19 +14,12 @@ import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import { Register, User } from "../../models";
 
 @Component({
   selector: "app-registers",
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TranslatePipe,
-    CurrencyPipe,
-    PageTitleComponent,
-  ],
+  imports: [CommonModule, FormsModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./registers.component.html",
   styleUrls: ["./registers.component.scss"],
 })

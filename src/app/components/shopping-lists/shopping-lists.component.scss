@@ -1,0 +1,178 @@
+@use "../../../styles/theme" as *;
+
+.shopping-lists {
+  padding: $spacing-lg;
+
+  .section-header {
+    margin-bottom: $spacing-lg;
+
+    h2 {
+      font-size: $font-size-lg;
+      font-weight: 600;
+      color: $text-primary;
+    }
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 240px;
+    gap: $spacing-lg;
+
+    @include respond-to(md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .list-panel {
+    @include card;
+    padding: $spacing-md;
+
+    .new-list-form {
+      display: flex;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-md;
+
+      input {
+        flex: 1;
+        padding: $spacing-sm;
+        border: 1px solid $border-color;
+        border-radius: $radius-sm;
+        background: var(--bg-primary);
+        color: $text-primary;
+        min-height: $touch-target-md;
+      }
+
+      button {
+        @include button-primary;
+        min-height: $touch-target-md;
+        padding: 0 $spacing-md;
+      }
+    }
+
+    .lists-ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm $spacing-md;
+      border-radius: $radius-sm;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--bg-secondary);
+      }
+
+      &.active {
+        background: rgba(var(--color-primary-rgb), 0.1);
+      }
+
+      .list-name {
+        flex: 1;
+        font-size: $font-size-sm;
+        color: $text-primary;
+      }
+
+      .item-count {
+        font-size: $font-size-xs;
+        color: $text-secondary;
+      }
+
+      .delete-btn {
+        background: none;
+        border: none;
+        color: var(--color-danger);
+        cursor: pointer;
+        font-size: $font-size-base;
+        line-height: 1;
+        padding: 0 $spacing-xs;
+      }
+    }
+
+    .empty {
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      text-align: center;
+      padding: $spacing-lg;
+    }
+  }
+
+  .detail-panel {
+    @include card;
+    padding: $spacing-md;
+
+    h3 {
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: $spacing-md;
+    }
+
+    .item-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      padding: $spacing-sm 0;
+      border-bottom: 1px solid $border-color;
+
+      &.purchased span {
+        text-decoration: line-through;
+        color: $text-secondary;
+      }
+
+      .qty {
+        margin-left: auto;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+      }
+    }
+  }
+
+  .recommendations-panel {
+    @include card;
+    padding: $spacing-md;
+
+    h4 {
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: $spacing-sm;
+      font-size: $font-size-sm;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: $spacing-xs 0;
+      font-size: $font-size-sm;
+      color: $text-primary;
+
+      button {
+        background: var(--color-primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        font-size: $font-size-sm;
+        line-height: 1;
+      }
+    }
+  }
+}

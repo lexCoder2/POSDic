@@ -1,0 +1,106 @@
+<div class="receipts-container">
+  <!-- Toolbar -->
+  <div class="receipts-toolbar">
+    <h3 class="section-title">
+      {{ "PROVIDERS.INVOICES.HISTORY.TITLE" | translate }}
+    </h3>
+    <button class="btn-scan" (click)="openScanner()">
+      <i class="fas fa-file-import"></i>
+      {{ "PROVIDERS.INVOICES.SCAN_BUTTON" | translate }}
+    </button>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <i class="fas fa-circle-notch fa-spin"></i>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading() && receipts().length === 0">
+    <i class="fas fa-file-invoice fa-2x"></i>
+    <p>{{ "PROVIDERS.INVOICES.HISTORY.EMPTY" | translate }}</p>
+  </div>
+
+  <!-- Receipts table -->
+  <div class="table-wrapper" *ngIf="!isLoading() && receipts().length > 0">
+    <table class="receipts-table">
+      <thead>
+        <tr>
+          <th>{{ "PROVIDERS.INVOICES.HISTORY.DATE" | translate }}</th>
+          <th>{{ "PROVIDERS.INVOICES.HISTORY.FILE_TYPE" | translate }}</th>
+          <th>{{ "PROVIDERS.INVOICES.HISTORY.INVOICE_NUMBER" | translate }}</th>
+          <th class="th-num">
+            {{ "PROVIDERS.INVOICES.HISTORY.TOTAL" | translate }}
+          </th>
+          <th class="th-num">
+            {{ "PROVIDERS.INVOICES.HISTORY.ITEMS" | translate }}
+          </th>
+          <th>{{ "PROVIDERS.INVOICES.HISTORY.STATUS" | translate }}</th>
+          <th class="th-actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let receipt of receipts(); trackBy: trackByReceiptId"
+          class="receipt-row"
+          (click)="viewReceipt(receipt)"
+        >
+          <td>{{ receipt.createdAt | date: "short" }}</td>
+          <td>
+            <span class="file-type-icon">
+              <i class="fas" [class]="getFileTypeIcon(receipt.fileType)"></i>
+              {{ receipt.fileType }}
+            </span>
+          </td>
+          <td>{{ receipt["invoiceNumber"] || "—" }}</td>
+          <td class="td-num">{{ receipt.totals.total | currency }}</td>
+          <td class="td-num">{{ receipt.parsedItems.length }}</td>
+          <td>
+            <span class="status-badge" [class]="'status-' + receipt.status">
+              {{
+                "PROVIDERS.INVOICES.STATUS." + receipt.status.toUpperCase()
+                  | translate
+              }}
+            </span>
+          </td>
+          <td class="td-actions">
+            <button
+              *ngIf="receipt.status !== 'applied'"
+              class="btn-delete"
+              (click)="deleteReceipt(receipt, $event)"
+              title="Delete"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Invoice scanner modal -->
+  <app-invoice-scanner
+    *ngIf="showScanner()"
+    (scanned)="onScanned($event)"
+    (cancelled)="onScanCancelled()"
+  ></app-invoice-scanner>
+
+  <!-- Review table modal (after scan) -->
+  <app-receipt-review-table
+    *ngIf="showReview() && parsedInvoice()"
+    [parsedInvoice]="parsedInvoice()!"
+    [providerId]="providerId"
+    (confirmed)="onReviewConfirmed()"
+    (cancelled)="onReviewCancelled()"
+  ></app-receipt-review-table>
+
+  <!-- Read-only view of a historical receipt -->
+  <app-receipt-review-table
+    *ngIf="selectedReceipt()"
+    [parsedInvoice]="toReadonlyParsedInvoice(selectedReceipt()!)"
+    [providerId]="providerId"
+    [readOnly]="true"
+    (confirmed)="closeReceiptDetail()"
+    (cancelled)="closeReceiptDetail()"
+  ></app-receipt-review-table>
+</div>

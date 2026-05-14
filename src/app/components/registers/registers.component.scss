@@ -1,4 +1,4 @@
-@import "../../../styles/theme";
+@use "../../../styles/theme" as *;
 
 .registers-container {
   padding: 0 $spacing-2xl;
@@ -23,7 +23,7 @@
   padding: $spacing-xl;
   border-radius: $radius-md;
   margin-bottom: $spacing-2xl;
-  box-shadow: $shadow-sm;
+  box-shadow: var(--shadow-1);
 }
 
 .filter-row {
@@ -62,7 +62,7 @@
 
   &:focus {
     outline: none;
-    border-color: $primary;
+    border-color: var(--color-primary);
     box-shadow: $shadow-primary;
   }
 }
@@ -87,7 +87,7 @@
     width: 40px;
     height: 40px;
     border: 4px solid var(--border-color);
-    border-top-color: $primary;
+    border-top-color: var(--color-primary);
     border-radius: $radius-full;
     animation: spin 1s linear infinite;
   }
@@ -108,7 +108,7 @@
   background: var(--bg-secondary);
   border-radius: $radius-md;
   overflow: hidden;
-  box-shadow: $shadow-sm;
+  box-shadow: var(--shadow-1);
 }
 
 .registers-table {
@@ -154,11 +154,11 @@
         font-weight: $font-weight-medium;
 
         &.positive {
-          color: $success;
+          color: var(--color-success);
         }
 
         &.negative {
-          color: $danger;
+          color: var(--color-danger);
         }
       }
 
@@ -182,13 +182,13 @@
   letter-spacing: 0.05em;
 
   &.open {
-    background: rgba($success, 0.1);
-    color: $success;
+    background: rgba(var(--color-success-rgb), 0.1);
+    color: var(--color-success);
   }
 
   &.closed {
-    background: rgba($gray-500, 0.1);
-    color: $gray-500;
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-secondary);
   }
 }
 
@@ -201,9 +201,9 @@
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  background: rgba($warning, 0.15);
-  color: $warning-dark;
-  border: 1px solid rgba($warning, 0.3);
+  background: rgba(var(--color-warning-rgb), 0.15);
+  color: var(--color-warning-dark);
+  border: 1px solid rgba(var(--color-warning-rgb), 0.3);
 
   i {
     font-size: 0.9em;
@@ -240,10 +240,10 @@
   }
 
   &.btn-danger:hover {
-    background: rgba($danger, 0.1);
+    background: rgba(var(--color-danger-rgb), 0.1);
 
     i {
-      color: $danger;
+      color: var(--color-danger);
     }
   }
 }
@@ -279,12 +279,12 @@
   }
 
   &.btn-primary {
-    background: $primary;
-    color: $white;
-    box-shadow: $shadow-sm;
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-1);
 
     &:hover:not(:disabled) {
-      background: $primary-dark;
+      background: var(--color-primary-dark);
       box-shadow: $shadow-primary;
       transform: translateY(-1px);
     }
@@ -302,12 +302,12 @@
   }
 
   &.btn-danger {
-    background: $danger;
-    color: $white;
-    box-shadow: $shadow-sm;
+    background: var(--color-danger);
+    color: #fff;
+    box-shadow: var(--shadow-1);
 
     &:hover:not(:disabled) {
-      background: $danger-dark;
+      background: var(--color-danger-dark);
       transform: translateY(-1px);
     }
   }
@@ -329,7 +329,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.5);
+  background: rgba(#000, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -433,11 +433,11 @@
       font-family: $font-family-mono;
 
       &.positive {
-        color: $success;
+        color: var(--color-success);
       }
 
       &.negative {
-        color: $danger;
+        color: var(--color-danger);
       }
     }
   }

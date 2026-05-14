@@ -39,10 +39,8 @@ export const routes: Routes = [
       },
       {
         path: "cashier",
-        loadComponent: () =>
-          import("./components/cashier/cashier.component").then(
-            (m) => m.CashierComponent
-          ),
+        redirectTo: "/pos",
+        pathMatch: "full",
       },
 
       {
@@ -83,6 +81,7 @@ export const routes: Routes = [
           import("./components/categories/categories.component").then(
             (m) => m.CategoriesComponent
           ),
+        canActivate: [roleGuard(["admin", "manager"])],
       },
       {
         path: "sales",
@@ -115,6 +114,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: "providers/:id",
+        loadComponent: () =>
+          import("./components/providers/provider-detail.component").then(
+            (m) => m.ProviderDetailComponent
+          ),
+      },
+      {
         path: "templates",
         loadComponent: () =>
           import("./components/templates/templates.component").then(
@@ -127,6 +133,27 @@ export const routes: Routes = [
         loadComponent: () =>
           import("./components/settings/settings.component").then(
             (m) => m.SettingsComponent
+          ),
+        canActivate: [roleGuard(["admin", "manager"])],
+      },
+      {
+        path: "dispatcher",
+        redirectTo: "/pos",
+        pathMatch: "full",
+      },
+      {
+        path: "checkout-desk",
+        loadComponent: () =>
+          import("./components/checkout-desk/checkout-desk.component").then(
+            (m) => m.CheckoutDeskComponent
+          ),
+        canActivate: [roleGuard(["admin", "manager", "cashier"])],
+      },
+      {
+        path: "shopping-lists",
+        loadComponent: () =>
+          import("./components/shopping-lists/shopping-lists.component").then(
+            (m) => m.ShoppingListsComponent
           ),
         canActivate: [roleGuard(["admin", "manager"])],
       },

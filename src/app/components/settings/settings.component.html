@@ -78,6 +78,151 @@
     </div>
   </section>
 
+  <!-- Estimated Cost Section (Admin only) -->
+  @if (isAdmin) {
+    <section class="card estimated-cost-section">
+      <h3>
+        <i class="fas fa-calculator"></i>
+        {{ "SETTINGS.ESTIMATED_COST.TITLE" | translate }}
+      </h3>
+      <p class="section-description">
+        {{ "SETTINGS.ESTIMATED_COST.DESCRIPTION" | translate }}
+      </p>
+
+      <div class="form-row">
+        <div class="toggle-container">
+          <app-toggle-switch
+            [checked]="estimatedCostEnabled"
+            (change)="estimatedCostEnabled = $event"
+            size="medium"
+          ></app-toggle-switch>
+          <span class="toggle-text">
+            {{ "SETTINGS.ESTIMATED_COST.ENABLE" | translate }}
+          </span>
+        </div>
+      </div>
+
+      @if (estimatedCostEnabled) {
+        <div class="form-row">
+          <label class="label">
+            {{ "SETTINGS.ESTIMATED_COST.MARGIN_LABEL" | translate }}
+          </label>
+          <div class="input-with-suffix">
+            <input
+              type="number"
+              [(ngModel)]="estimatedCostMarginPercent"
+              min="0"
+              max="100"
+              step="1"
+            />
+            <span class="input-suffix">%</span>
+          </div>
+          <p class="form-hint">
+            {{ "SETTINGS.ESTIMATED_COST.MARGIN_HINT" | translate }}
+          </p>
+        </div>
+
+        <div class="estimated-cost-preview">
+          <span class="preview-label">
+            {{ "SETTINGS.ESTIMATED_COST.PREVIEW_LABEL" | translate }}
+          </span>
+          <span class="preview-value">
+            {{ 100 - estimatedCostMarginPercent }}%
+            {{ "SETTINGS.ESTIMATED_COST.PREVIEW_SUFFIX" | translate }}
+          </span>
+        </div>
+      }
+
+      <div class="form-actions">
+        <button
+          class="btn btn-primary"
+          (click)="saveEstimatedCostSettings()"
+          [disabled]="savingEstimatedCost"
+        >
+          @if (savingEstimatedCost) {
+            <i class="fas fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fas fa-save"></i>
+          }
+          {{ "SETTINGS.ESTIMATED_COST.SAVE" | translate }}
+        </button>
+      </div>
+    </section>
+
+    <section class="card sell-mode-section">
+      <h3>
+        <i class="fas fa-arrows-split-up-and-left"></i>
+        {{ "SETTINGS.SELL_MODE.TITLE" | translate }}
+      </h3>
+      <p class="section-description">
+        {{ "SETTINGS.SELL_MODE.DESCRIPTION" | translate }}
+      </p>
+
+      <div class="options" role="radiogroup" aria-label="Sell Mode">
+        <div
+          class="option-card"
+          role="radio"
+          tabindex="0"
+          [attr.aria-checked]="sellMode === 'combined'"
+          [class.active]="sellMode === 'combined'"
+          (click)="sellMode = 'combined'"
+          (keydown.enter)="sellMode = 'combined'"
+        >
+          <div class="option-left">
+            <div class="icon">1</div>
+          </div>
+          <div class="option-body">
+            <div class="title">
+              {{ "SETTINGS.SELL_MODE.COMBINED" | translate }}
+            </div>
+            <div class="desc">
+              {{ "SETTINGS.SELL_MODE.COMBINED_DESC" | translate }}
+            </div>
+          </div>
+          <div class="option-right"><span class="check">✓</span></div>
+        </div>
+
+        <div
+          class="option-card"
+          role="radio"
+          tabindex="0"
+          [attr.aria-checked]="sellMode === 'split'"
+          [class.active]="sellMode === 'split'"
+          (click)="sellMode = 'split'"
+          (keydown.enter)="sellMode = 'split'"
+        >
+          <div class="option-left">
+            <div class="icon">2</div>
+          </div>
+          <div class="option-body">
+            <div class="title">
+              {{ "SETTINGS.SELL_MODE.SPLIT" | translate }}
+            </div>
+            <div class="desc">
+              {{ "SETTINGS.SELL_MODE.SPLIT_DESC" | translate }}
+            </div>
+          </div>
+          <div class="option-right"><span class="check">✓</span></div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          class="btn btn-primary"
+          (click)="saveSellModeSettings()"
+          [disabled]="savingSellMode"
+        >
+          @if (savingSellMode) {
+            <i class="fas fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fas fa-save"></i>
+          }
+          {{ "SETTINGS.SELL_MODE.SAVE" | translate }}
+        </button>
+      </div>
+    </section>
+  }
+
   <section class="card user-section">
     <h3>{{ "SETTINGS.USER_PREFERENCES.TITLE" | translate }}</h3>
 

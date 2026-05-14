@@ -2,7 +2,69 @@ const express = require("express");
 const router = express.Router();
 const Sale = require("../models/Sale");
 const Product = require("../models/Product");
+const StockMovement = require("../models/StockMovement");
 const { protect, checkPermission, authorize } = require("../middleware/auth");
+
+async function adjustStockWithMovement({
+  productId,
+  signedQuantity,
+  sourceType,
+  sourceId,
+  performedBy,
+  unitCost,
+  notes,
+  metadata = {},
+}) {
+  if (!productId || !Number.isFinite(signedQuantity) || signedQuantity === 0) {
+    return null;
+  }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new Error(`Product not found: ${productId}`);
+  }
+
+  const previousStock = Number(product.stock || 0);
+  const newStock = previousStock + signedQuantity;
+
+  const updatedProduct = await Product.findByIdAndUpdate(
+    productId,
+    { $set: { stock: newStock } },
+    { new: true, runValidators: false }
+  );
+
+  if (!updatedProduct) {
+    throw new Error(`Failed to update stock for product: ${productId}`);
+  }
+
+  try {
+    const movement = await StockMovement.create({
+      product: productId,
+      sourceType,
+      sourceId,
+      movementType: signedQuantity > 0 ? "increase" : "decrease",
+      quantityChange: Math.abs(signedQuantity),
+      previousStock,
+      newStock,
+      unitCost:
+        unitCost !== undefined && unitCost !== null
+          ? unitCost
+          : Number(product.cost || 0),
+      performedBy,
+      notes,
+      metadata,
+    });
+
+    return { movement, previousStock, newStock };
+  } catch (error) {
+    await Product.findByIdAndUpdate(
+      productId,
+      { $set: { stock: previousStock } },
+      { runValidators: false }
+    );
+    throw error;
+  }
+}
 
 // @route   GET /api/sales
 // @desc    Get all sales
@@ -97,11 +159,19 @@ router.post("/", protect, checkPermission("sales"), async (req, res) => {
     // Only update product stock if sale is completed and product exists
     if (sale.status === "completed") {
       for (const item of sale.items) {
-        if (item.product) {
-          await Product.findByIdAndUpdate(item.product, {
-            $inc: { stock: -item.quantity },
-          });
-        }
+        await adjustStockWithMovement({
+          productId: item.product,
+          signedQuantity: -Number(item.quantity || 0),
+          sourceType: "sale",
+          sourceId: sale._id,
+          performedBy: req.user._id,
+          notes: item.productName || "Completed sale",
+          metadata: {
+            saleNumber: sale.saleNumber,
+            paymentMethod: sale.paymentMethod,
+            isInternal: false,
+          },
+        });
       }
     }
 
@@ -148,15 +218,35 @@ router.put("/:id", protect, checkPermission("sales"), async (req, res) => {
     if (previousStatus === "in_progress" && sale.status === "completed") {
       // Deduct stock when completing sale
       for (const item of sale.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity },
+        await adjustStockWithMovement({
+          productId: item.product,
+          signedQuantity: -Number(item.quantity || 0),
+          sourceType: "sale",
+          sourceId: sale._id,
+          performedBy: req.user._id,
+          notes: item.productName || "Completed sale",
+          metadata: {
+            saleNumber: sale.saleNumber,
+            transition: `${previousStatus}_to_${sale.status}`,
+            paymentMethod: sale.paymentMethod,
+          },
         });
       }
     } else if (previousStatus === "completed" && sale.status === "cancelled") {
       // Restore stock when cancelling completed sale
       for (const item of sale.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: item.quantity },
+        await adjustStockWithMovement({
+          productId: item.product,
+          signedQuantity: Number(item.quantity || 0),
+          sourceType: "sale_cancel",
+          sourceId: sale._id,
+          performedBy: req.user._id,
+          notes:
+            sale.cancellationReason || item.productName || "Cancelled sale",
+          metadata: {
+            saleNumber: sale.saleNumber,
+            transition: `${previousStatus}_to_${sale.status}`,
+          },
         });
       }
     }
@@ -208,8 +298,18 @@ router.put("/:id/cancel", protect, async (req, res) => {
 
     // Restore product stock
     for (const item of sale.items) {
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: item.quantity },
+      await adjustStockWithMovement({
+        productId: item.product,
+        signedQuantity: Number(item.quantity || 0),
+        sourceType: "sale_cancel",
+        sourceId: sale._id,
+        performedBy: req.user._id,
+        notes: cancellationReason || item.productName || "Cancelled sale",
+        metadata: {
+          saleNumber: sale.saleNumber,
+          reason: cancellationReason || null,
+          action: "cancel",
+        },
       });
     }
 
@@ -262,11 +362,19 @@ router.post("/:id/refund", protect, async (req, res) => {
 
       // Restore product stock for all items
       for (const item of sale.items) {
-        if (item.product) {
-          await Product.findByIdAndUpdate(item.product, {
-            $inc: { stock: item.quantity },
-          });
-        }
+        await adjustStockWithMovement({
+          productId: item.product,
+          signedQuantity: Number(item.quantity || 0),
+          sourceType: "sale_cancel",
+          sourceId: sale._id,
+          performedBy: req.user._id,
+          notes: reason || item.productName || "Full refund",
+          metadata: {
+            saleNumber: sale.saleNumber,
+            refundType: "full",
+            action: "refund",
+          },
+        });
       }
     } else if (refundType === "partial") {
       // Partial refund - restore stock for selected items
@@ -286,11 +394,20 @@ router.post("/:id/refund", protect, async (req, res) => {
           const refundQty = refundItem.quantity || saleItem.quantity;
 
           // Restore stock
-          if (saleItem.product) {
-            await Product.findByIdAndUpdate(saleItem.product, {
-              $inc: { stock: refundQty },
-            });
-          }
+          await adjustStockWithMovement({
+            productId: saleItem.product,
+            signedQuantity: Number(refundQty || 0),
+            sourceType: "sale_cancel",
+            sourceId: sale._id,
+            performedBy: req.user._id,
+            notes: reason || saleItem.productName || "Partial refund",
+            metadata: {
+              saleNumber: sale.saleNumber,
+              refundType: "partial",
+              action: "refund",
+              refundedItemId: refundItem.itemId,
+            },
+          });
 
           // Update or remove item from sale
           if (refundQty >= saleItem.quantity) {
@@ -423,8 +540,18 @@ router.post("/internal", protect, async (req, res) => {
 
     // Update product stock
     for (const item of processedItems) {
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: -item.quantity },
+      await adjustStockWithMovement({
+        productId: item.product,
+        signedQuantity: -Number(item.quantity || 0),
+        sourceType: "sale",
+        sourceId: sale._id,
+        performedBy: req.user._id,
+        notes: item.productName || "Internal sale",
+        metadata: {
+          saleNumber: sale.saleNumber,
+          paymentMethod: sale.paymentMethod,
+          isInternal: true,
+        },
       });
     }
 

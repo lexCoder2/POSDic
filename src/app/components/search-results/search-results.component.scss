@@ -3,18 +3,18 @@
 .search-results-container {
   position: relative;
   width: 100%;
-  max-height: 46vh;
+  max-height: 44vh;
   overflow-y: auto;
   overflow-x: visible;
-  background: $neumorphic-surface;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: $shadow-sm;
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-1);
   padding: 0;
 
   @media (max-width: 768px) {
     max-height: 50vh;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
   }
 }
 
@@ -27,8 +27,8 @@
     width: 40px;
     height: 40px;
     margin: 0 auto 16px;
-    border: 3px solid $gray-200;
-    border-top-color: $primary;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--color-primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -47,35 +47,33 @@
 
 .results-header {
   padding: $spacing-sm $spacing-md;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid var(--table-border);
+  background: var(--table-header-bg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 
   .results-count {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 500;
+    font-size: 12px;
+    color: var(--table-header-text);
+    font-weight: 600;
   }
 }
 
 .result-item {
   display: flex;
   align-items: center;
-  gap: $spacing-xs;
-  padding: $spacing-sm 0;
-  border-radius: 8px;
+  gap: $spacing-sm;
+  padding: 10px 12px;
+  border-radius: 0;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--table-border);
 
   &:hover {
-    background: var(--bg-secondary);
-    border-color: $primary;
-    transform: translateY(-2px);
+    background: var(--table-row-hover);
   }
 
-  &:active {
-    transform: scale(0.98);
+  &:last-child {
+    border-bottom: none;
   }
 
   @media (max-width: 768px) {
@@ -86,11 +84,12 @@
 
 .result-image {
   flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--bg-secondary);
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,16 +101,16 @@
   }
 
   .no-image {
-    color: $gray-400;
+    color: var(--text-light);
     font-size: 24px;
   }
 
   @media (max-width: 768px) {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
 
     .no-image {
-      font-size: 20px;
+      font-size: 18px;
     }
   }
 }
@@ -122,7 +121,7 @@
 }
 
 .result-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
@@ -138,21 +137,22 @@
 .result-details {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   color: var(--text-secondary);
   margin-bottom: 4px;
   flex-wrap: wrap;
 
   .result-brand {
-    padding: 2px 8px;
-    background: var(--bg-secondary);
-    border-radius: 4px;
+    padding: 2px 6px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
   }
 
   .result-code {
     font-family: "Courier New", monospace;
-    color: $gray-500;
+    color: var(--text-secondary);
   }
 }
 
@@ -162,9 +162,9 @@
   gap: 4px;
   font-size: 11px;
   color: var(--text-secondary);
-  padding: 2px 8px;
-  background: rgba($primary, 0.1);
-  border-radius: 4px;
+  padding: 2px 6px;
+  background: rgba(var(--color-primary-rgb), 0.08);
+  border-radius: var(--radius-sm);
   width: fit-content;
 
   i {
@@ -186,9 +186,9 @@
 }
 
 .price-amount {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: $primary;
+  color: var(--color-primary);
 
   @media (max-width: 768px) {
     font-size: 16px;
@@ -196,30 +196,26 @@
 }
 
 .btn-add-quick {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: $gradient-primary;
-  color: $white;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--button-primary-bg);
+  border-radius: var(--radius-sm);
+  background: var(--button-primary-bg);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: $shadow-sm;
+  box-shadow: none;
 
   &:hover {
-    transform: scale(1.1);
-    box-shadow: $shadow-md;
-  }
-
-  &:active {
-    transform: scale(0.95);
+    background: var(--button-primary-bg-hover);
+    border-color: var(--button-primary-bg-hover);
   }
 
   i {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   @media (max-width: 768px) {
@@ -234,17 +230,17 @@
 
 .result-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .btn-quick-access,
 .btn-delete {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
   display: flex;
@@ -253,21 +249,15 @@
   cursor: pointer;
   transition: all 0.2s ease;
   opacity: 0;
-  transform: translateX(10px);
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   i {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   @media (max-width: 768px) {
     width: 28px;
     height: 28px;
     opacity: 1;
-    transform: translateX(0);
 
     i {
       font-size: 12px;
@@ -277,15 +267,15 @@
 
 .btn-quick-access {
   &:hover {
-    background: rgba($warning, 0.1);
-    color: $warning;
+    background: rgba(var(--color-warning-rgb), 0.1);
+    color: var(--color-warning);
   }
 }
 
 .btn-delete {
   &:hover {
-    background: rgba($danger, 0.1);
-    color: $danger;
+    background: rgba(var(--color-danger-rgb), 0.1);
+    color: var(--color-danger);
   }
 }
 
@@ -293,18 +283,17 @@
   .btn-quick-access,
   .btn-delete {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
 .no-results {
-  padding: 48px 24px;
+  padding: 36px 20px;
   text-align: center;
   color: var(--text-secondary);
 
   i {
     font-size: 48px;
-    color: $gray-300;
+    color: var(--border-light);
     margin-bottom: 16px;
   }
 
@@ -339,13 +328,13 @@
 }
 
 .empty-search {
-  padding: 36px 20px;
+  padding: 28px 16px;
   text-align: center;
   color: var(--text-secondary);
 
   i {
     font-size: 44px;
-    color: $gray-300;
+    color: var(--border-light);
     margin-bottom: 12px;
   }
 
@@ -378,12 +367,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal-backdrop);
   animation: fadeIn 0.2s ease;
 
   @keyframes fadeIn {
@@ -397,9 +386,10 @@
 }
 
 .modal-content {
-  background: $white;
-  border-radius: 12px;
-  box-shadow: $shadow-lg;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
   width: 90%;
   max-width: 480px;
   animation: slideUp 0.3s ease;
@@ -437,7 +427,7 @@
       padding: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -464,7 +454,7 @@
     }
 
     .warning {
-      color: $danger;
+      color: var(--color-danger);
       font-size: 14px;
       font-weight: 500;
       margin-bottom: 0;
@@ -501,13 +491,13 @@
       }
 
       &.btn-delete-confirm {
-        background: $danger;
-        color: $white;
-        box-shadow: $shadow-sm;
+        background: var(--color-danger);
+        color: #fff;
+        box-shadow: var(--shadow-1);
 
         &:hover {
-          background: darken($danger, 8%);
-          box-shadow: $shadow-md;
+          background: var(--color-danger-dark);
+          box-shadow: var(--shadow-2);
           transform: translateY(-1px);
         }
 

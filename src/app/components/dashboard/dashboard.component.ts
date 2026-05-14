@@ -7,7 +7,6 @@ import { SaleService } from "../../services/sale.service";
 import { ProductService } from "../../services/product.service";
 import { UserService } from "../../services/user.service";
 import { AuthService } from "../../services/auth.service";
-import { PageTitleComponent } from "../page-title/page-title.component";
 
 interface DashboardStats {
   totalSales: number;
@@ -44,7 +43,7 @@ interface DashboardStats {
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CurrencyPipe, PageTitleComponent],
+  imports: [CommonModule, TranslatePipe, CurrencyPipe],
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
 })

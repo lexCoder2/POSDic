@@ -23,6 +23,8 @@ import { SearchStateService } from "../../services/search-state.service";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
 import { ToastService } from "../../services/toast.service";
 import { RegisterService } from "../../services/register.service";
+import { SettingsService } from "../../services/settings.service";
+import { TicketService } from "../../services/ticket.service";
 import { Product, Category, CartItem, User, Register } from "../../models";
 import { environment } from "@environments/environment";
 import { CartComponent } from "../cart/cart.component";
@@ -101,6 +103,8 @@ export class PosComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private toastService = inject(ToastService);
   private registerService = inject(RegisterService);
+  private settingsService = inject(SettingsService);
+  private ticketService = inject(TicketService);
   private cdr = inject(ChangeDetectorRef);
 
   @ViewChild("barcodeInput") barcodeInput!: ElementRef;
@@ -150,6 +154,7 @@ export class PosComponent implements OnInit, OnDestroy {
 
   // Loose Product Modal
   showLooseProductModal = false;
+  pendingLooseProductDescription = "";
 
   // Returns Modal
   showReturnsModal = false;
@@ -174,6 +179,7 @@ export class PosComponent implements OnInit, OnDestroy {
 
   // Print receipts toggle
   printReceiptsEnabled = true;
+  sellMode: "combined" | "split" = "combined";
 
   private destroy$ = new Subject<void>();
   // timestamp of last Enter key press for double-Enter detection
@@ -261,6 +267,12 @@ export class PosComponent implements OnInit, OnDestroy {
           this.printReceiptsEnabled = register.printReceiptsEnabled !== false;
         }
         this.cdr.markForCheck();
+      });
+
+    this.settingsService.settings$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((settings) => {
+        this.sellMode = settings.sellMode;
       });
 
     // Load active register
@@ -615,6 +627,11 @@ export class PosComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.sellMode === "split") {
+      this.dispatchCurrentCart();
+      return;
+    }
+
     // Check if register is open
     if (!this.currentRegister) {
       this.toastService.show(
@@ -637,6 +654,11 @@ export class PosComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.sellMode === "split") {
+      this.dispatchCurrentCart();
+      return;
+    }
+
     // Check if register is open
     if (!this.currentRegister) {
       this.toastService.show(
@@ -652,6 +674,49 @@ export class PosComponent implements OnInit, OnDestroy {
 
   closeCheckout(): void {
     this.showCheckout = false;
+  }
+
+  private dispatchCurrentCart(): void {
+    const ticketItems = this.cartItems.map((item) => ({
+      product: item.product._id,
+      productName: item.customName || item.product.name,
+      quantity: item.quantity,
+      unitPrice: item.product.price,
+      subtotal: item.subtotal,
+    }));
+
+    this.ticketService
+      .createTicket(ticketItems, this.subtotal, this.total)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (ticket) => {
+          this.toastService.show(
+            `Ticket #${ticket.ticketNumber ?? ""} dispatched`,
+            "success"
+          );
+
+          if (this.printReceiptsEnabled) {
+            const mode = localStorage.getItem("printer.mode") || "plain";
+            const isPlainText = mode !== "styled";
+
+            this.receiptGeneratorService
+              .printDispatchTicket(ticket, { plainText: isPlainText })
+              .catch((err) => {
+                console.error("Error printing dispatch ticket:", err);
+              });
+          }
+
+          this.cartService.clearCart();
+        },
+        error: (err) => {
+          this.toastService.show(
+            `Error dispatching ticket: ${
+              err?.error?.message || err?.message || "Unknown error"
+            }`,
+            "error"
+          );
+        },
+      });
   }
 
   /**
@@ -908,18 +973,27 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   getProductImageUrl(product: Product): string {
+    if (product.local_image) {
+      // If it's already a full URL, return it
+      if (
+        product.local_image.startsWith("http://") ||
+        product.local_image.startsWith("https://")
+      ) {
+        return product.local_image;
+      }
+
+      return `${environment.imageUrl}/${product.local_image}`;
+    }
+
+    if (product.image_url) {
+      return product.image_url;
+    }
+
     if (!product.local_image) {
       return "";
     }
-    // If it's already a full URL, return it
-    if (
-      product.local_image.startsWith("http://") ||
-      product.local_image.startsWith("https://")
-    ) {
-      return product.local_image;
-    }
-    // Otherwise, construct the URL from the server
-    return `${environment.imageUrl}/${product.local_image}`;
+
+    return "";
   }
 
   focusSearchInput(): void {
@@ -988,6 +1062,11 @@ export class PosComponent implements OnInit, OnDestroy {
   closeQuickProductModal(): void {
     this.showQuickProductModal = false;
     this.quickProductBarcode = "";
+  }
+
+  onQuickProductSellLoose(description: string): void {
+    this.closeQuickProductModal();
+    this.openLooseProductModal(description);
   }
 
   /**
@@ -1071,13 +1150,15 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   // Loose Product Modal handlers
-  openLooseProductModal(): void {
+  openLooseProductModal(initialDescription = ""): void {
     this.showCalculatorModal = false; // Close calculator when opening loose product
+    this.pendingLooseProductDescription = initialDescription.trim();
     this.showLooseProductModal = true;
   }
 
   closeLooseProductModal(): void {
     this.showLooseProductModal = false;
+    this.pendingLooseProductDescription = "";
   }
 
   onLooseProductConfirm(data: LooseProductData): void {

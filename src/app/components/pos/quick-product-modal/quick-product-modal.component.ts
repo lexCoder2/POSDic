@@ -30,6 +30,7 @@ export class QuickProductModalComponent implements OnChanges {
 
   @Output() close = new EventEmitter<void>();
   @Output() createProduct = new EventEmitter<QuickProductData>();
+  @Output() sellLoose = new EventEmitter<string>();
 
   productName = "";
   productPrice = 0;
@@ -61,6 +62,16 @@ export class QuickProductModalComponent implements OnChanges {
     });
 
     this.resetForm();
+  }
+
+  onSellLoose(): void {
+    const fallbackName = this.barcode
+      ? `Product ${this.barcode}`
+      : "Loose Product";
+    const looseDescription = this.productName.trim() || fallbackName;
+
+    this.resetForm();
+    this.sellLoose.emit(looseDescription);
   }
 
   private resetForm(): void {

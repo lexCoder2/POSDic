@@ -13,10 +13,10 @@
     @if (searchQuery) {
       <i
         class="fas fa-times clear-icon"
-        (click)="searchQuery = ''"
+        (click)="clearSearch()"
         tabindex="0"
         role="button"
-        (keydown.enter)="searchQuery = ''"
+        (keydown.enter)="clearSearch()"
       ></i>
     }
   </div>

@@ -1,4 +1,4 @@
-@import "../../../styles/theme";
+@use "../../../styles/theme" as *;
 
 .toggle-switch {
   display: inline-block;
@@ -22,7 +22,7 @@
       background: $gradient-primary;
       box-shadow:
         var(--shadow-neumorphic-inset),
-        inset 0 0 0 2px $primary;
+        inset 0 0 0 2px var(--color-primary);
     }
 
     &:disabled + .toggle-slider {

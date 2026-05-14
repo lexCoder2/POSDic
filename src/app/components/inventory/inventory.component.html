@@ -1,63 +1,71 @@
 <div class="inventory-container">
-  <!-- Tabs -->
-  <div class="inventory-header">
-    <div class="tabs">
-      <button
-        class="tab"
-        [class.active]="activeTab === 'products'"
-        (click)="activeTab = 'products'; loadProducts()"
-      >
-        {{ "INVENTORY.TABS.PRODUCTS" | translate }}
-      </button>
-      <button
-        class="tab"
-        [class.active]="activeTab === 'categories'"
-        (click)="activeTab = 'categories'; loadCategories()"
-      >
-        {{ "INVENTORY.TABS.CATEGORIES" | translate }}
-      </button>
+  @if (!categoryPageMode) {
+    <!-- Tabs -->
+    <div class="inventory-header">
+      <div class="tabs">
+        <button
+          class="tab"
+          [class.active]="activeTab === 'products'"
+          (click)="activeTab = 'products'; loadProducts()"
+          type="button"
+        >
+          {{ "INVENTORY.TABS.PRODUCTS" | translate }}
+        </button>
+        <button
+          class="tab"
+          [class.active]="activeTab === 'categories'"
+          (click)="activeTab = 'categories'; loadCategories()"
+          type="button"
+        >
+          {{ "INVENTORY.TABS.CATEGORIES" | translate }}
+        </button>
+      </div>
+      <div class="row-count">
+        <select
+          [ngModel]="pageSize()"
+          (ngModelChange)="changePageSize(+$event)"
+          class="page-size-select"
+        >
+          <option [value]="10">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 10 } }}
+          </option>
+          <option [value]="25">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 25 } }}
+          </option>
+          <option [value]="50">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 50 } }}
+          </option>
+          <option [value]="100">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 100 } }}
+          </option>
+          <option [value]="250">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 250 } }}
+          </option>
+          <option [value]="500">
+            {{ "GLOBAL.PER_PAGE" | translate: { count: 500 } }}
+          </option>
+        </select>
+      </div>
+      <div class="header-actions">
+        <button
+          class="btn-session"
+          (click)="startInventorySession()"
+          type="button"
+        >
+          <i class="fas fa-clipboard-check"></i>
+          {{ "INVENTORY.START_SESSION" | translate }}
+        </button>
+        <button class="btn-add" (click)="openProductModal()" type="button">
+          <i class="fas fa-plus"></i>
+          {{ "INVENTORY.ADD_PRODUCT" | translate }}
+        </button>
+        <button class="btn-import" (click)="openImportModal()" type="button">
+          <i class="fas fa-file-import"></i>
+          {{ "INVENTORY.BULK_IMPORT" | translate }}
+        </button>
+      </div>
     </div>
-    <div class="row-count">
-      <select
-        [(ngModel)]="pageSize"
-        (change)="changePageSize(+$any($event.target).value)"
-        class="page-size-select"
-      >
-        <option [value]="10">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 10 } }}
-        </option>
-        <option [value]="25">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 25 } }}
-        </option>
-        <option [value]="50">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 50 } }}
-        </option>
-        <option [value]="100">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 100 } }}
-        </option>
-        <option [value]="250">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 250 } }}
-        </option>
-        <option [value]="500">
-          {{ "GLOBAL.PER_PAGE" | translate: { count: 500 } }}
-        </option>
-      </select>
-    </div>
-    <div class="header-actions">
-      <button class="btn-session" (click)="startInventorySession()">
-        <i class="fas fa-clipboard-check"></i>
-        {{ "INVENTORY.START_SESSION" | translate }}
-      </button>
-      <button class="btn-add" (click)="openProductModal()">
-        <i class="fas fa-plus"></i>
-        {{ "INVENTORY.ADD_PRODUCT" | translate }}
-      </button>
-      <button class="btn-import" (click)="openImportModal()">
-        <i class="fas fa-file-import"></i>
-        {{ "INVENTORY.BULK_IMPORT" | translate }}
-      </button>
-    </div>
-  </div>
+  }
 
   <!-- Products Tab -->
   @if (activeTab === "products") {
@@ -191,42 +199,64 @@
     <div class="tab-content">
       <div class="content-header">
         <h2>{{ "INVENTORY.CATEGORIES.TITLE" | translate }}</h2>
-        <button class="btn-add" (click)="openCategoryModal()">
+        <button class="btn-add" (click)="openCategoryModal()" type="button">
           <i class="fas fa-plus"></i>
           {{ "INVENTORY.ADD_CATEGORY" | translate }}
         </button>
       </div>
-      <div class="categories-grid">
-        @for (category of categories; track category) {
-          <div class="category-card">
-            <div class="category-info">
-              <h3>{{ category.name }}</h3>
-              @if (category.description) {
-                <p class="category-desc">
-                  {{ category.description }}
-                </p>
-              }
+      @if (isLoadingCategories) {
+        <div class="categories-feedback">
+          {{ "GLOBAL.LOADING" | translate }}
+        </div>
+      } @else if (categoryLoadError) {
+        <div class="categories-feedback categories-feedback--error">
+          <span>{{ "INVENTORY.CATEGORIES.LOAD_ERROR" | translate }}</span>
+          <button class="btn-import" (click)="loadCategories()" type="button">
+            {{ "GLOBAL.RETRY" | translate }}
+          </button>
+        </div>
+      } @else {
+        <div class="categories-grid">
+          @for (category of categories; track category) {
+            <div class="category-card">
+              <div class="category-info">
+                <h3>{{ category.name }}</h3>
+                @if (category.description) {
+                  <p class="category-desc">
+                    {{ category.description }}
+                  </p>
+                }
+              </div>
+              <div class="category-actions">
+                <button
+                  class="btn-edit"
+                  (click)="openCategoryModal(category)"
+                  type="button"
+                  title="{{ 'INVENTORY.ACTIONS.EDIT' | translate }}"
+                  [attr.aria-label]="'INVENTORY.ACTIONS.EDIT' | translate"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  class="btn-delete"
+                  (click)="deleteCategory(category._id!)"
+                  [disabled]="!isAdmin()"
+                  type="button"
+                  title="{{ 'INVENTORY.ACTIONS.DELETE' | translate }}"
+                  [attr.aria-label]="'INVENTORY.ACTIONS.DELETE' | translate"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
             </div>
-            <div class="category-actions">
-              <button class="btn-edit" (click)="openCategoryModal(category)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button
-                class="btn-delete"
-                (click)="deleteCategory(category._id!)"
-                [disabled]="!isAdmin()"
-              >
-                <i class="fas fa-trash-alt"></i>
-              </button>
+          }
+          @if (categories.length === 0) {
+            <div class="empty-state">
+              {{ "INVENTORY.CATEGORIES.EMPTY" | translate }}
             </div>
-          </div>
-        }
-        @if (categories.length === 0) {
-          <div class="empty-state">
-            {{ "INVENTORY.CATEGORIES.EMPTY" | translate }}
-          </div>
-        }
-      </div>
+          }
+        </div>
+      }
     </div>
   }
 
@@ -250,7 +280,7 @@
     "
     size="sm"
     [closeOnBackdropClick]="false"
-    (close)="showCategoryModal = false"
+    (close)="closeCategoryModal()"
   >
     <form (ngSubmit)="saveCategory()">
       <div class="form-group">
@@ -285,11 +315,7 @@
       </div>
 
       <div class="form-actions">
-        <button
-          type="button"
-          class="btn-cancel"
-          (click)="showCategoryModal = false"
-        >
+        <button type="button" class="btn-cancel" (click)="closeCategoryModal()">
           {{ "GLOBAL.CANCEL" | translate }}
         </button>
         <button type="submit" class="btn-save">

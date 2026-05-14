@@ -21,7 +21,7 @@
     .search-icon {
       position: absolute;
       left: $spacing-lg;
-      color: $gray-400;
+      color: var(--text-light);
       font-size: $font-size-lg;
       pointer-events: none;
     }

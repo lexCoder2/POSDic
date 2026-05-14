@@ -1,11 +1,12 @@
-@use "../../../styles/_theme.scss" as *;
+@use "sass:color";
+@use "../../../styles/theme" as *;
 
 .inventory-container {
   padding: 0 $spacing-sm;
   max-width: 1500px;
   margin: 0 auto;
   height: calc(100% - 65px);
-  background: $neumorphic-surface;
+  background: var(--bg-secondary);
   border-radius: $radius-2xl;
 }
 
@@ -39,10 +40,10 @@
   align-items: center;
   gap: $spacing-xs;
   padding: $spacing-sm $spacing-md;
-  background: $white;
-  border: 1px solid var(--border-color);
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
   border-radius: $radius-md;
-  color: $gray-600;
+  color: var(--text-secondary);
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   cursor: pointer;
@@ -55,8 +56,8 @@
 
   &:hover:not(:disabled) {
     background: var(--bg-tertiary);
-    border-color: $primary;
-    color: $primary;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
   }
 
   &:disabled {
@@ -66,32 +67,32 @@
 }
 
 .btn-session {
-  background: rgba($success, 0.1);
-  border-color: $success;
-  color: $success-dark;
+  background: rgba(var(--color-success-rgb), 0.1);
+  border-color: var(--color-success);
+  color: var(--color-success-dark);
 
   &:hover:not(:disabled) {
-    background: rgba($success, 0.2);
+    background: rgba(var(--color-success-rgb), 0.2);
   }
 }
 
 .btn-add {
-  background: rgba($primary, 0.1);
-  border-color: $primary;
-  color: $primary-dark;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 
   &:hover:not(:disabled) {
-    background: rgba($primary, 0.2);
+    background: rgba(var(--color-primary-rgb), 0.2);
   }
 }
 
 .btn-import {
-  background: rgba($info, 0.1);
-  border-color: $info;
-  color: $info-dark;
+  background: rgba(var(--color-info-rgb), 0.1);
+  border-color: var(--color-info);
+  color: var(--color-info-dark);
 
   &:hover:not(:disabled) {
-    background: rgba($info, 0.2);
+    background: rgba(var(--color-info-rgb), 0.2);
   }
 }
 
@@ -108,18 +109,19 @@
 .tabs {
   display: flex;
   gap: 0.5rem;
-  background: white;
+  background: var(--button-secondary-bg);
   padding: 0.25rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--button-secondary-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
 }
 
 .tab {
   padding: 0.5rem 1rem;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
-  color: #6c757d;
-  border-radius: 6px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
@@ -130,8 +132,9 @@
   }
 
   &.active {
-    background-color: $primary;
-    color: white;
+    background-color: var(--button-primary-bg);
+    border-color: var(--button-primary-bg);
+    color: var(--button-primary-text);
   }
 }
 
@@ -158,14 +161,14 @@
     width: 100%;
     padding: 0.75rem 1rem;
     padding-right: 3rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid $border-color;
     border-radius: 8px;
     font-size: 0.95rem;
     transition: border-color 0.3s ease;
 
     &:focus {
       outline: none;
-      border-color: $primary;
+      border-color: var(--color-primary);
     }
   }
 
@@ -182,18 +185,20 @@
 // Products Table
 .products-table-wrapper {
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-1);
 }
 
 .products-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--table-bg);
 
   thead {
-    background: $primary;
-    color: white;
+    background: var(--table-header-bg);
+    color: var(--table-header-text);
 
     th {
       padding: 1rem;
@@ -205,11 +210,11 @@
 
   tbody {
     tr {
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid var(--table-border);
       transition: background-color 0.2s ease;
 
       &:hover {
-        background: #f9f9f9;
+        background: var(--table-row-hover);
       }
 
       &:last-child {
@@ -235,7 +240,7 @@
     height: 50px;
     object-fit: cover;
     border-radius: 6px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid $border-color;
   }
 
   .product-thumb-placeholder {
@@ -244,24 +249,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f5f5;
+    background: var(--bg-hover);
     border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    color: #999;
+    border: 1px solid $border-color;
+    color: var(--text-light);
     font-size: 1.5rem;
   }
 
   .stock-badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: #4caf50;
+    background: var(--color-success);
     color: white;
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     font-size: 0.85rem;
     font-weight: 600;
 
     &.low-stock {
-      background: #ff6b6b;
+      background: var(--color-danger);
     }
   }
 
@@ -282,11 +287,11 @@
     border-radius: 4px;
 
     i {
-      color: $primary;
+      color: var(--color-primary);
     }
 
     &:hover:not(:disabled) {
-      background: rgba($primary, 0.1);
+      background: rgba(var(--color-primary-rgb), 0.1);
       transform: scale(1.1);
     }
 
@@ -298,21 +303,21 @@
 
   .btn-star {
     i {
-      color: $warning;
+      color: var(--color-warning);
     }
 
     &:hover:not(:disabled) {
-      background: rgba($warning, 0.1);
+      background: rgba(var(--color-warning-rgb), 0.1);
     }
   }
 
   .btn-delete {
     i {
-      color: #ff6b6b;
+      color: var(--color-danger);
     }
 
     &:hover:not(:disabled) {
-      background: rgba(#ff6b6b, 0.1);
+      background: rgba(var(--color-danger-rgb), 0.1);
     }
   }
 
@@ -325,6 +330,27 @@
 }
 
 // Categories Grid
+.categories-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-lg;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-1);
+  color: var(--text-secondary);
+
+  &--error {
+    background: rgba(var(--color-danger-rgb), 0.08);
+    border-color: var(--color-danger);
+    color: var(--color-danger-dark);
+  }
+}
+
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -332,18 +358,19 @@
 }
 
 .category-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-1);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-2);
   }
 
   .category-info {
@@ -376,22 +403,23 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($gray-800, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
+  z-index: var(--z-modal-backdrop);
   animation: fadeIn 0.3s ease;
 }
 
 .modal {
-  background: white;
-  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-3);
   animation: slideUp 0.3s ease;
 
   &.modal-large {
@@ -404,7 +432,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid $border-color;
 
   h2 {
     margin: 0;
@@ -466,14 +494,14 @@ form {
   select,
   textarea {
     padding: 0.75rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid $border-color;
     border-radius: 6px;
     font-size: 0.95rem;
     transition: border-color 0.3s ease;
 
     &:focus {
       outline: none;
-      border-color: $primary;
+      border-color: var(--color-primary);
     }
   }
 
@@ -502,34 +530,35 @@ form {
 
     .dropdown-input {
       padding: 0.75rem;
-      border: 2px solid #e0e0e0;
+      border: 2px solid $border-color;
       border-radius: 6px;
       font-size: 0.95rem;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: $white;
+      background: var(--input-bg);
+      color: var(--text-primary);
       transition: border-color 0.3s ease;
       width: 100%;
       text-align: left;
       font-family: inherit;
 
       &:hover {
-        border-color: $primary;
+        border-color: var(--color-primary);
       }
 
       &:focus {
         outline: none;
-        border-color: $primary;
+        border-color: var(--color-primary);
       }
 
       .placeholder {
-        color: #999;
+        color: var(--text-light);
       }
 
       i {
-        color: $gray-500;
+        color: var(--text-secondary);
         font-size: 0.8rem;
       }
     }
@@ -539,10 +568,10 @@ form {
       top: calc(100% + 4px);
       left: 0;
       right: 0;
-      background: $white;
-      border: 2px solid $primary;
+      background: var(--card-bg);
+      border: 2px solid var(--color-primary);
       border-radius: 6px;
-      box-shadow: $shadow-lg;
+      box-shadow: var(--shadow-3);
       z-index: 1000;
       max-height: 300px;
       display: flex;
@@ -551,13 +580,15 @@ form {
       .dropdown-search {
         padding: 0.75rem;
         border: none;
-        border-bottom: 2px solid #e0e0e0;
+        border-bottom: 2px solid $border-color;
         border-radius: 0;
         font-size: 0.95rem;
+        background: var(--input-bg);
+        color: var(--text-primary);
 
         &:focus {
           outline: none;
-          border-bottom-color: $primary;
+          border-bottom-color: var(--color-primary);
         }
       }
 
@@ -569,26 +600,27 @@ form {
           padding: 0.75rem;
           cursor: pointer;
           transition: background-color 0.2s ease;
-          background: $white;
+          background: var(--card-bg);
           border: none;
           width: 100%;
           text-align: left;
           font-size: 0.95rem;
           font-family: inherit;
+          color: var(--text-primary);
 
           &:hover {
-            background: rgba($primary, 0.1);
+            background: rgba(var(--color-primary-rgb), 0.1);
           }
 
           &:focus {
             outline: none;
-            background: rgba($primary, 0.15);
+            background: rgba(var(--color-primary-rgb), 0.15);
           }
 
           &.create-new {
-            color: $primary;
+            color: var(--color-primary);
             font-weight: 600;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid $border-color;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -605,7 +637,7 @@ form {
 
 // Image upload area
 .image-upload-area {
-  border: 2px dashed #e0e0e0;
+  border: 2px dashed $border-color;
   border-radius: 8px;
   padding: 2rem;
   text-align: center;
@@ -615,22 +647,22 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fafafa;
+  background: var(--bg-tertiary);
 
   &:hover {
-    border-color: $primary;
+    border-color: var(--color-primary);
     background: #f5f5ff;
   }
 
   .upload-placeholder {
     i.fa-cloud-upload-alt {
       font-size: 3rem;
-      color: $primary;
+      color: var(--color-primary);
       margin-bottom: 1rem;
     }
 
     p {
-      color: $gray-600;
+      color: var(--text-secondary);
       margin-bottom: 1rem;
     }
 
@@ -639,7 +671,7 @@ form {
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 1.5rem;
-      background: $primary;
+      background: var(--color-primary);
       color: white;
       border-radius: 6px;
       cursor: pointer;
@@ -647,7 +679,7 @@ form {
       transition: all 0.3s ease;
 
       &:hover {
-        background: darken($primary, 10%);
+        background: var(--color-primary-dark);
         transform: translateY(-2px);
       }
 
@@ -676,7 +708,7 @@ form {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: $danger;
+      background: var(--color-danger);
       color: white;
       border: none;
       cursor: pointer;
@@ -684,10 +716,10 @@ form {
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba($danger, 0.3);
+      box-shadow: 0 2px 8px rgba(var(--color-danger-rgb), 0.3);
 
       &:hover {
-        background: darken($danger, 10%);
+        background: var(--color-danger-dark);
         transform: scale(1.1);
       }
 
@@ -712,19 +744,19 @@ form {
 
     i {
       font-size: 2rem;
-      color: $primary;
+      color: var(--color-primary);
       margin-bottom: 0.5rem;
     }
 
     p {
-      color: $primary;
+      color: var(--color-primary);
       font-weight: 600;
     }
   }
 
   &.has-image {
     border-style: solid;
-    border-color: $success;
+    border-color: var(--color-success);
   }
 }
 
@@ -734,7 +766,7 @@ form {
   gap: 1rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 2px solid #e0e0e0;
+  border-top: 2px solid $border-color;
 }
 
 .btn-cancel,
@@ -749,28 +781,28 @@ form {
 }
 
 .btn-cancel {
-  background: #e0e0e0;
+  background: $border-color;
   color: var(--text-primary);
 
   &:hover {
-    background: #d0d0d0;
+    background: var(--border-light);
   }
 }
 
 .btn-save {
-  background: $primary;
+  background: var(--color-primary);
   color: white;
 
   &:hover {
-    background: darken($primary, 10%);
+    background: var(--color-primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($primary, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
   }
 }
 
 // Import Modal
 .import-instructions {
-  background: #f5f5f5;
+  background: var(--bg-hover);
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
@@ -792,7 +824,7 @@ form {
   }
 
   .tip {
-    color: $primary;
+    color: var(--color-primary);
     font-weight: 600;
     margin: 0;
   }
@@ -823,7 +855,7 @@ form {
     transition: all 0.3s ease;
 
     &:hover {
-      background: darken($secondary, 10%);
+      background: color.adjust($secondary, $lightness: -10%);
       transform: translateY(-2px);
     }
   }
@@ -840,14 +872,14 @@ form {
   .progress-bar {
     width: 100%;
     height: 30px;
-    background: #e0e0e0;
+    background: $border-color;
     border-radius: 15px;
     overflow: hidden;
     margin-bottom: 0.5rem;
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, $primary, $secondary);
+      background: linear-gradient(90deg, var(--color-primary), $secondary);
       transition: width 0.3s ease;
       display: flex;
       align-items: center;
@@ -866,7 +898,7 @@ form {
 }
 
 .import-results {
-  background: #f5f5f5;
+  background: var(--bg-hover);
   padding: 1.5rem;
   border-radius: 8px;
 
@@ -874,7 +906,7 @@ form {
     margin-bottom: 1rem;
 
     &.success {
-      border-left: 4px solid #4caf50;
+      border-left: 4px solid var(--color-success);
       padding-left: 1rem;
     }
 
@@ -888,7 +920,7 @@ form {
       color: var(--text-primary);
 
       &.error {
-        color: #f44336;
+        color: var(--color-danger);
       }
     }
   }
@@ -896,7 +928,7 @@ form {
   .error-list {
     h4 {
       margin: 0 0 0.5rem 0;
-      color: #f44336;
+      color: var(--color-danger);
     }
 
     ul {
@@ -904,7 +936,7 @@ form {
       padding-left: 1.5rem;
 
       li {
-        color: #f44336;
+        color: var(--color-danger);
         margin-bottom: 0.25rem;
       }
     }
@@ -1000,27 +1032,27 @@ form {
   display: inline-block;
   justify-self: end;
   gap: 15px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
 
 .page-size-select {
   padding: 6px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid $border-color;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    border-color: $primary;
+    border-color: var(--color-primary);
   }
 
   &:focus {
     outline: none;
-    border-color: $primary;
-    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
   }
 }
 
@@ -1031,7 +1063,7 @@ form {
   gap: 10px;
   margin-top: 25px;
   padding-top: 20px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid $border-color;
 }
 
 .pagination-btn {
@@ -1039,10 +1071,10 @@ form {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--button-secondary-border);
   border-radius: 6px;
-  background: white;
-  color: #333;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -1053,11 +1085,11 @@ form {
   }
 
   &:hover:not(:disabled) {
-    background: $primary;
-    color: white;
-    border-color: $primary;
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
+    border-color: var(--button-primary-bg);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($primary, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
   }
 
   &:disabled {
@@ -1075,25 +1107,25 @@ form {
   min-width: 36px;
   height: 36px;
   padding: 0 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--button-secondary-border);
   border-radius: 6px;
-  background: white;
-  color: #333;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover:not(.active) {
-    background: #f5f5f5;
-    border-color: $primary;
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
   }
 
   &.active {
-    background: $primary;
+    background: var(--color-primary);
     color: white;
-    border-color: $primary;
-    box-shadow: 0 2px 8px rgba($primary, 0.3);
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.3);
   }
 
   &.ellipsis {

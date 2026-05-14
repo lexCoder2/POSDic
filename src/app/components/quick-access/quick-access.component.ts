@@ -1,23 +1,39 @@
-import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Product } from "../../models";
+import { CurrencyPipe } from "../../pipes/currency.pipe";
+import { TranslatePipe } from "../../pipes/translate.pipe";
+import { environment } from "@environments/environment";
 
 @Component({
   selector: "app-quick-access",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe, CurrencyPipe],
   template: `
     <div class="quick-access">
       @if (products.length > 0) {
         <div class="products-grid">
           @for (product of products; track product) {
-            <div class="product-card" (click)="productSelected.emit(product)">
+            <button
+              type="button"
+              class="product-card"
+              (click)="productSelected.emit(product)"
+              [attr.aria-label]="
+                product.name + ' - ' + (product.price | appCurrency)
+              "
+            >
               <div class="product-image">
-                <img
-                  [src]="product.image_url || 'assets/placeholder-product.png'"
-                  [alt]="product.name"
-                  (error)="onImageError($event)"
-                />
+                @if (getProductImageUrl(product)) {
+                  <img
+                    [src]="getProductImageUrl(product)"
+                    [alt]="product.name"
+                    (error)="onImageError($event)"
+                  />
+                } @else {
+                  <div class="no-image">
+                    <i class="fas fa-box"></i>
+                  </div>
+                }
               </div>
               <div class="product-info">
                 <h4 class="product-name">{{ product.name }}</h4>
@@ -26,18 +42,16 @@ import { Product } from "../../models";
                     {{ product.brand }}
                   </p>
                 }
-                <p class="product-price">
-                  {{ product.price | currency: "PHP" : "symbol" : "1.2-2" }}
-                </p>
+                <p class="product-price">{{ product.price | appCurrency }}</p>
               </div>
-            </div>
+            </button>
           }
         </div>
       }
       @if (products.length === 0) {
         <div class="empty-state">
           <i class="fas fa-bolt"></i>
-          <p>No quick access products</p>
+          <p>{{ "QUICK_ACCESS.EMPTY" | translate }}</p>
         </div>
       }
     </div>
@@ -45,123 +59,163 @@ import { Product } from "../../models";
   styles: [
     `
       @use "src/styles/theme" as *;
+
       .quick-access {
-        background: $neumorphic-surface;
-        border-radius: 12px;
-        padding: 0.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: transparent;
+        border-radius: $radius-md;
         height: 100%;
-      }
-
-      .section-title {
-        margin: 0 0 1rem 0;
-        color: #333;
-        font-size: 1.1rem;
-        font-weight: 600;
+        overflow: hidden;
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .section-title i {
-        color: #ff8c42;
+        flex-direction: column;
       }
 
       .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.75rem;
-        max-height: 350px;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: $spacing-xs;
+        padding: $spacing-xs;
+        flex: 1;
         overflow-y: auto;
+        align-content: start;
+        @include smooth-scroll;
+
+        @media (max-width: $breakpoint-lg) {
+          grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+        }
       }
 
       .product-card {
-        background: white;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 0.75rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: $radius-md;
+        padding: 0.35rem;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: $transition-all;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        width: 100%;
+        font: inherit;
       }
 
       .product-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(255, 209, 102, 0.3);
-        border-color: #ffd166;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-1);
+        border-color: rgba(var(--color-primary-rgb), 0.45);
+      }
+
+      .product-card:active {
+        transform: scale(0.98);
       }
 
       .product-image {
         width: 100%;
-        height: 100px;
+        aspect-ratio: 5 / 4;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 0.5rem;
-        background: #f5f5f5;
-        border-radius: 6px;
+        background: var(--bg-tertiary);
+        border-radius: $radius-sm;
         overflow: hidden;
       }
 
       .product-image img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-image .no-image {
+        color: var(--border-light);
+        font-size: $font-size-3xl;
       }
 
       .product-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
         text-align: center;
       }
 
       .product-name {
-        margin: 0 0 0.5rem 0;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #333;
+        margin: 0;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semibold;
+        color: var(--text-primary);
         display: -webkit-box;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        line-height: $line-height-tight;
       }
 
       .product-brand {
-        margin: 0 0 0.25rem 0;
-        font-size: 0.75rem;
-        color: #666;
+        margin: 0;
+        font-size: 10px;
+        color: var(--text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .product-price {
         margin: 0;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #ff8c42;
+        margin-top: auto;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        color: var(--color-primary);
       }
 
       .empty-state {
         text-align: center;
-        padding: 2rem 1rem;
-        color: #999;
+        padding: $spacing-2xl $spacing-lg;
+        color: var(--text-light);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
       .empty-state i {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        font-size: $font-size-4xl;
+        margin-bottom: $spacing-md;
         opacity: 0.5;
+        color: var(--border-light);
       }
 
       .empty-state p {
         margin: 0;
-        font-size: 0.95rem;
+        font-size: $font-size-sm;
       }
     `,
   ],
 })
-export class QuickAccessComponent implements OnInit {
+export class QuickAccessComponent {
   @Input() products: Product[] = [];
   @Output() productSelected = new EventEmitter<Product>();
 
-  ngOnInit(): void {}
+  getProductImageUrl(product: Product): string {
+    if (product.local_image) {
+      if (
+        product.local_image.startsWith("http://") ||
+        product.local_image.startsWith("https://")
+      ) {
+        return product.local_image;
+      }
 
-  onImageError(event: any): void {
-    event.target.src = "assets/placeholder-product.png";
+      return `${environment.imageUrl}/${product.local_image}`;
+    }
+
+    return product.image_url || "";
+  }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement | null;
+
+    if (image) {
+      image.src = "assets/placeholder-product.png";
+    }
   }
 }

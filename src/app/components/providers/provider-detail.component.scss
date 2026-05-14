@@ -1,0 +1,250 @@
+@use "../../../styles/theme" as *;
+
+.detail-container {
+  padding: $spacing-5;
+  max-width: 1140px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-12;
+  color: var(--color-primary);
+}
+
+.detail-topbar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  margin-bottom: $spacing-4;
+  flex-wrap: wrap;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  background: transparent;
+  border: 1px solid rgba(var(--color-primary-rgb), 0.3);
+  color: var(--color-primary);
+  padding: $spacing-2 $spacing-3;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  min-height: $touch-target-md;
+
+  &:hover {
+    background: rgba(var(--color-primary-rgb), 0.06);
+  }
+}
+
+.provider-title {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-3;
+
+  h1 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+
+  .provider-code {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.08);
+    padding: 2px $spacing-2;
+    border-radius: var(--radius-sm);
+  }
+}
+
+// Tabs
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid rgba(var(--color-primary-rgb), 0.15);
+  margin-bottom: $spacing-5;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: $spacing-3 $spacing-5;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $text-secondary;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+
+  &.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+// Info card
+.info-card {
+  @include card;
+  padding: $spacing-5;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-5;
+}
+
+.info-grid,
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-4;
+
+  @include respond-to(md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-row {
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .info-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $text-secondary;
+    margin-bottom: $spacing-1;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    color: $text-primary;
+  }
+}
+
+.form-row {
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $text-secondary;
+    margin-bottom: $spacing-1;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: $spacing-2 $spacing-3;
+    border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: $text-primary;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.info-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-3;
+}
+
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: $spacing-2 $spacing-4;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-height: $touch-target-md;
+
+  &:hover {
+    background: rgba(var(--color-primary-rgb), 0.06);
+  }
+}
+
+.btn-cancel-edit {
+  background: transparent;
+  border: 1px solid $text-secondary;
+  color: $text-secondary;
+  padding: $spacing-2 $spacing-4;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-height: $touch-target-md;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: $spacing-2 $spacing-5;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-height: $touch-target-md;
+
+  &:hover {
+    opacity: 0.88;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

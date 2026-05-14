@@ -35,7 +35,7 @@ export class QzTrayService {
   private qzInitialized = false;
   private qz: any = null;
   private initializationPromise: Promise<void> | null = null;
-  private printerDetailsCache: Map<string, PrinterCapabilities> = new Map();
+  private printerDetailsCache = new Map<string, PrinterCapabilities>();
 
   private apiUrl = `${environment.apiUrl}`;
 
@@ -293,6 +293,10 @@ export class QzTrayService {
   clearPrinterCache(): void {
     this.printerDetailsCache.clear();
     console.log("Printer details cache cleared");
+  }
+
+  isConnected(): boolean {
+    return !!(this.qz && this.qz.websocket.isActive());
   }
 
   async disconnect(): Promise<void> {

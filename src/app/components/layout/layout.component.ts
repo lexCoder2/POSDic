@@ -12,7 +12,13 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { RouterOutlet, Router, NavigationEnd } from "@angular/router";
+import {
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+  Router,
+  NavigationEnd,
+} from "@angular/router";
 import { filter } from "rxjs/operators";
 import { Subject, takeUntil } from "rxjs";
 import { AuthService } from "../../services/auth.service";
@@ -29,7 +35,8 @@ import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { ToastComponent } from "../toast/toast.component";
 import { ModalComponent } from "../modal/modal.component";
 import { GlobalSearchComponent } from "../global-search/global-search.component";
-import { User, Register } from "../../models";
+import { User, Register, SessionEntry } from "../../models";
+import { Observable } from "rxjs";
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { Html5Qrcode } from "html5-qrcode";
@@ -41,6 +48,8 @@ import { catchError, finalize, of } from "rxjs";
     CommonModule,
     FormsModule,
     RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
     TranslatePipe,
     ToastComponent,
     CurrencyPipe,
@@ -61,6 +70,8 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
+
+  sessions$: Observable<SessionEntry[]> = this.authService.sessions$;
 
   @ViewChild("switchQrInput") switchQrInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild("withdrawAmount") withdrawAmountRef!: ElementRef<HTMLInputElement>;
@@ -111,10 +122,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
     "/dashboard": {
       title: "GLOBAL.SIDEBAR.DASHBOARD",
       icon: "fa-tachometer-alt",
-    },
-    "/cashier": {
-      title: "GLOBAL.SIDEBAR.QUICK_CASHIER",
-      icon: "fa-calculator",
     },
     "/statistics": { title: "GLOBAL.SIDEBAR.STATISTICS", icon: "fa-chart-bar" },
     "/inventory": { title: "GLOBAL.SIDEBAR.INVENTORY", icon: "fa-boxes" },
@@ -286,17 +293,15 @@ export class LayoutComponent implements OnInit, OnDestroy {
     }
 
     // F key navigation shortcuts
-    const fKeyRoutes: { [key: string]: string } = {
+    const fKeyRoutes: Record<string, string> = {
       F1: "/dashboard",
       F2: "/pos",
-      F3: "/cashier",
-      F4: "/statistics",
-      F5: "/inventory",
-      F6: "/providers",
-      F7: "/sales",
-      F8: "/registers",
-      F9: "/users",
-      F10: "/settings",
+      F3: "/statistics",
+      F4: "/inventory",
+      F5: "/providers",
+      F6: "/sales",
+      F7: "/registers",
+      F8: "/users",
     };
 
     const route = fKeyRoutes[event.key];
@@ -309,8 +314,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         route === "/statistics" ||
         route === "/sales" ||
         route === "/registers" ||
-        route === "/users" ||
-        route === "/settings"
+        route === "/users"
       ) {
         if (!this.isAdminOrManager) return;
       }
@@ -360,6 +364,17 @@ export class LayoutComponent implements OnInit, OnDestroy {
           },
         });
     }
+  }
+
+  switchToSession(userId: string): void {
+    if (userId === (this.currentUser?.id ?? this.currentUser?.username)) return;
+    this.authService.switchSession(userId);
+    this.currentUser = this.authService.getCurrentUser();
+    this.cdr.detectChanges();
+  }
+
+  closeSession(userId: string): void {
+    this.authService.removeSession(userId);
   }
 
   switchUser(): void {

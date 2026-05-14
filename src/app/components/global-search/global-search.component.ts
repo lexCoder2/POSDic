@@ -4,7 +4,6 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-  HostListener,
   inject,
 } from "@angular/core";
 
@@ -69,7 +68,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
               input.focus();
               input.select();
             }
-          } catch (e) {
+          } catch {
             // ignore if element not available
           }
         }, 80);
@@ -84,7 +83,7 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
           input.focus();
           input.select();
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }, 80);
@@ -97,6 +96,13 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
 
   onSearchChange(query: string): void {
     this.searchQuery = query;
+
+    if (!query.trim()) {
+      this.searchSubject.next("");
+      this.searchStateService.clearSearch();
+      return;
+    }
+
     this.searchSubject.next(query);
   }
 
@@ -188,40 +194,54 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
             this.searchQuery = "";
           }
         },
-        error: (err) => {
+        error: () => {
           // Product not found by barcode - perform regular search
           console.log("Barcode not found, performing regular search");
-          this.performSearch(trimmedQuery);
+          this.performSearch(trimmedQuery, { bypassRecentEnterGuard: true });
         },
       });
     } else {
       // Not a barcode format - perform regular search
-      this.performSearch(trimmedQuery);
+      this.performSearch(trimmedQuery, { bypassRecentEnterGuard: true });
     }
   }
 
-  performSearch(query: string): void {
-    // Prevent duplicate search if Enter key just triggered the same search
-    const now = Date.now();
-    if (
-      query.trim() === this.lastEnterSearchQuery &&
-      now - this.lastEnterSearchTime < 900
-    ) {
+  performSearch(
+    query: string,
+    options?: { bypassRecentEnterGuard?: boolean }
+  ): void {
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) {
+      this.searchStateService.clearSearch();
       return;
     }
 
+    // Prevent duplicate search if Enter key just triggered the same search
+    if (!options?.bypassRecentEnterGuard) {
+      const now = Date.now();
+      if (
+        normalizedQuery === this.lastEnterSearchQuery &&
+        now - this.lastEnterSearchTime < 900
+      ) {
+        return;
+      }
+    }
+
     // Update the search state service which will trigger search in consuming components
-    this.searchStateService.setSearchQuery(query);
+    this.searchStateService.setSearchQuery(normalizedQuery);
+  }
+
+  clearSearch(): void {
+    this.searchQuery = "";
+    this.searchSubject.next("");
+    this.searchStateService.clearSearch();
+    this.globalSearchInput?.nativeElement?.focus();
   }
 
   onProductSelected(product: Product): void {
     // Navigate to POS page and let it handle adding to cart
     this.router.navigate(["/pos"], { state: { selectedProduct: product } });
     this.searchQuery = "";
-  }
-
-  @HostListener("document:click", ["$event"])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
   }
 }

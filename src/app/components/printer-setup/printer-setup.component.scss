@@ -1,0 +1,68 @@
+@use "../../../styles/theme" as *;
+
+.printer-setup {
+  @include card;
+  padding: $spacing-4;
+
+  h3 {
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: $spacing-3;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    margin-bottom: $spacing-3;
+  }
+
+  .status-badge {
+    padding: $spacing-1 $spacing-2;
+    border-radius: var(--radius-sm);
+    font-size: $font-size-sm;
+    background: var(--color-danger);
+    color: white;
+
+    &.connected {
+      background: var(--color-success);
+    }
+
+    &.error {
+      background: var(--color-danger);
+    }
+  }
+
+  .printer-select,
+  .print-mode {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    margin-bottom: $spacing-3;
+
+    label {
+      font-size: $font-size-sm;
+      color: $text-secondary;
+    }
+
+    select {
+      padding: $spacing-2;
+      border: 1px solid $border-color;
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: $text-primary;
+      min-height: $touch-target-md;
+    }
+  }
+
+  button {
+    @include button-primary;
+    min-height: $touch-target-md;
+
+    &.test-btn {
+      width: 100%;
+      margin-top: $spacing-2;
+    }
+  }
+}

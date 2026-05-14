@@ -34,6 +34,7 @@ export class LooseProductModalComponent implements OnChanges {
   @Input() show = false;
   @Input() scaleConnected = false;
   @Input() savedWeight = 0;
+  @Input() initialDescription = "";
 
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<LooseProductData>();
@@ -48,6 +49,7 @@ export class LooseProductModalComponent implements OnChanges {
       if (this.scaleConnected && this.savedWeight > 0) {
         this.weight = this.savedWeight.toFixed(3);
       }
+      this.description = this.initialDescription || "";
       this.focusWeightInput();
     }
 

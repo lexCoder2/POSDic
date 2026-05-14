@@ -1,0 +1,317 @@
+// =============================================================================
+// _tokens.scss — Design Tokens (CSS Custom Properties)
+// =============================================================================
+// This is the SINGLE source of truth for all visual values.
+// Defines light theme in :root; dark theme overrides in html.theme-dark.
+// Component SCSS files should NEVER hardcode colors, shadows, or radii—
+// they should always reference var(--<token>).
+//
+// Token groups:
+//   --color-*          Brand & semantic colors (+ *-rgb triplets for rgba())
+//   --text-*           Text colors
+//   --bg-*             Background colors
+//   --border-*         Border colors
+//   --shadow-*         Elevation shadows
+//   --radius-*         Border radius scale
+//   --space-*          Spacing scale
+//   --font-size-*      Typography scale
+//   --transition-*     Animation timing
+//   --z-*              Z-index scale
+//   --touch-*          Minimum touch target sizes
+//   --sidebar-*        Sidebar component dimensions
+//   --input-*          Input component tokens
+// =============================================================================
+
+// ---- Light Theme (default) --------------------------------------------------
+:root {
+  // --- Brand ---
+  --color-primary: #2f62d7;
+  --color-primary-dark: #254fb6;
+  --color-primary-light: #dbe6ff;
+  --color-primary-rgb:
+    47, 98, 215; /* for rgba(var(--color-primary-rgb), 0.1) */
+
+  --color-secondary: #6366f1;
+  --color-secondary-dark: #4f46e5;
+  --color-secondary-rgb: 99, 102, 241;
+
+  // --- Status ---
+  --color-success: #2f855a;
+  --color-success-dark: #276749;
+  --color-success-light: #68d391;
+  --color-success-bg: #f0fff4;
+  --color-success-rgb: 72, 187, 120;
+
+  --color-danger: #c53030;
+  --color-danger-dark: #9b2c2c;
+  --color-danger-light: #fc8181;
+  --color-danger-bg: #fff5f5;
+  --color-danger-rgb: 245, 101, 101;
+
+  --color-warning: #b45309;
+  --color-warning-dark: #92400e;
+  --color-warning-light: #f6ad55;
+  --color-warning-bg: #fffaf0;
+  --color-warning-rgb: 237, 137, 54;
+
+  --color-info: #4299e1;
+  --color-info-dark: #3182ce;
+  --color-info-rgb: 66, 153, 225;
+
+  // --- Text ---
+  --text-primary: #1f2937;
+  --text-secondary: #334155;
+  --text-muted: #5b667a;
+  --text-light: #8b97aa;
+  --text-inverse: #f8f8f8;
+
+  // --- Backgrounds ---
+  --bg-primary: #eef2f7; /* page background */
+  --bg-secondary: #e4eaf2; /* section/panel */
+  --bg-tertiary: #ffffff; /* card/surface */
+  --bg-hover: #f2f6fb; /* hover state */
+  --bg-active: #dde5f0; /* active/pressed */
+  --bg-disabled: #cad3df;
+
+  // --- Borders ---
+  --border-color: #d7deea; /* default border */
+  --border-light: #c6cfdd; /* subtle border */
+  --border-dark: #94a0b5; /* strong border */
+
+  // --- Specific component surfaces ---
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --sidebar-bg: var(--color-primary); /* same as primary */
+
+  // --- Button tokens ---
+  --button-primary-bg: var(--color-primary);
+  --button-primary-bg-hover: var(--color-primary-dark);
+  --button-primary-text: #ffffff;
+
+  --button-secondary-bg: #ffffff;
+  --button-secondary-bg-hover: #f4f7fb;
+  --button-secondary-text: var(--text-primary);
+  --button-secondary-border: var(--border-color);
+
+  --button-success-bg: var(--color-success);
+  --button-success-bg-hover: var(--color-success-dark);
+  --button-success-text: #ffffff;
+
+  --button-danger-bg: var(--color-danger);
+  --button-danger-bg-hover: var(--color-danger-dark);
+  --button-danger-text: #ffffff;
+
+  --button-warning-bg: var(--color-warning);
+  --button-warning-bg-hover: var(--color-warning-dark);
+  --button-warning-text: #ffffff;
+
+  --button-ghost-text: var(--text-secondary);
+  --button-ghost-hover-text: var(--text-primary);
+  --button-ghost-hover-bg: var(--bg-hover);
+  --button-ghost-primary-text: var(--color-primary);
+  --button-ghost-primary-hover-bg: rgba(var(--color-primary-rgb), 0.06);
+
+  // --- Table tokens ---
+  --table-bg: var(--card-bg);
+  --table-border: var(--border-color);
+  --table-header-bg: var(--bg-secondary);
+  --table-header-text: var(--text-primary);
+  --table-row-hover: var(--bg-hover);
+  --table-cell-text: var(--text-primary);
+
+  // Aliases kept for backward compatibility with existing component SCSS
+  --primary-color: var(--color-primary);
+  --primary-dark: var(--color-primary-dark);
+  --primary-light: var(--color-primary-light);
+  --secondary-color: var(--color-secondary);
+  --danger-color: var(--color-danger);
+  --warning-color: var(--color-warning);
+  --success-color: var(--color-success);
+  --info-color: var(--color-info);
+
+  // --- Elevation (3-tier shadow system) ---
+  --shadow-1: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-2: 0 4px 10px rgba(15, 23, 42, 0.08);
+  --shadow-3: 0 10px 24px rgba(15, 23, 42, 0.12);
+  --shadow-inset: inset 0 1px 3px rgba(15, 23, 42, 0.06);
+
+  // Aliases kept for backward compatibility
+  --shadow-sm: var(--shadow-1);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
+  --shadow-neumorphic: var(--shadow-1);
+  --shadow-neumorphic-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-neumorphic-lg: var(--shadow-2);
+  --shadow-neumorphic-inset: var(--shadow-inset);
+
+  // --- Border radius ---
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 5px;
+  --radius-xl: 6px;
+  --radius-full: 9999px;
+
+  // --- Spacing (compact scale) ---
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 10px;
+  --space-4: 14px;
+  --space-5: 18px;
+  --space-6: 22px;
+  --space-8: 28px;
+  --space-10: 34px;
+  --space-12: 40px;
+
+  // Aliases: kept for backward compat with existing component SCSS
+  --spacing-xs: var(--space-1);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-3);
+  --spacing-lg: var(--space-4);
+  --spacing-xl: var(--space-6);
+
+  // --- Typography scale ---
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 0.95rem; /* 15px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-2xl: 1.25rem; /* 20px */
+  --font-size-3xl: 1.5rem; /* 24px */
+  --font-size-4xl: 2rem; /* 32px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  // --- Transitions ---
+  --transition: 0.2s ease;
+  --transition-fast: 0.15s ease;
+  --transition-slow: 0.3s ease;
+
+  // --- Z-index scale ---
+  --z-sticky: 1010;
+  --z-fixed: 1030;
+  --z-sidebar: 1035;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-dropdown: 1025;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  // --- Touch targets ---
+  --touch-sm: 24px;
+  --touch-md: 32px;
+  --touch-lg: 56px;
+  --touch-target: var(--touch-md); /* compat alias */
+  --touch-target-lg: var(--touch-lg); /* compat alias */
+
+  // --- Sidebar ---
+  --sidebar-width: 80px;
+
+  // --- Input ---
+  --input-height: 34px;
+  --input-border: 1px solid var(--border-color);
+  --input-border-focus: var(--color-primary);
+  --input-shadow-focus: 0 0 0 2px rgba(var(--color-primary-rgb), 0.12);
+}
+
+// ---- Dark Theme -------------------------------------------------------------
+html.theme-dark {
+  // --- Brand (lightened for dark bg) ---
+  --color-primary: #7a98ff;
+  --color-primary-dark: #6483f0;
+  --color-primary-light: #c5d1ff;
+  --color-primary-rgb: 122, 152, 255;
+
+  // --- Status ---
+  --color-success: #2f855a;
+  --color-success-dark: #276749;
+  --color-success-light: #68d391;
+
+  --color-danger: #c53030;
+  --color-danger-dark: #9b2c2c;
+  --color-danger-light: #fc8181;
+
+  --color-warning: #b45309;
+  --color-warning-dark: #92400e;
+  --color-warning-light: #f6ad55;
+
+  // --- Text ---
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-light: #4b5563;
+  --text-inverse: #111827;
+
+  // --- Backgrounds ---
+  --bg-primary: #111418; /* page background */
+  --bg-secondary: #1a1d24; /* section/panel */
+  --bg-tertiary: #222831; /* card/surface */
+  --bg-hover: #2a2f38; /* hover */
+  --bg-active: #323844; /* active */
+  --bg-disabled: #3a3f4b;
+
+  // --- Borders ---
+  --border-color: #2d3443;
+  --border-light: #3a4157;
+  --border-dark: #4a5168;
+
+  // --- Specific surfaces ---
+  --card-bg: #222831;
+  --input-bg: #1e2228;
+  --sidebar-bg: #1a1d24;
+
+  // --- Button tokens ---
+  --button-primary-bg: var(--color-primary);
+  --button-primary-bg-hover: var(--color-primary-dark);
+  --button-primary-text: #ffffff;
+
+  --button-secondary-bg: #2a2f38;
+  --button-secondary-bg-hover: #323844;
+  --button-secondary-text: #e5e7eb;
+  --button-secondary-border: #3a4157;
+
+  --button-success-bg: var(--color-success);
+  --button-success-bg-hover: var(--color-success-dark);
+  --button-success-text: #ffffff;
+
+  --button-danger-bg: var(--color-danger);
+  --button-danger-bg-hover: var(--color-danger-dark);
+  --button-danger-text: #ffffff;
+
+  --button-warning-bg: var(--color-warning);
+  --button-warning-bg-hover: var(--color-warning-dark);
+  --button-warning-text: #ffffff;
+
+  --button-ghost-text: var(--text-secondary);
+  --button-ghost-hover-text: var(--text-primary);
+  --button-ghost-hover-bg: var(--bg-hover);
+  --button-ghost-primary-text: var(--color-primary-light);
+  --button-ghost-primary-hover-bg: rgba(var(--color-primary-rgb), 0.16);
+
+  // --- Table tokens ---
+  --table-bg: var(--card-bg);
+  --table-border: #3a4157;
+  --table-header-bg: #262d38;
+  --table-header-text: var(--text-primary);
+  --table-row-hover: #2b313d;
+  --table-cell-text: var(--text-primary);
+
+  // --- Status backgrounds (dark-adjusted) ---
+  --color-success-bg: rgba(72, 187, 120, 0.12);
+  --color-danger-bg: rgba(245, 101, 101, 0.12);
+  --color-warning-bg: rgba(237, 137, 54, 0.12);
+
+  // --- Elevation (higher contrast on dark) ---
+  --shadow-1: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-inset: inset 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-neumorphic-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+}

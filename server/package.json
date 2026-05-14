@@ -4,8 +4,11 @@
   "description": "Backend API for POS system",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node index.js",
+    "dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon index.js",
+    "test": "jest --testEnvironment node",
+    "test:watch": "jest --watch --testEnvironment node",
+    "test:coverage": "jest --coverage --testEnvironment node"
   },
   "dependencies": {
     "@angular/common": "^21.0.0",
@@ -20,12 +23,18 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "multer": "^2.0.2",
+    "pdf-parse": "^2.4.5",
     "pdfkit": "^0.17.2",
     "qrcode": "^1.5.4",
     "qz-tray": "^2.2.5",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.1.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^7.2.2"
   }
 }

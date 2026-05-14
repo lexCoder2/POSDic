@@ -1,75 +1,78 @@
-@use "theme";
+// =============================================================================
+// table.scss — Global bare-table defaults (HTML <table> elements)
+// =============================================================================
+// Provides minimal sensible defaults for raw <table> elements.
+// For styled data tables in components, use the .data-table-wrapper utility
+// class from _utilities.scss instead.
+// =============================================================================
 
-/* Apply neumorphic table styling to all tables globally */
+@use "theme" as *; /* provides $spacing-*, $font-size-*, etc. */
+
 table {
   width: 100%;
-  background: var(--bg-tertiary);
-  border-radius: $radius-md;
-  box-shadow: var(--shadow-neumorphic-sm);
-  border: 1px solid var(--border-color);
+  background: var(--table-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--table-border);
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  margin-bottom: $spacing-lg;
-  font-size: $font-size-base;
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
 }
 
-/* Header styles */
 thead th {
   position: sticky;
   top: 0;
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  font-weight: $font-weight-medium;
+  background: var(--table-header-bg);
+  color: var(--table-header-text);
+  font-weight: var(--font-weight-medium);
   text-align: left;
-  padding: $spacing-sm $spacing-md;
-  border-bottom: 1px solid var(--border-color);
-  z-index: $z-sticky;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--table-border);
+  z-index: var(--z-sticky);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* Body rows */
 tbody tr {
-  transition:
-    background $transition-fast,
-    transform $transition-fast,
-    box-shadow $transition-fast;
-  border-bottom: 1px solid rgba(var(--border-color), 0.6);
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--table-border);
 
+  &:last-child {
+    border-bottom: none;
+  }
   &:hover {
-    background: rgba(0, 0, 0, 0.02);
-    transform: translateY(-1px);
-    box-shadow: $shadow-sm;
+    background: var(--table-row-hover);
   }
 }
 
-/* Cells */
 td {
-  padding: $spacing-md $spacing-lg;
+  padding: var(--space-2) var(--space-3);
   vertical-align: middle;
-  color: var(--text-primary);
-  font-size: $font-size-base;
+  color: var(--table-cell-text);
+  font-size: var(--font-size-sm);
   border: none;
 }
 
-/* Responsive helper if tables overflow horizontally */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
 }
 
-/* Compact variant for dense tables */
 .compact-table,
 table.compact {
   td,
   th {
-    padding: 0.35rem 0.5rem;
+    padding: 0.25rem 0.45rem;
     font-size: 0.875rem;
   }
 }
 
 /* Empty state helper inside table containers */
 .table-empty {
-  padding: $spacing-lg;
+  padding: $spacing-md;
   text-align: center;
   color: var(--text-muted);
 }

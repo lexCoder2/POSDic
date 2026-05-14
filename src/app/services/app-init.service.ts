@@ -5,6 +5,7 @@ import { TranslationService } from "./translation.service";
 import { CurrencyService } from "./currency.service";
 import { ThemeService } from "./theme.service";
 import { QzTrayService } from "./qz-tray.service";
+import { SettingsService } from "./settings.service";
 import { firstValueFrom } from "rxjs";
 
 @Injectable({
@@ -17,6 +18,7 @@ export class AppInitService {
   private currencyService = inject(CurrencyService);
   themeService = inject(ThemeService);
   private qzTrayService = inject(QzTrayService);
+  private settingsService = inject(SettingsService);
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -29,6 +31,12 @@ export class AppInitService {
 
     // Check if user is authenticated
     if (this.authService.isAuthenticated()) {
+      try {
+        await firstValueFrom(this.settingsService.loadSettings());
+      } catch (error) {
+        console.error("Failed to load global settings on init:", error);
+      }
+
       try {
         // Load user settings from database
         const settings = await firstValueFrom(

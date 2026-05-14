@@ -1,0 +1,75 @@
+<div class="shopping-lists">
+  <header class="section-header">
+    <h2>{{ "SHOPPING.TITLE" | translate }}</h2>
+  </header>
+
+  <div class="layout">
+    <!-- LIST PANEL -->
+    <div class="list-panel">
+      <div class="new-list-form">
+        <input
+          type="text"
+          [placeholder]="'SHOPPING.NEW_LIST_PLACEHOLDER' | translate"
+          [ngModel]="newListName()"
+          (ngModelChange)="newListName.set($event)"
+          (keyup.enter)="createList()"
+        />
+        <button (click)="createList()" [disabled]="!newListName()">
+          {{ "SHOPPING.CREATE" | translate }}
+        </button>
+      </div>
+
+      <ul class="lists-ul" *ngIf="lists().length; else noLists">
+        <li
+          *ngFor="let list of lists()"
+          class="list-item"
+          [class.active]="selectedList()?._id === list._id"
+          (click)="selectList(list)"
+        >
+          <span class="list-name">{{ list.name }}</span>
+          <span class="item-count">{{ list.items.length }}</span>
+          <button
+            class="delete-btn"
+            (click)="$event.stopPropagation(); deleteList(list._id!)"
+          >
+            &times;
+          </button>
+        </li>
+      </ul>
+      <ng-template #noLists>
+        <p class="empty">{{ "SHOPPING.NO_LISTS" | translate }}</p>
+      </ng-template>
+    </div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel" *ngIf="selectedList()">
+      <h3>{{ selectedList()!.name }}</h3>
+      <ul class="item-list">
+        <li
+          *ngFor="let item of selectedList()!.items; let i = index"
+          class="item"
+          [class.purchased]="item.purchased"
+        >
+          <input
+            type="checkbox"
+            [checked]="item.purchased"
+            (change)="toggleItem(i)"
+          />
+          <span>{{ item.productName }}</span>
+          <span class="qty">x{{ item.quantity }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- RECOMMENDATIONS PANEL -->
+    <div class="recommendations-panel" *ngIf="recommendations().length">
+      <h4>{{ "SHOPPING.RECOMMENDATIONS" | translate }}</h4>
+      <ul>
+        <li *ngFor="let rec of recommendations()">
+          <span>{{ rec.productName }}</span>
+          <button (click)="addRecommendedItem(rec)">+</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

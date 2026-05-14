@@ -1,0 +1,86 @@
+<div class="dispatcher">
+  <div class="dispatcher__header">
+    <h2>{{ "DISPATCHER.TITLE" | translate }}</h2>
+    <span class="badge" *ngIf="lastDispatchedTicketNumber()">
+      {{ "DISPATCHER.LAST_TICKET" | translate }}: #{{
+        lastDispatchedTicketNumber()
+      }}
+    </span>
+  </div>
+
+  <!-- Last dispatched ticket banner -->
+  <div class="dispatcher__last-ticket" *ngIf="lastDispatchedTicketNumber()">
+    <i class="fas fa-check-circle"></i>
+    {{ "DISPATCHER.TICKET_SENT" | translate }} #{{
+      lastDispatchedTicketNumber()
+    }}
+  </div>
+
+  <!-- Cart items -->
+  <div class="dispatcher__cart">
+    <div class="dispatcher__cart--empty" *ngIf="items().length === 0">
+      <i class="fas fa-shopping-basket"></i>
+      <span>{{ "DISPATCHER.EMPTY_CART" | translate }}</span>
+    </div>
+
+    <div class="dispatcher__item" *ngFor="let item of items(); let i = index">
+      <span class="dispatcher__item-name">{{ item.productName }}</span>
+      <span class="dispatcher__item-qty">x{{ item.quantity }}</span>
+      <span class="dispatcher__item-price">{{
+        item.subtotal | number: "1.2-2"
+      }}</span>
+      <button
+        class="dispatcher__item-remove"
+        (click)="removeItem(i)"
+        type="button"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="dispatcher__summary" *ngIf="items().length > 0">
+    <div class="dispatcher__summary-row dispatcher__summary-row--total">
+      <span>{{ "DISPATCHER.TOTAL" | translate }}</span>
+      <span>{{ total() | number: "1.2-2" }}</span>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="dispatcher__notes">
+    <input
+      type="text"
+      [placeholder]="'DISPATCHER.NOTES_PLACEHOLDER' | translate"
+      [ngModel]="notes()"
+      (ngModelChange)="notes.set($event)"
+    />
+  </div>
+
+  <!-- Actions -->
+  <div class="dispatcher__actions">
+    <button
+      class="dispatcher__actions-clear"
+      type="button"
+      (click)="clearCart()"
+      [disabled]="items().length === 0"
+    >
+      <i class="fas fa-trash"></i>
+      {{ "DISPATCHER.CLEAR" | translate }}
+    </button>
+    <button
+      class="dispatcher__actions-dispatch"
+      type="button"
+      (click)="dispatchTicket()"
+      [disabled]="items().length === 0 || isDispatching()"
+    >
+      <i class="fas fa-paper-plane" *ngIf="!isDispatching()"></i>
+      <i class="fas fa-spinner fa-spin" *ngIf="isDispatching()"></i>
+      {{
+        isDispatching()
+          ? ("DISPATCHER.DISPATCHING" | translate)
+          : ("DISPATCHER.DISPATCH" | translate)
+      }}
+    </button>
+  </div>
+</div>

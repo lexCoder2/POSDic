@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { Types } = require("mongoose");
 const Product = require("../models/Product");
 const Sale = require("../models/Sale");
 const { protect, checkPermission } = require("../middleware/auth");
@@ -7,6 +8,23 @@ const multer = require("multer");
 const xlsx = require("xlsx");
 const fs = require("fs");
 const path = require("path");
+
+function buildInventoryProductId() {
+  return `INV-${new Types.ObjectId().toString()}`;
+}
+
+function normalizeCreatePayload(body = {}) {
+  const payload = { ...body };
+
+  if (
+    typeof payload.product_id !== "string" ||
+    payload.product_id.trim() === ""
+  ) {
+    payload.product_id = buildInventoryProductId();
+  }
+
+  return payload;
+}
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -465,7 +483,7 @@ router.post(
 // @access  Private (requires inventory permission)
 router.post("/", protect, checkPermission("inventory"), async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const product = new Product(normalizeCreatePayload(req.body));
     await product.save();
 
     const populatedProduct = await Product.findById(product._id)
@@ -479,6 +497,19 @@ router.post("/", protect, checkPermission("inventory"), async (req, res) => {
         .status(400)
         .json({ message: "Product code or barcode already exists" });
     }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        message: error.message,
+        errors: Object.fromEntries(
+          Object.entries(error.errors || {}).map(([field, detail]) => [
+            field,
+            detail.message,
+          ])
+        ),
+      });
+    }
+
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });

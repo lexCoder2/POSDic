@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
-import { Sale, SaleItem, PrintTemplate } from "../models";
+import { Sale, SaleItem, PrintTemplate, Ticket } from "../models";
 import { TranslationService } from "./translation.service";
 import { QzTrayService } from "./qz-tray.service";
 import { environment } from "@environments/environment";
@@ -344,7 +344,7 @@ export class ReceiptGeneratorService {
     }
 
     // Auto-detect optimal receipt configuration based on printer
-    let config: Partial<ReceiptConfig> = {
+    const config: Partial<ReceiptConfig> = {
       plainTextMode: options.plainText ?? false,
     };
 
@@ -378,6 +378,49 @@ export class ReceiptGeneratorService {
     }
 
     await this.printReceipt(sale, template, config, printerName);
+  }
+
+  /**
+   * Print a dispatch ticket for split sell mode.
+   */
+  async printDispatchTicket(
+    ticket: Ticket,
+    options: {
+      plainText?: boolean;
+      printerName?: string;
+    } = {}
+  ): Promise<void> {
+    let printerName = options.printerName;
+    if (!printerName) {
+      const savedDefaultPrinter = localStorage.getItem("printer.default");
+      if (savedDefaultPrinter && savedDefaultPrinter !== "default") {
+        printerName = savedDefaultPrinter;
+      }
+    }
+
+    const html = this.generateDispatchTicketHtml(ticket, options.plainText);
+
+    if (this.shouldShowPreview()) {
+      const confirmed = await this.showPreview(html);
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    const targetPrinter = printerName || "default";
+    let printOptions: { dpi?: number; paperWidthMm?: number } | undefined;
+    if (printerName && printerName !== "default") {
+      try {
+        const dpi = await this.qzTrayService.getOptimalDpi(printerName);
+        const paperWidth =
+          await this.qzTrayService.getOptimalPaperWidth(printerName);
+        printOptions = { dpi, paperWidthMm: paperWidth };
+      } catch (err) {
+        console.log("Could not retrieve printer options for ticket:", err);
+      }
+    }
+
+    await this.qzTrayService.print(targetPrinter, html, "html", printOptions);
   }
 
   /**
@@ -445,6 +488,105 @@ export class ReceiptGeneratorService {
     await this.qzTrayService.print(targetPrinter, html, "html", printOptions);
   }
 
+  private generateDispatchTicketHtml(
+    ticket: Ticket,
+    plainText = false
+  ): string {
+    const issuedAt = new Date(ticket.createdAt || new Date()).toLocaleString();
+    const currencyFormatter = new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: "USD",
+    });
+
+    const itemLines = ticket.items
+      .map((item) => {
+        const line = `${item.productName} x${item.quantity}`;
+        const amount = currencyFormatter.format(item.subtotal);
+        return plainText
+          ? `${line}\n${amount}`
+          : `<div class="dispatch-ticket__item"><span>${this.escapeHtml(
+              line
+            )}</span><span>${this.escapeHtml(amount)}</span></div>`;
+      })
+      .join(plainText ? "\n" : "");
+
+    const notes = ticket.notes
+      ? plainText
+        ? `\nNotes: ${ticket.notes}`
+        : `<div class="dispatch-ticket__notes">${this.escapeHtml(
+            ticket.notes
+          )}</div>`
+      : "";
+
+    if (plainText) {
+      return `<pre class="dispatch-ticket dispatch-ticket--plain">TICKET #${
+        ticket.ticketNumber ?? ""
+      }\n${issuedAt}\n\n${itemLines}${notes}\n\nTOTAL ${currencyFormatter.format(
+        ticket.total
+      )}</pre>`;
+    }
+
+    return `
+      <div class="dispatch-ticket">
+        <div class="dispatch-ticket__header">
+          <h1>Ticket #${this.escapeHtml(String(ticket.ticketNumber ?? ""))}</h1>
+          <div class="dispatch-ticket__date">${this.escapeHtml(issuedAt)}</div>
+        </div>
+        <div class="dispatch-ticket__items">${itemLines}</div>
+        ${notes}
+        <div class="dispatch-ticket__total">
+          <span>Total</span>
+          <strong>${this.escapeHtml(currencyFormatter.format(ticket.total))}</strong>
+        </div>
+      </div>
+      <style>
+        .dispatch-ticket {
+          width: 280px;
+          padding: 12px;
+          font-family: 'Courier New', Courier, monospace;
+          color: #111;
+        }
+        .dispatch-ticket__header {
+          margin-bottom: 12px;
+          text-align: center;
+        }
+        .dispatch-ticket__header h1 {
+          margin: 0;
+          font-size: 18px;
+        }
+        .dispatch-ticket__date {
+          margin-top: 4px;
+          font-size: 11px;
+        }
+        .dispatch-ticket__items {
+          border-top: 1px dashed #444;
+          border-bottom: 1px dashed #444;
+          padding: 8px 0;
+        }
+        .dispatch-ticket__item,
+        .dispatch-ticket__total {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          font-size: 12px;
+          margin: 4px 0;
+        }
+        .dispatch-ticket__notes {
+          margin-top: 10px;
+          font-size: 11px;
+        }
+        .dispatch-ticket__total {
+          margin-top: 12px;
+          font-size: 14px;
+        }
+        .dispatch-ticket--plain {
+          font-family: 'Courier New', Courier, monospace;
+          white-space: pre-wrap;
+        }
+      </style>
+    `;
+  }
+
   /**
    * Generate barcode as base64 image with optional printer optimization
    */
@@ -455,7 +597,7 @@ export class ReceiptGeneratorService {
   ): Promise<string> {
     try {
       // Optimize barcode for printer if specified
-      let optimizedConfig = { ...config };
+      const optimizedConfig = { ...config };
       if (printerName) {
         try {
           const dpi = await this.qzTrayService.getOptimalDpi(printerName);
@@ -1411,9 +1553,9 @@ export class ReceiptGeneratorService {
   private totalRow(
     label: string,
     value: number | string,
-    className: string = "",
-    isText: boolean = false,
-    inlineStyle: string = ""
+    className = "",
+    isText = false,
+    inlineStyle = ""
   ): string {
     const displayValue = isText
       ? value

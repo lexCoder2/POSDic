@@ -1,0 +1,197 @@
+<div class="detail-container">
+  <!-- Loading -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+  </div>
+
+  <ng-container *ngIf="!isLoading() && provider()">
+    <!-- Top bar -->
+    <div class="detail-topbar">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        {{ "PROVIDERS.INVOICES.BACK_TO_LIST" | translate }}
+      </button>
+
+      <div class="provider-title">
+        <span class="provider-code">{{ provider()!.code }}</span>
+        <h1>{{ provider()!.name }}</h1>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'info'"
+        (click)="setTab('info')"
+      >
+        {{ "PROVIDERS.INVOICES.INFO_TAB" | translate }}
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'invoices'"
+        (click)="setTab('invoices')"
+      >
+        <i class="fas fa-file-invoice"></i>
+        {{ "PROVIDERS.INVOICES.TAB" | translate }}
+      </button>
+    </div>
+
+    <!-- INFO TAB -->
+    <div class="tab-content" *ngIf="activeTab() === 'info'">
+      <!-- View mode -->
+      <ng-container *ngIf="!isEditing()">
+        <div class="info-card">
+          <div class="info-grid">
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.TABLE.NAME" | translate
+              }}</span>
+              <span class="info-value">{{ provider()!.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.TABLE.CONTACT" | translate
+              }}</span>
+              <span class="info-value">{{
+                provider()!.contactName || "—"
+              }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.TABLE.EMAIL" | translate
+              }}</span>
+              <span class="info-value">{{ provider()!.email || "—" }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.TABLE.PHONE" | translate
+              }}</span>
+              <span class="info-value">{{ provider()!.phone || "—" }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.FORM.TAX_ID" | translate
+              }}</span>
+              <span class="info-value">{{ provider()!.taxId || "—" }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">{{
+                "PROVIDERS.TABLE.PAYMENT" | translate
+              }}</span>
+              <span class="info-value">{{
+                provider()!.paymentTerms || "—"
+              }}</span>
+            </div>
+            <div class="info-row full-width" *ngIf="provider()!.notes">
+              <span class="info-label">{{
+                "PROVIDERS.FORM.NOTES" | translate
+              }}</span>
+              <span class="info-value">{{ provider()!.notes }}</span>
+            </div>
+          </div>
+          <div class="info-actions">
+            <button class="btn-edit" (click)="startEdit()">
+              <i class="fas fa-pencil-alt"></i>
+              {{ "PROVIDERS.INVOICES.EDIT_PROVIDER" | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Edit mode -->
+      <ng-container *ngIf="isEditing()">
+        <div class="info-card">
+          <div class="form-grid">
+            <div class="form-row">
+              <label>{{ "PROVIDERS.TABLE.NAME" | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="providerForm.name"
+                [disabled]="isSaving()"
+              />
+            </div>
+            <div class="form-row">
+              <label>{{ "PROVIDERS.TABLE.CONTACT" | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="providerForm.contactName"
+                [disabled]="isSaving()"
+              />
+            </div>
+            <div class="form-row">
+              <label>{{ "PROVIDERS.TABLE.EMAIL" | translate }}</label>
+              <input
+                type="email"
+                [(ngModel)]="providerForm.email"
+                [disabled]="isSaving()"
+              />
+            </div>
+            <div class="form-row">
+              <label>{{ "PROVIDERS.TABLE.PHONE" | translate }}</label>
+              <input
+                type="tel"
+                [(ngModel)]="providerForm.phone"
+                [disabled]="isSaving()"
+              />
+            </div>
+            <div class="form-row">
+              <label>{{ "PROVIDERS.FORM.TAX_ID" | translate }}</label>
+              <input
+                type="text"
+                [(ngModel)]="providerForm.taxId"
+                [disabled]="isSaving()"
+              />
+            </div>
+            <div class="form-row">
+              <label>{{ "PROVIDERS.TABLE.PAYMENT" | translate }}</label>
+              <select
+                [(ngModel)]="providerForm.paymentTerms"
+                [disabled]="isSaving()"
+              >
+                <option value="immediate">Immediate</option>
+                <option value="15days">15 days</option>
+                <option value="30days">30 days</option>
+                <option value="60days">60 days</option>
+                <option value="90days">90 days</option>
+              </select>
+            </div>
+            <div class="form-row full-width">
+              <label>{{ "PROVIDERS.FORM.NOTES" | translate }}</label>
+              <textarea
+                rows="3"
+                [(ngModel)]="providerForm.notes"
+                [disabled]="isSaving()"
+              ></textarea>
+            </div>
+          </div>
+          <div class="info-actions">
+            <button
+              class="btn-cancel-edit"
+              (click)="cancelEdit()"
+              [disabled]="isSaving()"
+            >
+              {{ "PROVIDERS.INVOICES.CANCEL_EDIT" | translate }}
+            </button>
+            <button
+              class="btn-save"
+              (click)="saveProvider()"
+              [disabled]="isSaving()"
+            >
+              <i class="fas fa-circle-notch fa-spin" *ngIf="isSaving()"></i>
+              <i class="fas fa-check" *ngIf="!isSaving()"></i>
+              {{ "PROVIDERS.INVOICES.SAVE_PROVIDER" | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- INVOICES TAB -->
+    <div class="tab-content" *ngIf="activeTab() === 'invoices'">
+      <app-provider-receipts
+        [providerId]="provider()!._id!"
+      ></app-provider-receipts>
+    </div>
+  </ng-container>
+</div>

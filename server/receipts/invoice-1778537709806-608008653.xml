@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4"
+  Folio="123" Serie="A" Fecha="2026-05-01T10:00:00"
+  SubTotal="315.00" Total="365.40">
+  <cfdi:Emisor Rfc="ABC010101AAA" Nombre="Proveedor Test SA de CV"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto NoIdentificacion="7501234567890"
+      Descripcion="Leche Entera 1L" Cantidad="10"
+      ValorUnitario="22.50" Importe="225.00"/>
+    <cfdi:Concepto NoIdentificacion="7509876543210"
+      Descripcion="Pan Integral" Cantidad="5"
+      ValorUnitario="18.00" Importe="90.00"/>
+  </cfdi:Conceptos>
+</cfdi:Comprobante>

@@ -29,7 +29,7 @@
       gap: 0.75rem;
 
       i {
-        color: $primary;
+        color: var(--color-primary);
       }
     }
 
@@ -95,7 +95,7 @@
       i {
         font-size: 2rem;
         margin-bottom: 1rem;
-        color: $primary;
+        color: var(--color-primary);
       }
 
       p {
@@ -133,8 +133,8 @@
 
         &:focus {
           outline: none;
-          border-color: $primary;
-          box-shadow: 0 0 0 3px rgba($primary, 0.1);
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
         }
 
         &:disabled {
@@ -259,11 +259,11 @@
     }
 
     .btn-confirm {
-      background: $success;
+      background: var(--color-success);
       color: white;
 
       &:hover:not(:disabled) {
-        background: darken($success, 8%);
+        background: var(--color-success-dark);
       }
     }
   }

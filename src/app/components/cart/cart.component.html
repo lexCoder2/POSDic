@@ -85,6 +85,11 @@
                       {{ item.product.brand }}
                     </div>
                   }
+                  @if ((item.product.stock ?? 1) <= 0) {
+                    <span class="out-of-stock-warning">
+                      {{ "CART.OUT_OF_STOCK" | translate }}
+                    </span>
+                  }
                   <span class="item-price">{{
                     item.product.price | appCurrency
                   }}</span>
@@ -241,7 +246,7 @@
         }
         <app-calculator
           (addItem)="onPriceChanged($event)"
-          [lastItemPrice]="editingItem()!.product.price ?? null"
+          [lastItemPrice]="editingItem()!.product.price"
         ></app-calculator>
       </div>
     </div>

@@ -1,0 +1,514 @@
+@use "../../../styles/theme" as *;
+
+.checkout-desk {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-4;
+  height: 100%;
+  min-height: 0;
+  padding: $spacing-4;
+  background: $bg-primary;
+
+  &__queue {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    min-height: 0;
+    padding: $spacing-4;
+    overflow: hidden;
+  }
+
+  &__panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-2;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      margin: 0;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+  }
+
+  &__eyebrow {
+    margin: 0 0 $spacing-1;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  &__queue-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $spacing-2;
+  }
+
+  &__queue-metric {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    padding: $spacing-3;
+    border: 1px solid rgba($blue-primary, 0.12);
+    border-radius: var(--radius-md);
+    background: rgba($blue-primary, 0.05);
+
+    &-value {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+      line-height: $line-height-tight;
+    }
+
+    &-label {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: $text-muted;
+    }
+  }
+
+  &__queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: $spacing-1;
+  }
+
+  &__loading,
+  &__empty,
+  &__placeholder {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-3;
+    min-height: 220px;
+    padding: $spacing-6;
+    border: 1px dashed $border-color;
+    color: $text-secondary;
+    text-align: center;
+
+    i {
+      font-size: 2.5rem;
+      opacity: 0.35;
+    }
+  }
+
+  &__ticket-card {
+    @include card;
+    appearance: none;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+    width: 100%;
+    padding: $spacing-3;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-align: left;
+    transition:
+      transform $transition-base,
+      border-color $transition-base,
+      box-shadow $transition-base,
+      background-color $transition-base;
+
+    &:hover {
+      transform: translateY(-1px);
+      border-color: rgba($blue-primary, 0.2);
+      box-shadow: $shadow-2;
+    }
+
+    &--selected {
+      border-color: rgba($blue-primary, 0.36);
+      background: rgba($blue-primary, 0.06);
+    }
+
+    &-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: $spacing-2;
+    }
+
+    &-number {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+
+    &-total {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $blue-primary;
+      line-height: $line-height-tight;
+    }
+
+    &-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: $spacing-2;
+      font-size: $font-size-sm;
+      color: $text-secondary;
+    }
+
+    &-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-1;
+      padding: $spacing-1 $spacing-2;
+      border-radius: var(--radius-full);
+      background: rgba($blue-primary, 0.08);
+      color: $blue-dark;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+    }
+
+    &-time {
+      font-size: $font-size-xs;
+      color: $text-muted;
+      white-space: nowrap;
+    }
+
+    &-preview {
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      line-height: $line-height-normal;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+  }
+
+  &__checkout {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: $spacing-3;
+  }
+
+  &__ticket-detail {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: $spacing-3;
+  }
+
+  &__ticket-hero {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+    padding-bottom: $spacing-3;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+    }
+  }
+
+  &__ticket-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-2;
+    margin-top: $spacing-2;
+  }
+
+  &__meta-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: $spacing-1 $spacing-2;
+    border-radius: var(--radius-full);
+    background: $bg-hover;
+    color: $text-secondary;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__ticket-total-card {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    padding: $spacing-3;
+    border-radius: var(--radius-md);
+    background: $text-primary;
+    color: $white;
+
+    span {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    strong {
+      font-size: $font-size-3xl;
+      line-height: $line-height-tight;
+    }
+  }
+
+  &__item-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-top: $spacing-3;
+    padding-right: $spacing-1;
+  }
+
+  &__item-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-3;
+    padding: $spacing-3 0;
+    border-bottom: 1px solid $border-color;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  &__item-copy {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    min-width: 0;
+  }
+
+  &__item-name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  &__item-meta {
+    font-size: $font-size-sm;
+    color: $text-muted;
+  }
+
+  &__item-total {
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    white-space: nowrap;
+  }
+
+  &__total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: $spacing-3;
+    margin-top: $spacing-3;
+    border-top: 1px solid $border-color;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  &__payment-shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-3;
+  }
+
+  &__payment {
+    @include card;
+    padding: $spacing-3;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+
+    label {
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__payment-label {
+    margin: 0;
+  }
+
+  &__payment-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $spacing-2;
+  }
+
+  &__payment-option {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-2;
+    min-height: 88px;
+    padding: $spacing-3;
+    border: 1px solid $border-color;
+    border-radius: var(--radius-md);
+    background: $bg-tertiary;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    transition:
+      border-color $transition-base,
+      background-color $transition-base,
+      color $transition-base,
+      box-shadow $transition-base;
+
+    i {
+      font-size: $font-size-xl;
+    }
+
+    &:hover {
+      border-color: rgba($blue-primary, 0.28);
+      color: $text-primary;
+      box-shadow: $shadow-1;
+    }
+
+    &--active {
+      border-color: rgba($blue-primary, 0.42);
+      background: rgba($blue-primary, 0.08);
+      color: $blue-dark;
+      box-shadow: $shadow-primary;
+    }
+  }
+
+  &__cash-field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-2;
+
+    input {
+      @include input-base;
+      width: 100%;
+    }
+  }
+
+  &__payment-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: $spacing-2;
+  }
+
+  &__payment-stat {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    padding: $spacing-3;
+    border: 1px solid $border-color;
+    border-radius: var(--radius-md);
+    background: $bg-hover;
+
+    span {
+      font-size: $font-size-xs;
+      font-weight: $font-weight-semibold;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+
+  &__payment-stat-value {
+    font-size: $font-size-2xl;
+    line-height: $line-height-tight;
+    color: $text-primary;
+
+    &--positive {
+      color: $success-dark;
+    }
+
+    &--warning {
+      color: $warning-dark;
+    }
+  }
+
+  &__actions {
+    display: grid;
+    gap: $spacing-2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    button {
+      width: 100%;
+      min-height: $touch-target-lg;
+      font-size: $font-size-base;
+    }
+
+    &-cancel {
+      @include button-secondary;
+      color: $danger-dark;
+      border-color: rgba($danger, 0.35);
+      background: rgba($danger, 0.08);
+    }
+
+    &-complete {
+      @include button-primary;
+      background: $success-dark;
+      color: white;
+    }
+  }
+
+  @include respond-to(md) {
+    &__ticket-hero {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    &__payment-shell {
+      grid-template-columns: minmax(0, 1fr) 240px;
+      align-items: stretch;
+    }
+
+    &__actions {
+      grid-template-columns: 1fr;
+      align-content: stretch;
+    }
+  }
+
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    padding: $spacing-3;
+
+    &__queue,
+    &__ticket-detail,
+    &__payment {
+      padding: $spacing-3;
+    }
+
+    &__queue-summary,
+    &__payment-options,
+    &__payment-stats,
+    &__actions {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+    align-items: stretch;
+
+    &__queue {
+      height: 100%;
+    }
+  }
+}

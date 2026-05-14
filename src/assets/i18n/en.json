@@ -13,11 +13,15 @@
     "SALE_NUMBER": "Sale #",
     "DATE": "Date",
     "ITEMS": "Items",
-    "TOTAL": "Total",
+    "TOTAL": "Total: {{count}} sales",
     "PAYMENT": "Payment",
     "CASHIER": "Cashier",
     "STATUS_LABEL": "Status",
-    "ACTIONS": "Actions",
+    "ACTIONS": {
+      "VIEW": "View Details",
+      "PRINT": "Print Receipt",
+      "CANCEL": "Cancel Sale (Admin only)"
+    },
     "VIEW_DETAILS": "View Details",
     "PRINT_RECEIPT": "Print Receipt",
     "CANCEL_SALE": "Cancel Sale (Admin only)",
@@ -27,7 +31,6 @@
     "DISCOUNT": "Discount:",
     "TAX": "Tax:",
     "GRAND_TOTAL": "Total:",
-    "TOTAL": "Total: {{count}} sales",
     "SUMMARY": {
       "TOTAL_SALES": "Total Sales",
       "REVENUE": "Revenue",
@@ -45,11 +48,6 @@
       "ACTIONS": "Actions"
     },
     "ITEMS_COUNT": "{{count}} items",
-    "ACTIONS": {
-      "VIEW": "View Details",
-      "PRINT": "Print Receipt",
-      "CANCEL": "Cancel Sale (Admin only)"
-    },
     "EMPTY": "No sales found",
     "DETAILS_TITLE": "Sale Details - {{saleNumber}}",
     "DETAILS": {
@@ -97,9 +95,9 @@
     "THEME": {
       "LABEL": "Theme",
       "DARK_MODE": "Dark Mode",
-      "LIGHT_MODE": "Light Mode"
+      "LIGHT_MODE": "Light Mode",
+      "TOGGLE": "Toggle Theme"
     },
-
     "SIDEBAR": {
       "DASHBOARD": "Dashboard",
       "POS": "POS",
@@ -111,7 +109,11 @@
       "SALES": "Sales",
       "REGISTERS": "Registers",
       "USERS": "Users",
-      "RECEIPT_TEMPLATES": "Receipt Templates"
+      "RECEIPT_TEMPLATES": "Receipt Templates",
+      "REPORTS": "Reports",
+      "SHOPPING_LISTS": "Shopping Lists",
+      "RECEIPT_SCANNER": "Receipt Scanner",
+      "DISPATCHER": "Dispatcher"
     },
     "WITHDRAW_CASH": "Withdraw Cash"
   },
@@ -252,7 +254,29 @@
     "CANCEL": "Cancel Session",
     "CONFIRM_CANCEL": "Are you sure you want to cancel? All updates have been saved, but the report will not be generated.",
     "REPORT_GENERATED": "Inventory report downloaded successfully",
-    "STOCK_REGISTRATION_MODE": "Stock Registration Mode"
+    "MODE_LABEL": "Mode",
+    "MODE_EDIT": "Edit",
+    "MODE_RECEIVE": "Receive",
+    "MODE_STOCKTAKE": "Stocktake",
+    "MODE_HINT_EDIT": "Manually edit price, stock, and EAN for any product",
+    "MODE_HINT_RECEIVE": "Record stock received — enter quantity per product; stock is added to current total",
+    "MODE_HINT_STOCKTAKE": "Count on-hand inventory — enter the absolute counted quantity; report shows variance",
+    "RECEIVED_QTY": "Quantity Received",
+    "COUNTED_QTY": "Counted Quantity",
+    "VARIANCE": "Variance",
+    "UNDO": "Undo",
+    "UNDO_SUCCESS": "Update reverted to previous values",
+    "UNDO_ERROR": "Could not revert update — please try again",
+    "MULTIPLE_MATCHES": "Multiple products found — select one",
+    "REFINE_SEARCH": "Too many matches — refine your search",
+    "UNSAVED_CHANGES_CONFIRM": "You have unsaved changes. Load this product anyway?",
+    "EXPORT_TXT": "Download .txt",
+    "EXPORT_CSV": "Export CSV",
+    "EXPORT_PRINT": "Print / PDF",
+    "BEFORE_UNLOAD_WARN": "Session has unsaved updates. Are you sure you want to leave?",
+    "RESTORE_DRAFT": "Previous session found. Restore it?",
+    "DRAFT_RESTORED": "Previous session restored",
+    "EDIT_AGAIN": "Edit again"
   },
   "SETTINGS": {
     "TITLE": "Settings",
@@ -266,6 +290,16 @@
       "STYLED_DESC": "Styled HTML receipts with branding and layout (may vary by printer)",
       "SHOW_PREVIEW": "Show preview before printing",
       "SHOW_PREVIEW_DESC": "Display a preview window with Print/Cancel buttons before sending receipts to the printer"
+    },
+    "SELL_MODE": {
+      "TITLE": "Sell Mode",
+      "DESCRIPTION": "Choose whether operators serve and collect payment in one step, or dispatch a ticket for a cashier to complete later on any machine.",
+      "COMBINED": "Serve And Cashier Together",
+      "COMBINED_DESC": "Use the normal checkout flow and complete payment in the same transaction.",
+      "SPLIT": "Serve Then Cashier",
+      "SPLIT_DESC": "Register products, print a ticket, and let checkout-desk collect payment later.",
+      "SAVE": "Save Sell Mode",
+      "SAVED": "Sell mode saved"
     },
     "USER_PREFERENCES": {
       "TITLE": "User Preferences",
@@ -316,6 +350,18 @@
       "ADMIN_ONLY": "Only administrators can reset the database",
       "SUCCESS": "Database reset successfully",
       "ERROR": "Error resetting database"
+    },
+    "ESTIMATED_COST": {
+      "TITLE": "Estimated Cost",
+      "DESCRIPTION": "When a product has no purchase cost recorded, use an estimated cost based on a margin percentage for profit calculations in reports and register close.",
+      "ENABLE": "Enable estimated cost for products without cost data",
+      "MARGIN_LABEL": "Estimated margin",
+      "MARGIN_HINT": "The percentage of the selling price that represents your expected profit margin. The estimated cost will be (100% - margin)% of the price.",
+      "PREVIEW_LABEL": "Estimated cost will be",
+      "PREVIEW_SUFFIX": "of the selling price",
+      "SAVE": "Save",
+      "SAVED": "Estimated cost settings saved",
+      "INVALID_MARGIN": "Margin must be between 0 and 100"
     },
     "SAVED": "Settings saved",
     "SAVE_FAILED": "Failed to save settings"
@@ -383,6 +429,77 @@
       "FILL_REQUIRED": "Please fill in all required fields",
       "ADMIN_DELETE": "Only administrators can delete suppliers",
       "CONFIRM_DELETE": "Are you sure you want to delete this supplier?"
+    },
+    "INVOICES": {
+      "TAB": "Invoices",
+      "SCAN_BUTTON": "Scan / Import Invoice",
+      "BACK_TO_LIST": "Back to Suppliers",
+      "INFO_TAB": "Info",
+      "EDIT_PROVIDER": "Edit",
+      "SAVE_PROVIDER": "Save",
+      "CANCEL_EDIT": "Cancel",
+      "SCANNER": {
+        "TITLE": "Import Supplier Invoice",
+        "DRAG_DROP": "Drag and drop a file here",
+        "OR": "or",
+        "CHOOSE_FILE": "Choose File",
+        "TAKE_PHOTO": "Take Photo",
+        "UPLOADING": "Parsing invoice...",
+        "SUPPORTED_FORMATS": "Supported: Images (JPG, PNG), PDF, Excel (.xlsx), CFDI XML",
+        "CANCEL": "Cancel",
+        "VISION_UNAVAILABLE": "Vision model not available. Use Excel or XML for automatic data extraction.",
+        "FILE_PREVIEW": "{{name}} ({{size}})"
+      },
+      "REVIEW": {
+        "TITLE": "Review Invoice Items",
+        "INVOICE_NUMBER": "Invoice #",
+        "INVOICE_DATE": "Invoice Date",
+        "PROVIDER_RFC": "Provider RFC",
+        "DESCRIPTION": "Description",
+        "BARCODE": "Barcode",
+        "QUANTITY": "Qty",
+        "UNIT_COST": "Unit Cost",
+        "TOTAL": "Total",
+        "MATCH": "Matched Product",
+        "NO_MATCH": "No match found",
+        "CREATE_NEW": "Create new product",
+        "SKIP": "Skip",
+        "INCLUDE": "Include",
+        "SEARCH_PRODUCT": "Search product...",
+        "CONFIRM_APPLY": "Apply to Inventory",
+        "APPLYING": "Applying...",
+        "CANCEL": "Cancel",
+        "SUBTOTAL": "Subtotal",
+        "TAX": "Tax",
+        "GRAND_TOTAL": "Total",
+        "ITEMS_SELECTED": "{{count}} items selected"
+      },
+      "HISTORY": {
+        "TITLE": "Invoice History",
+        "DATE": "Date",
+        "FILE_TYPE": "Type",
+        "INVOICE_NUMBER": "Invoice #",
+        "STATUS": "Status",
+        "TOTAL": "Total",
+        "ITEMS": "Items",
+        "EMPTY": "No invoices imported yet",
+        "VIEW": "View"
+      },
+      "STATUS": {
+        "PENDING": "Pending",
+        "REVIEWED": "Reviewed",
+        "APPLIED": "Applied"
+      },
+      "ALERTS": {
+        "PARSE_SUCCESS": "Invoice parsed successfully",
+        "PARSE_ERROR": "Failed to parse invoice",
+        "APPLY_SUCCESS": "Inventory updated successfully",
+        "APPLY_ERROR": "Failed to apply invoice",
+        "DELETE_SUCCESS": "Receipt deleted",
+        "DELETE_ERROR": "Failed to delete receipt",
+        "NO_ITEMS": "No items selected to apply",
+        "VISION_UNAVAILABLE": "Vision OCR not available — use Excel (.xlsx) or CFDI XML for structured import"
+      }
     }
   },
   "USERS": {
@@ -506,7 +623,8 @@
     },
     "CATEGORIES": {
       "TITLE": "Product Categories",
-      "EMPTY": "No categories found. Add your first category to get started."
+      "EMPTY": "No categories found. Add your first category to get started.",
+      "LOAD_ERROR": "Unable to load categories right now. Try again."
     },
     "CATEGORY_FORM": {
       "NAME_LABEL": "Category Name *",
@@ -755,6 +873,23 @@
       "SUCCESS": "Cash flow report generated successfully",
       "ERROR": "Failed to generate cash flow report"
     },
+    "FORMAT": {
+      "PDF": "PDF",
+      "EXCEL": "Excel",
+      "CSV": "CSV"
+    },
+    "FORMAT_EXCEL": "Excel (.xlsx)",
+    "FORMAT_PDF": "PDF (.pdf)",
+    "PROFIT_REPORT": {
+      "TITLE": "Profit Analysis",
+      "DESCRIPTION": "Revenue vs estimated cost breakdown per product (Excel)",
+      "START_DATE": "Start Date",
+      "END_DATE": "End Date",
+      "GENERATE": "Download Profit Report",
+      "GENERATING": "Generating...",
+      "SUCCESS": "Profit report generated successfully",
+      "ERROR": "Failed to generate profit report"
+    },
     "BARCODE_GENERATOR": {
       "TITLE": "Barcode Generator",
       "DESCRIPTION": "Generate printable barcode labels for products",
@@ -804,11 +939,6 @@
       "ERROR": "Failed to generate QR code PDF",
       "NO_PRODUCTS": "No products found for the selected criteria"
     },
-    "FORMAT": {
-      "PDF": "PDF",
-      "EXCEL": "Excel",
-      "CSV": "CSV"
-    },
     "COMMON": {
       "DATE_RANGE": "Date Range",
       "FILTERS": "Filters",
@@ -836,6 +966,8 @@
       "CONFIRM": "Confirm Withdrawal"
     },
     "REGISTER": {
+      "AUTO_CLOSE_WARNING": "A register is already open. Please close the current register before opening a new one.",
+      "AUTO_CLOSE_CRITICAL": "The register has been open for a long time. ",
       "OPEN_TITLE": "Open Register",
       "CLOSE_TITLE": "Close Register",
       "NUMBER": "Register Number",
@@ -847,7 +979,8 @@
       "NOTES": "Notes",
       "NOTES_PLACEHOLDER": "Optional notes...",
       "OPEN": "Open Register",
-      "CLOSE": "Close Register"
+      "CLOSE": "Close Register",
+      "CLOSE_NOW": "Close Now"
     },
     "RETURNS": {
       "TITLE": "Returns & Refunds",
@@ -915,6 +1048,7 @@
       "PRICE": "Price",
       "REQUIRES_SCALE": "Requires Scale (Loose Product)",
       "NOTE": "This product will be marked as incomplete. Remember to complete its information from the dashboard.",
+      "SELL_ONCE": "Sell Once",
       "CREATE_AND_ADD": "Create & Add to Cart"
     },
     "CALCULATOR": {
@@ -955,6 +1089,7 @@
       "TOTAL": "Total:"
     },
     "PLACE_ORDER": "Place order",
+    "OUT_OF_STOCK": "Out of stock",
     "MODAL": {
       "TITLE": "Close Sale Tab",
       "CONTAINS": "This tab contains {{count}} item(s).",
@@ -986,15 +1121,12 @@
     "EDIT": "Edit",
     "SET_DEFAULT": "Set as default",
     "CURRENT_DEFAULT": "Currently default",
-
     "EDIT_HEADER": "Edit Template",
     "CREATE_HEADER": "Create New Template",
-
     "SECTION_BASIC": "Basic Information",
     "SECTION_HEADER": "Header",
     "SECTION_ITEMS": "Item Details",
     "SECTION_FOOTER": "Footer",
-
     "FORM": {
       "NAME_LABEL": "Template Name *",
       "NAME_PLACEHOLDER": "e.g., Standard Receipt",
@@ -1027,16 +1159,13 @@
       "CUSTOM_MESSAGE_PLACEHOLDER": "e.g., Thank you for your purchase!",
       "TEXT_ALIGNMENT": "Text Alignment"
     },
-
     "ACTIONS": {
       "CREATE": "Create Template",
       "UPDATE": "Update Template",
       "DELETE": "Delete"
     },
-
     "PREVIEW_TITLE": "Preview",
     "PREVIEW_MODE": "Preview Mode",
-
     "OPTIONS": {
       "RECEIPT": "Receipt",
       "INVOICE": "Invoice",
@@ -1048,7 +1177,6 @@
       "ALIGN_CENTER": "Center",
       "ALIGN_RIGHT": "Right"
     },
-
     "CREATED": "Template created successfully!",
     "CREATE_FAILED": "Failed to create template",
     "UPDATED": "Template updated successfully!",
@@ -1128,5 +1256,98 @@
     "CAMERA_SCAN_TITLE": "Camera Scanner",
     "QR_CAMERA_INSTRUCTIONS": "Point your camera at your employee QR badge",
     "QR_AUTHENTICATING": "Authenticating..."
+  },
+  "DISPATCHER": {
+    "TITLE": "Dispatcher",
+    "EMPTY_CART": "Cart is empty",
+    "EMPTY_CART_ERROR": "Add items before dispatching",
+    "TOTAL": "Total",
+    "NOTES_PLACEHOLDER": "Notes (table, order name...)",
+    "DISPATCH": "Dispatch Ticket",
+    "DISPATCHING": "Dispatching...",
+    "DISPATCH_ERROR": "Error dispatching ticket",
+    "CLEAR": "Clear",
+    "LAST_TICKET": "Last Ticket",
+    "TICKET_SENT": "Ticket dispatched",
+    "DISPATCHED_SUCCESS": "Ticket dispatched successfully"
+  },
+  "CHECKOUT_DESK": {
+    "TITLE": "Checkout Desk",
+    "QUEUE_TITLE": "Pending Tickets",
+    "TAP_TO_CLAIM": "Tap a ticket to claim it for payment",
+    "READY_COUNT": "Ready now",
+    "QUEUE_TOTAL": "Pending total",
+    "NO_TICKETS": "No pending tickets",
+    "ITEMS": "items",
+    "TICKET": "Ticket",
+    "TOTAL": "Total",
+    "PAYMENT_METHOD": "Payment Method",
+    "PAYMENT_CASH": "Cash",
+    "PAYMENT_CARD": "Card",
+    "PAYMENT_TRANSFER": "Transfer",
+    "AMOUNT_TENDERED": "Amount Tendered",
+    "CHANGE": "Change",
+    "REMAINING": "Remaining",
+    "CANCEL_TICKET": "Cancel",
+    "COMPLETE_PAYMENT": "Complete Payment",
+    "SELECT_TICKET_HINT": "Select a ticket from the queue to process",
+    "CLAIM_ERROR": "Could not claim ticket",
+    "COMPLETED_SUCCESS": "Payment completed successfully",
+    "COMPLETE_ERROR": "Error completing payment",
+    "CANCELLED": "Ticket cancelled",
+    "CANCEL_ERROR": "Error cancelling ticket",
+    "PAYMENT_METHOD_REQUIRED": "Please select a payment method"
+  },
+  "PRINTER": {
+    "SETUP_TITLE": "Printer Setup",
+    "CONNECT": "Connect",
+    "DISCONNECT": "Disconnect",
+    "DEFAULT_PRINTER": "Default Printer",
+    "SELECT_PRINTER": "-- Select printer --",
+    "PRINT_MODE": "Print Mode",
+    "MODE_HTML": "HTML (Styled)",
+    "MODE_ESCPOS": "ESC/POS (Plain)",
+    "PRINT_TEST": "Print Test Page",
+    "NOT_CONNECTED": "Not connected to QZ Tray",
+    "CONNECTION_ERROR": "Failed to connect to printer",
+    "SELECT_PRINTER_FIRST": "Please select a printer first",
+    "STATUS": {
+      "DISCONNECTED": "Disconnected",
+      "CONNECTING": "Connecting...",
+      "CONNECTED": "Connected",
+      "ERROR": "Connection Error"
+    }
+  },
+  "SHOPPING": {
+    "TITLE": "Shopping Lists",
+    "NEW_LIST_PLACEHOLDER": "New list name...",
+    "CREATE": "Create",
+    "NO_LISTS": "No shopping lists yet",
+    "RECOMMENDATIONS": "Suggested (based on history)",
+    "CREATE_ERROR": "Error creating shopping list",
+    "DELETE_ERROR": "Error deleting shopping list",
+    "ITEM_PURCHASED": "Item marked as purchased",
+    "LIST_CREATED": "Shopping list created"
+  },
+  "AI": {
+    "CATEGORIZE": "Auto-categorize",
+    "CATEGORIZE_HINT": "Use AI to suggest a category for this product",
+    "CATEGORIZE_ERROR": "Error getting category suggestion",
+    "SOURCE_OLLAMA": "AI",
+    "SOURCE_HEURISTIC": "Heuristic"
+  },
+  "RECEIPT_SCAN": {
+    "TITLE": "Receipt Scanner",
+    "SUBTITLE": "Paste or type receipt text to extract provider and product information",
+    "TEXT_PLACEHOLDER": "Paste receipt text here...",
+    "PARSE": "Extract Data",
+    "PROCESSING": "Processing...",
+    "PROVIDER": "Provider",
+    "DATE": "Date",
+    "ITEM": "Item",
+    "QTY": "Qty",
+    "PRICE": "Price",
+    "SCAN_ANOTHER": "Scan Another",
+    "PARSE_ERROR": "Error parsing receipt"
   }
 }

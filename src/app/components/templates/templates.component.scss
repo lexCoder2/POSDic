@@ -1,14 +1,14 @@
-@import "../../../styles/theme";
+@use "../../../styles/theme" as *;
 
 .templates-container {
-  padding: 1.5rem;
+  padding: 1rem;
   background: var(--bg-primary);
   min-height: 100%;
   max-width: 100%;
   overflow-x: hidden;
 
   .header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
 
     h1 {
       font-size: 2rem;
@@ -24,27 +24,28 @@
   }
 
   .content {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-1);
     max-width: 100%;
     overflow: hidden;
 
     .btn-primary {
-      background: $primary;
+      background: var(--color-primary);
       color: white;
-      padding: 0.75rem 1.5rem;
+      padding: 0.625rem 1rem;
       border: none;
       border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
 
       &:hover {
-        background: $primary-dark;
+        background: var(--color-primary-dark);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
       }
@@ -54,14 +55,14 @@
       }
 
       &:disabled {
-        background: $gray-300;
+        background: var(--border-light);
         cursor: not-allowed;
         transform: none;
       }
     }
 
     .btn-secondary {
-      background: $gray-300;
+      background: var(--border-light);
       color: var(--text-primary);
       padding: 0.5rem 1rem;
       border: none;
@@ -72,16 +73,16 @@
       transition: all 0.2s;
 
       &:hover {
-        background: $gray-400;
+        background: var(--text-light);
       }
 
       &:active {
-        background: $gray-500;
+        background: var(--bg-hover);
       }
     }
 
     .btn-danger {
-      background: $danger;
+      background: var(--color-danger);
       color: white;
       padding: 0.5rem 1rem;
       border: none;
@@ -92,27 +93,27 @@
       transition: all 0.2s;
 
       &:hover {
-        background: $danger-dark;
+        background: var(--color-danger-dark);
       }
     }
   }
 
   .loading {
     text-align: center;
-    padding: 2rem;
+    padding: 1.25rem;
     color: var(--text-secondary);
   }
 
   .templates-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin: 1.5rem 0;
+    gap: 1rem;
+    margin: 1rem 0;
 
     .template-card {
       border: 1px solid $border-light;
       border-radius: 8px;
-      padding: 1.5rem;
+      padding: 1rem;
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
@@ -123,7 +124,7 @@
       }
 
       .card-header {
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
       }
 
       h3 {
@@ -135,7 +136,7 @@
 
       p {
         color: var(--text-secondary);
-        margin: 0 0 1rem 0;
+        margin: 0 0 0.75rem 0;
       }
 
       .template-info {
@@ -148,12 +149,12 @@
           background: var(--bg-secondary);
           color: var(--text-secondary);
           padding: 0.25rem 0.75rem;
-          border-radius: 12px;
+          border-radius: var(--radius-xl);
           font-size: 0.75rem;
           font-weight: 500;
         }
         .default-badge {
-          background: $primary;
+          background: var(--color-primary);
           color: white;
         }
       }
@@ -193,7 +194,7 @@
 
         .default-note {
           font-size: 0.85rem;
-          color: $primary;
+          color: var(--color-primary);
           font-weight: 700;
         }
       }
@@ -202,7 +203,7 @@
 
   .no-templates {
     text-align: center;
-    padding: 2rem;
+    padding: 1.25rem;
     color: var(--text-secondary);
   }
 
@@ -211,7 +212,7 @@
       font-size: 1.5rem;
       font-weight: 600;
       color: var(--text-primary);
-      margin: 0 0 1.5rem 0;
+      margin: 0 0 1rem 0;
     }
 
     form {
@@ -220,15 +221,15 @@
   }
 
   .form-section {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
     border-bottom: 1px solid $border-light;
 
     h3 {
       font-size: 1.1rem;
       font-weight: 600;
       color: var(--text-primary);
-      margin: 0 0 1.5rem 0;
+      margin: 0 0 1rem 0;
     }
 
     &:last-of-type {
@@ -261,7 +262,7 @@
 
       &:focus {
         outline: none;
-        border-color: $primary;
+        border-color: var(--color-primary);
         box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
       }
     }
@@ -291,7 +292,7 @@
     }
 
     .error {
-      color: $danger;
+      color: var(--color-danger);
       font-size: 0.875rem;
       margin-top: 0.25rem;
       display: block;
@@ -341,7 +342,7 @@
     padding: 1rem;
     border-radius: 6px;
     margin-top: 1rem;
-    border-left: 3px solid $primary;
+    border-left: 3px solid var(--color-primary);
 
     .form-row {
       margin-bottom: 1rem;
@@ -366,18 +367,19 @@
       border: 1px solid $border-light;
       border-radius: 4px;
       font-size: 0.8rem;
-      background: white;
+      background: var(--input-bg);
+      color: var(--text-primary);
       cursor: pointer;
       transition: all 0.2s;
       min-width: 50px;
 
       &:hover {
-        border-color: $primary;
+        border-color: var(--color-primary);
       }
 
       &:focus {
         outline: none;
-        border-color: $primary;
+        border-color: var(--color-primary);
         box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.1);
       }
 
@@ -409,11 +411,11 @@
       }
 
       input:checked + span {
-        color: $primary;
+        color: var(--color-primary);
       }
 
       &:hover {
-        border-color: $primary;
+        border-color: var(--color-primary);
         background: rgba(255, 140, 66, 0.05);
       }
     }
@@ -468,13 +470,13 @@
   .form-with-preview {
     display: grid;
     grid-template-columns: 1fr 400px;
-    gap: 2rem;
+    gap: 1.25rem;
     align-items: start;
     max-width: 100%;
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr;
-      gap: 1.5rem;
+      gap: 1rem;
     }
 
     .form-section-wrapper {
@@ -531,7 +533,7 @@
         border: 1px solid $border-light;
         border-radius: 8px;
         padding: 1rem;
-        background: #fafafa;
+        background: var(--bg-hover);
         overflow-y: auto;
         overflow-x: hidden;
         max-height: calc(100vh - 220px);
@@ -542,7 +544,7 @@
           width: 100%;
           min-height: 500px;
           border: none;
-          background: white;
+          background: var(--card-bg);
           border-radius: 4px;
         }
       }

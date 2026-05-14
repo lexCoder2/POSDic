@@ -13,11 +13,15 @@
     "SALE_NUMBER": "Venta #",
     "DATE": "Fecha",
     "ITEMS": "Artículos",
-    "TOTAL": "Total",
+    "TOTAL": "Total: {{count}} ventas",
     "PAYMENT": "Pago",
     "CASHIER": "Cajero",
     "STATUS_LABEL": "Estado",
-    "ACTIONS": "Acciones",
+    "ACTIONS": {
+      "VIEW": "Ver Detalles",
+      "PRINT": "Imprimir Recibo",
+      "CANCEL": "Cancelar Venta (Solo Admin)"
+    },
     "VIEW_DETAILS": "Ver Detalles",
     "PRINT_RECEIPT": "Imprimir Recibo",
     "CANCEL_SALE": "Cancelar Venta (Solo Admin)",
@@ -27,7 +31,6 @@
     "DISCOUNT": "Descuento:",
     "TAX": "Impuesto:",
     "GRAND_TOTAL": "Total:",
-    "TOTAL": "Total: {{count}} ventas",
     "SUMMARY": {
       "TOTAL_SALES": "Ventas Totales",
       "REVENUE": "Ingresos",
@@ -45,11 +48,6 @@
       "ACTIONS": "Acciones"
     },
     "ITEMS_COUNT": "{{count}} artículos",
-    "ACTIONS": {
-      "VIEW": "Ver Detalles",
-      "PRINT": "Imprimir Recibo",
-      "CANCEL": "Cancelar Venta (Solo Admin)"
-    },
     "EMPTY": "No se encontraron ventas",
     "DETAILS_TITLE": "Detalles de la Venta - {{saleNumber}}",
     "DETAILS": {
@@ -179,9 +177,9 @@
     "THEME": {
       "LABEL": "Tema",
       "DARK_MODE": "Modo Oscuro",
-      "LIGHT_MODE": "Modo Claro"
+      "LIGHT_MODE": "Modo Claro",
+      "TOGGLE": "Cambiar Tema"
     },
-
     "SIDEBAR": {
       "DASHBOARD": "Panel",
       "POS": "Venta",
@@ -193,9 +191,12 @@
       "SALES": "Ventas",
       "REGISTERS": "Cajas",
       "USERS": "Usuarios",
-      "RECEIPT_TEMPLATES": "Plantillas de Recibo"
+      "RECEIPT_TEMPLATES": "Plantillas de Recibo",
+      "REPORTS": "Reportes",
+      "SHOPPING_LISTS": "Listas de Compras",
+      "RECEIPT_SCANNER": "Escanear Recibo",
+      "DISPATCHER": "Despachador"
     },
-
     "WITHDRAW_CASH": "Retirar Efectivo"
   },
   "SETTINGS": {
@@ -210,6 +211,16 @@
       "STYLED_DESC": "Recibos HTML con estilo y marca (puede variar según la impresora)",
       "SHOW_PREVIEW": "Mostrar vista previa antes de imprimir",
       "SHOW_PREVIEW_DESC": "Mostrar ventana de vista previa con botones Imprimir/Cancelar antes de enviar recibos a la impresora"
+    },
+    "SELL_MODE": {
+      "TITLE": "Modo De Venta",
+      "DESCRIPTION": "Elige si el operador registra y cobra en un solo paso, o si despacha un ticket para que caja lo cobre después desde cualquier equipo.",
+      "COMBINED": "Despacho Y Caja Juntos",
+      "COMBINED_DESC": "Usa el flujo normal de cobro y completa el pago en la misma transacción.",
+      "SPLIT": "Despacho Luego Caja",
+      "SPLIT_DESC": "Registra productos, imprime un ticket y permite que mesa de cobro complete el pago después.",
+      "SAVE": "Guardar Modo De Venta",
+      "SAVED": "Modo de venta guardado"
     },
     "USER_PREFERENCES": {
       "TITLE": "Preferencias de Usuario",
@@ -243,6 +254,18 @@
       "ADMIN_ONLY": "Solo los administradores pueden restablecer la base de datos",
       "SUCCESS": "Base de datos restablecida exitosamente",
       "ERROR": "Error al restablecer la base de datos"
+    },
+    "ESTIMATED_COST": {
+      "TITLE": "Costo Estimado",
+      "DESCRIPTION": "Cuando un producto no tiene costo de compra registrado, se usa un costo estimado basado en un porcentaje de margen para los cálculos de ganancias en reportes y cierre de caja.",
+      "ENABLE": "Activar costo estimado para productos sin datos de costo",
+      "MARGIN_LABEL": "Margen estimado",
+      "MARGIN_HINT": "El porcentaje del precio de venta que representa tu margen de ganancia esperado. El costo estimado será el (100% - margen)% del precio.",
+      "PREVIEW_LABEL": "El costo estimado será el",
+      "PREVIEW_SUFFIX": "del precio de venta",
+      "SAVE": "Guardar",
+      "SAVED": "Configuración de costo estimado guardada",
+      "INVALID_MARGIN": "El margen debe estar entre 0 y 100"
     },
     "SCALE": {
       "TITLE": "Báscula Digital",
@@ -304,7 +327,29 @@
     "CANCEL": "Cancelar Sesión",
     "CONFIRM_CANCEL": "¿Está seguro que desea cancelar? Todas las actualizaciones han sido guardadas, pero el reporte no será generado.",
     "REPORT_GENERATED": "Reporte de inventario descargado exitosamente",
-    "STOCK_REGISTRATION_MODE": "Modo de Registro de Stock"
+    "MODE_LABEL": "Modo",
+    "MODE_EDIT": "Editar",
+    "MODE_RECEIVE": "Recepción",
+    "MODE_STOCKTAKE": "Conteo",
+    "MODE_HINT_EDIT": "Editar manualmente precio, stock y EAN de cualquier producto",
+    "MODE_HINT_RECEIVE": "Registrar stock recibido — ingrese la cantidad por producto; se suma al stock actual",
+    "MODE_HINT_STOCKTAKE": "Contar inventario en existencia — ingrese la cantidad contada; el reporte muestra la varianza",
+    "RECEIVED_QTY": "Cantidad Recibida",
+    "COUNTED_QTY": "Cantidad Contada",
+    "VARIANCE": "Varianza",
+    "UNDO": "Deshacer",
+    "UNDO_SUCCESS": "Actualización revertida a valores anteriores",
+    "UNDO_ERROR": "No se pudo revertir — intente de nuevo",
+    "MULTIPLE_MATCHES": "Múltiples productos encontrados — seleccione uno",
+    "REFINE_SEARCH": "Demasiados resultados — refine su búsqueda",
+    "UNSAVED_CHANGES_CONFIRM": "Tiene cambios sin guardar. ¿Cargar este producto de todas formas?",
+    "EXPORT_TXT": "Descargar .txt",
+    "EXPORT_CSV": "Exportar CSV",
+    "EXPORT_PRINT": "Imprimir / PDF",
+    "BEFORE_UNLOAD_WARN": "La sesión tiene actualizaciones. ¿Está seguro de salir?",
+    "RESTORE_DRAFT": "Se encontró una sesión anterior. ¿Restaurarla?",
+    "DRAFT_RESTORED": "Sesión anterior restaurada",
+    "EDIT_AGAIN": "Editar de nuevo"
   },
   "PROVIDERS": {
     "TITLE": "Gestión de Proveedores",
@@ -369,6 +414,77 @@
       "FILL_REQUIRED": "Por favor complete todos los campos requeridos",
       "ADMIN_DELETE": "Solo los administradores pueden eliminar proveedores",
       "CONFIRM_DELETE": "¿Está seguro que desea eliminar este proveedor?"
+    },
+    "INVOICES": {
+      "TAB": "Facturas",
+      "SCAN_BUTTON": "Escanear / Importar Factura",
+      "BACK_TO_LIST": "Volver a Proveedores",
+      "INFO_TAB": "Datos",
+      "EDIT_PROVIDER": "Editar",
+      "SAVE_PROVIDER": "Guardar",
+      "CANCEL_EDIT": "Cancelar",
+      "SCANNER": {
+        "TITLE": "Importar Factura de Proveedor",
+        "DRAG_DROP": "Arrastra y suelta un archivo aquí",
+        "OR": "o",
+        "CHOOSE_FILE": "Seleccionar Archivo",
+        "TAKE_PHOTO": "Tomar Foto",
+        "UPLOADING": "Procesando factura...",
+        "SUPPORTED_FORMATS": "Formatos: Imágenes (JPG, PNG), PDF, Excel (.xlsx), XML CFDI",
+        "CANCEL": "Cancelar",
+        "VISION_UNAVAILABLE": "Modelo de visión no disponible. Use Excel o XML para importación automática.",
+        "FILE_PREVIEW": "{{name}} ({{size}})"
+      },
+      "REVIEW": {
+        "TITLE": "Revisar Artículos de Factura",
+        "INVOICE_NUMBER": "Factura #",
+        "INVOICE_DATE": "Fecha",
+        "PROVIDER_RFC": "RFC Proveedor",
+        "DESCRIPTION": "Descripción",
+        "BARCODE": "Código de Barras",
+        "QUANTITY": "Cant",
+        "UNIT_COST": "Costo Unit.",
+        "TOTAL": "Total",
+        "MATCH": "Producto",
+        "NO_MATCH": "Sin coincidencia",
+        "CREATE_NEW": "Crear producto nuevo",
+        "SKIP": "Omitir",
+        "INCLUDE": "Incluir",
+        "SEARCH_PRODUCT": "Buscar producto...",
+        "CONFIRM_APPLY": "Aplicar a Inventario",
+        "APPLYING": "Aplicando...",
+        "CANCEL": "Cancelar",
+        "SUBTOTAL": "Subtotal",
+        "TAX": "IVA",
+        "GRAND_TOTAL": "Total",
+        "ITEMS_SELECTED": "{{count}} artículos seleccionados"
+      },
+      "HISTORY": {
+        "TITLE": "Historial de Facturas",
+        "DATE": "Fecha",
+        "FILE_TYPE": "Tipo",
+        "INVOICE_NUMBER": "Factura #",
+        "STATUS": "Estado",
+        "TOTAL": "Total",
+        "ITEMS": "Artículos",
+        "EMPTY": "No hay facturas importadas aún",
+        "VIEW": "Ver"
+      },
+      "STATUS": {
+        "PENDING": "Pendiente",
+        "REVIEWED": "Revisado",
+        "APPLIED": "Aplicado"
+      },
+      "ALERTS": {
+        "PARSE_SUCCESS": "Factura procesada correctamente",
+        "PARSE_ERROR": "Error al procesar la factura",
+        "APPLY_SUCCESS": "Inventario actualizado correctamente",
+        "APPLY_ERROR": "Error al aplicar la factura",
+        "DELETE_SUCCESS": "Recibo eliminado",
+        "DELETE_ERROR": "Error al eliminar el recibo",
+        "NO_ITEMS": "No hay artículos seleccionados para aplicar",
+        "VISION_UNAVAILABLE": "OCR de visión no disponible — use Excel (.xlsx) o XML CFDI para importación"
+      }
     }
   },
   "USERS": {
@@ -495,7 +611,8 @@
     },
     "CATEGORIES": {
       "TITLE": "Categorías de Productos",
-      "EMPTY": "No se encontraron categorías. Agregue su primera categoría para comenzar."
+      "EMPTY": "No se encontraron categorías. Agregue su primera categoría para comenzar.",
+      "LOAD_ERROR": "No se pudieron cargar las categorías en este momento. Inténtelo de nuevo."
     },
     "CATEGORY_FORM": {
       "NAME_LABEL": "Nombre de la Categoría *",
@@ -713,6 +830,23 @@
       "SUCCESS": "Reporte de flujo de caja generado exitosamente",
       "ERROR": "Error al generar reporte de flujo de caja"
     },
+    "FORMAT": {
+      "PDF": "PDF",
+      "EXCEL": "Excel",
+      "CSV": "CSV"
+    },
+    "FORMAT_EXCEL": "Excel (.xlsx)",
+    "FORMAT_PDF": "PDF (.pdf)",
+    "PROFIT_REPORT": {
+      "TITLE": "Análisis de Rentabilidad",
+      "DESCRIPTION": "Ingresos vs costo estimado por producto (Excel)",
+      "START_DATE": "Fecha de Inicio",
+      "END_DATE": "Fecha de Fin",
+      "GENERATE": "Descargar Reporte de Rentabilidad",
+      "GENERATING": "Generando...",
+      "SUCCESS": "Reporte de rentabilidad generado exitosamente",
+      "ERROR": "Error al generar reporte de rentabilidad"
+    },
     "BARCODE_GENERATOR": {
       "TITLE": "Generador de Códigos de Barras",
       "DESCRIPTION": "Generar etiquetas de códigos de barras imprimibles para productos",
@@ -761,11 +895,6 @@
       "SUCCESS": "PDF de códigos QR generado exitosamente",
       "ERROR": "Error al generar PDF de códigos QR",
       "NO_PRODUCTS": "No se encontraron productos para el criterio seleccionado"
-    },
-    "FORMAT": {
-      "PDF": "PDF",
-      "EXCEL": "Excel",
-      "CSV": "CSV"
     },
     "COMMON": {
       "DATE_RANGE": "Rango de Fechas",
@@ -824,7 +953,6 @@
       "FAILED": "Falló al registrar el retiro"
     }
   },
-
   "POS": {
     "FAVORITES": "Favoritos",
     "QUICK_ACCESS": "Acceso Rápido",
@@ -838,6 +966,8 @@
       "PRINT": "Ticket"
     },
     "REGISTER": {
+      "AUTO_CLOSE_WARNING": "Advertencia: Esta caja se ha mantenido abierta durante más de 20 horas. Por seguridad, se recomienda cerrar la caja al final de cada día.",
+      "AUTO_CLOSE_CRITICAL": "Crítico: Esta caja ha estado abierta durante más de 24 horas. Por favor cierre la caja inmediatamente para evitar riesgos de seguridad.",
       "OPEN_TITLE": "Abrir Caja",
       "CLOSE_TITLE": "Cerrar Caja",
       "NUMBER": "Número de Caja",
@@ -849,9 +979,9 @@
       "NOTES": "Notas",
       "NOTES_PLACEHOLDER": "Notas opcionales...",
       "OPEN": "Abrir Caja",
-      "CLOSE": "Cerrar Caja"
+      "CLOSE": "Cerrar Caja",
+      "CLOSE_NOW": "Cerrar Ahora"
     },
-
     "RETURNS": {
       "TITLE": "Devoluciones y Reembolsos",
       "SEARCH_PLACEHOLDER": "Buscar por número de venta o recibo...",
@@ -928,6 +1058,7 @@
       "PRICE": "Precio",
       "REQUIRES_SCALE": "Requiere Báscula (Producto a Granel)",
       "NOTE": "Este producto será marcado como incompleto. Recuerda completar su información desde el panel.",
+      "SELL_ONCE": "Vender Una Vez",
       "CREATE_AND_ADD": "Crear y Agregar al Carrito"
     },
     "CALCULATOR": {
@@ -968,6 +1099,7 @@
       "TOTAL": "Total:"
     },
     "PLACE_ORDER": "Realizar pedido",
+    "OUT_OF_STOCK": "Sin stock",
     "MODAL": {
       "TITLE": "Cerrar pestaña de venta",
       "CONTAINS": "Esta pestaña contiene {{count}} artículo(s).",
@@ -999,15 +1131,12 @@
     "EDIT": "Editar",
     "SET_DEFAULT": "Establecer como predeterminada",
     "CURRENT_DEFAULT": "Predeterminada",
-
     "EDIT_HEADER": "Editar plantilla",
     "CREATE_HEADER": "Crear nueva plantilla",
-
     "SECTION_BASIC": "Información básica",
     "SECTION_HEADER": "Encabezado",
     "SECTION_ITEMS": "Detalles del artículo",
     "SECTION_FOOTER": "Pie de página",
-
     "FORM": {
       "NAME_LABEL": "Nombre de la plantilla *",
       "NAME_PLACEHOLDER": "p.ej., Recibo estándar",
@@ -1040,16 +1169,13 @@
       "CUSTOM_MESSAGE_PLACEHOLDER": "p.ej., ¡Gracias por su compra!",
       "TEXT_ALIGNMENT": "Alineación del texto"
     },
-
     "ACTIONS": {
       "CREATE": "Crear plantilla",
       "UPDATE": "Actualizar plantilla",
       "DELETE": "Eliminar"
     },
-
     "PREVIEW_TITLE": "Previsualización",
     "PREVIEW_MODE": "Modo de Vista Previa",
-
     "OPTIONS": {
       "RECEIPT": "Recibo",
       "INVOICE": "Factura",
@@ -1061,7 +1187,6 @@
       "ALIGN_CENTER": "Centro",
       "ALIGN_RIGHT": "Derecha"
     },
-
     "CREATED": "Plantilla creada con éxito",
     "CREATE_FAILED": "Error al crear la plantilla",
     "UPDATED": "Plantilla actualizada con éxito",
@@ -1141,5 +1266,98 @@
     "CAMERA_SCAN_TITLE": "Escáner de Cámara",
     "QR_CAMERA_INSTRUCTIONS": "Apunta tu cámara al código QR de tu credencial",
     "QR_AUTHENTICATING": "Autenticando..."
+  },
+  "DISPATCHER": {
+    "TITLE": "Despacho",
+    "EMPTY_CART": "Carrito vacío",
+    "EMPTY_CART_ERROR": "Agrega artículos antes de despachar",
+    "TOTAL": "Total",
+    "NOTES_PLACEHOLDER": "Notas (mesa, nombre del pedido...)",
+    "DISPATCH": "Despachar Ticket",
+    "DISPATCHING": "Despachando...",
+    "DISPATCH_ERROR": "Error al despachar el ticket",
+    "CLEAR": "Limpiar",
+    "LAST_TICKET": "Último Ticket",
+    "TICKET_SENT": "Ticket despachado",
+    "DISPATCHED_SUCCESS": "Ticket despachado exitosamente"
+  },
+  "CHECKOUT_DESK": {
+    "TITLE": "Caja de Cobro",
+    "QUEUE_TITLE": "Tickets Pendientes",
+    "TAP_TO_CLAIM": "Toca un ticket para tomarlo y cobrarlo",
+    "READY_COUNT": "Listos ahora",
+    "QUEUE_TOTAL": "Total pendiente",
+    "NO_TICKETS": "Sin tickets pendientes",
+    "ITEMS": "artículos",
+    "TICKET": "Ticket",
+    "TOTAL": "Total",
+    "PAYMENT_METHOD": "Método de Pago",
+    "PAYMENT_CASH": "Efectivo",
+    "PAYMENT_CARD": "Tarjeta",
+    "PAYMENT_TRANSFER": "Transferencia",
+    "AMOUNT_TENDERED": "Monto Entregado",
+    "CHANGE": "Cambio",
+    "REMAINING": "Falta",
+    "CANCEL_TICKET": "Cancelar",
+    "COMPLETE_PAYMENT": "Completar Pago",
+    "SELECT_TICKET_HINT": "Selecciona un ticket de la cola para procesar",
+    "CLAIM_ERROR": "No se pudo tomar el ticket",
+    "COMPLETED_SUCCESS": "Pago completado exitosamente",
+    "COMPLETE_ERROR": "Error al completar el pago",
+    "CANCELLED": "Ticket cancelado",
+    "CANCEL_ERROR": "Error al cancelar el ticket",
+    "PAYMENT_METHOD_REQUIRED": "Por favor selecciona un método de pago"
+  },
+  "PRINTER": {
+    "SETUP_TITLE": "Configuracion de Impresora",
+    "CONNECT": "Conectar",
+    "DISCONNECT": "Desconectar",
+    "DEFAULT_PRINTER": "Impresora Predeterminada",
+    "SELECT_PRINTER": "-- Seleccionar impresora --",
+    "PRINT_MODE": "Modo de Impresion",
+    "MODE_HTML": "HTML (Con estilo)",
+    "MODE_ESCPOS": "ESC/POS (Texto plano)",
+    "PRINT_TEST": "Imprimir Pagina de Prueba",
+    "NOT_CONNECTED": "No conectado a QZ Tray",
+    "CONNECTION_ERROR": "Error al conectar con la impresora",
+    "SELECT_PRINTER_FIRST": "Por favor seleccione una impresora primero",
+    "STATUS": {
+      "DISCONNECTED": "Desconectado",
+      "CONNECTING": "Conectando...",
+      "CONNECTED": "Conectado",
+      "ERROR": "Error de conexion"
+    }
+  },
+  "SHOPPING": {
+    "TITLE": "Listas de Compras",
+    "NEW_LIST_PLACEHOLDER": "Nombre de la nueva lista...",
+    "CREATE": "Crear",
+    "NO_LISTS": "No hay listas de compras",
+    "RECOMMENDATIONS": "Sugeridos (basado en historial)",
+    "CREATE_ERROR": "Error al crear la lista",
+    "DELETE_ERROR": "Error al eliminar la lista",
+    "ITEM_PURCHASED": "Artículo marcado como comprado",
+    "LIST_CREATED": "Lista de compras creada"
+  },
+  "AI": {
+    "CATEGORIZE": "Auto-categorizar",
+    "CATEGORIZE_HINT": "Usar IA para sugerir una categoria para este producto",
+    "CATEGORIZE_ERROR": "Error al obtener sugerencia de categoria",
+    "SOURCE_OLLAMA": "IA",
+    "SOURCE_HEURISTIC": "Heuristico"
+  },
+  "RECEIPT_SCAN": {
+    "TITLE": "Escaner de Recibos",
+    "SUBTITLE": "Pega o escribe el texto del recibo para extraer informacion del proveedor y productos",
+    "TEXT_PLACEHOLDER": "Pega el texto del recibo aqui...",
+    "PARSE": "Extraer Datos",
+    "PROCESSING": "Procesando...",
+    "PROVIDER": "Proveedor",
+    "DATE": "Fecha",
+    "ITEM": "Articulo",
+    "QTY": "Cant.",
+    "PRICE": "Precio",
+    "SCAN_ANOTHER": "Escanear Otro",
+    "PARSE_ERROR": "Error al procesar el recibo"
   }
 }

@@ -1,6 +1,26 @@
 <app-page-title [title]="' '" icon="fas fa-clipboard-check">
   <!-- Session Actions -->
   <div class="session-actions">
+    <!-- Export format selector -->
+    <div class="export-selector">
+      <i class="fas fa-file-export"></i>
+      <select
+        [ngModel]="exportFormat()"
+        (ngModelChange)="exportFormat.set($event)"
+        name="exportFormat"
+        class="export-select"
+      >
+        <option value="txt">
+          {{ "INVENTORY_SESSION.EXPORT_TXT" | translate }}
+        </option>
+        <option value="csv">
+          {{ "INVENTORY_SESSION.EXPORT_CSV" | translate }}
+        </option>
+        <option value="print">
+          {{ "INVENTORY_SESSION.EXPORT_PRINT" | translate }}
+        </option>
+      </select>
+    </div>
     <button class="btn btn-secondary" (click)="cancelSession()">
       <i class="fas fa-times"></i>
       {{ "INVENTORY_SESSION.CANCEL" | translate }}
@@ -27,31 +47,75 @@
       <i class="fas fa-clock"></i>
       <span>{{ session().startedAt | date: "short" }}</span>
     </div>
-    <div class="session-info-item">
-      <label class="stock-registration-toggle">
-        <input type="checkbox" [(ngModel)]="isStockRegistration" />
-        <i class="fas fa-box-open"></i>
-        <span>{{
-          "INVENTORY_SESSION.STOCK_REGISTRATION_MODE" | translate
-        }}</span>
-      </label>
-    </div>
-    <div class="session-info-item">
-      <i class="fas fa-list"></i>
+    <div class="session-info-item updates-count">
+      <i class="fas fa-list-check"></i>
       <span
         >{{ session().updates.length }}
         {{ "INVENTORY_SESSION.UPDATES" | translate }}</span
       >
     </div>
+
+    <!-- Mode selector (replaces old checkbox) -->
+    <div
+      class="mode-selector"
+      role="group"
+      [attr.aria-label]="'INVENTORY_SESSION.MODE_LABEL' | translate"
+    >
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="mode() === 'edit'"
+        (click)="setMode('edit')"
+        [title]="'INVENTORY_SESSION.MODE_HINT_EDIT' | translate"
+      >
+        <i class="fas fa-edit"></i>
+        <span>{{ "INVENTORY_SESSION.MODE_EDIT" | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="mode() === 'receive'"
+        (click)="setMode('receive')"
+        [title]="'INVENTORY_SESSION.MODE_HINT_RECEIVE' | translate"
+      >
+        <i class="fas fa-box-open"></i>
+        <span>{{ "INVENTORY_SESSION.MODE_RECEIVE" | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="mode-btn"
+        [class.active]="mode() === 'stocktake'"
+        (click)="setMode('stocktake')"
+        [title]="'INVENTORY_SESSION.MODE_HINT_STOCKTAKE' | translate"
+      >
+        <i class="fas fa-clipboard-list"></i>
+        <span>{{ "INVENTORY_SESSION.MODE_STOCKTAKE" | translate }}</span>
+      </button>
+    </div>
   </div>
 
-  <!-- Product Edit Section -->
+  <!-- Mode hint -->
+  <div class="mode-hint">
+    @if (mode() === "edit") {
+      <i class="fas fa-info-circle"></i>
+      {{ "INVENTORY_SESSION.MODE_HINT_EDIT" | translate }}
+    }
+    @if (mode() === "receive") {
+      <i class="fas fa-info-circle"></i>
+      {{ "INVENTORY_SESSION.MODE_HINT_RECEIVE" | translate }}
+    }
+    @if (mode() === "stocktake") {
+      <i class="fas fa-info-circle"></i>
+      {{ "INVENTORY_SESSION.MODE_HINT_STOCKTAKE" | translate }}
+    }
+  </div>
+
+  <!-- Product Editor -->
   <div class="product-editor">
-    <!-- Product Edit Form -->
     @if (currentProduct) {
       <div class="product-form">
+        <!-- Left: Product info -->
         <div class="form-left">
-          <!-- Product Image -->
           <div class="product-image">
             @if (currentProduct.local_image) {
               <img
@@ -67,13 +131,52 @@
           </div>
           <div class="product-name">{{ currentProduct.name }}</div>
           @if (currentProduct.category) {
-            <div class="product-category">
-              {{ currentProduct.category }}
+            <div class="product-category">{{ currentProduct.category }}</div>
+          }
+          @if (currentProduct.ean) {
+            <div class="product-ean">
+              <i class="fas fa-barcode"></i>
+              <code>{{ currentProduct.ean }}</code>
             </div>
           }
+          <div class="product-stock-info">
+            <i class="fas fa-boxes"></i>
+            <span
+              >{{ "INVENTORY_SESSION.CURRENT" | translate }}:
+              {{ currentProduct.stock }}</span
+            >
+          </div>
         </div>
+
+        <!-- Right: Edit form -->
         <div class="form-right">
           <form (submit)="updateProduct()">
+            <!-- Receive mode: quantity received input -->
+            @if (mode() === "receive") {
+              <div class="form-group highlight receive-mode">
+                <label for="receive-qty-input">
+                  <i class="fas fa-plus-circle"></i>
+                  {{ "INVENTORY_SESSION.RECEIVED_QTY" | translate }}
+                </label>
+                <input
+                  id="receive-qty-input"
+                  type="number"
+                  [ngModel]="receiveQty"
+                  (ngModelChange)="onReceiveQtyChange(+$event)"
+                  name="receiveQty"
+                  class="form-control receive-qty"
+                  step="1"
+                  min="1"
+                  (keydown.enter)="updateProduct()"
+                />
+                <div class="old-value receive-preview">
+                  {{ "INVENTORY_SESSION.CURRENT" | translate }}:
+                  {{ currentProduct.stock }} &nbsp;+&nbsp;{{ receiveQty }} =
+                  <strong>{{ newStock }}</strong>
+                </div>
+              </div>
+            }
+
             <!-- EAN Field -->
             <div class="form-group">
               <label for="ean-input">
@@ -89,7 +192,8 @@
                 [placeholder]="currentProduct.ean || ''"
               />
             </div>
-            <!-- Price Field (Main Focus) -->
+
+            <!-- Price Field -->
             <div class="form-group highlight">
               <label for="price-input">
                 <i class="fas fa-dollar-sign"></i>
@@ -122,11 +226,19 @@
                 {{ currentProduct.price | appCurrency }}
               </div>
             </div>
-            <!-- Stock Field (Main Focus) -->
-            <div class="form-group highlight">
+
+            <!-- Stock Field -->
+            <div
+              class="form-group highlight"
+              [class.stocktake-mode]="mode() === 'stocktake'"
+            >
               <label for="stock-input">
                 <i class="fas fa-boxes"></i>
-                {{ "PRODUCTS.STOCK" | translate }}
+                @if (mode() === "stocktake") {
+                  {{ "INVENTORY_SESSION.COUNTED_QTY" | translate }}
+                } @else {
+                  {{ "PRODUCTS.STOCK" | translate }}
+                }
               </label>
               <div class="input-with-change">
                 <input
@@ -137,6 +249,7 @@
                   class="form-control"
                   step="1"
                   min="0"
+                  [readonly]="mode() === 'receive'"
                   required
                 />
                 @if (newStock !== (currentProduct.stock || 0)) {
@@ -153,12 +266,35 @@
               <div class="old-value">
                 {{ "INVENTORY_SESSION.CURRENT" | translate }}:
                 {{ currentProduct.stock }}
+                @if (
+                  mode() === "stocktake" &&
+                  newStock !== (currentProduct.stock || 0)
+                ) {
+                  &nbsp;|&nbsp;
+                  {{ "INVENTORY_SESSION.VARIANCE" | translate }}:
+                  <strong
+                    [class.positive-text]="
+                      newStock > (currentProduct.stock || 0)
+                    "
+                    [class.negative-text]="
+                      newStock < (currentProduct.stock || 0)
+                    "
+                  >
+                    {{ newStock - (currentProduct.stock || 0) > 0 ? "+" : ""
+                    }}{{ newStock - (currentProduct.stock || 0) }}
+                  </strong>
+                }
               </div>
             </div>
-            <!-- Action Buttons -->
+
+            <!-- Form Actions -->
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" [disabled]="saving">
-                <i class="fas fa-save"></i>
+                @if (saving) {
+                  <i class="fas fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fas fa-save"></i>
+                }
                 {{ "INVENTORY_SESSION.UPDATE" | translate }}
               </button>
               <button
@@ -176,8 +312,45 @@
       </div>
     }
 
+    <!-- Multi-result picker -->
+    @if (!currentProduct && searchResults().length > 0) {
+      <div class="search-results-list">
+        <h3>
+          <i class="fas fa-search"></i>
+          {{ "INVENTORY_SESSION.MULTIPLE_MATCHES" | translate }}
+        </h3>
+        <div class="results-grid">
+          @for (product of searchResults(); track product._id) {
+            <button
+              type="button"
+              class="result-card"
+              (click)="pickResult(product)"
+            >
+              <div class="result-name">{{ product.name }}</div>
+              @if (product.ean) {
+                <div class="result-ean">
+                  <code>{{ product.ean }}</code>
+                </div>
+              }
+              <div class="result-meta">
+                <span class="result-price">{{
+                  product.price | appCurrency
+                }}</span>
+                <span class="result-stock">
+                  <i class="fas fa-boxes"></i> {{ product.stock }}
+                </span>
+              </div>
+              @if (product.category) {
+                <div class="result-category">{{ product.category }}</div>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+
     <!-- Empty State -->
-    @if (!currentProduct) {
+    @if (!currentProduct && searchResults().length === 0) {
       <div class="empty-state">
         <i class="fas fa-search"></i>
         <p>{{ "INVENTORY_SESSION.EMPTY_STATE" | translate }}</p>
@@ -199,8 +372,10 @@
               <th>{{ "INVENTORY_SESSION.TIME" | translate }}</th>
               <th>{{ "PRODUCTS.NAME" | translate }}</th>
               <th>{{ "PRODUCTS.EAN" | translate }}</th>
+              <th>{{ "INVENTORY_SESSION.MODE_LABEL" | translate }}</th>
               <th>{{ "INVENTORY_SESSION.PRICE_CHANGE" | translate }}</th>
               <th>{{ "INVENTORY_SESSION.STOCK_CHANGE" | translate }}</th>
+              <th>{{ "COMMON.ACTIONS" | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -210,6 +385,18 @@
                 <td>{{ update.productName }}</td>
                 <td>
                   <span class="ean-code">{{ update.ean || "-" }}</span>
+                </td>
+                <td>
+                  <span class="mode-badge" [class]="'mode-' + update.mode">
+                    @if (update.mode === "receive") {
+                      <i class="fas fa-box-open"></i>
+                    } @else if (update.mode === "stocktake") {
+                      <i class="fas fa-clipboard-list"></i>
+                    } @else {
+                      <i class="fas fa-edit"></i>
+                    }
+                    {{ update.mode }}
+                  </span>
                 </td>
                 <td>
                   <div class="change-cell">
@@ -247,6 +434,31 @@
                         }}{{ getStockChange(update) }}
                       </span>
                     }
+                  </div>
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button
+                      type="button"
+                      class="btn-icon btn-edit-again"
+                      (click)="editAgain(update)"
+                      [title]="'INVENTORY_SESSION.EDIT_AGAIN' | translate"
+                    >
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-icon btn-undo"
+                      (click)="undoUpdate(update)"
+                      [disabled]="undoing() === update.productId"
+                      [title]="'INVENTORY_SESSION.UNDO' | translate"
+                    >
+                      @if (undoing() === update.productId) {
+                        <i class="fas fa-spinner fa-spin"></i>
+                      } @else {
+                        <i class="fas fa-rotate-left"></i>
+                      }
+                    </button>
                   </div>
                 </td>
               </tr>

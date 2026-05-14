@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const { generateToken } = require("../utils/jwt");
+const { protect } = require("../middleware/auth");
 
 // @route   POST /api/auth/register
 // @desc    Register new user
@@ -206,6 +207,17 @@ router.post("/change-password", async (req, res) => {
     res.json({ message: "Password changed successfully" });
   } catch (error) {
     console.error("Change password error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// @route   GET /api/auth/me
+// @desc    Get current authenticated user
+// @access  Private
+router.get("/me", protect, async (req, res) => {
+  try {
+    res.json({ user: req.user });
+  } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });

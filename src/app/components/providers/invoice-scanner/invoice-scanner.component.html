@@ -1,0 +1,77 @@
+<div class="modal-overlay" (click)="onOverlayClick()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ "PROVIDERS.INVOICES.SCANNER.TITLE" | translate }}</h2>
+      <button class="btn-close" (click)="closeModal()" [disabled]="isLoading()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (isLoading()) {
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin fa-2x"></i>
+          <p>{{ "PROVIDERS.INVOICES.SCANNER.UPLOADING" | translate }}</p>
+        </div>
+      } @else {
+        <!-- Drop zone -->
+        <div
+          class="drop-zone"
+          [class.dragging]="isDragging()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+        >
+          <i class="fas fa-cloud-upload-alt fa-3x"></i>
+          <p class="drop-text">
+            {{ "PROVIDERS.INVOICES.SCANNER.DRAG_DROP" | translate }}
+          </p>
+          <p class="or-text">
+            {{ "PROVIDERS.INVOICES.SCANNER.OR" | translate }}
+          </p>
+
+          <div class="btn-row">
+            <!-- Standard file picker -->
+            <label class="btn-choose">
+              <i class="fas fa-folder-open"></i>
+              {{ "PROVIDERS.INVOICES.SCANNER.CHOOSE_FILE" | translate }}
+              <input
+                type="file"
+                accept="image/*,.pdf,.xlsx,.xls,.csv,.xml"
+                (change)="onFileInputChange($event)"
+                class="file-input-hidden"
+              />
+            </label>
+
+            <!-- Camera capture (mobile / webcam) -->
+            <label class="btn-camera">
+              <i class="fas fa-camera"></i>
+              {{ "PROVIDERS.INVOICES.SCANNER.TAKE_PHOTO" | translate }}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                (change)="onFileInputChange($event)"
+                class="file-input-hidden"
+              />
+            </label>
+          </div>
+
+          <p class="formats-hint">
+            {{ "PROVIDERS.INVOICES.SCANNER.SUPPORTED_FORMATS" | translate }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn-cancel"
+        (click)="closeModal()"
+        [disabled]="isLoading()"
+      >
+        {{ "PROVIDERS.INVOICES.SCANNER.CANCEL" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

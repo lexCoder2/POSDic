@@ -1,8 +1,15 @@
-import { Component, OnInit, OnDestroy, signal, inject } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  inject,
+  Input,
+} from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { Subject, takeUntil, skip, debounceTime } from "rxjs";
+import { Subject, takeUntil, skip } from "rxjs";
 import { ProductService } from "../../services/product.service";
 import { CategoryService } from "../../services/category.service";
 import { AuthService } from "../../services/auth.service";
@@ -14,6 +21,12 @@ import { TranslationService } from "../../services/translation.service";
 import { environment } from "@environments/environment";
 import { ModalComponent } from "../modal/modal.component";
 import { ProductFormComponent } from "../product-form/product-form.component";
+
+interface BulkImportResults {
+  successful: number;
+  failed: number;
+  errors?: string[];
+}
 
 @Component({
   selector: "app-inventory",
@@ -36,6 +49,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
   private translation = inject(TranslationService);
   private toastService = inject(ToastService);
   private router = inject(Router);
+
+  @Input() categoryPageMode = false;
 
   currentUser: User | null = null;
   activeTab: "products" | "categories" = "products";
@@ -61,6 +76,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
   selectedCategory: Category | null = null;
   showCategoryModal = false;
   isEditingCategory = false;
+  isLoadingCategories = false;
+  categoryLoadError = false;
 
   // Brand list for autocomplete
   allBrands = signal<string[]>([]);
@@ -68,7 +85,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
   // Bulk import
   showImportModal = false;
   importProgress = 0;
-  importResults: any = null;
+  importResults: BulkImportResults | null = null;
   selectedFile: File | null = null;
 
   // Category form
@@ -81,8 +98,19 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.loadProducts();
+    this.activeTab = this.categoryPageMode ? "categories" : "products";
     this.loadCategories();
+
+    if (this.categoryPageMode) {
+      return;
+    }
+
+    const initialQuery = this.searchStateService.getSearchQuery().trim();
+    if (initialQuery) {
+      this.searchQuery.set(initialQuery);
+    }
+
+    this.loadProducts();
     this.loadBrands();
 
     // Subscribe to product edit requests from barcode scan
@@ -95,9 +123,15 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
     // Subscribe to header search bar with debounce
     this.searchStateService.searchQuery$
-      .pipe(skip(1), debounceTime(500), takeUntil(this.destroy$))
+      .pipe(skip(1), takeUntil(this.destroy$))
       .subscribe((query) => {
-        this.searchQuery.set(query);
+        const normalizedQuery = query.trim();
+
+        if (normalizedQuery === this.searchQuery()) {
+          return;
+        }
+
+        this.searchQuery.set(normalizedQuery);
         this.currentPage.set(1);
         this.loadProducts();
       });
@@ -130,7 +164,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   // ===== PRODUCTS =====
   loadProducts(): void {
-    const filters: any = {
+    const filters: NonNullable<Parameters<ProductService["getProducts"]>[0]> = {
       page: this.currentPage(),
       pageSize: this.pageSize(),
     };
@@ -166,22 +200,61 @@ export class InventoryComponent implements OnInit, OnDestroy {
     this.selectedProduct = null;
   }
 
+  private sortProductsByName(products: Product[]): Product[] {
+    return [...products].sort((left, right) =>
+      left.name.localeCompare(right.name)
+    );
+  }
+
+  private setPaginationTotals(totalRecords: number): void {
+    this.totalRecords.set(totalRecords);
+    this.totalPages.set(Math.ceil(totalRecords / this.pageSize()));
+  }
+
+  private shouldReloadProductsAfterSave(): boolean {
+    if (this.searchQuery().trim()) {
+      return true;
+    }
+
+    if (this.currentPage() > 1) {
+      return true;
+    }
+
+    if (!this.isEditingProduct && this.products().length >= this.pageSize()) {
+      return true;
+    }
+
+    return false;
+  }
+
   onProductSaved(product: Product): void {
+    if (this.shouldReloadProductsAfterSave()) {
+      this.loadProducts();
+      return;
+    }
+
     if (this.isEditingProduct && this.selectedProduct) {
       // Update existing product in list
       const index = this.products().findIndex(
         (p: Product) => p._id === this.selectedProduct!._id
       );
-      if (index !== -1) {
-        const updatedProducts = [...this.products()];
-        updatedProducts[index] = product;
-        this.products.set(updatedProducts);
+      if (index === -1) {
+        this.loadProducts();
+        return;
       }
+
+      const updatedProducts = [...this.products()];
+      updatedProducts[index] = product;
+      this.products.set(this.sortProductsByName(updatedProducts));
     } else {
       // Add new product to list
-      this.products.set([product, ...this.products()]);
+      const nextProducts = this.sortProductsByName([
+        ...this.products(),
+        product,
+      ]).slice(0, this.pageSize());
+      this.products.set(nextProducts);
+      this.setPaginationTotals(this.totalRecords() + 1);
     }
-    this.closeProductModal();
   }
 
   deleteProduct(productId: string): void {
@@ -212,10 +285,27 @@ export class InventoryComponent implements OnInit, OnDestroy {
           this.translation.translate("INVENTORY.ALERTS.PRODUCT_DELETED"),
           "success"
         );
-        // Remove from local array instead of reloading
-        this.products.set(
-          this.products().filter((p: Product) => p._id !== productId)
+        const remainingProducts = this.products().filter(
+          (p: Product) => p._id !== productId
         );
+        const nextTotalRecords = Math.max(0, this.totalRecords() - 1);
+        const nextTotalPages = Math.ceil(nextTotalRecords / this.pageSize());
+        const hasMoreResultsBeyondCurrentPage =
+          nextTotalRecords > remainingProducts.length;
+
+        if (this.currentPage() > 1 && remainingProducts.length === 0) {
+          this.setPaginationTotals(nextTotalRecords);
+          this.currentPage.set(Math.max(1, nextTotalPages));
+          this.loadProducts();
+          return;
+        }
+
+        this.setPaginationTotals(nextTotalRecords);
+        this.products.set(remainingProducts);
+
+        if (hasMoreResultsBeyondCurrentPage) {
+          this.loadProducts();
+        }
       },
       error: (err) => {
         console.error("Error deleting product:", err);
@@ -251,11 +341,24 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   // ===== CATEGORIES =====
   loadCategories(): void {
+    this.isLoadingCategories = true;
+    this.categoryLoadError = false;
+
     this.categoryService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+        this.isLoadingCategories = false;
       },
-      error: (err) => console.error("Error loading categories:", err),
+      error: (err) => {
+        console.error("Error loading categories:", err);
+        this.categories = [];
+        this.isLoadingCategories = false;
+        this.categoryLoadError = true;
+        this.toastService.show(
+          this.translation.translate("INVENTORY.CATEGORIES.LOAD_ERROR"),
+          "error"
+        );
+      },
     });
   }
 
@@ -291,6 +394,8 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   closeCategoryModal(): void {
     this.showCategoryModal = false;
+    this.isEditingCategory = false;
+    this.selectedCategory = null;
     this.resetCategoryForm();
   }
 
@@ -430,8 +535,10 @@ export class InventoryComponent implements OnInit, OnDestroy {
     this.importResults = null;
   }
 
-  importProducts(event: any): void {
-    const file = event.target.files[0];
+  importProducts(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+
     if (!file) return;
 
     this.selectedFile = file;

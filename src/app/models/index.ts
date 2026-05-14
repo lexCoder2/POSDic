@@ -10,6 +10,19 @@ export interface PaginatedResponse<T> {
   pagination: PaginationInfo;
 }
 
+/** A single authenticated user session stored in the browser. */
+export interface SessionEntry {
+  token: string;
+  user: User;
+}
+
+/** Global application settings stored in the backend. */
+export interface AppSettings {
+  estimatedCostEnabled: boolean;
+  estimatedCostMarginPercent: number;
+  sellMode: "combined" | "split";
+}
+
 export interface Cart {
   _id?: string;
   cashier: string | any;
@@ -287,4 +300,140 @@ export interface Register {
   printReceiptsEnabled?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface TicketItem {
+  product?: string | Product;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export type TicketStatus =
+  | "pending"
+  | "in_checkout"
+  | "completed"
+  | "cancelled";
+
+export interface Ticket {
+  _id?: string;
+  ticketNumber?: number;
+  items: TicketItem[];
+  subtotal: number;
+  discount?: number;
+  total: number;
+  status: TicketStatus;
+  notes?: string;
+  createdBy?: string | User;
+  cashier?: string | User;
+  sale?: string | Sale;
+  completedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ShoppingItem {
+  product?: string;
+  productName: string;
+  quantity: number;
+  purchased?: boolean;
+  purchasedAt?: Date;
+}
+
+export type ShoppingListStatus = "active" | "completed" | "archived";
+
+export interface ShoppingList {
+  _id?: string;
+  name: string;
+  items: ShoppingItem[];
+  createdBy?: string | User;
+  weekday?: number;
+  status?: ShoppingListStatus;
+  completedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ShoppingRecommendation {
+  productName: string;
+  frequency: number;
+}
+
+// ---------------------------------------------------------------------------
+// Purchase Receipts (Invoice Scanner / Stock Import)
+// ---------------------------------------------------------------------------
+
+export interface ParsedInvoiceItem {
+  description: string;
+  noIdentificacion?: string | null;
+  barcode?: string | null;
+  quantity: number;
+  unitCost: number;
+  total: number;
+  included: boolean;
+}
+
+export interface ParsedInvoice {
+  items: ParsedInvoiceItem[];
+  totals: { subtotal: number; tax: number; total: number };
+  invoiceNumber?: string | null;
+  invoiceDate?: string | null;
+  providerRfc?: string | null;
+  providerName?: string | null;
+  fileType?: string;
+  storagePath?: string;
+  originalFilename?: string;
+  visionUnavailable?: boolean;
+}
+
+export interface ConfirmedItem extends ParsedInvoiceItem {
+  matchedProduct?: string | Product | null; // Product _id or populated Product
+  createNew?: boolean;
+}
+
+export interface PurchaseReceiptItem {
+  description: string;
+  noIdentificacion?: string;
+  barcode?: string;
+  quantity: number;
+  unitCost: number;
+  total: number;
+  included: boolean;
+  matchedProduct?: string | Product | null;
+  createNew?: boolean;
+}
+
+export interface PurchaseReceipt {
+  _id?: string;
+  provider: string | Provider;
+  originalFilename: string;
+  fileType: "image" | "pdf" | "excel" | "xml" | "camera";
+  storagePath?: string;
+  invoiceNumber?: string | null;
+  invoiceDate?: string | null;
+  providerRfc?: string | null;
+  providerName?: string | null;
+  parsedItems: PurchaseReceiptItem[];
+  totals: { subtotal: number; tax: number; total: number };
+  status: "pending" | "reviewed" | "applied";
+  appliedAt?: Date;
+  appliedBy?: string | User | null;
+  notes?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface PurchaseReceiptPayload {
+  providerId: string;
+  originalFilename: string;
+  fileType: string;
+  storagePath?: string;
+  invoiceNumber?: string | null;
+  invoiceDate?: string | null;
+  providerRfc?: string | null;
+  providerName?: string | null;
+  totals?: { subtotal: number; tax: number; total: number };
+  confirmedItems: ConfirmedItem[];
+  notes?: string;
 }

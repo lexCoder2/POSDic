@@ -1,0 +1,247 @@
+<div class="checkout-desk">
+  <aside class="checkout-desk__queue">
+    <div class="checkout-desk__panel-header">
+      <div>
+        <p class="checkout-desk__eyebrow">
+          {{ "CHECKOUT_DESK.TAP_TO_CLAIM" | translate }}
+        </p>
+        <h3>
+          <i class="fas fa-list"></i>
+          {{ "CHECKOUT_DESK.QUEUE_TITLE" | translate }}
+        </h3>
+      </div>
+    </div>
+
+    <div class="checkout-desk__queue-summary" *ngIf="tickets().length > 0">
+      <div class="checkout-desk__queue-metric">
+        <span class="checkout-desk__queue-metric-value">{{
+          tickets().length
+        }}</span>
+        <span class="checkout-desk__queue-metric-label">
+          {{ "CHECKOUT_DESK.READY_COUNT" | translate }}
+        </span>
+      </div>
+      <div class="checkout-desk__queue-metric">
+        <span class="checkout-desk__queue-metric-value">
+          {{ pendingTotal | number: "1.2-2" }}
+        </span>
+        <span class="checkout-desk__queue-metric-label">
+          {{ "CHECKOUT_DESK.QUEUE_TOTAL" | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div
+      class="checkout-desk__loading"
+      *ngIf="tickets().length === 0 && isLoading()"
+    >
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+
+    <div
+      class="checkout-desk__empty"
+      *ngIf="tickets().length === 0 && !isLoading()"
+    >
+      <i class="fas fa-inbox"></i>
+      <span>{{ "CHECKOUT_DESK.NO_TICKETS" | translate }}</span>
+    </div>
+
+    <div class="checkout-desk__queue-list" *ngIf="tickets().length > 0">
+      <button
+        class="checkout-desk__ticket-card"
+        *ngFor="let ticket of tickets()"
+        type="button"
+        [class.checkout-desk__ticket-card--selected]="
+          selectedTicket()?._id === ticket._id
+        "
+        (click)="selectTicket(ticket)"
+      >
+        <div class="checkout-desk__ticket-card-top">
+          <div class="checkout-desk__ticket-card-number">
+            #{{ ticket.ticketNumber }}
+          </div>
+          <div class="checkout-desk__ticket-card-total">
+            {{ ticket.total | number: "1.2-2" }}
+          </div>
+        </div>
+
+        <div class="checkout-desk__ticket-card-meta">
+          <span class="checkout-desk__ticket-card-badge">
+            {{ ticket.items.length }} {{ "CHECKOUT_DESK.ITEMS" | translate }}
+          </span>
+          <span
+            class="checkout-desk__ticket-card-time"
+            *ngIf="ticket.createdAt"
+          >
+            {{ ticket.createdAt | date: "shortTime" }}
+          </span>
+        </div>
+
+        <div class="checkout-desk__ticket-card-preview">
+          {{ getTicketPreview(ticket) }}
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <section class="checkout-desk__checkout">
+    <div
+      class="checkout-desk__ticket-detail"
+      *ngIf="selectedTicket(); else noSelection"
+    >
+      <div class="checkout-desk__ticket-hero">
+        <div>
+          <p class="checkout-desk__eyebrow">
+            {{ "CHECKOUT_DESK.TICKET" | translate }}
+          </p>
+          <h3>#{{ selectedTicket()!.ticketNumber }}</h3>
+
+          <div class="checkout-desk__ticket-meta">
+            <span class="checkout-desk__meta-pill">
+              {{ selectedItemCount }} {{ "CHECKOUT_DESK.ITEMS" | translate }}
+            </span>
+            <span
+              class="checkout-desk__meta-pill"
+              *ngIf="selectedTicket()!.createdAt"
+            >
+              {{ selectedTicket()!.createdAt | date: "shortTime" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="checkout-desk__ticket-total-card">
+          <span>{{ "CHECKOUT_DESK.TOTAL" | translate }}</span>
+          <strong>{{ selectedTicket()!.total | number: "1.2-2" }}</strong>
+        </div>
+      </div>
+
+      <div class="checkout-desk__item-list">
+        <div
+          class="checkout-desk__item-row"
+          *ngFor="let item of selectedTicket()!.items"
+        >
+          <div class="checkout-desk__item-copy">
+            <span class="checkout-desk__item-name">{{ item.productName }}</span>
+            <span class="checkout-desk__item-meta">
+              x{{ item.quantity }} · {{ item.unitPrice | number: "1.2-2" }}
+            </span>
+          </div>
+          <span class="checkout-desk__item-total">
+            {{ item.subtotal | number: "1.2-2" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="checkout-desk__total-row">
+        <span>{{ "CHECKOUT_DESK.TOTAL" | translate }}</span>
+        <span>{{ selectedTicket()!.total | number: "1.2-2" }}</span>
+      </div>
+    </div>
+
+    <div class="checkout-desk__payment-shell" *ngIf="selectedTicket()">
+      <div class="checkout-desk__payment">
+        <label class="checkout-desk__payment-label">
+          {{ "CHECKOUT_DESK.PAYMENT_METHOD" | translate }}
+        </label>
+
+        <div class="checkout-desk__payment-options">
+          <button
+            class="checkout-desk__payment-option"
+            *ngFor="let option of paymentOptions"
+            type="button"
+            [class.checkout-desk__payment-option--active]="
+              selectedPaymentMethod() === option.value
+            "
+            (click)="setPaymentMethod(option.value)"
+          >
+            <i [class]="option.icon"></i>
+            <span>{{ option.label | translate }}</span>
+          </button>
+        </div>
+
+        <div
+          class="checkout-desk__cash-field"
+          *ngIf="selectedPaymentMethod() === 'cash'"
+        >
+          <label>{{ "CHECKOUT_DESK.AMOUNT_TENDERED" | translate }}</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [ngModel]="amountTendered()"
+            (ngModelChange)="amountTendered.set(+$event)"
+          />
+        </div>
+
+        <div class="checkout-desk__payment-stats">
+          <div class="checkout-desk__payment-stat">
+            <span>{{ "CHECKOUT_DESK.TOTAL" | translate }}</span>
+            <strong class="checkout-desk__payment-stat-value">
+              {{ selectedTicket()!.total | number: "1.2-2" }}
+            </strong>
+          </div>
+
+          <div
+            class="checkout-desk__payment-stat"
+            *ngIf="selectedPaymentMethod() === 'cash'"
+          >
+            <span>{{ "CHECKOUT_DESK.AMOUNT_TENDERED" | translate }}</span>
+            <strong class="checkout-desk__payment-stat-value">
+              {{ amountTendered() | number: "1.2-2" }}
+            </strong>
+          </div>
+
+          <div
+            class="checkout-desk__payment-stat"
+            *ngIf="selectedPaymentMethod() === 'cash'"
+          >
+            <span>
+              {{
+                (change > 0
+                  ? "CHECKOUT_DESK.CHANGE"
+                  : "CHECKOUT_DESK.REMAINING"
+                ) | translate
+              }}
+            </span>
+            <strong
+              class="checkout-desk__payment-stat-value"
+              [class.checkout-desk__payment-stat-value--positive]="change > 0"
+              [class.checkout-desk__payment-stat-value--warning]="change === 0"
+            >
+              {{ (change > 0 ? change : amountRemaining) | number: "1.2-2" }}
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-desk__actions">
+        <button
+          class="checkout-desk__actions-cancel"
+          type="button"
+          (click)="cancelSelectedTicket()"
+          [disabled]="isProcessing()"
+        >
+          <i class="fas fa-times"></i>
+          {{ "CHECKOUT_DESK.CANCEL_TICKET" | translate }}
+        </button>
+        <button
+          class="checkout-desk__actions-complete"
+          type="button"
+          (click)="completeCheckout()"
+          [disabled]="isProcessing()"
+        >
+          <i class="fas fa-check" *ngIf="!isProcessing()"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isProcessing()"></i>
+          {{ "CHECKOUT_DESK.COMPLETE_PAYMENT" | translate }}
+        </button>
+      </div>
+    </div>
+
+    <ng-template #noSelection>
+      <div class="checkout-desk__placeholder">
+        <i class="fas fa-hand-pointer"></i>
+        <p>{{ "CHECKOUT_DESK.SELECT_TICKET_HINT" | translate }}</p>
+      </div>
+    </ng-template>
+  </section>
+</div>

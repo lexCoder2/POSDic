@@ -51,6 +51,17 @@
               (change)="salesReportIncludeRefunds = $event"
             ></app-toggle-switch>
           </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.FORMAT" | translate }}</label>
+            <select [(ngModel)]="salesReportFormat">
+              <option value="excel">
+                {{ "REPORTS.FORMAT_EXCEL" | translate }}
+              </option>
+              <option value="pdf">
+                {{ "REPORTS.FORMAT_PDF" | translate }}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="report-footer">
           <button
@@ -62,7 +73,11 @@
               <i class="fas fa-spinner fa-spin"></i>
               {{ "REPORTS.SALES_REPORT.GENERATING" | translate }}
             } @else {
-              <i class="fas fa-file-pdf"></i>
+              <i
+                class="fas"
+                [class.fa-file-excel]="salesReportFormat === 'excel'"
+                [class.fa-file-pdf]="salesReportFormat === 'pdf'"
+              ></i>
               {{ "REPORTS.SALES_REPORT.GENERATE" | translate }}
             }
           </button>
@@ -176,6 +191,17 @@
               (change)="cashflowGroupByPayment = $event"
             ></app-toggle-switch>
           </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.FORMAT" | translate }}</label>
+            <select [(ngModel)]="cashflowReportFormat">
+              <option value="excel">
+                {{ "REPORTS.FORMAT_EXCEL" | translate }}
+              </option>
+              <option value="pdf">
+                {{ "REPORTS.FORMAT_PDF" | translate }}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="report-footer">
           <button
@@ -187,8 +213,50 @@
               <i class="fas fa-spinner fa-spin"></i>
               {{ "REPORTS.CASHFLOW_REPORT.GENERATING" | translate }}
             } @else {
-              <i class="fas fa-file-pdf"></i>
+              <i
+                class="fas"
+                [class.fa-file-excel]="cashflowReportFormat === 'excel'"
+                [class.fa-file-pdf]="cashflowReportFormat === 'pdf'"
+              ></i>
               {{ "REPORTS.CASHFLOW_REPORT.GENERATE" | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Profit Report Card -->
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon profit">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="report-title-section">
+            <h3>{{ "REPORTS.PROFIT_REPORT.TITLE" | translate }}</h3>
+            <p>{{ "REPORTS.PROFIT_REPORT.DESCRIPTION" | translate }}</p>
+          </div>
+        </div>
+        <div class="report-body">
+          <div class="form-row">
+            <label>{{ "REPORTS.PROFIT_REPORT.START_DATE" | translate }}</label>
+            <input type="date" [(ngModel)]="profitReportStartDate" />
+          </div>
+          <div class="form-row">
+            <label>{{ "REPORTS.PROFIT_REPORT.END_DATE" | translate }}</label>
+            <input type="date" [(ngModel)]="profitReportEndDate" />
+          </div>
+        </div>
+        <div class="report-footer">
+          <button
+            class="btn btn-primary"
+            (click)="generateProfitReport()"
+            [disabled]="generatingProfitReport()"
+          >
+            @if (generatingProfitReport()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              {{ "REPORTS.PROFIT_REPORT.GENERATING" | translate }}
+            } @else {
+              <i class="fas fa-file-excel"></i>
+              {{ "REPORTS.PROFIT_REPORT.GENERATE" | translate }}
             }
           </button>
         </div>

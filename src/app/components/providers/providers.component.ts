@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 import { Subject, takeUntil, skip } from "rxjs";
 import { ProviderService } from "../../services/provider.service";
 import { AuthService } from "../../services/auth.service";
@@ -21,7 +22,7 @@ import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component"
 @Component({
   selector: "app-providers",
   standalone: true,
-  imports: [FormsModule, TranslatePipe, ToggleSwitchComponent],
+  imports: [FormsModule, RouterLink, TranslatePipe, ToggleSwitchComponent],
   templateUrl: "./providers.component.html",
   styleUrls: ["./providers.component.scss"],
 })

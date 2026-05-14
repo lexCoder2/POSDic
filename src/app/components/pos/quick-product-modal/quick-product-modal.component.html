@@ -63,6 +63,10 @@
     <button class="btn-cancel" (click)="onClose()">
       <i class="fas fa-times"></i> {{ "GLOBAL.CANCEL" | translate }}
     </button>
+    <button class="btn-loose" (click)="onSellLoose()">
+      <i class="fas fa-balance-scale"></i>
+      {{ "POS.QUICK_PRODUCT.SELL_ONCE" | translate }}
+    </button>
     <button
       class="btn-complete btn-create"
       (click)="onCreateProduct()"

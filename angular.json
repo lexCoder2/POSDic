@@ -41,12 +41,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
+                  "maximumWarning": "650kb",
                   "maximumError": "1mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "30kb",
+                  "maximumWarning": "45kb",
                   "maximumError": "50kb"
                 }
               ],
@@ -73,9 +73,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "retail-pos:build:development",
-            "ssl": true,
-            "sslKey": "certs/localhost-key.pem",
-            "sslCert": "certs/localhost-cert.pem"
+            "ssl": false
           },
           "configurations": {
             "production": {

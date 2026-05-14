@@ -19,18 +19,18 @@
     padding: $spacing-xs $spacing-lg;
     background: linear-gradient(
       135deg,
-      rgba($warning, 0.15),
-      rgba($warning, 0.1)
+      rgba(var(--color-warning-rgb), 0.15),
+      rgba(var(--color-warning-rgb), 0.1)
     );
-    border: 1px solid rgba($warning, 0.3);
+    border: 1px solid rgba(var(--color-warning-rgb), 0.3);
     border-radius: $radius-lg;
     margin-bottom: $spacing-md;
-    color: $warning-dark;
+    color: var(--color-warning-dark);
     font-weight: $font-weight-medium;
 
     i {
       font-size: $font-size-xl;
-      color: $warning;
+      color: var(--color-warning);
     }
 
     span {
@@ -42,9 +42,9 @@
       align-items: center;
       gap: $spacing-xs;
       padding: $spacing-xs $spacing-md;
-      background: $white;
-      color: $primary;
-      border: 1px solid $primary;
+      background: var(--button-secondary-bg);
+      color: var(--button-secondary-text);
+      border: 1px solid var(--button-secondary-border);
       border-radius: $radius-md;
       font-weight: $font-weight-semibold;
       font-size: $font-size-sm;
@@ -56,10 +56,11 @@
       }
 
       &:hover {
-        background: $primary;
-        color: $white;
+        background: var(--button-primary-bg);
+        color: var(--button-primary-text);
+        border-color: var(--button-primary-bg);
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba($primary, 0.3);
+        box-shadow: var(--shadow-1);
       }
 
       &:active {
@@ -81,7 +82,7 @@
         padding: 0.5rem 0.75rem;
         border-radius: 8px;
         border: none;
-        background: rgba($primary, 0.06);
+        background: rgba(var(--color-primary-rgb), 0.06);
         color: var(--text-primary);
         cursor: pointer;
         font-weight: 700;
@@ -91,7 +92,7 @@
         }
 
         &:hover {
-          background: rgba($primary, 0.09);
+          background: rgba(var(--color-primary-rgb), 0.09);
         }
       }
     }
@@ -108,8 +109,8 @@
       height: 24px;
       border-radius: 50%;
       border: none;
-      background: $danger-light;
-      color: $danger-dark;
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -118,8 +119,8 @@
       transition: all 0.12s;
 
       &:hover {
-        background: $danger;
-        color: $white;
+        background: var(--color-danger);
+        color: #fff;
         transform: scale(1.05);
       }
     }
@@ -218,9 +219,10 @@
   max-height: 100%;
 
   .items-panel {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-1);
     overflow: hidden;
     flex: 1;
     display: flex;
@@ -233,7 +235,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg-primary);
+      background: var(--bg-hover);
       flex-shrink: 0;
 
       h3 {
@@ -245,7 +247,7 @@
         gap: 0.75rem;
 
         i {
-          color: $primary;
+          color: var(--color-primary);
         }
       }
 
@@ -256,20 +258,20 @@
       }
 
       .item-count {
-        background: $primary;
-        color: white;
+        background: var(--color-primary);
+        color: var(--button-primary-text);
         padding: 0.25rem 0.75rem;
-        border-radius: 12px;
+        border-radius: var(--radius-xl);
         font-size: 1rem;
         font-weight: 600;
       }
 
       .clear-all-btn {
         padding: 0.5rem 0.75rem;
-        border: none;
+        border: 1px solid var(--button-danger-bg);
         border-radius: 8px;
-        background: $danger;
-        color: white;
+        background: var(--button-danger-bg);
+        color: var(--button-danger-text);
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
@@ -283,7 +285,8 @@
         }
 
         &:hover:not(:disabled) {
-          background: color.adjust($danger, $lightness: -10%);
+          background: var(--button-danger-bg-hover);
+          border-color: var(--button-danger-bg-hover);
           transform: translateY(-1px);
         }
 
@@ -303,7 +306,7 @@
       flex: 1;
       min-height: 0;
       max-height: 60vh;
-      border: 1px solid $border-light;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       position: relative;
 
@@ -318,39 +321,21 @@
       }
 
       &::-webkit-scrollbar-thumb {
-        background: $primary;
+        background: var(--color-primary);
         border-radius: 4px;
         transition: background 0.3s ease;
 
         &:hover {
-          background: darken($primary, 10%);
+          background: var(--color-primary-dark);
         }
-      }
-
-      // Scroll indicator gradient at bottom
-      &::after {
-        content: "";
-        position: sticky;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 40px;
-        background: linear-gradient(
-          to top,
-          rgba(255, 255, 255, 0.95) 0%,
-          rgba(255, 255, 255, 0.7) 50%,
-          rgba(255, 255, 255, 0) 100%
-        );
-        pointer-events: none;
-        z-index: 1;
       }
 
       .item-row {
         display: flex;
         align-items: center;
         padding: 0.5rem 0.5rem;
-        background: white;
-        border-bottom: 1px solid $border-light;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
         transition: all 0.2s;
         cursor: pointer;
         gap: 0.5rem;
@@ -361,8 +346,8 @@
         }
 
         &.selected {
-          background: rgba($primary, 0.1);
-          border-left: 3px solid $primary;
+          background: rgba(var(--color-primary-rgb), 0.1);
+          border-left: 3px solid var(--color-primary);
           padding-left: calc(0.5rem - 3px);
 
           .item-info {
@@ -469,7 +454,7 @@
             width: 22px;
             height: 22px;
             border: none;
-            background: $gray-300;
+            background: var(--border-light);
             color: var(--text-primary);
             border-radius: 4px;
             cursor: pointer;
@@ -482,23 +467,23 @@
             padding: 0;
 
             &:hover {
-              background: $gray-400;
+              background: var(--text-light);
               transform: scale(1.05);
             }
 
             &.decrease {
-              background: $gray-300;
+              background: var(--border-light);
 
               &:hover {
-                background: $gray-400;
+                background: var(--text-light);
               }
             }
 
             &.increase {
-              background: $gray-300;
+              background: var(--border-light);
 
               &:hover {
-                background: $gray-400;
+                background: var(--text-light);
               }
             }
           }
@@ -515,8 +500,8 @@
             width: 22px;
             height: 22px;
             border: none;
-            background: $gray-300;
-            color: $danger;
+            background: var(--border-light);
+            color: var(--color-danger);
             border-radius: 4px;
             cursor: pointer;
             display: flex;
@@ -528,8 +513,8 @@
             padding: 0;
 
             &:hover {
-              background: $danger;
-              color: $white;
+              background: var(--color-danger);
+              color: var(--button-danger-text);
               transform: scale(1.05);
             }
           }
@@ -547,8 +532,8 @@
           height: 24px;
           border-radius: 50%;
           border: none;
-          background: $danger-light;
-          color: $white;
+          background: rgba(var(--color-danger-rgb), 0.16);
+          color: var(--color-danger-dark);
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -557,8 +542,8 @@
           transition: all 0.12s;
 
           &:hover {
-            background: $danger;
-            color: $white;
+            background: var(--color-danger);
+            color: #fff;
             transform: scale(1.05);
           }
         }
@@ -594,14 +579,11 @@
   }
 
   .total-section {
-    background: linear-gradient(
-      180deg,
-      var(--bg-primary) 0%,
-      var(--bg-secondary) 100%
-    );
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 0 1rem;
-    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+    box-shadow: var(--shadow-1);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -624,7 +606,7 @@
       .total-value {
         font-size: 2.25rem;
         font-weight: 800;
-        color: $primary;
+        color: var(--color-primary);
         line-height: 1;
       }
     }
@@ -635,8 +617,8 @@
       gap: 1rem;
 
       .item-count {
-        background: rgba($primary, 0.12);
-        color: $primary;
+        background: rgba(var(--color-primary-rgb), 0.12);
+        color: var(--color-primary);
         padding: 0.25rem 0.6rem;
         border-radius: 999px;
         font-size: 0.95rem;
@@ -649,15 +631,15 @@
       .clear-all-btn {
         padding: 0.45rem 0.9rem;
         border-radius: $radius-3xl;
-        border: none;
-        background: $danger;
-        color: $white;
+        border: 1px solid var(--button-danger-bg);
+        background: var(--button-danger-bg);
+        color: var(--button-danger-text);
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
         font-weight: 700;
-        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+        box-shadow: var(--shadow-1);
         transition: all 0.12s;
 
         i {
@@ -665,7 +647,8 @@
         }
 
         &:hover:not(:disabled) {
-          background: color.adjust($danger, $lightness: -8%);
+          background: var(--button-danger-bg-hover);
+          border-color: var(--button-danger-bg-hover);
           transform: translateY(-1px);
         }
 
@@ -692,10 +675,11 @@
   }
 
   .payment-section {
-    background: white;
-    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
     padding: 1rem 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-1);
     flex-shrink: 0;
 
     .payment-title {
@@ -713,8 +697,8 @@
 
       .payment-btn {
         padding: 0.8rem 1rem;
-        border: none;
-        border-radius: 12px;
+        border: 1px solid transparent;
+        border-radius: var(--radius-xl);
         font-size: 1.05rem;
         font-weight: 600;
         cursor: pointer;
@@ -723,7 +707,7 @@
         align-items: center;
         gap: 0.6rem;
         transition: all 0.18s;
-        box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+        box-shadow: var(--shadow-1);
         min-height: 64px;
 
         i {
@@ -732,7 +716,7 @@
 
         &:hover:not(:disabled) {
           transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(16, 24, 40, 0.08);
+          box-shadow: var(--shadow-2);
         }
 
         &:active:not(:disabled) {
@@ -745,29 +729,35 @@
         }
 
         &.cash {
-          background: $success;
-          color: white;
+          background: var(--button-success-bg);
+          border-color: var(--button-success-bg);
+          color: var(--button-success-text);
 
           &:hover:not(:disabled) {
-            background: color.adjust($success, $lightness: -10%);
+            background: var(--button-success-bg-hover);
+            border-color: var(--button-success-bg-hover);
           }
         }
 
         &.card {
-          background: $primary;
-          color: white;
+          background: var(--button-primary-bg);
+          border-color: var(--button-primary-bg);
+          color: var(--button-primary-text);
 
           &:hover:not(:disabled) {
-            background: color.adjust($primary, $lightness: -10%);
+            background: var(--button-primary-bg-hover);
+            border-color: var(--button-primary-bg-hover);
           }
         }
 
         &.internal {
-          background: $warning;
-          color: white;
+          background: var(--button-warning-bg);
+          border-color: var(--button-warning-bg);
+          color: var(--button-warning-text);
 
           &:hover:not(:disabled) {
-            background: color.adjust($warning, $lightness: -10%);
+            background: var(--button-warning-bg-hover);
+            border-color: var(--button-warning-bg-hover);
           }
         }
       }
@@ -781,59 +771,37 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
-  animation: fadeIn 0.2s ease-out;
+  z-index: var(--z-modal-backdrop);
+  animation: fade-in var(--transition-fast) both;
   backdrop-filter: blur(4px);
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
 
   .modal-content {
-    background: white;
-    border-radius: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
     width: 90%;
     max-width: 600px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    animation: slideUp 0.3s ease-out;
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
+    box-shadow: var(--shadow-3);
+    animation: slide-up var(--transition) both;
 
     .modal-header {
       padding: $spacing-sm;
-      border-bottom: 2px solid $secondary-dark;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(
-        135deg,
-        $neumorphic-surface 0%,
-        color.adjust($neumorphic-surface, $lightness: -10%) 100%
-      );
-      border-radius: 16px 16px 0 0;
+      background: var(--bg-hover);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 
       h2 {
         margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
-        color: white;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -849,8 +817,8 @@
       height: 24px;
       border-radius: 50%;
       border: none;
-      background: #fed7d7;
-      color: #c53030;
+      background: rgba(var(--color-danger-rgb), 0.12);
+      color: var(--color-danger-dark);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -860,21 +828,21 @@
       flex-shrink: 0;
 
       &:hover {
-        background: #feb2b2;
+        background: rgba(var(--color-danger-rgb), 0.2);
         transform: scale(1.05);
       }
     }
     .modal-body {
       padding: $spacing-md;
-      background: $neumorphic-surface;
+      background: var(--card-bg);
 
       .sale-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: $spacing-md $spacing-lg;
-        background: $white;
-        border-radius: 12px;
+        background: var(--bg-hover);
+        border-radius: var(--radius-xl);
         margin-bottom: $spacing-md;
 
         .label {
@@ -886,7 +854,7 @@
         .value {
           font-size: 2rem;
           font-weight: 700;
-          color: $primary;
+          color: var(--color-primary);
         }
       }
 
@@ -905,36 +873,36 @@
           justify-content: space-between;
           align-items: center;
           padding: 1.5rem;
-          background: rgba($success, 0.1);
-          border: 2px solid $success;
-          border-radius: 12px;
+          background: rgba(var(--color-success-rgb), 0.1);
+          border: 2px solid var(--color-success);
+          border-radius: var(--radius-xl);
           margin-bottom: 1rem;
           transition: all 0.3s ease;
 
           .change-label {
             font-size: 1.25rem;
             font-weight: 600;
-            color: $success;
+            color: var(--color-success);
             transition: color 0.3s ease;
           }
 
           .change-value {
             font-size: 2rem;
             font-weight: 700;
-            color: $success;
+            color: var(--color-success);
             transition: color 0.3s ease;
           }
 
           &.insufficient {
-            background: rgba($danger, 0.1);
-            border-color: $danger;
+            background: rgba(var(--color-danger-rgb), 0.1);
+            border-color: var(--color-danger);
 
             .change-label {
-              color: $danger;
+              color: var(--color-danger);
             }
 
             .change-value {
-              color: $danger;
+              color: var(--color-danger);
             }
           }
         }
@@ -944,10 +912,10 @@
           align-items: center;
           gap: 0.5rem;
           padding: 1rem;
-          background: rgba($danger, 0.1);
-          border: 1px solid $danger;
+          background: rgba(var(--color-danger-rgb), 0.1);
+          border: 1px solid var(--color-danger);
           border-radius: 8px;
-          color: $danger;
+          color: var(--color-danger);
           font-weight: 500;
 
           i {
@@ -962,7 +930,7 @@
 
         i {
           font-size: 4rem;
-          color: $success;
+          color: var(--color-success);
           margin-bottom: 1rem;
         }
 
@@ -983,7 +951,7 @@
 
       .modal-btn {
         padding: 1rem 2rem;
-        border: none;
+        border: 1px solid transparent;
         border-radius: 8px;
         font-size: 1rem;
         font-weight: 600;
@@ -996,35 +964,40 @@
         }
 
         &.cancel {
-          background: var(--text-secondary);
-          color: white;
+          background: var(--button-secondary-bg);
+          border-color: var(--button-secondary-border);
+          color: var(--button-secondary-text);
 
           &:hover:not(:disabled) {
-            background: $gray-700;
+            background: var(--button-secondary-bg-hover);
           }
         }
 
         &.secondary {
-          background: $blue-primary;
-          color: white;
+          background: var(--button-primary-bg);
+          border-color: var(--button-primary-bg);
+          color: var(--button-primary-text);
           min-width: 180px;
 
           &:hover:not(:disabled) {
-            background: color.adjust($blue-primary, $lightness: -10%);
+            background: var(--button-primary-bg-hover);
+            border-color: var(--button-primary-bg-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba($blue-primary, 0.3);
+            box-shadow: var(--shadow-1);
           }
         }
 
         &.confirm {
-          background: $success;
-          color: white;
+          background: var(--button-success-bg);
+          border-color: var(--button-success-bg);
+          color: var(--button-success-text);
           min-width: 160px;
 
           &:hover:not(:disabled) {
-            background: color.adjust($success, $lightness: -10%);
+            background: var(--button-success-bg-hover);
+            border-color: var(--button-success-bg-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba($success, 0.3);
+            box-shadow: var(--shadow-1);
           }
         }
       }
@@ -1049,15 +1022,15 @@
   margin-top: 1rem;
   width: 100%;
   padding: 1rem;
-  border: none;
-  border-radius: 12px;
-  background: $gradient-primary;
-  color: white;
+  border: 1px solid var(--button-primary-bg);
+  border-radius: var(--radius-xl);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: $shadow-primary-lg;
+  box-shadow: var(--shadow-1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1069,7 +1042,9 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 140, 66, 0.4);
+    background: var(--button-primary-bg-hover);
+    border-color: var(--button-primary-bg-hover);
+    box-shadow: var(--shadow-2);
   }
 
   &:active {
@@ -1089,15 +1064,16 @@
     font-size: 0.85rem;
   }
   .scale-connection {
-    background: $gradient-primary;
-    border-radius: 12px;
+    background: rgba(var(--color-primary-rgb), 0.08);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.18);
+    border-radius: var(--radius-xl);
     padding: $spacing-sm;
     margin-bottom: $spacing-md;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    color: white;
+    color: var(--text-primary);
 
     .scale-status {
       display: flex;
@@ -1110,7 +1086,7 @@
         font-size: 1.5rem;
 
         &.connected {
-          color: $success;
+          color: var(--color-success);
           animation: pulse 2s ease-in-out infinite;
         }
       }
@@ -1118,10 +1094,10 @@
 
     .scale-btn {
       padding: 0.75rem 1.5rem;
-      border: 2px solid white;
+      border: 1px solid var(--button-secondary-border);
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
+      background: var(--button-secondary-bg);
+      color: var(--button-secondary-text);
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -1130,16 +1106,17 @@
       gap: 0.5rem;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--button-secondary-bg-hover);
         transform: translateY(-2px);
       }
 
       &.disconnect {
-        background: rgba(239, 68, 68, 0.3);
-        border-color: $danger;
+        background: rgba(var(--color-danger-rgb), 0.12);
+        color: var(--color-danger-dark);
+        border-color: rgba(var(--color-danger-rgb), 0.24);
 
         &:hover {
-          background: rgba(239, 68, 68, 0.5);
+          background: rgba(var(--color-danger-rgb), 0.2);
         }
       }
     }
@@ -1147,34 +1124,34 @@
 
   .scale-reading {
     background: var(--bg-secondary);
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    border: 2px solid $border-light;
+    border: 1px solid var(--border-color);
 
     .reading-display {
-      background: white;
+      background: var(--card-bg);
       border-radius: 8px;
       padding: 1.5rem;
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      border: 2px solid $border-light;
+      border: 1px solid var(--border-color);
       transition: all 0.3s;
 
       &.stable {
-        border-color: $success;
+        border-color: var(--color-success);
         background: linear-gradient(
           135deg,
-          rgba($success, 0.1) 0%,
-          rgba($success, 0.2) 100%
+          rgba(var(--color-success-rgb), 0.1) 0%,
+          rgba(var(--color-success-rgb), 0.2) 100%
         );
       }
 
       i {
         font-size: 2rem;
-        color: $primary;
+        color: var(--color-primary);
       }
 
       .weight {
@@ -1191,8 +1168,8 @@
 
       .status-badge {
         margin-left: auto;
-        background: $success;
-        color: white;
+        background: var(--color-success);
+        color: var(--button-success-text);
         padding: 0.5rem 1rem;
         border-radius: 6px;
         font-size: 0.875rem;
@@ -1233,15 +1210,15 @@
     .form-input {
       width: 100%;
       padding: 0.875rem;
-      border: 2px solid $border-light;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       font-size: 1rem;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: $primary;
-        box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
       }
 
       &:readonly {
@@ -1250,10 +1227,10 @@
       }
 
       &.invalid {
-        border-color: $danger;
+        border-color: var(--color-danger);
 
         &:focus {
-          box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);
+          box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
         }
       }
     }
@@ -1269,20 +1246,20 @@
       gap: 0.5rem;
 
       i {
-        color: $info;
+        color: var(--color-info);
       }
     }
   }
 
   .total-preview {
-    background: $gradient-primary;
-    border-radius: 12px;
+    background: var(--button-primary-bg);
+    border-radius: var(--radius-xl);
     padding: 1.5rem;
     margin-top: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
+    color: var(--button-primary-text);
 
     .preview-label {
       font-size: 1.25rem;
@@ -1334,16 +1311,6 @@
   }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
 @media (max-width: 576px) {
   .cashier-container {
     .cashier-content {
@@ -1388,17 +1355,13 @@
       right: 8px;
       bottom: 68px; /* above the payment bar */
       z-index: $z-modal;
-      border-radius: 12px;
+      border-radius: var(--radius-xl);
       padding: 0.5rem 0.75rem;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      box-shadow: var(--shadow-2);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(
-        180deg,
-        var(--bg-primary) 0%,
-        var(--bg-secondary) 100%
-      );
+      background: var(--card-bg);
 
       .total-display {
         .total-value {
@@ -1421,8 +1384,8 @@
       margin: 0;
       border-radius: 0;
       padding: 0.5rem;
-      background: var(--bg-primary);
-      box-shadow: 0 -6px 24px rgba(16, 24, 40, 0.08);
+      background: var(--card-bg);
+      box-shadow: var(--shadow-2);
 
       .payment-buttons {
         display: flex;

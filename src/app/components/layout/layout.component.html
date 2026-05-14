@@ -2,7 +2,19 @@
 <header class="top-header">
   <div class="header-content">
     <div class="sidebar-header">
-      <i class="fas fa-store"></i>
+      @if (isAdminOrManager) {
+        <button
+          class="header-dashboard-btn"
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [title]="'GLOBAL.SIDEBAR.DASHBOARD' | translate"
+          type="button"
+        >
+          <i class="fas fa-store"></i>
+        </button>
+      } @else {
+        <i class="fas fa-store"></i>
+      }
     </div>
     <app-page-title [title]="pageTitle" [icon]="pageIcon">
       @if (pageActions) {
@@ -39,6 +51,40 @@
     <button class="user-swap" (click)="switchUser()">
       <i class="fa-solid fa-people-arrows"></i>
     </button>
+
+    <!-- Multi-user session chips (Spec 1) -->
+    @if ((sessions$ | async)!.length > 1) {
+      <div class="session-chips">
+        @for (
+          session of (sessions$ | async)!;
+          track session.user.id ?? session.user.username
+        ) {
+          <span
+            class="session-chip"
+            [class.session-chip--active]="
+              (session.user.id ?? session.user.username) ===
+              (currentUser?.id ?? currentUser?.username)
+            "
+            (click)="switchToSession(session.user.id ?? session.user.username)"
+            [title]="session.user.firstName + ' (' + session.user.role + ')'"
+          >
+            {{ session.user.firstName }}
+            <button
+              class="session-chip__close"
+              type="button"
+              (click)="
+                $event.stopPropagation();
+                closeSession(session.user.id ?? session.user.username)
+              "
+              aria-label="Close session"
+            >
+              &times;
+            </button>
+          </span>
+        }
+      </div>
+    }
+
     <div class="user-info" (click)="toggleUserDropdown()">
       <span class="user-name">{{
         currentUser?.firstName || ("GLOBAL.USER" | translate)

@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { RouterLink } from "@angular/router";
 import { ReceiptGeneratorService } from "../../services/receipt-generator.service";
@@ -14,6 +13,8 @@ import { QzTrayService } from "../../services/qz-tray.service";
 import { ScaleService } from "../../services/scale.service";
 import { ToggleSwitchComponent } from "../toggle-switch/toggle-switch.component";
 import { environment } from "@environments/environment";
+import { SettingsService } from "../../services/settings.service";
+import { AppSettings } from "../../models";
 
 @Component({
   selector: "app-settings",
@@ -21,7 +22,6 @@ import { environment } from "@environments/environment";
   imports: [
     CommonModule,
     FormsModule,
-    PageTitleComponent,
     TranslatePipe,
     RouterLink,
     ToggleSwitchComponent,
@@ -38,6 +38,14 @@ export class SettingsComponent implements OnInit {
   private userService = inject(UserService);
   private qzTrayService = inject(QzTrayService);
   private scaleService = inject(ScaleService);
+  private settingsService = inject(SettingsService);
+
+  // Estimated cost settings
+  estimatedCostEnabled = false;
+  estimatedCostMarginPercent = 30;
+  savingEstimatedCost = false;
+  sellMode: AppSettings["sellMode"] = "combined";
+  savingSellMode = false;
 
   printerMode: "plain" | "styled" = "plain";
   showPrintPreview = false;
@@ -45,8 +53,8 @@ export class SettingsComponent implements OnInit {
   displayName = "";
   preferredLang = "";
   userPrinterMode: "inherit" | "plain" | "styled" = "inherit";
-  selectedCurrency: string = "USD";
-  defaultPrinter: string = "default";
+  selectedCurrency = "USD";
+  defaultPrinter = "default";
   availablePrinters: string[] = [];
 
   // QR Badge properties
@@ -84,6 +92,18 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load app-wide settings (estimated cost, etc.)
+    this.settingsService.loadSettings().subscribe({
+      next: (s) => {
+        this.estimatedCostEnabled = s.estimatedCostEnabled;
+        this.estimatedCostMarginPercent = s.estimatedCostMarginPercent;
+        this.sellMode = s.sellMode;
+      },
+      error: () => {
+        /* non-critical */
+      },
+    });
+
     // Load global printer mode from localStorage (for system-wide setting)
     const stored = localStorage.getItem("printer.mode");
     if (stored === "plain" || stored === "styled") {
@@ -166,6 +186,63 @@ export class SettingsComponent implements OnInit {
   onDefaultPrinterChange(): void {
     localStorage.setItem("printer.default", this.defaultPrinter);
     console.log(`Default printer changed to: ${this.defaultPrinter}`);
+  }
+
+  saveEstimatedCostSettings(): void {
+    if (
+      this.estimatedCostMarginPercent < 0 ||
+      this.estimatedCostMarginPercent > 100
+    ) {
+      this.toastService.show(
+        this.translationService.translate(
+          "SETTINGS.ESTIMATED_COST.INVALID_MARGIN"
+        ),
+        "error"
+      );
+      return;
+    }
+    this.savingEstimatedCost = true;
+    this.settingsService
+      .updateSettings({
+        estimatedCostEnabled: this.estimatedCostEnabled,
+        estimatedCostMarginPercent: this.estimatedCostMarginPercent,
+      })
+      .subscribe({
+        next: () => {
+          this.toastService.show(
+            this.translationService.translate("SETTINGS.ESTIMATED_COST.SAVED"),
+            "success"
+          );
+          this.savingEstimatedCost = false;
+        },
+        error: () => {
+          this.toastService.show(
+            this.translationService.translate("GLOBAL.ERROR"),
+            "error"
+          );
+          this.savingEstimatedCost = false;
+        },
+      });
+  }
+
+  saveSellModeSettings(): void {
+    this.savingSellMode = true;
+    this.settingsService.updateSettings({ sellMode: this.sellMode }).subscribe({
+      next: () => {
+        this.toastService.show(
+          this.translationService.translate("SETTINGS.SELL_MODE.SAVED"),
+          "success"
+        );
+        this.savingSellMode = false;
+      },
+      error: () => {
+        this.toastService.show(
+          this.translationService.translate("GLOBAL.ERROR"),
+          "error"
+        );
+        this.savingSellMode = false;
+      },
+    });
   }
 
   setPrinterMode(mode: "plain" | "styled") {

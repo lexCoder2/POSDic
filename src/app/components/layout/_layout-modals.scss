@@ -1,0 +1,724 @@
+// =============================================================================
+// _layout-modals.scss — Modal forms hosted inside the layout component
+//   • Open Register / Switch User / Withdraw modal
+//   • QR camera scanner overlay
+// =============================================================================
+@use "../../../styles/theme" as *;
+
+// ===== SHARED MODAL FORM STRUCTURE =====
+.register-form,
+.switch-user-form,
+.withdraw-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  h4 {
+    margin: 0 0 $spacing-md;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+  }
+
+  // Device info badge
+  .device-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    font-size: $font-size-xs;
+    color: var(--text-secondary);
+    width: fit-content;
+
+    i {
+      color: var(--color-primary);
+    }
+  }
+
+  .device-bound-alert {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background: var(--color-success-bg);
+    border: 1px solid rgba(var(--color-success-rgb), 0.3);
+    border-radius: var(--radius-md);
+    color: var(--color-success-dark);
+    font-size: $font-size-sm;
+
+    i,
+    strong {
+      color: var(--color-success);
+    }
+  }
+
+  .loading-registers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    padding: $spacing-lg;
+    color: var(--text-secondary);
+
+    i {
+      color: var(--color-primary);
+    }
+  }
+
+  // Register selection list
+  .register-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
+    max-height: 250px;
+    overflow-y: auto;
+
+    .register-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-md;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition:
+        border-color var(--transition),
+        background var(--transition);
+
+      &:hover {
+        border-color: rgba(var(--color-primary-rgb), 0.3);
+        background: rgba(var(--color-primary-rgb), 0.04);
+      }
+
+      &.selected {
+        border-color: var(--color-primary);
+        background: rgba(var(--color-primary-rgb), 0.08);
+
+        .register-item-icon {
+          background: var(--color-primary);
+          color: #fff;
+        }
+      }
+
+      &.new-register {
+        border-style: dashed;
+
+        .register-item-icon {
+          background: var(--bg-secondary);
+          color: var(--color-primary);
+        }
+
+        &.selected .register-item-icon {
+          background: var(--color-primary);
+          color: #fff;
+        }
+
+        &.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+      }
+
+      &.device-bound {
+        border-color: var(--color-success);
+        background: var(--color-success-bg);
+
+        .register-item-icon {
+          background: var(--color-success);
+          color: #fff;
+        }
+      }
+
+      &.other-device {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+          border-color: var(--border-color);
+          background: transparent;
+        }
+      }
+
+      .register-item-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        position: relative;
+
+        .device-link-icon,
+        .device-lock-icon {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          font-size: 0.65rem;
+          border-radius: 50%;
+          padding: 3px;
+          color: #fff;
+        }
+        .device-link-icon {
+          background: var(--color-success);
+        }
+        .device-lock-icon {
+          background: var(--color-danger);
+        }
+      }
+
+      .register-item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .register-name {
+          font-weight: $font-weight-semibold;
+          color: var(--text-primary);
+        }
+        .register-last-used {
+          font-size: $font-size-sm;
+          color: var(--text-muted);
+        }
+
+        .device-name-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: $font-size-xs;
+          color: var(--color-success);
+          font-weight: $font-weight-medium;
+
+          &.other {
+            color: var(--text-muted);
+          }
+          i {
+            font-size: 0.65rem;
+          }
+        }
+      }
+
+      .register-item-check {
+        color: var(--color-primary);
+        font-size: 1.25rem;
+      }
+    }
+
+    .no-registers {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-lg;
+      color: var(--text-muted);
+      font-size: $font-size-sm;
+
+      i {
+        color: var(--color-info);
+      }
+    }
+  }
+
+  .new-register-input {
+    margin-top: $spacing-sm;
+    padding-top: $spacing-md;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    label {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .form-control {
+      @include input-base();
+
+      &:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.12);
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .form-control {
+        padding-right: 2.5rem;
+      }
+
+      .password-toggle-btn {
+        position: absolute;
+        right: 0.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--transition);
+        border-radius: var(--radius-md);
+
+        i {
+          font-size: 1rem;
+        }
+
+        &:hover {
+          color: var(--color-primary);
+          background: rgba(var(--color-primary-rgb), 0.08);
+        }
+      }
+    }
+  }
+
+  .modal-description {
+    color: var(--text-secondary);
+    font-size: $font-size-base;
+    line-height: $line-height-normal;
+    margin: 0 0 $spacing-lg;
+    padding: $spacing-md;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-primary);
+  }
+
+  .register-info,
+  .withdraw-info > p {
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    padding: $spacing-md;
+    margin-bottom: $spacing-sm;
+
+    p {
+      margin: $spacing-xs 0;
+      color: var(--text-secondary);
+      font-size: var(--font-size-base);
+
+      strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .permission-notice {
+    background: rgba(var(--color-primary-rgb), 0.08);
+    border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+    border-radius: var(--radius-md);
+    padding: $spacing-md;
+    display: flex;
+    gap: $spacing-sm;
+    align-items: flex-start;
+
+    i {
+      color: var(--color-primary);
+      font-size: 1.2rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      line-height: 1.5;
+    }
+  }
+
+  // Local .btn overrides inside modal forms
+  .btn {
+    @include button-base();
+
+    &.btn-primary {
+      @include button-primary();
+    }
+    &.btn-secondary {
+      @include button-secondary();
+    }
+    &.btn-danger {
+      @include button-danger();
+    }
+  }
+}
+
+// ===== MODAL FOOTER (shared) =====
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-hover);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+
+  .btn {
+    @include button-base();
+    min-width: 120px;
+    padding: $spacing-xs $spacing-lg;
+
+    &.btn-primary {
+      @include button-primary();
+    }
+    &.btn-secondary {
+      @include button-secondary();
+    }
+  }
+}
+
+// ===== WITHDRAW FORM =====
+.withdraw-modal-content {
+  padding: 0;
+
+  .withdraw-info {
+    .current-cash-info {
+      margin-top: 0;
+      margin-bottom: $spacing-md;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      padding: $spacing-sm $spacing-md;
+      box-shadow: var(--shadow-1);
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .label {
+          font-size: $font-size-sm;
+          color: var(--text-secondary);
+          font-weight: $font-weight-medium;
+        }
+        .value {
+          font-size: $font-size-xl;
+          font-weight: $font-weight-bold;
+          color: var(--color-success-dark);
+          letter-spacing: -0.5px;
+        }
+      }
+    }
+
+    .withdraw-amount-input {
+      @include input-base();
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      color: var(--color-danger);
+      text-align: center;
+      letter-spacing: -0.5px;
+      border-width: 2px;
+
+      &:hover {
+        border-color: var(--color-danger-light);
+      }
+
+      &:focus {
+        border-color: var(--color-danger);
+        box-shadow: 0 0 0 2px rgba(var(--color-danger-rgb), 0.12);
+      }
+
+      &::placeholder {
+        color: var(--text-light);
+        font-size: $font-size-base;
+        font-weight: $font-weight-normal;
+      }
+    }
+  }
+
+  .withdraw-reason-group {
+    position: relative;
+    margin-bottom: 0;
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-semibold;
+      color: var(--text-primary);
+      margin-bottom: $spacing-xs;
+
+      &::after {
+        content: "*";
+        color: var(--color-danger);
+        margin-left: -$spacing-xs;
+      }
+    }
+
+    .form-control {
+      @include input-base();
+      resize: none;
+      min-height: 60px;
+      border-width: 2px;
+
+      &:hover {
+        border-color: var(--border-dark);
+      }
+      &:focus {
+        border-color: var(--color-warning);
+        box-shadow: 0 0 0 2px rgba(var(--color-warning-rgb), 0.12);
+      }
+    }
+  }
+}
+
+// ===== SWITCH USER FORM =====
+.switch-user-form {
+  .login-mode-toggle {
+    display: flex;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-lg;
+    padding: 4px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+
+    .mode-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      padding: $spacing-sm $spacing-md;
+      border: none;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all var(--transition);
+
+      &:hover {
+        color: var(--text-primary);
+      }
+      &.active {
+        background: var(--bg-primary);
+        color: var(--color-primary);
+        box-shadow: var(--shadow-2);
+      }
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+    background: var(--color-danger-bg);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.2);
+    border-radius: var(--radius-md);
+    color: var(--color-danger);
+    font-size: $font-size-sm;
+  }
+
+  .scanner-login-section {
+    text-align: center;
+
+    .scanner-instructions {
+      color: var(--text-secondary);
+      font-size: $font-size-base;
+      margin: 0 0 $spacing-lg;
+    }
+
+    .scanner-input-wrapper {
+      position: relative;
+      margin-bottom: $spacing-md;
+
+      .scanner-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-primary);
+        font-size: 1.5rem;
+      }
+
+      .scanner-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        font-size: $font-size-lg;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        text-align: center;
+        transition: all var(--transition);
+
+        &:focus {
+          outline: none;
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+        }
+        &::placeholder {
+          color: var(--text-light);
+        }
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .scanner-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      color: var(--text-muted);
+      font-size: $font-size-sm;
+      margin: 0 0 $spacing-lg;
+
+      i {
+        color: var(--color-info);
+      }
+    }
+
+    .scanner-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-md;
+      margin-bottom: $spacing-md;
+      background: rgba(var(--color-primary-rgb), 0.08);
+      border-radius: var(--radius-md);
+      color: var(--color-primary);
+      font-weight: $font-weight-medium;
+    }
+
+    .btn-use-camera {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-xs;
+      padding: $spacing-sm $spacing-lg;
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      cursor: pointer;
+      transition: all var(--transition);
+
+      &:hover:not(:disabled) {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        background: rgba(var(--color-primary-rgb), 0.04);
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// ===== QR CAMERA SCANNER OVERLAY =====
+.qr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: calc(var(--z-modal) + 10);
+  backdrop-filter: blur(4px);
+}
+
+.qr-modal-content {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  width: 90%;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: var(--shadow-3);
+
+  .qr-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .btn-close {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background var(--transition);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .qr-modal-body {
+    padding: $spacing-lg;
+
+    .qr-instructions {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: $font-size-sm;
+      margin: 0 0 $spacing-md;
+    }
+
+    .qr-scanner-container {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #000;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .qr-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+      padding: $spacing-md;
+      margin-top: $spacing-md;
+      background: rgba(var(--color-primary-rgb), 0.08);
+      border-radius: var(--radius-md);
+      color: var(--color-primary);
+      font-weight: $font-weight-medium;
+    }
+  }
+}

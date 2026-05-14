@@ -7,7 +7,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.9);
+  background: rgba(#000, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,14 +19,14 @@
   position: relative;
   width: 100%;
   max-width: 500px;
-  background: $black;
+  background: #000;
   border-radius: $radius-xl;
   overflow: hidden;
 
   #camera-scanner {
     width: 100%;
     min-height: 350px;
-    background: $gray-900;
+    background: var(--text-primary);
   }
 }
 
@@ -40,14 +40,14 @@
   min-height: 40px;
   padding: 0;
   border-radius: $radius-full;
-  background: rgba($white, 0.2);
-  color: $white;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
   font-size: $font-size-xl;
   z-index: 1;
   box-shadow: none;
 
   &:hover {
-    background: rgba($white, 0.3);
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -64,8 +64,8 @@
     display: inline-flex;
     align-items: center;
     gap: $spacing-sm;
-    background: rgba($black, 0.85);
-    color: $white;
+    background: rgba(#000, 0.85);
+    color: #fff;
     padding: $spacing-sm $spacing-md;
     border-radius: $radius-full;
     box-shadow: $shadow-xl;
@@ -75,7 +75,7 @@
     animation: toast-pop 260ms ease-out;
 
     i {
-      color: $success;
+      color: var(--color-success);
     }
   }
 }
@@ -107,7 +107,7 @@
   box-shadow: $shadow-primary-lg;
 
   i {
-    color: $white;
+    color: #fff;
   }
 
   @media (max-width: $breakpoint-md) {

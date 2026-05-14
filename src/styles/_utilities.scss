@@ -1,0 +1,600 @@
+// =============================================================================
+// _utilities.scss — Shared UI Utility Classes
+// =============================================================================
+// These classes eliminate hundreds of lines of duplicated component SCSS.
+// Components should use these classes in their HTML templates instead of
+// repeating the same rules locally.
+//
+// Sections:
+//   1. Buttons (.btn, .btn-*)
+//   2. Cards (.card, .card-hover)
+//   3. Modal (.modal-overlay, .modal-box)
+//   4. Spinner (.spinner, .spinner-sm)
+//   5. Badges & Tags (.badge, .tag, .status-dot)
+//   6. Form inputs (.field, .search-box)
+//   7. Status blocks (.status-bar, .alert)
+//   8. Layout shortcuts (.flex-center, .fill, .page-panel)
+//   9. Tables (.data-table)
+// =============================================================================
+
+// ---- 1. Buttons -------------------------------------------------------------
+// Base: apply to every button; variant modifier adds color.
+// Usage: <button class="btn btn-primary">
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+  min-height: var(--touch-md);
+  white-space: nowrap;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &:active:not(:disabled) {
+    filter: brightness(0.9);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.3);
+  }
+}
+
+.btn-primary {
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border-color: var(--button-primary-bg);
+
+  &:hover:not(:disabled) {
+    background: var(--button-primary-bg-hover);
+    border-color: var(--button-primary-bg-hover);
+  }
+}
+
+.btn-secondary {
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-color: var(--button-secondary-border);
+
+  &:hover:not(:disabled) {
+    background: var(--button-secondary-bg-hover);
+  }
+}
+
+.btn-success {
+  background: var(--button-success-bg);
+  color: var(--button-success-text);
+  border-color: var(--button-success-bg);
+
+  &:hover:not(:disabled) {
+    background: var(--button-success-bg-hover);
+    border-color: var(--button-success-bg-hover);
+  }
+}
+
+.btn-danger {
+  background: var(--button-danger-bg);
+  color: var(--button-danger-text);
+  border-color: var(--button-danger-bg);
+
+  &:hover:not(:disabled) {
+    background: var(--button-danger-bg-hover);
+    border-color: var(--button-danger-bg-hover);
+  }
+}
+
+.btn-warning {
+  background: var(--button-warning-bg);
+  color: var(--button-warning-text);
+  border-color: var(--button-warning-bg);
+
+  &:hover:not(:disabled) {
+    background: var(--button-warning-bg-hover);
+    border-color: var(--button-warning-bg-hover);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--button-ghost-text);
+
+  &:hover:not(:disabled) {
+    background: var(--button-ghost-hover-bg);
+    color: var(--button-ghost-hover-text);
+  }
+}
+
+.btn-ghost-primary {
+  background: transparent;
+  color: var(--button-ghost-primary-text);
+
+  &:hover:not(:disabled) {
+    background: var(--button-ghost-primary-hover-bg);
+  }
+}
+
+// Size modifiers
+.btn-sm {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  min-height: var(--touch-sm);
+  gap: var(--space-1);
+}
+
+.btn-lg {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-lg);
+  min-height: var(--touch-lg);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-icon {
+  width: var(--touch-md);
+  height: var(--touch-md);
+  min-height: var(--touch-md);
+  padding: 0;
+  border-radius: var(--radius-md);
+}
+
+.btn-icon-sm {
+  width: var(--touch-sm);
+  height: var(--touch-sm);
+  min-height: var(--touch-sm);
+  padding: 0;
+  border-radius: var(--radius-sm);
+}
+
+// ---- 2. Cards ---------------------------------------------------------------
+// Usage: <div class="card"> or <div class="card card-hover">
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+}
+
+.card-body {
+  padding: var(--space-3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-hover {
+  transition:
+    box-shadow var(--transition),
+    transform var(--transition);
+  &:hover {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-1px);
+  }
+}
+
+// ---- 3. Modal ---------------------------------------------------------------
+// Usage: add .modal-overlay to fixed backdrop divs.
+// REPLACE the 12+ local .modal-overlay definitions with this class.
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in var(--transition-fast) both;
+}
+
+.modal-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slide-up var(--transition) both;
+  position: relative;
+  z-index: var(--z-modal);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+
+  h2,
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+}
+
+.modal-body {
+  padding: var(--space-3) var(--space-4);
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+// Modal close button
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  transition: background var(--transition);
+  &:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+}
+
+// ---- 4. Spinner -------------------------------------------------------------
+// Usage:  <div class="spinner"></div>
+//         <div class="spinner spinner-sm"></div>
+// REPLACES 8 duplicate local spinner definitions.
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner-sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.spinner-lg {
+  width: 52px;
+  height: 52px;
+  border-width: 4px;
+}
+
+// Loading state wrapper
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+// ---- 5. Badges & Tags -------------------------------------------------------
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.badge-primary {
+  background: rgba(var(--color-primary-rgb), 0.12);
+  color: var(--color-primary);
+}
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+}
+.badge-danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-dark);
+}
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-dark);
+}
+.badge-neutral {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+// Status dot (colored circle)
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  &--success {
+    background: var(--color-success);
+  }
+  &--danger {
+    background: var(--color-danger);
+  }
+  &--warning {
+    background: var(--color-warning);
+  }
+  &--neutral {
+    background: var(--border-dark);
+  }
+}
+
+// Tag (slightly larger than badge, used for categories etc.)
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+// ---- 6. Form inputs ---------------------------------------------------------
+// Canonical input style. Use .field-input on <input>, <select>, <textarea>.
+
+.field-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  outline: none;
+  min-height: var(--input-height);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+
+  &::placeholder {
+    color: var(--text-light);
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.12);
+  }
+
+  &:disabled {
+    background: var(--bg-disabled);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
+
+// Search input with icon
+.search-box {
+  position: relative;
+
+  .search-icon {
+    position: absolute;
+    left: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: var(--font-size-base);
+  }
+
+  input {
+    padding-left: calc(var(--space-3) + 1.25rem + var(--space-2));
+  }
+}
+
+// ---- 7. Status bars / alerts ------------------------------------------------
+// Colored status stripe (used for register status, warnings, etc.)
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-left: 3px solid currentColor;
+
+  &--success {
+    background: var(--color-success-bg);
+    color: var(--color-success-dark);
+  }
+  &--danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-dark);
+  }
+  &--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-dark);
+  }
+  &--info {
+    background: rgba(var(--color-info-rgb), 0.1);
+    color: var(--color-info-dark);
+  }
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+
+  &--success {
+    background: var(--color-success-bg);
+    color: var(--color-success-dark);
+    border: 1px solid rgba(var(--color-success-rgb), 0.3);
+  }
+  &--danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-dark);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.3);
+  }
+  &--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-dark);
+    border: 1px solid rgba(var(--color-warning-rgb), 0.3);
+  }
+}
+
+// ---- 8. Layout shortcuts ---------------------------------------------------
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+}
+
+.page-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-10);
+  color: var(--text-muted);
+  text-align: center;
+
+  i {
+    font-size: 2.5rem;
+    opacity: 0.4;
+  }
+}
+
+// Divider
+.divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: var(--space-2) 0;
+}
+
+// ---- 9. Data tables ---------------------------------------------------------
+// Canonical table container. Use .data-table on the container, not the <table>.
+
+.data-table-wrapper {
+  background: var(--table-bg);
+  border: 1px solid var(--table-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  overflow: auto;
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--table-header-bg);
+    color: var(--table-header-text);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--table-border);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--table-border);
+    transition: background var(--transition-fast);
+
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: var(--table-row-hover);
+    }
+  }
+
+  tbody td {
+    padding: var(--space-2) var(--space-3);
+    color: var(--table-cell-text);
+    font-size: var(--font-size-sm);
+    vertical-align: middle;
+  }
+}
+
+// Row action buttons inside tables
+.table-actions {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}

@@ -78,6 +78,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
     stock: 0,
     minStock: 0,
     active: true,
+    available: true,
     requiresScale: false,
     image_url: "",
   };
@@ -118,7 +119,12 @@ export class ProductFormComponent implements OnInit, OnChanges {
   ngOnChanges(): void {
     if (this.product) {
       this.isEditingProduct = true;
-      this.productForm = { ...this.product };
+      this.productForm = {
+        ...this.productForm,
+        active: true,
+        available: true,
+        ...this.product,
+      };
       this.imagePreview.set(this.product.image_url || null);
     } else {
       this.isEditingProduct = false;
@@ -601,13 +607,23 @@ export class ProductFormComponent implements OnInit, OnChanges {
   }
 
   async saveProduct(): Promise<void> {
-    if (!this.productForm.name || !this.productForm.price) {
+    const trimmedName = `${this.productForm.name || ""}`.trim();
+    const price = Number(this.productForm.price);
+    const hasPrice =
+      this.productForm.price !== null &&
+      this.productForm.price !== undefined &&
+      this.productForm.price !== "";
+
+    if (!trimmedName || !hasPrice || Number.isNaN(price)) {
       this.toastService.show(
         this.translation.translate("INVENTORY.ALERTS.FILL_REQUIRED"),
         "info"
       );
       return;
     }
+
+    this.productForm.name = trimmedName;
+    this.productForm.price = price;
 
     // If cost is not set or is 0, use price
     if (!this.productForm.cost || this.productForm.cost === 0) {
@@ -762,6 +778,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       stock: 0,
       minStock: 0,
       active: true,
+      available: true,
       requiresScale: false,
       image_url: "",
     };

@@ -18,7 +18,6 @@ import { AuthService } from "../../services/auth.service";
 import { ToastService } from "../../services/toast.service";
 import { SearchStateService } from "../../services/search-state.service";
 import { Sale, SaleItem, User } from "../../models";
-import { PageTitleComponent } from "../page-title/page-title.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CurrencyPipe } from "../../pipes/currency.pipe";
 import { ModalComponent } from "../modal/modal.component";
@@ -29,7 +28,6 @@ import { ModalComponent } from "../modal/modal.component";
   imports: [
     CommonModule,
     FormsModule,
-    PageTitleComponent,
     TranslatePipe,
     ModalComponent,
     CurrencyPipe,

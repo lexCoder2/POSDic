@@ -1,0 +1,51 @@
+<div class="printer-setup">
+  <h3>{{ "PRINTER.SETUP_TITLE" | translate }}</h3>
+
+  <div class="status-row">
+    <span
+      class="status-badge"
+      [class.connected]="status() === 'connected'"
+      [class.error]="status() === 'error'"
+    >
+      {{ "PRINTER.STATUS." + status().toUpperCase() | translate }}
+    </span>
+
+    <button
+      *ngIf="status() !== 'connected'"
+      (click)="connect()"
+      [disabled]="isLoading() || status() === 'connecting'"
+    >
+      {{ "PRINTER.CONNECT" | translate }}
+    </button>
+    <button *ngIf="status() === 'connected'" (click)="disconnect()">
+      {{ "PRINTER.DISCONNECT" | translate }}
+    </button>
+  </div>
+
+  <div class="printer-select" *ngIf="status() === 'connected'">
+    <label>{{ "PRINTER.DEFAULT_PRINTER" | translate }}</label>
+    <select
+      [ngModel]="selectedPrinter()"
+      (ngModelChange)="selectPrinter($event)"
+    >
+      <option value="">{{ "PRINTER.SELECT_PRINTER" | translate }}</option>
+      <option *ngFor="let p of printers()" [value]="p">{{ p }}</option>
+    </select>
+  </div>
+
+  <div class="print-mode" *ngIf="status() === 'connected'">
+    <label>{{ "PRINTER.PRINT_MODE" | translate }}</label>
+    <select [(ngModel)]="printMode">
+      <option value="html">{{ "PRINTER.MODE_HTML" | translate }}</option>
+      <option value="escpos">{{ "PRINTER.MODE_ESCPOS" | translate }}</option>
+    </select>
+  </div>
+
+  <button
+    class="test-btn"
+    *ngIf="status() === 'connected'"
+    (click)="printTest()"
+  >
+    {{ "PRINTER.PRINT_TEST" | translate }}
+  </button>
+</div>

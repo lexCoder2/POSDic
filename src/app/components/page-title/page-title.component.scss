@@ -1,7 +1,7 @@
 @use "../../../styles/theme" as *;
 
 .page-title {
-  color: $primary;
+  color: var(--color-primary);
   width: 144px;
   padding: 0 0.5rem;
   display: flex;
@@ -63,13 +63,11 @@
         cursor: pointer;
 
         &.btn-primary {
-          background: $primary-light;
-          color: white;
+          @include button-primary();
         }
 
         &.btn-secondary {
           @include button-secondary();
-          color: $text-inverse;
         }
       }
 
@@ -79,11 +77,12 @@
         font-size: 0.85rem;
         border: 1px solid $border-light;
         border-radius: 4px;
-        background: white;
+        background: var(--input-bg);
+        color: var(--text-primary);
 
         &:focus {
           outline: none;
-          border-color: $primary;
+          border-color: var(--color-primary);
         }
       }
     }

@@ -199,9 +199,9 @@
             <div class="form-group">
               <label>{{ "INVENTORY.FORM.AVAILABLE_LABEL" | translate }}</label>
               <app-toggle-switch
-                [checked]="productForm.active"
+                [checked]="productForm.available"
                 [tabindex]="9"
-                (change)="productForm.active = $event"
+                (change)="productForm.available = $event"
               ></app-toggle-switch>
             </div>
           }
@@ -217,6 +217,19 @@
             ></app-toggle-switch>
           </div>
         </div>
+
+        @if (!showRequiredFieldsOnly()) {
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ "INVENTORY.FORM.ACTIVE_LABEL" | translate }}</label>
+              <app-toggle-switch
+                [checked]="productForm.active"
+                [tabindex]="11"
+                (change)="productForm.active = $event"
+              ></app-toggle-switch>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Right Column -->

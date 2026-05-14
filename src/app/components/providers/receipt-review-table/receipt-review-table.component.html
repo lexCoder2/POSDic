@@ -1,0 +1,276 @@
+<div class="modal-overlay" (click)="cancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>{{ "PROVIDERS.INVOICES.REVIEW.TITLE" | translate }}</h2>
+      <button class="btn-close" (click)="cancel()" [disabled]="isApplying()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Invoice metadata -->
+    <div class="invoice-meta" *ngIf="parsedInvoice">
+      <div class="meta-row">
+        <span *ngIf="parsedInvoice.invoiceNumber" class="meta-item">
+          <strong
+            >{{
+              "PROVIDERS.INVOICES.REVIEW.INVOICE_NUMBER" | translate
+            }}:</strong
+          >
+          {{ parsedInvoice.invoiceNumber }}
+        </span>
+        <span *ngIf="parsedInvoice.invoiceDate" class="meta-item">
+          <strong
+            >{{ "PROVIDERS.INVOICES.REVIEW.INVOICE_DATE" | translate }}:</strong
+          >
+          {{ parsedInvoice.invoiceDate | date: "shortDate" }}
+        </span>
+        <span *ngIf="parsedInvoice.providerRfc" class="meta-item">
+          <strong
+            >{{ "PROVIDERS.INVOICES.REVIEW.PROVIDER_RFC" | translate }}:</strong
+          >
+          {{ parsedInvoice.providerRfc }}
+        </span>
+      </div>
+      <div class="meta-row" *ngIf="parsedInvoice.visionUnavailable">
+        <div class="vision-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ "PROVIDERS.INVOICES.SCANNER.VISION_UNAVAILABLE" | translate }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table class="review-table">
+        <thead>
+          <tr>
+            <th class="th-include">
+              {{ "PROVIDERS.INVOICES.REVIEW.INCLUDE" | translate }}
+            </th>
+            <th>{{ "PROVIDERS.INVOICES.REVIEW.DESCRIPTION" | translate }}</th>
+            <th class="th-num">
+              {{ "PROVIDERS.INVOICES.REVIEW.QUANTITY" | translate }}
+            </th>
+            <th class="th-num">
+              {{ "PROVIDERS.INVOICES.REVIEW.UNIT_COST" | translate }}
+            </th>
+            <th class="th-num">
+              {{ "PROVIDERS.INVOICES.REVIEW.TOTAL" | translate }}
+            </th>
+            <th class="th-match">
+              {{ "PROVIDERS.INVOICES.REVIEW.MATCH" | translate }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let row of rows(); let i = index; trackBy: trackByIndex"
+            [class.excluded]="!row.included"
+          >
+            <!-- Include checkbox -->
+            <td class="td-include">
+              <input
+                type="checkbox"
+                [checked]="row.included"
+                (change)="toggleIncluded(i)"
+                [disabled]="readOnly || isApplying()"
+              />
+            </td>
+
+            <!-- Description + barcode -->
+            <td class="td-desc">
+              <div class="desc-primary">{{ row.description }}</div>
+              <div class="desc-barcode" *ngIf="row.barcode">
+                <input
+                  *ngIf="!readOnly"
+                  class="input-small"
+                  type="text"
+                  [ngModel]="row.barcode"
+                  (ngModelChange)="updateField(i, 'barcode', $event)"
+                  [disabled]="isApplying()"
+                  placeholder="Barcode"
+                />
+                <span *ngIf="readOnly">{{ row.barcode }}</span>
+              </div>
+            </td>
+
+            <!-- Quantity -->
+            <td class="td-num">
+              <input
+                *ngIf="!readOnly"
+                class="input-num"
+                type="number"
+                min="0"
+                [ngModel]="row.quantity"
+                (ngModelChange)="updateField(i, 'quantity', $event)"
+                [disabled]="!row.included || isApplying()"
+              />
+              <span *ngIf="readOnly">{{ row.quantity }}</span>
+            </td>
+
+            <!-- Unit cost -->
+            <td class="td-num">
+              <input
+                *ngIf="!readOnly"
+                class="input-num"
+                type="number"
+                min="0"
+                step="0.01"
+                [ngModel]="row.unitCost"
+                (ngModelChange)="updateField(i, 'unitCost', $event)"
+                [disabled]="!row.included || isApplying()"
+              />
+              <span *ngIf="readOnly">{{ row.unitCost | currency }}</span>
+            </td>
+
+            <!-- Total -->
+            <td class="td-num td-total">{{ row.total | currency }}</td>
+
+            <!-- Product match -->
+            <td class="td-match">
+              <ng-container *ngIf="!readOnly">
+                <!-- Matched product chip -->
+                <div *ngIf="row.matchedProduct" class="match-chip match-found">
+                  <span>{{ getProductName(row) }}</span>
+                  <button
+                    class="btn-clear-match"
+                    (click)="clearMatch(i)"
+                    [disabled]="isApplying()"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+
+                <!-- Create new chip -->
+                <div
+                  *ngIf="!row.matchedProduct && row.createNew"
+                  class="match-chip match-new"
+                >
+                  <span>{{
+                    "PROVIDERS.INVOICES.REVIEW.CREATE_NEW" | translate
+                  }}</span>
+                  <button
+                    class="btn-clear-match"
+                    (click)="toggleCreateNew(i)"
+                    [disabled]="isApplying()"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+
+                <!-- No match controls -->
+                <div
+                  *ngIf="!row.matchedProduct && !row.createNew"
+                  class="match-search"
+                >
+                  <div class="search-wrapper">
+                    <input
+                      class="input-search"
+                      type="text"
+                      [ngModel]="row.searchQuery"
+                      (ngModelChange)="searchProduct(i, $event)"
+                      (blur)="hideDropdown(i)"
+                      [disabled]="!row.included || isApplying()"
+                      [placeholder]="
+                        'PROVIDERS.INVOICES.REVIEW.SEARCH_PRODUCT' | translate
+                      "
+                    />
+                    <div class="search-spinner" *ngIf="row.isSearching">
+                      <i class="fas fa-circle-notch fa-spin"></i>
+                    </div>
+                    <div class="search-dropdown" *ngIf="row.showDropdown">
+                      <button
+                        *ngFor="let p of row.searchResults"
+                        class="dropdown-item"
+                        (mousedown)="selectProduct(i, p)"
+                        type="button"
+                      >
+                        <span class="item-name">{{ p.name }}</span>
+                        <span class="item-sku">{{ p.sku }}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    class="btn-create-new"
+                    (click)="toggleCreateNew(i)"
+                    [disabled]="!row.included || isApplying()"
+                    type="button"
+                    title="{{
+                      'PROVIDERS.INVOICES.REVIEW.CREATE_NEW' | translate
+                    }}"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </ng-container>
+
+              <!-- Read-only match display -->
+              <ng-container *ngIf="readOnly">
+                <span *ngIf="row.matchedProduct" class="match-chip match-found">
+                  {{ getProductName(row) }}
+                </span>
+                <span
+                  *ngIf="!row.matchedProduct && row.createNew"
+                  class="match-chip match-new"
+                >
+                  {{ "PROVIDERS.INVOICES.REVIEW.CREATE_NEW" | translate }}
+                </span>
+                <span
+                  *ngIf="!row.matchedProduct && !row.createNew"
+                  class="no-match"
+                >
+                  {{ "PROVIDERS.INVOICES.REVIEW.NO_MATCH" | translate }}
+                </span>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Totals bar -->
+    <div class="totals-bar" *ngIf="parsedInvoice.totals">
+      <div class="total-item">
+        <span>{{ "PROVIDERS.INVOICES.REVIEW.SUBTOTAL" | translate }}:</span>
+        <strong>{{ parsedInvoice.totals.subtotal | currency }}</strong>
+      </div>
+      <div class="total-item" *ngIf="parsedInvoice.totals.tax">
+        <span>{{ "PROVIDERS.INVOICES.REVIEW.TAX" | translate }}:</span>
+        <strong>{{ parsedInvoice.totals.tax | currency }}</strong>
+      </div>
+      <div class="total-item grand">
+        <span>{{ "PROVIDERS.INVOICES.REVIEW.GRAND_TOTAL" | translate }}:</span>
+        <strong>{{ parsedInvoice.totals.total | currency }}</strong>
+      </div>
+      <div class="total-item selected-count">
+        <span
+          >{{ "PROVIDERS.INVOICES.REVIEW.ITEMS_SELECTED" | translate }}:</span
+        >
+        <strong>{{ selectedCount() }} / {{ rows().length }}</strong>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancel()" [disabled]="isApplying()">
+        {{ "PROVIDERS.INVOICES.REVIEW.CANCEL" | translate }}
+      </button>
+      <button
+        *ngIf="!readOnly"
+        class="btn-apply"
+        (click)="confirmAndApply()"
+        [disabled]="isApplying() || selectedCount() === 0"
+      >
+        <i class="fas fa-circle-notch fa-spin" *ngIf="isApplying()"></i>
+        <i class="fas fa-check" *ngIf="!isApplying()"></i>
+        {{
+          (isApplying()
+            ? "PROVIDERS.INVOICES.REVIEW.APPLYING"
+            : "PROVIDERS.INVOICES.REVIEW.CONFIRM_APPLY"
+          ) | translate
+        }}
+      </button>
+    </div>
+  </div>
+</div>

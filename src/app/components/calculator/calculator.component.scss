@@ -30,9 +30,9 @@
     }
 
     &:focus {
-      border-color: $primary;
+      border-color: var(--color-primary);
       background: var(--bg-primary);
-      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
     }
 
     &:hover:not(:focus) {
@@ -57,29 +57,29 @@
   transition: all 0.3s ease;
 
   &.selected {
-    background: rgba($primary, 0.15);
+    background: rgba(var(--color-primary-rgb), 0.15);
     box-shadow:
       inset 0 2px 8px rgba(0, 0, 0, 0.2),
-      0 0 0 2px rgba($primary, 0.5);
+      0 0 0 2px rgba(var(--color-primary-rgb), 0.5);
     animation: pulse-selection 1s ease-in-out infinite;
 
     .display-value,
     .quantity-display {
-      color: $primary;
+      color: var(--color-primary);
       animation: text-pulse 1s ease-in-out infinite;
     }
   }
 
   &.editing {
-    background: rgba($success, 0.2);
+    background: rgba(var(--color-success-rgb), 0.2);
     box-shadow:
       inset 0 2px 8px rgba(0, 0, 0, 0.2),
-      0 0 0 3px rgba($success, 0.6);
-    border: 2px solid $success;
+      0 0 0 3px rgba(var(--color-success-rgb), 0.6);
+    border: 2px solid var(--color-success);
 
     .display-value,
     .quantity-display {
-      color: $success;
+      color: var(--color-success);
       font-weight: 800;
     }
   }
@@ -94,7 +94,7 @@
   .quantity-display {
     font-size: 2rem;
     font-weight: 700;
-    color: $primary;
+    color: var(--color-primary);
     transition: color 0.3s ease;
   }
 
@@ -134,7 +134,7 @@
 
     &:hover {
       background: rgba(0, 0, 0, 0.1);
-      color: $primary;
+      color: var(--color-primary);
       transform: translateY(-50%) scale(1.1);
     }
 
@@ -158,7 +158,7 @@
     border: none;
     min-height: 72px;
     height: 100%;
-    border-radius: 12px;
+    border-radius: var(--radius-xl);
     font-size: 1.25rem;
     font-weight: 600;
     cursor: pointer;
@@ -182,7 +182,7 @@
 
       &:hover {
         background: $bg-active;
-        border-color: $primary;
+        border-color: var(--color-primary);
       }
 
       &.zero {
@@ -191,39 +191,39 @@
     }
 
     &.operation {
-      background: $primary;
+      background: var(--color-primary);
       color: white;
 
       &:hover {
-        background: color.adjust($primary, $lightness: -10%);
+        background: var(--color-primary-dark);
       }
 
       &.clear {
-        background: $warning;
+        background: var(--color-warning);
 
         &:hover {
-          background: color.adjust($warning, $lightness: -10%);
+          background: var(--color-warning-dark);
         }
       }
 
       &.clear-all {
-        background: $danger;
+        background: var(--color-danger);
 
         &:hover {
-          background: color.adjust($danger, $lightness: -10%);
+          background: var(--color-danger-dark);
         }
       }
 
       &.backspace {
-        background: $gray-500;
+        background: var(--button-secondary-bg);
 
         &:hover {
-          background: color.adjust($gray-500, $lightness: -10%);
+          background: var(--button-secondary-bg-hover);
         }
       }
 
       &.add {
-        background: $success;
+        background: var(--color-success);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -236,7 +236,7 @@
         }
 
         &:hover {
-          background: color.adjust($success, $lightness: -10%);
+          background: var(--color-success-dark);
         }
       }
     }
@@ -249,7 +249,7 @@
   width: 100%;
   padding: 1rem;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   background: $gradient-primary;
   color: white;
   font-size: 1rem;
@@ -312,12 +312,12 @@
   100% {
     box-shadow:
       inset 0 2px 8px rgba(0, 0, 0, 0.2),
-      0 0 0 2px rgba($primary, 0.5);
+      0 0 0 2px rgba(var(--color-primary-rgb), 0.5);
   }
   50% {
     box-shadow:
       inset 0 2px 8px rgba(0, 0, 0, 0.2),
-      0 0 0 2px rgba($primary, 0.8);
+      0 0 0 2px rgba(var(--color-primary-rgb), 0.8);
   }
 }
 

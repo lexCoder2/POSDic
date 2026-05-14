@@ -17,27 +17,12 @@
   </button>
 
   <nav class="sidebar-nav">
-    @if (isAdminOrManager) {
-      <button
-        class="sidebar-btn"
-        routerLink="/dashboard"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-chart-line"></i>
-        <span>{{ "GLOBAL.SIDEBAR.DASHBOARD" | translate }}</span>
-        <kbd class="fkey-label">F1</kbd>
-      </button>
-    }
     <button class="sidebar-btn" routerLink="/pos" routerLinkActive="active">
       <i class="fas fa-cash-register"></i>
       <span>{{ "GLOBAL.SIDEBAR.POS" | translate }}</span>
       <kbd class="fkey-label">F2</kbd>
     </button>
-    <button class="sidebar-btn" routerLink="/cashier" routerLinkActive="active">
-      <i class="fas fa-calculator"></i>
-      <span>{{ "GLOBAL.SIDEBAR.QUICK_CASHIER" | translate }}</span>
-      <kbd class="fkey-label">F3</kbd>
-    </button>
+
     @if (isAdminOrManager) {
       <button
         class="sidebar-btn"
@@ -58,6 +43,16 @@
       <span>{{ "GLOBAL.SIDEBAR.INVENTORY" | translate }}</span>
       <kbd class="fkey-label">F5</kbd>
     </button>
+    @if (isAdminOrManager) {
+      <button
+        class="sidebar-btn"
+        routerLink="/categories"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-tags"></i>
+        <span>{{ "GLOBAL.SIDEBAR.CATEGORIES" | translate }}</span>
+      </button>
+    }
 
     @if (isAdmin) {
       <button
@@ -77,6 +72,28 @@
         <kbd class="fkey-label">F7</kbd>
       </button>
     }
+
+    @if (isAdminOrManager) {
+      <button
+        class="sidebar-btn"
+        routerLink="/shopping-lists"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-list-check"></i>
+        <span>{{ "GLOBAL.SIDEBAR.SHOPPING_LISTS" | translate }}</span>
+      </button>
+    }
+
+    @if (sellMode === "split") {
+      <button
+        class="sidebar-btn"
+        routerLink="/checkout-desk"
+        routerLinkActive="active"
+      >
+        <i class="fas fa-receipt"></i>
+        <span>{{ "CHECKOUT_DESK.TITLE" | translate }}</span>
+      </button>
+    }
     @if (isAdminOrManager) {
       <button
         class="sidebar-btn"
@@ -93,17 +110,6 @@
         <i class="fas fa-users"></i>
         <span>{{ "GLOBAL.SIDEBAR.USERS" | translate }}</span>
         <kbd class="fkey-label">F9</kbd>
-      </button>
-    }
-    @if (isAdminOrManager) {
-      <button
-        class="sidebar-btn"
-        routerLink="/settings"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-cog"></i>
-        <span>{{ "GLOBAL.SETTINGS" | translate }}</span>
-        <kbd class="fkey-label">F10</kbd>
       </button>
     }
   </nav>

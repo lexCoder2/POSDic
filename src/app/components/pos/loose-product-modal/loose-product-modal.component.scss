@@ -6,23 +6,24 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($black, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-modal;
+  z-index: var(--z-modal-backdrop);
   padding: $spacing-lg;
 }
 
 .modal-content {
-  background: $white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: $radius-2xl;
   width: 100%;
   max-width: 450px;
   max-height: 90vh;
   overflow: auto;
-  box-shadow: $shadow-xl;
+  box-shadow: var(--shadow-3);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -43,7 +44,7 @@
   align-items: center;
   padding: $spacing-xl;
   background: $gradient-primary;
-  color: $white;
+  color: #fff;
   border-radius: $radius-2xl $radius-2xl 0 0;
 
   h3 {
@@ -62,12 +63,12 @@
     min-height: 36px;
     padding: 0;
     border-radius: $radius-full;
-    background: rgba($white, 0.2);
-    color: $white;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
     box-shadow: none;
 
     &:hover {
-      background: rgba($white, 0.3);
+      background: rgba(255, 255, 255, 0.3);
     }
   }
 }
@@ -91,13 +92,13 @@
     display: flex;
     align-items: center;
     gap: $spacing-xs;
-    color: $success;
+    color: var(--color-success);
     font-weight: $font-weight-medium;
   }
 
   .btn-use-scale {
     @include button-base;
-    background: $white;
+    background: var(--button-secondary-bg);
     color: var(--text-primary);
     padding: $spacing-sm $spacing-md;
     border-radius: $radius-lg;
@@ -107,9 +108,9 @@
     border: 1px solid var(--border-color);
 
     &.active {
-      background: $blue-primary;
-      color: $white;
-      border-color: $blue-primary;
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
     }
   }
 
@@ -118,13 +119,13 @@
     align-items: baseline;
     gap: $spacing-xs;
     padding: $spacing-sm $spacing-md;
-    background: rgba($blue-primary, 0.1);
+    background: rgba(var(--color-primary-rgb), 0.1);
     border-radius: $radius-lg;
 
     .weight-value {
       font-size: $font-size-3xl;
       font-weight: $font-weight-bold;
-      color: $blue-primary;
+      color: var(--color-primary);
     }
 
     .weight-unit {
@@ -137,11 +138,11 @@
       font-size: $font-size-sm;
       padding: 2px 8px;
       border-radius: $radius-full;
-      background: $warning;
-      color: $white;
+      background: var(--color-warning);
+      color: #fff;
 
       &.stable {
-        background: $success;
+        background: var(--color-success);
       }
     }
   }
@@ -160,7 +161,7 @@
     gap: $spacing-xs;
 
     i {
-      color: $blue-primary;
+      color: var(--color-primary);
       width: 16px;
     }
   }
@@ -178,11 +179,11 @@
 }
 
 .total-preview {
-  background: rgba($success, 0.1);
+  background: rgba(var(--color-success-rgb), 0.1);
   padding: $spacing-lg;
   border-radius: $radius-xl;
   text-align: center;
-  border: 1px solid rgba($success, 0.3);
+  border: 1px solid rgba(var(--color-success-rgb), 0.3);
 
   .total-label {
     font-size: $font-size-sm;
@@ -194,7 +195,7 @@
   .total-value {
     font-size: $font-size-4xl;
     font-weight: $font-weight-bold;
-    color: $success;
+    color: var(--color-success);
     margin: $spacing-xs 0;
   }
 
@@ -208,28 +209,33 @@
   display: flex;
   gap: $spacing-lg;
   padding: $spacing-xl;
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
+  border-top: 1px solid var(--border-color);
   border-radius: 0 0 $radius-2xl $radius-2xl;
 
   .btn-cancel {
     @include button-secondary;
     flex: 1;
-    background: $white;
-    color: $gray-500;
-    border: 2px solid var(--border-color);
+    background: var(--button-secondary-bg);
+    color: var(--button-secondary-text);
+    border: 1px solid var(--button-secondary-border);
 
     &:hover {
-      background: var(--bg-tertiary);
+      background: var(--button-secondary-bg-hover);
     }
   }
 
   .btn-confirm {
     @include button-primary;
     flex: 2;
-    background: linear-gradient(135deg, $success 0%, $success-dark 100%);
+    background: linear-gradient(
+      135deg,
+      var(--color-success) 0%,
+      var(--color-success-dark) 100%
+    );
 
     &:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba($success, 0.3);
+      box-shadow: 0 4px 12px rgba(var(--color-success-rgb), 0.3);
     }
 
     &:disabled {

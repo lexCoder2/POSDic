@@ -3,9 +3,33 @@ const router = express.Router();
 const Sale = require("../models/Sale");
 const Product = require("../models/Product");
 const Register = require("../models/Register");
+const Settings = require("../models/Settings");
 const { protect, checkPermission } = require("../middleware/auth");
 const PDFDocument = require("pdfkit");
 const ExcelJS = require("exceljs");
+
+// --- Shared Excel helpers ---
+
+function styleHeaderRow(worksheet) {
+  worksheet.getRow(1).font = { color: { argb: "FFFFFFFF" }, bold: true };
+  worksheet.getRow(1).fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FF654483" },
+  };
+}
+
+function addSummaryRow(worksheet, values) {
+  worksheet.addRow([]);
+  const row = worksheet.addRow(values);
+  row.font = { bold: true };
+  row.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFEEEEEE" },
+  };
+  return row;
+}
 
 // @route   GET /api/reports/sales
 // @desc    Generate sales report
@@ -21,6 +45,7 @@ router.get(
         endDate,
         groupBy = "day",
         includeRefunds = "false",
+        format = "pdf",
       } = req.query;
 
       if (!startDate || !endDate) {
@@ -43,7 +68,6 @@ router.get(
 
       const sales = await Sale.find(query)
         .populate("cashier", "firstName lastName username")
-        .populate("register", "name location")
         .sort({ createdAt: 1 });
 
       // Group sales data
@@ -80,7 +104,96 @@ router.get(
         groupedData[key].sales.push(sale);
       });
 
-      // Generate PDF
+      // Generate PDF or Excel based on format parameter
+      if (format === "excel") {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "POS System";
+        workbook.created = new Date();
+
+        // Sheet 1: Transactions
+        const txSheet = workbook.addWorksheet("Transactions");
+        txSheet.columns = [
+          { header: "Date", key: "date", width: 20 },
+          { header: "Sale #", key: "saleNumber", width: 12 },
+          { header: "Cashier", key: "cashier", width: 20 },
+          { header: "Payment Method", key: "paymentMethod", width: 18 },
+          { header: "Subtotal", key: "subtotal", width: 14 },
+          { header: "Discount", key: "discount", width: 12 },
+          { header: "Tax", key: "tax", width: 12 },
+          { header: "Total", key: "total", width: 14 },
+        ];
+        styleHeaderRow(txSheet);
+
+        sales.forEach((sale) => {
+          txSheet.addRow({
+            date: new Date(sale.createdAt).toLocaleString(),
+            saleNumber: sale.saleNumber || "",
+            cashier: sale.cashier?.username || sale.cashier?.firstName || "",
+            paymentMethod: sale.paymentMethod || "",
+            subtotal: sale.subtotal || 0,
+            discount: sale.discount || 0,
+            tax: sale.tax || 0,
+            total: sale.total || 0,
+          });
+        });
+
+        ["subtotal", "discount", "tax", "total"].forEach((col) => {
+          txSheet.getColumn(col).numFmt = "$#,##0.00";
+        });
+
+        addSummaryRow(txSheet, [
+          "TOTAL",
+          "",
+          "",
+          "",
+          sales.reduce((s, x) => s + (x.subtotal || 0), 0),
+          sales.reduce((s, x) => s + (x.discount || 0), 0),
+          sales.reduce((s, x) => s + (x.tax || 0), 0),
+          sales.reduce((s, x) => s + (x.total || 0), 0),
+        ]);
+
+        // Sheet 2: Summary by period
+        const summarySheet = workbook.addWorksheet("Summary");
+        summarySheet.columns = [
+          { header: "Period", key: "period", width: 16 },
+          { header: "# Sales", key: "count", width: 10 },
+          { header: "Revenue", key: "total", width: 14 },
+          { header: "Subtotal", key: "subtotal", width: 14 },
+          { header: "Discount", key: "discount", width: 12 },
+          { header: "Tax", key: "tax", width: 12 },
+        ];
+        styleHeaderRow(summarySheet);
+
+        Object.keys(groupedData)
+          .sort()
+          .forEach((key) => {
+            const d = groupedData[key];
+            summarySheet.addRow({
+              period: key,
+              count: d.count,
+              total: d.total,
+              subtotal: d.subtotal,
+              discount: d.discount,
+              tax: d.tax,
+            });
+          });
+        ["total", "subtotal", "discount", "tax"].forEach((col) => {
+          summarySheet.getColumn(col).numFmt = "$#,##0.00";
+        });
+
+        res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=sales-report-${startDate}-to-${endDate}.xlsx`
+        );
+        await workbook.xlsx.write(res);
+        return res.end();
+      }
+
+      // Generate PDF (default)
       const doc = new PDFDocument({ margin: 50, size: "A4" });
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
@@ -167,7 +280,14 @@ router.get(
         query.stock = { $lte: 0 };
       }
 
-      const products = await Product.find(query).sort({ category: 1, name: 1 });
+      let products = await Product.find(query).sort({ category: 1, name: 1 });
+
+      // Bug fix: sort by stock value (price * stock) descending for type=value
+      if (type === "value") {
+        products = products
+          .slice()
+          .sort((a, b) => b.price * b.stock - a.price * a.stock);
+      }
 
       if (products.length === 0) {
         return res
@@ -272,6 +392,7 @@ router.get(
         includeWithdrawals = "true",
         groupByRegister = "false",
         groupByPayment = "false",
+        format = "pdf",
       } = req.query;
 
       if (!startDate || !endDate) {
@@ -288,12 +409,113 @@ router.get(
         status: "completed",
       };
 
+      // Bug fix: apply includeWithdrawals filter
+      if (includeWithdrawals === "false") {
+        query.isInternal = { $ne: true };
+      }
+
       const sales = await Sale.find(query)
         .populate("cashier", "firstName lastName username")
-        .populate("register", "name location")
         .sort({ createdAt: 1 });
 
-      // Generate PDF
+      if (format === "excel") {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = "POS System";
+        workbook.created = new Date();
+
+        // Sheet 1: Transactions
+        const txSheet = workbook.addWorksheet("Cash Flow");
+        txSheet.columns = [
+          { header: "Date", key: "date", width: 20 },
+          { header: "Sale #", key: "saleNumber", width: 12 },
+          { header: "Cashier", key: "cashier", width: 20 },
+          { header: "Payment Method", key: "paymentMethod", width: 18 },
+          { header: "Total", key: "total", width: 14 },
+        ];
+        styleHeaderRow(txSheet);
+
+        sales.forEach((sale) => {
+          txSheet.addRow({
+            date: new Date(sale.createdAt).toLocaleString(),
+            saleNumber: sale.saleNumber || "",
+            cashier: sale.cashier?.username || sale.cashier?.firstName || "",
+            paymentMethod: sale.paymentMethod || "",
+            total: sale.total || 0,
+          });
+        });
+        txSheet.getColumn("total").numFmt = "$#,##0.00";
+
+        addSummaryRow(txSheet, [
+          "TOTAL",
+          "",
+          "",
+          "",
+          sales.reduce((s, x) => s + (x.total || 0), 0),
+        ]);
+
+        // Sheet 2: By payment method
+        const byPayment = workbook.addWorksheet("By Payment Method");
+        byPayment.columns = [
+          { header: "Payment Method", key: "method", width: 20 },
+          { header: "# Transactions", key: "count", width: 16 },
+          { header: "Total", key: "total", width: 14 },
+        ];
+        styleHeaderRow(byPayment);
+
+        const pmGroups = {};
+        sales.forEach((s) => {
+          const m = s.paymentMethod || "unknown";
+          if (!pmGroups[m]) pmGroups[m] = { count: 0, total: 0 };
+          pmGroups[m].count++;
+          pmGroups[m].total += s.total;
+        });
+        Object.entries(pmGroups).forEach(([method, data]) => {
+          byPayment.addRow({ method, count: data.count, total: data.total });
+        });
+        byPayment.getColumn("total").numFmt = "$#,##0.00";
+
+        // Sheet 3: By Register (when groupByRegister=true)
+        if (groupByRegister === "true") {
+          const byRegister = workbook.addWorksheet("By Register");
+          byRegister.columns = [
+            { header: "Register", key: "register", width: 24 },
+            { header: "# Transactions", key: "count", width: 16 },
+            { header: "Total", key: "total", width: 14 },
+          ];
+          styleHeaderRow(byRegister);
+
+          const regGroups = {};
+          sales.forEach((s) => {
+            const regName =
+              s.register?.name || s.register?.toString() || "Unknown";
+            if (!regGroups[regName])
+              regGroups[regName] = { count: 0, total: 0 };
+            regGroups[regName].count++;
+            regGroups[regName].total += s.total || 0;
+          });
+          Object.entries(regGroups).forEach(([register, data]) => {
+            byRegister.addRow({
+              register,
+              count: data.count,
+              total: data.total,
+            });
+          });
+          byRegister.getColumn("total").numFmt = "$#,##0.00";
+        }
+
+        res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=cashflow-report-${startDate}-to-${endDate}.xlsx`
+        );
+        await workbook.xlsx.write(res);
+        return res.end();
+      }
+
+      // Generate PDF (default)
       const doc = new PDFDocument({ margin: 50, size: "A4" });
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
@@ -416,10 +638,13 @@ router.get(
         if (category) {
           query.category = category;
         }
-        query.barcode = { $exists: true, $ne: "" };
+        // Bug fix: use actual schema field (ean) instead of non-existent barcode field
+        query.ean = { $exists: true, $ne: "" };
       } else if (generationType === "auto") {
         // Auto-generate for products without barcodes
-        query.barcode = { $in: ["", null] };
+        query.ean = { $in: ["", null] };
+        query.$or = [{ ean: { $in: ["", null] } }, { ean: { $exists: false } }];
+        delete query.ean;
       }
 
       const products = await Product.find(query).sort({ category: 1, name: 1 });
@@ -457,7 +682,11 @@ router.get(
           doc.addPage();
         }
 
-        const barcode = product.barcode || `AUTO${product.sku || product._id}`;
+        const barcode =
+          product.ean ||
+          product.ean13 ||
+          product.upc ||
+          `AUTO${product.sku || product._id}`;
 
         // Center content
         let yPos = 10;
@@ -804,5 +1033,181 @@ function getWeekNumber(date) {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
 }
+
+// @route   GET /api/reports/profit
+// @desc    Profit report — revenue vs estimated cost, per product
+// @access  Private (requires reports permission)
+router.get(
+  "/profit",
+  protect,
+  checkPermission(["reports"]),
+  async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res
+          .status(400)
+          .json({ message: "Start and end dates are required" });
+      }
+
+      const settings = await Settings.getSingleton();
+      const marginPercent = settings.estimatedCostMarginPercent;
+      const useEstimatedCost = settings.estimatedCostEnabled;
+
+      const sales = await Sale.find({
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999)),
+        },
+        status: "completed",
+        isInternal: { $ne: true },
+        refundedSale: { $exists: false },
+      })
+        .populate("items.product", "name cost")
+        .sort({ createdAt: 1 });
+
+      // Aggregate by product
+      const productMap = new Map();
+      sales.forEach((sale) => {
+        sale.items.forEach((item) => {
+          const key =
+            item.product?._id?.toString() || item.productName || "generic";
+          const name =
+            item.product?.name || item.productName || "Generic Product";
+          const revenue = item.subtotal || item.unitPrice * item.quantity;
+          const exactCost = item.product?.cost
+            ? item.product.cost * item.quantity
+            : null;
+          const estCost = Settings.estimatedCost(revenue, marginPercent);
+
+          if (!productMap.has(key)) {
+            productMap.set(key, {
+              name,
+              qty: 0,
+              revenue: 0,
+              exactCost: 0,
+              estCost: 0,
+              hasExactCost: exactCost !== null,
+            });
+          }
+          const entry = productMap.get(key);
+          entry.qty += item.quantity;
+          entry.revenue += revenue;
+          entry.exactCost += exactCost !== null ? exactCost : 0;
+          entry.estCost += estCost;
+        });
+      });
+
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = "POS System";
+      workbook.created = new Date();
+
+      const sheet = workbook.addWorksheet("Profit Analysis");
+      const columns = [
+        { header: "Product", key: "name", width: 30 },
+        { header: "Qty Sold", key: "qty", width: 12 },
+        { header: "Revenue", key: "revenue", width: 14 },
+      ];
+
+      if (useEstimatedCost) {
+        columns.push(
+          {
+            header: `Est. Cost (${marginPercent}% margin)`,
+            key: "estCost",
+            width: 22,
+          },
+          { header: "Est. Profit", key: "estProfit", width: 14 },
+          { header: "Est. Margin %", key: "estMargin", width: 16 }
+        );
+      } else {
+        columns.push(
+          { header: "Cost", key: "exactCost", width: 14 },
+          { header: "Gross Profit", key: "profit", width: 14 }
+        );
+      }
+
+      sheet.columns = columns;
+      styleHeaderRow(sheet);
+
+      let totalRevenue = 0;
+      let totalCost = 0;
+
+      productMap.forEach((entry) => {
+        totalRevenue += entry.revenue;
+
+        if (useEstimatedCost) {
+          const estProfit = entry.revenue - entry.estCost;
+          const estMargin =
+            entry.revenue > 0 ? (estProfit / entry.revenue) * 100 : 0;
+          totalCost += entry.estCost;
+          sheet.addRow({
+            name: entry.name,
+            qty: entry.qty,
+            revenue: entry.revenue,
+            estCost: entry.estCost,
+            estProfit,
+            estMargin: parseFloat(estMargin.toFixed(2)),
+          });
+        } else {
+          const profit = entry.revenue - entry.exactCost;
+          totalCost += entry.exactCost;
+          sheet.addRow({
+            name: entry.name,
+            qty: entry.qty,
+            revenue: entry.revenue,
+            exactCost: entry.exactCost,
+            profit,
+          });
+        }
+      });
+
+      // Format currency columns
+      sheet.getColumn("revenue").numFmt = "$#,##0.00";
+      if (useEstimatedCost) {
+        sheet.getColumn("estCost").numFmt = "$#,##0.00";
+        sheet.getColumn("estProfit").numFmt = "$#,##0.00";
+        sheet.getColumn("estMargin").numFmt = "0.00%";
+      } else {
+        sheet.getColumn("exactCost").numFmt = "$#,##0.00";
+        sheet.getColumn("profit").numFmt = "$#,##0.00";
+      }
+
+      const totalProfit = totalRevenue - totalCost;
+      if (useEstimatedCost) {
+        addSummaryRow(sheet, [
+          "TOTAL",
+          "",
+          totalRevenue,
+          totalCost,
+          totalProfit,
+          "",
+        ]);
+      } else {
+        addSummaryRow(sheet, [
+          "TOTAL",
+          "",
+          totalRevenue,
+          totalCost,
+          totalProfit,
+        ]);
+      }
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=profit-report-${startDate}-to-${endDate}.xlsx`
+      );
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error("Error generating profit report:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
 
 module.exports = router;
