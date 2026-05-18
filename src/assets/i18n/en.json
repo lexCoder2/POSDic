@@ -1349,5 +1349,36 @@
     "PRICE": "Price",
     "SCAN_ANOTHER": "Scan Another",
     "PARSE_ERROR": "Error parsing receipt"
+  },
+  "CATEGORIES_PAGE": {
+    "TITLE": "Categories",
+    "SEARCH_PLACEHOLDER": "Search categories...",
+    "ADD": "Add Category",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "EMPTY": "No categories found. Add your first category to get started.",
+    "LOAD_ERROR": "Unable to load categories. Try again.",
+    "FORM": {
+      "TITLE_ADD": "Add Category",
+      "TITLE_EDIT": "Edit Category",
+      "NAME_LABEL": "Category Name *",
+      "NAME_PLACEHOLDER": "Enter category name",
+      "DESCRIPTION_LABEL": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Enter description (optional)",
+      "ICON_LABEL": "Icon",
+      "COLOR_LABEL": "Color",
+      "ACTIVE_LABEL": "Active"
+    },
+    "ALERTS": {
+      "REQUIRED_NAME": "Please enter a category name",
+      "CREATED": "Category created successfully!",
+      "CREATE_FAILED": "Failed to create category",
+      "UPDATED": "Category updated successfully!",
+      "UPDATE_FAILED": "Failed to update category",
+      "ADMIN_DELETE": "Only administrators can delete categories",
+      "CONFIRM_DELETE": "Are you sure you want to delete \"{{name}}\"?",
+      "DELETED": "Category deleted successfully!",
+      "DELETE_FAILED": "Failed to delete category"
+    }
   }
 }

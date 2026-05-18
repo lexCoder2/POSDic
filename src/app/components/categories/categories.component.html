@@ -1,0 +1,267 @@
+<div class="categories-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header__title">
+      <h1>{{ "CATEGORIES_PAGE.TITLE" | translate }}</h1>
+      @if (!isLoading() && !hasError()) {
+        <span class="count-badge">{{ filteredCategories().length }}</span>
+      }
+    </div>
+    <div class="page-header__actions">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          [placeholder]="'CATEGORIES_PAGE.SEARCH_PLACEHOLDER' | translate"
+          class="search-input"
+        />
+        @if (searchQuery()) {
+          <button
+            class="search-clear"
+            (click)="searchQuery.set('')"
+            type="button"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        }
+      </div>
+      <button class="btn-add" (click)="openModal()" type="button">
+        <i class="fas fa-plus"></i>
+        {{ "CATEGORIES_PAGE.ADD" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="feedback-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>{{ "GLOBAL.LOADING" | translate }}</span>
+    </div>
+  } @else if (hasError()) {
+    <!-- Error State -->
+    <div class="feedback-state feedback-state--error">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ "CATEGORIES_PAGE.LOAD_ERROR" | translate }}</span>
+      <button class="btn-retry" (click)="loadCategories()" type="button">
+        <i class="fas fa-redo"></i>
+        {{ "GLOBAL.RETRY" | translate }}
+      </button>
+    </div>
+  } @else {
+    <!-- Empty State -->
+    @if (filteredCategories().length === 0) {
+      <div class="feedback-state">
+        <i class="fas fa-folder-open"></i>
+        <span>{{ "CATEGORIES_PAGE.EMPTY" | translate }}</span>
+      </div>
+    } @else {
+      <!-- Categories Grid -->
+      <div class="categories-grid">
+        @for (category of filteredCategories(); track category._id) {
+          <div
+            class="category-card"
+            [class.category-card--inactive]="category.active === false"
+          >
+            <div
+              class="category-card__icon"
+              [style.background-color]="category.color || '#3b82f6'"
+            >
+              <i [class]="category.icon || 'fas fa-tag'"></i>
+            </div>
+            <div class="category-card__body">
+              <div class="category-card__header">
+                <h3 class="category-card__name" [title]="category.name">
+                  {{ category.name }}
+                </h3>
+                <span
+                  class="status-badge"
+                  [class.status-badge--active]="category.active !== false"
+                  [class.status-badge--inactive]="category.active === false"
+                >
+                  {{
+                    (category.active !== false
+                      ? "CATEGORIES_PAGE.ACTIVE"
+                      : "CATEGORIES_PAGE.INACTIVE"
+                    ) | translate
+                  }}
+                </span>
+              </div>
+              @if (category.description) {
+                <p class="category-card__desc" [title]="category.description">
+                  {{ category.description }}
+                </p>
+              }
+            </div>
+            <div class="category-card__actions">
+              <button
+                class="btn-icon btn-edit"
+                (click)="openModal(category)"
+                type="button"
+                [title]="'INVENTORY.ACTIONS.EDIT' | translate"
+              >
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button
+                class="btn-icon btn-delete"
+                (click)="deleteCategory(category)"
+                [disabled]="!isAdmin()"
+                type="button"
+                [title]="'INVENTORY.ACTIONS.DELETE' | translate"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Category Modal -->
+<app-modal
+  [show]="showModal()"
+  [title]="
+    (isEditing()
+      ? 'CATEGORIES_PAGE.FORM.TITLE_EDIT'
+      : 'CATEGORIES_PAGE.FORM.TITLE_ADD'
+    ) | translate
+  "
+  size="md"
+  [closeOnBackdropClick]="false"
+  (close)="closeModal()"
+>
+  <form (ngSubmit)="saveCategory()" class="category-form">
+    <!-- Preview -->
+    <div class="form-preview">
+      <div
+        class="form-preview__icon"
+        [style.background-color]="categoryForm.color || '#3b82f6'"
+      >
+        <i [class]="categoryForm.icon || 'fas fa-tag'"></i>
+      </div>
+      <span class="form-preview__name">{{
+        categoryForm.name ||
+          ("CATEGORIES_PAGE.FORM.NAME_PLACEHOLDER" | translate)
+      }}</span>
+    </div>
+
+    <!-- Name -->
+    <div class="form-group">
+      <label for="cat-name">{{
+        "CATEGORIES_PAGE.FORM.NAME_LABEL" | translate
+      }}</label>
+      <input
+        type="text"
+        id="cat-name"
+        [(ngModel)]="categoryForm.name"
+        name="name"
+        required
+        [placeholder]="'CATEGORIES_PAGE.FORM.NAME_PLACEHOLDER' | translate"
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="cat-desc">{{
+        "CATEGORIES_PAGE.FORM.DESCRIPTION_LABEL" | translate
+      }}</label>
+      <textarea
+        id="cat-desc"
+        [(ngModel)]="categoryForm.description"
+        name="description"
+        rows="2"
+        [placeholder]="
+          'CATEGORIES_PAGE.FORM.DESCRIPTION_PLACEHOLDER' | translate
+        "
+      ></textarea>
+    </div>
+
+    <!-- Icon Picker -->
+    <div class="form-group">
+      <label>{{ "CATEGORIES_PAGE.FORM.ICON_LABEL" | translate }}</label>
+      <div class="icon-picker">
+        @for (icon of presetIcons; track icon) {
+          <button
+            type="button"
+            class="icon-option"
+            [class.icon-option--selected]="categoryForm.icon === icon"
+            [style.background-color]="
+              categoryForm.icon === icon ? categoryForm.color || '#3b82f6' : ''
+            "
+            (click)="selectIcon(icon)"
+            [title]="icon"
+          >
+            <i [class]="icon"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="form-group">
+      <label>{{ "CATEGORIES_PAGE.FORM.COLOR_LABEL" | translate }}</label>
+      <div class="color-picker">
+        @for (color of presetColors; track color) {
+          <button
+            type="button"
+            class="color-swatch"
+            [class.color-swatch--selected]="categoryForm.color === color"
+            [style.background-color]="color"
+            (click)="selectColor(color)"
+          ></button>
+        }
+        <input
+          type="color"
+          class="color-custom"
+          [ngModel]="categoryForm.color || '#3b82f6'"
+          (ngModelChange)="selectColor($event)"
+          name="colorCustom"
+          title="Custom color"
+        />
+      </div>
+    </div>
+
+    <!-- Active Toggle -->
+    <div class="form-group form-group--inline">
+      <label for="cat-active">{{
+        "CATEGORIES_PAGE.FORM.ACTIVE_LABEL" | translate
+      }}</label>
+      <label class="toggle">
+        <input
+          type="checkbox"
+          id="cat-active"
+          [(ngModel)]="categoryForm.active"
+          name="active"
+        />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="closeModal()"
+        [disabled]="isSaving()"
+      >
+        {{ "GLOBAL.CANCEL" | translate }}
+      </button>
+      <button type="submit" class="btn-save" [disabled]="isSaving()">
+        @if (isSaving()) {
+          <i class="fas fa-spinner fa-spin"></i>
+        }
+        {{
+          (isEditing()
+            ? "INVENTORY.ACTIONS.UPDATE_CATEGORY"
+            : "INVENTORY.ACTIONS.CREATE_CATEGORY"
+          ) | translate
+        }}
+      </button>
+    </div>
+  </form>
+</app-modal>

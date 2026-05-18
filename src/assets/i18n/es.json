@@ -1359,5 +1359,36 @@
     "PRICE": "Precio",
     "SCAN_ANOTHER": "Escanear Otro",
     "PARSE_ERROR": "Error al procesar el recibo"
+  },
+  "CATEGORIES_PAGE": {
+    "TITLE": "Categorías",
+    "SEARCH_PLACEHOLDER": "Buscar categorías...",
+    "ADD": "Agregar Categoría",
+    "ACTIVE": "Activo",
+    "INACTIVE": "Inactivo",
+    "EMPTY": "No se encontraron categorías. Agregue su primera categoría para comenzar.",
+    "LOAD_ERROR": "No se pudieron cargar las categorías. Inténtelo de nuevo.",
+    "FORM": {
+      "TITLE_ADD": "Agregar Categoría",
+      "TITLE_EDIT": "Editar Categoría",
+      "NAME_LABEL": "Nombre de la Categoría *",
+      "NAME_PLACEHOLDER": "Ingrese el nombre de la categoría",
+      "DESCRIPTION_LABEL": "Descripción",
+      "DESCRIPTION_PLACEHOLDER": "Ingrese la descripción (opcional)",
+      "ICON_LABEL": "Ícono",
+      "COLOR_LABEL": "Color",
+      "ACTIVE_LABEL": "Activo"
+    },
+    "ALERTS": {
+      "REQUIRED_NAME": "Por favor ingrese un nombre de categoría",
+      "CREATED": "¡Categoría creada correctamente!",
+      "CREATE_FAILED": "Error al crear la categoría",
+      "UPDATED": "¡Categoría actualizada correctamente!",
+      "UPDATE_FAILED": "Error al actualizar la categoría",
+      "ADMIN_DELETE": "Solo los administradores pueden eliminar categorías",
+      "CONFIRM_DELETE": "¿Está seguro que desea eliminar \"{{name}}\"?",
+      "DELETED": "¡Categoría eliminada correctamente!",
+      "DELETE_FAILED": "Error al eliminar la categoría"
+    }
   }
 }
